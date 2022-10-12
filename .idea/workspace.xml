@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b7e895ae-7cd8-4b7b-8094-70d7fbbfa8a0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PacPhi.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Gui.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/InputListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/MainMenu.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PacPhi.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pmButton.java" afterDir="false" />
-    </list>
+    <list default="true" id="b7e895ae-7cd8-4b7b-8094-70d7fbbfa8a0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,6 +38,19 @@
     <configuration name="PacPhi" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="PacPhi" />
       <module name="PacPhi" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="PacPhi" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="PacPhi" />
+      <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
