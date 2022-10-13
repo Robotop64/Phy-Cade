@@ -1,8 +1,7 @@
+import net.java.games.input.Controller;
+
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
-import java.awt.Desktop;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class Gui {
 
@@ -28,6 +27,11 @@ public class Gui {
         frame.getContentPane().add(new MainMenu());
 
         frame.setVisible(true);
+
+        InputListener inputListener = InputListener.getInstance();
+        inputListener.start();
+
+        inputListener.subscribe(System.out::println);
     }
 
     public static Gui getInstance() {
