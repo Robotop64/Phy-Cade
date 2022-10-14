@@ -7,34 +7,42 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 public class LeaderboardMenu extends JPanel {
 
 
-    //Create and calculate constants
-    pmButton header, game, ybuffer, xbuffer;
-    JLabel label;
-    int entryheight = 60;
-    int currentActive = -1;
-    public static int tabOffset = 0;
-    //container of all created buttons in the 9 slots
-    //public static List<pmButton[]> buttonListAll = new ArrayList<>(0);
     //container of the 9 display slots
-    public static List<pmButton[]> buttonSlots = new ArrayList<>(0);
+    private static final List<pmButton[]> buttonSlots = new ArrayList<>(0);
+
 
     //create a Leaderboard record type
-    record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) {
-    }
+    private record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) {}
 
-    //create a List of Leaderboard entries
-    public static List<LeaderboardEntry> entries = new ArrayList<>(0);
+    //create a List of LeaderboardEntries
+    private List<LeaderboardEntry> entries = new ArrayList<>(0);
+
+
+    private record Leaderboard(String name, List<LeaderboardEntry> entries) {}
+
+    private List<Leaderboard> games = new ArrayList<>(0);
+
+
+    //constants
+    private static int tabOffset = 0;
+    private pmButton header, ybuffer, xbuffer, temp;
+    private JLabel label, left, right;
+    private final int entryheight = 60;
+    private int currentActive = -1;
+    private int activeGame = -1;
+    private String[] gamesTitles = {"PacMan"};
+
 
     /*
      * Defines the Leaderboard GUI
      */
     public LeaderboardMenu() {
 
+    // Initialisation
         setBackground(Color.black);
         setLayout(null);
 
@@ -42,27 +50,33 @@ public class LeaderboardMenu extends JPanel {
 
         createEntrySlots();
 
+        createLeaderboards();
+
         toggleSelection(0);
 
         setEntries(0);
 
-        //example entry
-//        addEntry(new LeaderboardEntry("a", 10, LocalTime.now(), LocalDate.now()));
-//        addEntry(new LeaderboardEntry("h", 67, LocalTime.now(), LocalDate.now()));
+        setGame("PacMan");
+    // end of initialisation
 
-
-
-
+        //examples
+        addEntry("PacMan", new LeaderboardEntry("a", 9000, LocalTime.of(15,20,45), LocalDate.now()));
+        addEntry("PacMan", new LeaderboardEntry("b", 8000, LocalTime.of(15,20,45), LocalDate.now()));
+        addEntry("PacMan", new LeaderboardEntry("c", 7000, LocalTime.of(15,20,45), LocalDate.now()));
+//        setGame("Pacman");
+//        moveActive(1);
+//        moveGame(1);
     }
 
     /*
      * Can be used the create and add a new Leaderboardentry to the database
-     * @param neu - a leaderboard entry
+     * @param Board - which game the entry should be added to (Test,PacMan)
+     * @param neu - a leaderboard entry with (Name, Score, Time, Date)
      */
-    public void addEntry(LeaderboardEntry neu) {
-        entries.add(neu);
+    public void addEntry(String Board, LeaderboardEntry neu) {
+        getGameLeaderboard(Board).add(neu);
         //sorts the entries by score
-        entries.sort(new Comparator<LeaderboardEntry>() {
+        getGameLeaderboard(Board).sort(new Comparator<LeaderboardEntry>() {
             @Override
             public int compare(LeaderboardEntry o1, LeaderboardEntry o2) {
                 return Integer.compare(o2.highscore, o1.highscore);
@@ -78,22 +92,24 @@ public class LeaderboardMenu extends JPanel {
      */
     public void moveActive(int change) {
         if (change == 1) {
-            //keep scroll in slot bounds (0-8)
-            if (currentActive + change >= 0 && currentActive + change <= 8) {
-                //normal scroll from top until mid
-                if (currentActive + change <= 4) {
-                    toggleSelection(currentActive);
-                    toggleSelection(currentActive + change);
-                    return;
-                }
-                //entry shift from topmid until botmid
-                if (tabOffset + change + 8 < entries.size()) {
-                    tabOffset += change;
-                    setEntries(tabOffset);
-                } else {
-                    //normal scroll from bot mid to bot
-                    toggleSelection(currentActive);
-                    toggleSelection(currentActive + change);
+            if(entries.size()-1 > currentActive) {
+                //keep scroll in slot bounds (0-8)
+                if (currentActive + change >= 0 && currentActive + change <= 8) {
+                    //normal scroll from top until mid
+                    if (currentActive + change <= 4) {
+                        toggleSelection(currentActive);
+                        toggleSelection(currentActive + change);
+                        return;
+                    }
+                    //entry shift from topmid until botmid
+                    if (tabOffset + change + 8 < entries.size()) {
+                        tabOffset += change;
+                        setEntries(tabOffset);
+                    } else {
+                        //normal scroll from bot mid to bot
+                        toggleSelection(currentActive);
+                        toggleSelection(currentActive + change);
+                    }
                 }
             }
         }
@@ -120,21 +136,80 @@ public class LeaderboardMenu extends JPanel {
     }
 
     /*
+     * Used to move the leaderboard, only useful if more than 2 games available
+     * @param change - either -1 or 1
+     */
+    public void moveGame(int change){
+        activeGame += change;
+        if(activeGame >= 0){
+            setGame(gamesTitles[activeGame]);
+        }
+    }
+
+    /*
+     * Used to set the game who's Leaderboard should be displayed
+     */
+    public void setGame(String name) {
+        activeGame = 0;
+        if (games.size() >= 1) {
+            entries = getGameLeaderboard(name);
+            header.setText("Bestenliste : ~ " + name + " ~");
+        }
+        setEntries(0);
+    }
+
+    /*
+     * Used to Initialise the existing game Leaderboards
+     */
+    private void createLeaderboards() {
+        List<LeaderboardEntry> pacMan = new ArrayList<>(0);
+        games.add(new Leaderboard("PacMan", pacMan));
+    }
+
+    /*
+     * Used to get the leaderboard of a certain game
+     */
+    private List<LeaderboardEntry> getGameLeaderboard(String name) {
+        List<LeaderboardEntry> e = null;
+        for (int i = 0; i < games.size(); i++) {
+            if (games.get(i).name.equals(name)) {
+                e = games.get(i).entries;
+            }
+        }
+        return e;
+
+    }
+
+    /*
      * Creates the various Buttons on the GUI in the Leaderboard
      */
     private void createUI() {
-        header = new pmButton("Bestenliste :");
+        header = new pmButton("Bestenliste : ~selected game~");
         header.setBounds(20, 20, Gui.frame_width - 40, 60);
         header.setTheme("Leaderboard-GUI");
         header.update();
         add(header);
 
-        label = new JLabel("Rang:      Name:                           Punktestand:               Zeit:             Datum:");
+        label = new JLabel(" Rang:             Name:               Punktestand:            Zeit:           Datum:");
         label.setBounds(20, 85, Gui.frame_width - 40, 50);
         label.setHorizontalAlignment(SwingConstants.LEFT);
         label.setFont(new Font("Comic Sans MS", Font.PLAIN, 32));
         label.setForeground(Color.yellow);
         add(label);
+
+        left = new JLabel(" < |");
+        left.setBounds(30, 17, 50, 60);
+        left.setHorizontalAlignment(SwingConstants.LEFT);
+        left.setFont(new Font("Comic Sans MS", Font.PLAIN, 32));
+        left.setForeground(Color.cyan);
+        add(left);
+
+        right = new JLabel("| > ");
+        right.setBounds(Gui.frame_width - 80, 17, 50, 60);
+        right.setHorizontalAlignment(SwingConstants.RIGHT);
+        right.setFont(new Font("Comic Sans MS", Font.PLAIN, 32));
+        right.setForeground(Color.cyan);
+        add(right);
 
         ybuffer = new pmButton("");
         ybuffer.setBounds(20, 140, Gui.frame_width - 40, 10);
@@ -150,12 +225,15 @@ public class LeaderboardMenu extends JPanel {
         xbuffer.update();
         add(xbuffer);
 
-        game = new pmButton("~selected game~");
-        game.setBounds(Gui.frame_height/2, Gui.frame_height-80, 300, 60);
-        game.setTheme("Leaderboard-GUI");
-        game.setHorizontalAlignment(SwingConstants.CENTER);
-        game.update();
-        add(game);
+        for(int i=1; i < 10;i++){
+            pmButton temp = new pmButton("");
+            temp.setBounds(20, 170+i*(entryheight+25)-10, Gui.frame_width-40, 3);
+            temp.setTheme("Leaderboard-GUI");
+            temp.setHorizontalAlignment(SwingConstants.LEFT);
+            temp.setBorder(BorderFactory.createLineBorder(new Color(11, 136, 156), 3, true));
+            add(temp);
+        }
+
     }
 
     /*
@@ -237,20 +315,13 @@ public class LeaderboardMenu extends JPanel {
      */
     private void setEntries(int offset) {
 
-//        if (entries.size() <= 9) {
-//            Random random = new Random();
-//            for (int i = 0; i < 9; i++) {
-//                addEntry(new LeaderboardEntry("None", 0, LocalTime.of(0,0,0), LocalDate.of(1111,11,11)));
-//            }
-//        }
-
         for (int s = 0; s < Math.min(9, entries.size()); s++) {
 
             pmButton[] buttonSlot = buttonSlots.get(s);
             LeaderboardEntry slotEntry = entries.get(s + offset);
 
             for (int e = 0; e < 5; e++) {
-                buttonSlot[0].setText(entries.indexOf(slotEntry) + 1 + ".: ");
+                buttonSlot[0].setText(entries.indexOf(slotEntry) + 1 + ".  ");
                 buttonSlot[1].setText(slotEntry.name);
                 buttonSlot[2].setText(String.valueOf(slotEntry.highscore));
                 DateTimeFormatter newtime = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -259,8 +330,6 @@ public class LeaderboardMenu extends JPanel {
                 buttonSlot[4].setText(slotEntry.date.format(newdate));
             }
         }
-
-
     }
 
 }
