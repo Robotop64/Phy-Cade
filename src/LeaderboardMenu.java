@@ -13,7 +13,7 @@ public class LeaderboardMenu extends JPanel {
 
 
     //Create and calculate constants
-    pmButton header, back, enter, ybuffer, xbuffer;
+    pmButton header, game, ybuffer, xbuffer;
     JLabel label;
     int entryheight = 60;
     int currentActive = -1;
@@ -48,6 +48,7 @@ public class LeaderboardMenu extends JPanel {
 
         //example entry
 //        addEntry(new LeaderboardEntry("a", 10, LocalTime.now(), LocalDate.now()));
+//        addEntry(new LeaderboardEntry("h", 67, LocalTime.now(), LocalDate.now()));
 
 
 
@@ -122,13 +123,13 @@ public class LeaderboardMenu extends JPanel {
      * Creates the various Buttons on the GUI in the Leaderboard
      */
     private void createUI() {
-        header = new pmButton("Leaderboard :");
+        header = new pmButton("Bestenliste :");
         header.setBounds(20, 20, Gui.frame_width - 40, 60);
         header.setTheme("Leaderboard-GUI");
         header.update();
         add(header);
 
-        label = new JLabel("Rank:      Name:                           Score:               Time:             Date:");
+        label = new JLabel("Rang:      Name:                           Punktestand:               Zeit:             Datum:");
         label.setBounds(20, 85, Gui.frame_width - 40, 50);
         label.setHorizontalAlignment(SwingConstants.LEFT);
         label.setFont(new Font("Comic Sans MS", Font.PLAIN, 32));
@@ -149,17 +150,12 @@ public class LeaderboardMenu extends JPanel {
         xbuffer.update();
         add(xbuffer);
 
-        back = new pmButton("<| back");
-        back.setBounds(20, Gui.frame_height - 80, 120, 50);
-        back.setTheme("Leaderboard-GUI");
-        back.update();
-        add(back);
-
-        enter = new pmButton("go |>");
-        enter.setBounds(Gui.frame_width - 20 - 120, Gui.frame_height - 80, 120, 50);
-        enter.setTheme("Leaderboard-GUI");
-        enter.update();
-        add(enter);
+        game = new pmButton("~selected game~");
+        game.setBounds(Gui.frame_height/2, Gui.frame_height-80, 300, 60);
+        game.setTheme("Leaderboard-GUI");
+        game.setHorizontalAlignment(SwingConstants.CENTER);
+        game.update();
+        add(game);
     }
 
     /*
@@ -176,15 +172,15 @@ public class LeaderboardMenu extends JPanel {
             int ypos = ypos0 + i * entryheight + 25 * i;
 
             //rank
-            buttonSlot[0] = createButton((i) + ".:", xpos0, ypos, 110, entryheight, "Leaderboard", SwingConstants.RIGHT);
+            buttonSlot[0] = createButton("", xpos0, ypos, 110, entryheight, "Leaderboard", SwingConstants.RIGHT);
             //name
-            buttonSlot[1] = createButton("e" + i, xpos0 + 130, ypos, 280, entryheight, "Leaderboard", SwingConstants.CENTER);
+            buttonSlot[1] = createButton("", xpos0 + 130, ypos, 280, entryheight, "Leaderboard", SwingConstants.CENTER);
             //highscore
-            buttonSlot[2] = createButton("eScore" + i, xpos0 + 430, ypos, 280, entryheight, "Leaderboard", SwingConstants.CENTER);
+            buttonSlot[2] = createButton("", xpos0 + 430, ypos, 280, entryheight, "Leaderboard", SwingConstants.CENTER);
             //time
-            buttonSlot[3] = createButton("eTime" + i, xpos0 + 730, ypos, 170, entryheight, "Leaderboard", SwingConstants.RIGHT);
+            buttonSlot[3] = createButton("", xpos0 + 730, ypos, 170, entryheight, "Leaderboard", SwingConstants.RIGHT);
             //date
-            buttonSlot[4] = createButton("eDate" + i, xpos0 + 910, ypos, 230, entryheight, "Leaderboard", SwingConstants.CENTER);
+            buttonSlot[4] = createButton("", xpos0 + 910, ypos, 230, entryheight, "Leaderboard", SwingConstants.CENTER);
 
             buttonSlots.add(buttonSlot);
 
@@ -241,14 +237,14 @@ public class LeaderboardMenu extends JPanel {
      */
     private void setEntries(int offset) {
 
-        if (entries.size() <= 9) {
-            Random random = new Random();
-            for (int i = 0; i < 9; i++) {
-                addEntry(new LeaderboardEntry("None", 0, LocalTime.of(0,0,0), LocalDate.of(1111,11,11)));
-            }
-        }
+//        if (entries.size() <= 9) {
+//            Random random = new Random();
+//            for (int i = 0; i < 9; i++) {
+//                addEntry(new LeaderboardEntry("None", 0, LocalTime.of(0,0,0), LocalDate.of(1111,11,11)));
+//            }
+//        }
 
-        for (int s = 0; s <= 8; s++) {
+        for (int s = 0; s < Math.min(9, entries.size()); s++) {
 
             pmButton[] buttonSlot = buttonSlots.get(s);
             LeaderboardEntry slotEntry = entries.get(s + offset);
