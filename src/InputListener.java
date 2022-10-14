@@ -8,13 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InputListener{
+public class InputListener extends Celebrity<InputListener.Input>{
 
     private static InputListener instance;
-    private static int subId = 0;
 
     Thread thread;
-    Map<Integer, InputSubscriber> subscribers = new HashMap<>();
     Map<Controller, Player> controllerPlayerMap = new HashMap<>();
 
     private InputListener(){
@@ -27,24 +25,31 @@ public class InputListener{
             controllerPlayerMap.put(controllers.get(0), Player.player_one);
             controllerPlayerMap.put(controllers.get(1), Player.player_two);
 
+            handle_events(controllers, true);
+
             while (true) {
-                controllers.forEach(controller -> {
-                    controller.poll();
-                    Event e = new Event();
-                    EventQueue eq = controller.getEventQueue();
-                    while (eq.getNextEvent(e)) {
-                        if (e.getComponent().getName().equals("Z Axis")) continue;
-                        notify(new Input(getKey(e), getState(e), controllerPlayerMap.get(controller)));
-                    }
-                });
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                handle_events(controllers, false);
 
             }
         });
+    }
+
+    private void handle_events(List<Controller> controllers, boolean void_input) {
+        controllers.forEach(controller -> {
+            controller.poll();
+            Event e = new Event();
+            EventQueue eq = controller.getEventQueue();
+            while (eq.getNextEvent(e)) {
+                if (void_input) continue;
+                if (e.getComponent().getName().equals("Z Axis")) continue;
+                post(new Input(getKey(e), getState(e), controllerPlayerMap.get(controller)));
+            }
+        });
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private State getState(Event e){
@@ -70,30 +75,11 @@ public class InputListener{
         thread.start();
     }
 
-    private void notify(Input input){
-        subscribers.forEach((id, sub) -> sub.handle(input));
-    }
-
-    public int subscribe(InputSubscriber inputSubscriber){
-        subscribers.put(subId, inputSubscriber);
-        return subId++;
-    }
-
-    public void unsubscribe(int id){
-        subscribers.remove(id);
-    }
-
     public static InputListener getInstance(){
         if (instance == null) {
             instance = new InputListener();
         }
         return instance;
-    }
-
-    interface InputSubscriber {
-
-        void handle(Input input);
-
     }
 
     record Input(Key key, State state, Player player){}

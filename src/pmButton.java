@@ -2,10 +2,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.HashSet;
+import java.util.Set;
 
 public class pmButton extends JLabel {
 
     public boolean isSelected;
+
+    private Set<Runnable> actions = new HashSet<>();
 
     public pmButton(String text){
         super(text);
@@ -18,14 +22,23 @@ public class pmButton extends JLabel {
     }
 
     public void update(){
-        Color color = isSelected ? Color.yellow : Color.cyan;
+        Color color = isSelected ? Color.yellow : Color.cyan.darker();
         setBorder(BorderFactory.createLineBorder(color, 3, true));
         setForeground(color);
     }
 
-    /*
-     * Compact way to change the color scheme / theme of a button
-     */
+    public void press(){
+        actions.forEach(Runnable::run);
+    }
+
+    public void removeAction(Runnable a){
+        actions.remove(a);
+    }
+
+    public void addAction(Runnable a){
+        actions.add(a);
+    }
+
     public void setTheme(String theme){
         switch (theme) {
             case "Normal" -> {
