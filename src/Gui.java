@@ -19,12 +19,12 @@ public class Gui {
         frame = new JFrame("Pac-Φ");
         frame.setSize(frame_width, frame_height);
         frame.setLocationRelativeTo(null);
-        frame.setLocation(2560, 0);
+        //frame.setLocation(2560, 0);
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setUndecorated(true);
 
-        frame.getContentPane().add(new MainMenu());
+        frame.getContentPane().add(new LeaderboardMenu());
 
         frame.setVisible(true);
 
