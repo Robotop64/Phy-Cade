@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class onScreenKeyboard extends JPanel
+public class OnScreenKeyboard extends JPanel
 {
 
   public static Consumer <String> target;
@@ -70,7 +70,7 @@ public class onScreenKeyboard extends JPanel
   private static final int          maxButtonsInRow = 11;
   private static final int          origin          = Gui.frame_width / 2 - ( maxButtonsInRow * buttonOffset ) / 2;
 
-  public onScreenKeyboard ()
+  public OnScreenKeyboard ()
   {
     //initialisation
     setBackground(Color.black);
@@ -88,7 +88,7 @@ public class onScreenKeyboard extends JPanel
    */
   public void setTarget (Consumer <String> target)
   {
-    onScreenKeyboard.target = target;
+    OnScreenKeyboard.target = target;
   }
 
   private void createKeyStrings (String top, String mid)
