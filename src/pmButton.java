@@ -39,6 +39,10 @@ public class pmButton extends JLabel {
         actions.remove(a);
     }
 
+    public void clearActions(){
+        actions.clear();
+    }
+
     public void addAction(Runnable a){
         actions.add(a);
     }
