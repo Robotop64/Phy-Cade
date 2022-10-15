@@ -21,6 +21,10 @@ public class pmButton extends JLabel {
 
     }
 
+    public void setFontSize(int size){
+        setFont(new Font("Comic Sans MS", Font.PLAIN, size));
+    }
+
     public void update(){
         Color color = isSelected ? Color.yellow : Color.cyan.darker();
         setBorder(BorderFactory.createLineBorder(color, 3, true));
