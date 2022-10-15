@@ -1,7 +1,6 @@
-public class Util {
+public class Util
+{
 
-    public static int bounded(int x, int min, int max){
-        return Math.max(Math.min(x, max), min);
-    }
+  public static int bounded (int x, int min, int max) { return Math.max(Math.min(x, max), min); }
 
 }
