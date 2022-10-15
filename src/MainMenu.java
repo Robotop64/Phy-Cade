@@ -71,7 +71,9 @@ public class MainMenu extends JPanel
 
     lbButton.addAction(() ->
     {
-
+      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard();
+      getParent().add(onScreenKeyboard);
+      onScreenKeyboard.setBounds(0, 0, Gui.frame_width, Gui.frame_height);
     });
 
     InputListener.getInstance().subscribe(input ->
