@@ -5,16 +5,17 @@ import java.util.List;
 
 public class MainMenu extends JPanel {
 
-    pmButton spButton, mpButton, settingsButton, lbButton;
+    pmButton spButton, mpButton, settingsButton, lbButton, soundButton;
+    pmButton title_label;
 
     int w = 500;
     int x = (Gui.frame_width - w) / 2;
 
     int h = 120;
     int n_offsets = 32;
-    int n_buttons = 4;
+    int n_buttons = 5;
     int buffer = (Gui.frame_height - (n_buttons * h)) / n_offsets;
-    int y = (n_offsets - n_buttons) / 2 * buffer;
+    int y = (n_offsets - n_buttons) / 2 * buffer + 100;
 
     int selected_index = 0;
     int listener_id;
@@ -24,8 +25,14 @@ public class MainMenu extends JPanel {
     public MainMenu(){
 
         setBackground(Color.black);
-
         setLayout(null);
+
+        title_label = new pmButton("~ PAC - MAN ~");
+        title_label.setBounds(x, 100, w, h);
+        title_label.setFontSize(54);
+        title_label.setBorder(null);
+        add(title_label);
+
         spButton = new pmButton("EIN SPIELER");
         spButton.setBounds(x, y, w, h);
         add(spButton);
@@ -42,7 +49,13 @@ public class MainMenu extends JPanel {
         settingsButton.setBounds(x, y + 3 * (h + buffer), w, h);
         add(settingsButton);
 
-        buttons = Arrays.asList(spButton, mpButton, lbButton, settingsButton);
+        soundButton = new pmButton("TON - AN");
+        soundButton.setBounds(x, y + 4 * (h + buffer), w, h);
+        add(soundButton);
+
+        //Kai schmidt-brauns
+
+        buttons = Arrays.asList(spButton, mpButton, lbButton, settingsButton, soundButton);
 
         select(0);
 
@@ -55,7 +68,7 @@ public class MainMenu extends JPanel {
                 case down -> 1;
                 case none -> 0;
             };
-            select(Util.bounded(selected_index + delta, 0, 3));
+            select(Util.bounded(selected_index + delta, 0, n_buttons-1));
         });
 
         buttons.forEach(b -> b.addAction(() -> {
