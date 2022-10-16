@@ -1,6 +1,7 @@
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -61,6 +62,7 @@ public class OnScreenKeyboard extends JPanel
       new Point(4, 10), new Point(4, 5)
   );
 
+  private              int          listener_id;
   private              char[][]     keyRows         = new char[3][];
   private              char[]       topRow          = new char[11];
   private final        pmButton[][] buttons         = new pmButton[5][];
@@ -78,8 +80,8 @@ public class OnScreenKeyboard extends JPanel
     createButtons();
     setButtonLayout(activeLayout);
     toggleKey(activeKey);
+    activate();
     //end of initialisation
-
 
   }
 
@@ -252,8 +254,50 @@ public class OnScreenKeyboard extends JPanel
     buttons[pos.y][pos.x].update();
   }
 
-  private void moveActive (int directions)
+  //TODO cleanup if statements
+  private void setActiveKey (Point newKey)
   {
+    toggleKey(activeKey);
+    if (newKey.y == 3)
+    {
+      if (newKey.x == 0)
+      {
+        newKey = new Point(newKey.y, newKey.x + 1);
+      }
+      if (newKey.x == 10)
+      {
+        newKey = new Point(newKey.y, newKey.x - 1);
+      }
+    }
+    if (newKey.y == 4)
+    {
+      if (newKey.x == 0)
+      {
+        newKey = new Point(newKey.y, newKey.x + 1);
+      }
+      if (newKey.x == 10)
+      {
+        newKey = new Point(newKey.y, newKey.x - 1);
+      }
+    }
+    if (newKey.y == 4)
+    {
+      if (activeKey.x == 3 && newKey.x == 4)
+      {
+        newKey = new Point(newKey.y, 7);
+      }
+      if (activeKey.x == 6 && newKey.x == 5)
+      {
+        newKey = new Point(newKey.y, 2);
+      }
+    }
+    if (activeKey.y == 3 && newKey.y == 4 && activeKey.x >= 3 && activeKey.x <= 6)
+    {
+      newKey = new Point(newKey.y, 3);
+    }
+
+    activeKey = newKey;
+    toggleKey(activeKey);
   }
 
   private pmButton createPrintableButton (String text, String key, double size, int x, int y)
@@ -274,4 +318,43 @@ public class OnScreenKeyboard extends JPanel
   }
 
 
+  /*
+   * Activate the Input Listener
+   */
+  private void activate ()
+  {
+    listener_id = InputListener.getInstance().subscribe(input ->
+    {
+      if (input.player().equals(InputListener.Player.playerTwo)) return;
+      if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
+                 .contains(input.key())) return;
+      int delta = switch (input.state())
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
+      int y = Util.bounded(activeKey.y + delta, 0, 5 - 1);
+      int x = Util.bounded(activeKey.x + delta, 0, 11 - 1);
+
+      if (input.key().name().equals("horizontal"))
+      {
+        setActiveKey(new Point(activeKey.y, x));
+      }
+      if (input.key().name().equals("vertical"))
+      {
+        setActiveKey(new Point(y, activeKey.x));
+      }
+    });
+    setVisible(true);
+  }
+
+  /*
+   * Deactivate the Input Listener
+   */
+  private void deactivate ()
+  {
+    InputListener.getInstance().unsubscribe(listener_id);
+    setVisible(false);
+  }
 }
