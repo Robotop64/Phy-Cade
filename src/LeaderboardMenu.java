@@ -61,7 +61,6 @@ public class LeaderboardMenu extends JPanel
     setEntries(0);
     setGame("PacMan");
 
-    activate();
     // end of initialisation
 
     // todo read from and to XML file
@@ -226,13 +225,13 @@ public class LeaderboardMenu extends JPanel
   private void createUI ()
   {
     header = new pmButton("Bestenliste : ~selected game~");
-    header.setBounds(20, 20, Gui.frame_width - 40, 60);
+    header.setBounds(20, 20, Gui.frameWidth - 40, 60);
     header.setTheme("Leaderboard-GUI");
     header.update();
     add(header);
 
     label = new JLabel(" Rang:             Name:               Punktestand:            Zeit:           Datum:");
-    label.setBounds(20, 85, Gui.frame_width - 40, 50);
+    label.setBounds(20, 85, Gui.frameWidth - 40, 50);
     label.setHorizontalAlignment(SwingConstants.LEFT);
     label.setFont(new Font("Comic Sans MS", Font.PLAIN, 32));
     label.setForeground(Color.yellow);
@@ -246,21 +245,21 @@ public class LeaderboardMenu extends JPanel
     add(left);
 
     right = new JLabel("| > ");
-    right.setBounds(Gui.frame_width - 80, 17, 50, 60);
+    right.setBounds(Gui.frameWidth - 80, 17, 50, 60);
     right.setHorizontalAlignment(SwingConstants.RIGHT);
     right.setFont(new Font("Comic Sans MS", Font.PLAIN, 32));
     right.setForeground(Color.cyan);
     add(right);
 
     ybuffer = new pmButton("");
-    ybuffer.setBounds(20, 140, Gui.frame_width - 40, 10);
+    ybuffer.setBounds(20, 140, Gui.frameWidth - 40, 10);
     ybuffer.setTheme("Leaderboard-GUI");
     ybuffer.setHorizontalAlignment(SwingConstants.LEFT);
     ybuffer.update();
     add(ybuffer);
 
     xbuffer = new pmButton("");
-    xbuffer.setBounds(125, 90, 10, Gui.frame_height - 180);
+    xbuffer.setBounds(125, 90, 10, Gui.frameHeight - 180);
     xbuffer.setTheme("Leaderboard-GUI");
     xbuffer.setHorizontalAlignment(SwingConstants.LEFT);
     xbuffer.update();
@@ -269,7 +268,7 @@ public class LeaderboardMenu extends JPanel
     for (int i = 1; i < 10; i++)
     {
       pmButton temp = new pmButton("");
-      temp.setBounds(20, 170 + i * ( entryHeight + 25 ) - 10, Gui.frame_width - 40, 3);
+      temp.setBounds(20, 170 + i * ( entryHeight + 25 ) - 10, Gui.frameWidth - 40, 3);
       temp.setTheme("Leaderboard-GUI");
       temp.setHorizontalAlignment(SwingConstants.LEFT);
       temp.setBorder(BorderFactory.createLineBorder(new Color(11, 136, 156), 3, true));
@@ -388,19 +387,29 @@ public class LeaderboardMenu extends JPanel
     }
   }
 
-  private void activate ()
+  public void activate ()
   {
     listener_id = InputListener.getInstance().subscribe(input ->
     {
+      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        InputListener.getInstance().unsubscribe(listener_id);
+        setVisible(false);
+        getParent().remove(this);
+        Gui.getInstance().frame.getContentPane().add(MainMenu.getInstance());
+        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+        MainMenu.getInstance().activate();
+      }
+
       if (input.player().equals(InputListener.Player.playerTwo)) return;
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+        {
+          case up -> -1;
+          case down -> 1;
+          case none -> 0;
+        };
 
       if (input.key().name().equals("horizontal")) moveGame(delta);
       if (input.key().name().equals("vertical")) moveActive(delta);
