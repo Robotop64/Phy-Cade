@@ -7,9 +7,8 @@ import java.time.LocalTime;
 
 public class GameOverScreen extends JPanel
 {
-  private JLabel title, over, text, score, time;
-  private int overWidth  = 600;
-  private int titleWidth = 600;
+  private final int width = 600;
+  private final int dist  = 60;
 
   public GameOverScreen (String gameName, int score, LocalTime time)
   {
@@ -20,19 +19,29 @@ public class GameOverScreen extends JPanel
 
   private void createLabels (String gameName, int score, LocalTime time)
   {
-    title = new JLabel(gameName);
-    title.setBounds(Gui.frame_width / 2 - titleWidth / 2, 10, titleWidth, 100);
+    JLabel title = new JLabel("~ " + gameName + " ~");
+    title.setBounds(Gui.frame_width / 2 - width / 2, dist / 6, width, 100);
     //    title.setBorder(BorderFactory.createLineBorder(Color.CYAN, 3, true));
     title.setFont(new Font("Comic Sans MS", Font.PLAIN, 60));
     title.setHorizontalAlignment(SwingConstants.CENTER);
+    title.setForeground(Color.cyan);
     add(title);
 
-    over = new JLabel("GAME OVER");
-    over.setBounds(Gui.frame_width / 2 - overWidth / 2, 120, overWidth, 100);
+    JLabel over = new JLabel("GAME OVER");
+    over.setBounds(Gui.frame_width / 2 - width / 2, dist * 2, width, 100);
     //    over.setBorder(BorderFactory.createLineBorder(Color.CYAN, 3, true));
     over.setFont(new Font("Comic Sans MS", Font.PLAIN, 100));
     over.setHorizontalAlignment(SwingConstants.CENTER);
+    over.setForeground(Color.red);
     add(over);
+
+    JLabel message = new JLabel("Dein Ergebnis");
+    message.setBounds(Gui.frame_width / 2 - width / 2, dist * 6, width, 100);
+    //    over.setBorder(BorderFactory.createLineBorder(Color.CYAN, 3, true));
+    message.setFont(new Font("Comic Sans MS", Font.PLAIN, 40));
+    message.setHorizontalAlignment(SwingConstants.CENTER);
+    message.setForeground(Color.red);
+    add(message);
 
 
   }
