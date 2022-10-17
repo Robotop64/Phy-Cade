@@ -21,18 +21,18 @@ public class OnScreenKeyboard extends JPanel
   { DE, GREEK }
 
   private final Map <Languages, Layout>  LayoutLangStringMap = Map.of(
-      Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
-      Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
+    Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
+    Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
   private final Map <LayoutHead, String> layoutHeadStringMap = Map.of(
-      LayoutHead.num, "1234567890 ",
-      LayoutHead.numDE, "1234567890ß",
-      LayoutHead.extra, "!\"§$%&/()=?");
+    LayoutHead.num, "1234567890 ",
+    LayoutHead.numDE, "1234567890ß",
+    LayoutHead.extra, "!\"§$%&/()=?");
   private final Map <LayoutBody, String> layoutBodyStringMap = Map.of(
-      LayoutBody.empty, "                             ",
-      LayoutBody.extraP1, "                             ",
-      LayoutBody.extraP2, "                             ",
-      LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
-      LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
+    LayoutBody.empty, "                             ",
+    LayoutBody.extraP1, "                             ",
+    LayoutBody.extraP2, "                             ",
+    LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
+    LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
 
   private record Layout(LayoutHead layoutHead, LayoutBody layoutBody)
   { }
@@ -49,18 +49,18 @@ public class OnScreenKeyboard extends JPanel
 
   private       Point              activeKey = new Point(3, 5);
   private final Map <Point, Point> keyMap    = Map.of(
-      //shift
-      new Point(3, 1), new Point(3, 0),
-      //backspace
-      new Point(3, 10), new Point(3, 8),
-      //extra
-      new Point(4, 1), new Point(4, 0),
-      //space
-      new Point(4, 4), new Point(4, 2),
-      new Point(4, 5), new Point(4, 2),
-      new Point(4, 6), new Point(4, 2),
-      //enter
-      new Point(4, 10), new Point(4, 5)
+    //shift
+    new Point(3, 1), new Point(3, 0),
+    //backspace
+    new Point(3, 10), new Point(3, 8),
+    //extra
+    new Point(4, 1), new Point(4, 0),
+    //space
+    new Point(4, 4), new Point(4, 2),
+    new Point(4, 5), new Point(4, 2),
+    new Point(4, 6), new Point(4, 2),
+    //enter
+    new Point(4, 10), new Point(4, 5)
   );
 
   private              int          listener_id;
@@ -74,7 +74,7 @@ public class OnScreenKeyboard extends JPanel
   private static final int          buttonOffset       = buttonBaseSize + buttonBuffer;
   private static final int          maxButtonsInRow    = 11;
   private static final int          maxButtonsInColumn = 5;
-  private static final int          origin             = Gui.frame_width / 2 - ( maxButtonsInRow * buttonOffset ) / 2;
+  private static final int          origin             = Gui.frameWidth / 2 - ( maxButtonsInRow * buttonOffset ) / 2;
   private static final int          heightOffset       = 375;
   // total height 520
 
@@ -84,8 +84,8 @@ public class OnScreenKeyboard extends JPanel
     setBackground(Color.black);
     setLayout(null);
     border.setBounds(origin - 20, origin + heightOffset - 20,
-        maxButtonsInRow * buttonOffset + 20,
-        maxButtonsInColumn * buttonOffset + 20);
+      maxButtonsInRow * buttonOffset + 20,
+      maxButtonsInColumn * buttonOffset + 20);
     border.update();
     add(border);
     createButtons();
@@ -344,11 +344,11 @@ public class OnScreenKeyboard extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+        {
+          case up -> -1;
+          case down -> 1;
+          case none -> 0;
+        };
 
       if (input.key().name().equals("horizontal"))
       {

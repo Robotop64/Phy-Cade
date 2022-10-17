@@ -75,7 +75,7 @@ public class MainMenu extends JPanel
       System.out.println("showing OSK");
       OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard();
       getParent().add(onScreenKeyboard);
-      onScreenKeyboard.setBounds(0, 0, Gui.frame_width, Gui.frame_height);
+      onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
     });
 
   }
