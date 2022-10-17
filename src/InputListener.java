@@ -122,7 +122,7 @@ public class InputListener extends Celebrity <InputListener.Input>
     controllers.forEach(handling);
     try
     {
-      Thread.sleep(1000);
+      Thread.sleep(10);
     }
     catch (InterruptedException e)
     {
