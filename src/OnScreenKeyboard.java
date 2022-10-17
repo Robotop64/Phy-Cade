@@ -10,7 +10,6 @@ public class OnScreenKeyboard extends JPanel
 
   public static Consumer <String> target;
 
-  private boolean shifted = false;
 
   private enum LayoutHead
   { num, numDE, extra }
@@ -65,20 +64,30 @@ public class OnScreenKeyboard extends JPanel
   );
 
   private              int          listener_id;
-  private              char[][]     keyRows         = new char[3][];
-  private              char[]       topRow          = new char[11];
-  private final        pmButton[][] buttons         = new pmButton[5][];
-  private static final int          buttonBaseSize  = 80;
-  private static final int          buttonBuffer    = 20;
-  private static final int          buttonOffset    = buttonBaseSize + buttonBuffer;
-  private static final int          maxButtonsInRow = 11;
-  private static final int          origin          = Gui.frame_width / 2 - ( maxButtonsInRow * buttonOffset ) / 2;
+  private              boolean      shifted            = false;
+  private              char[][]     keyRows            = new char[3][];
+  private              char[]       topRow             = new char[11];
+  private final        pmButton[][] buttons            = new pmButton[5][];
+  private final        pmButton     border             = new pmButton("");
+  private static final int          buttonBaseSize     = 80;
+  private static final int          buttonBuffer       = 20;
+  private static final int          buttonOffset       = buttonBaseSize + buttonBuffer;
+  private static final int          maxButtonsInRow    = 11;
+  private static final int          maxButtonsInColumn = 5;
+  private static final int          origin             = Gui.frame_width / 2 - ( maxButtonsInRow * buttonOffset ) / 2;
+  private static final int          heightOffset       = 375;
+  // total height 520
 
   public OnScreenKeyboard ()
   {
     //initialisation
     setBackground(Color.black);
     setLayout(null);
+    border.setBounds(origin - 20, origin + heightOffset - 20,
+        maxButtonsInRow * buttonOffset + 20,
+        maxButtonsInColumn * buttonOffset + 20);
+    border.update();
+    add(border);
     createButtons();
     setButtonLayout(activeLayout);
     toggleKey(activeKey);
@@ -316,7 +325,7 @@ public class OnScreenKeyboard extends JPanel
     pmButton temp = new pmButton(text);
     temp.addAction(action);
     temp.setSize((int) Math.round(buttonBaseSize * size), buttonBaseSize);
-    temp.setLocation(origin + x * buttonOffset, 375 + origin + y * buttonOffset);
+    temp.setLocation(origin + x * buttonOffset, heightOffset + origin + y * buttonOffset);
     temp.isSelected = false;
     temp.update();
 
