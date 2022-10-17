@@ -19,23 +19,21 @@ public class InputListener extends Celebrity <InputListener.Input>
   Thread                   thread;
   Map <Controller, Player> controllerPlayerMap = new HashMap <>();
 
-  private Map <Component.Identifier.Key, State> keyStateMap = Map.of(
-      Component.Identifier.Key.W, State.none,
-      Component.Identifier.Key.A, State.none,
-      Component.Identifier.Key.S, State.none,
-      Component.Identifier.Key.D, State.none,
-      Component.Identifier.Key.SPACE, State.none);
+  private Map <Component.Identifier.Key, State> keyStateMap = new HashMap <>();
 
   private final Map <Component.Identifier.Key, InputState> inputMap = Map.of(
-      Component.Identifier.Key.W, new InputState(Key.vertical, State.up),
-      Component.Identifier.Key.S, new InputState(Key.vertical, State.down),
-      Component.Identifier.Key.A, new InputState(Key.horizontal, State.up),
-      Component.Identifier.Key.D, new InputState(Key.horizontal, State.down),
-      Component.Identifier.Key.SPACE, new InputState(Key.A, State.down)
+    Component.Identifier.Key.W, new InputState(Key.vertical, State.up),
+    Component.Identifier.Key.S, new InputState(Key.vertical, State.down),
+    Component.Identifier.Key.A, new InputState(Key.horizontal, State.up),
+    Component.Identifier.Key.D, new InputState(Key.horizontal, State.down),
+    Component.Identifier.Key.ESCAPE, new InputState(Key.B, State.down),
+    Component.Identifier.Key.SPACE, new InputState(Key.A, State.down)
   );
 
   private InputListener ()
   {
+    inputMap.keySet().forEach(key -> keyStateMap.put(key, State.none));
+
     thread = new Thread(() ->
     {
       List <Controller> controllers = Arrays.stream(ControllerEnvironment.getDefaultEnvironment().getControllers())
@@ -80,9 +78,9 @@ public class InputListener extends Celebrity <InputListener.Input>
 
           newState.keySet().stream().filter(k -> !newState.get(k).equals(keyStateMap.get(k)))
                   .map(key -> new Input(
-                      inputMap.get(key).key,
-                      newState.get(key).equals(State.none) ? State.none : inputMap.get(key).state,
-                      Player.playerOne))
+                    inputMap.get(key).key,
+                    newState.get(key).equals(State.none) ? State.none : inputMap.get(key).state,
+                    Player.playerOne))
                   .forEach(this::post);
 
           keyStateMap = newState;
@@ -138,18 +136,19 @@ public class InputListener extends Celebrity <InputListener.Input>
 
   private Key getKey (Event e)
   {
+    // todo map this
     return switch (e.getComponent().getName())
-        {
-          case "Y Axis" -> Key.vertical;
-          case "X Axis" -> Key.horizontal;
-          case "Button 1" -> Key.A;
-          case "Button 2" -> Key.B;
-          case "Button 3" -> Key.C;
-          case "Button 4" -> Key.D;
-          case "Button 5" -> Key.X;
-          case "Button 6" -> Key.Y;
-          default -> null;
-        };
+      {
+        case "Y Axis" -> Key.vertical;
+        case "X Axis" -> Key.horizontal;
+        case "Button 1" -> Key.A;
+        case "Button 2" -> Key.B;
+        case "Button 3" -> Key.C;
+        case "Button 4" -> Key.D;
+        case "Button 5" -> Key.X;
+        case "Button 6" -> Key.Y;
+        default -> null;
+      };
   }
 
   public void start () { thread.start(); }
