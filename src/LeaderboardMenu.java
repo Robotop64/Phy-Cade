@@ -14,41 +14,43 @@ import java.util.List;
 
 public class LeaderboardMenu extends JPanel
 {
-
+  private static LeaderboardMenu instance;
 
   //container of the 9 display slots
-  private static final List <pmButton[]> buttonSlots = new ArrayList <>(0);
-
-
-  //create a Leaderboard record type
-  private record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) { }
-
-  //create a List of LeaderboardEntries
-  public List <LeaderboardEntry> entries = new ArrayList <>(0);
-
+  private final List <pmButton[]> buttonSlots = new ArrayList <>();
 
   public record Leaderboard(String name, List <LeaderboardEntry> entries) { }
 
-  public List <Leaderboard> games = new ArrayList <>(0);
+  public List <LeaderboardEntry> entries = new ArrayList <>();
+  public List <Leaderboard>      games   = new ArrayList <>();
 
+  private record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) { }
 
-  //constants
-  private        int      listener_id;
-  private static int      tabOffset = 0;
-  private        pmButton header, ybuffer, xbuffer, temp;
-  private JLabel label, left, right;
-  private final int      entryheight   = 60;
+  private       int      listener_id;
+  private       int      tableOffset   = 0;
+  private       pmButton header;
+  private       pmButton ybuffer;
+  private       pmButton xbuffer;
+  private       JLabel   label;
+  private       JLabel   left;
+  private       JLabel   right;
+  private final int      entryHeight   = 60;
   private       int      currentActive = -1;
   private       int      activeGame    = -1;
   private       String[] gamesTitles   = { "PacMan" };
 
 
-  /*
-   * Defines the Leaderboard GUI
-   */
-  public LeaderboardMenu ()
+  public static LeaderboardMenu getInstance ()
   {
+    if (instance == null)
+    {
+      instance = new LeaderboardMenu();
+    }
+    return instance;
+  }
 
+  private LeaderboardMenu ()
+  {
     // Initialisation
     setBackground(Color.black);
     setLayout(null);
@@ -62,6 +64,7 @@ public class LeaderboardMenu extends JPanel
     activate();
     // end of initialisation
 
+    // todo read from and to XML file
     //examples
     addEntry("PacMan", new LeaderboardEntry("a", 9000, LocalTime.of(15, 20, 45), LocalDate.now()));
     addEntry("PacMan", new LeaderboardEntry("b", 8000, LocalTime.of(15, 20, 45), LocalDate.now()));
@@ -79,8 +82,9 @@ public class LeaderboardMenu extends JPanel
 
   }
 
+
   /*
-   * Can be used the create and add a new Leaderboardentry to the database
+   * Can be used the create and add a new LeaderboardEntry to the database
    * @param Board - which game the entry should be added to (Test,PacMan)
    * @param neu - a leaderboard entry with (Name, Score, Time, Date)
    */
@@ -121,10 +125,10 @@ public class LeaderboardMenu extends JPanel
             return;
           }
           //entry shift from topmid until botmid
-          if (tabOffset + change + 8 < entries.size())
+          if (tableOffset + change + 8 < entries.size())
           {
-            tabOffset += change;
-            setEntries(tabOffset);
+            tableOffset += change;
+            setEntries(tableOffset);
           }
           else
           {
@@ -148,10 +152,10 @@ public class LeaderboardMenu extends JPanel
           return;
         }
         //entry shift from botmid until topmid
-        if (tabOffset + change >= 0)
+        if (tableOffset + change >= 0)
         {
-          tabOffset += change;
-          setEntries(tabOffset);
+          tableOffset += change;
+          setEntries(tableOffset);
         }
         else
         {
@@ -265,7 +269,7 @@ public class LeaderboardMenu extends JPanel
     for (int i = 1; i < 10; i++)
     {
       pmButton temp = new pmButton("");
-      temp.setBounds(20, 170 + i * ( entryheight + 25 ) - 10, Gui.frame_width - 40, 3);
+      temp.setBounds(20, 170 + i * ( entryHeight + 25 ) - 10, Gui.frame_width - 40, 3);
       temp.setTheme("Leaderboard-GUI");
       temp.setHorizontalAlignment(SwingConstants.LEFT);
       temp.setBorder(BorderFactory.createLineBorder(new Color(11, 136, 156), 3, true));
@@ -287,18 +291,18 @@ public class LeaderboardMenu extends JPanel
     for (int i = 0; i < slots; i++)
     {
       pmButton[] buttonSlot = new pmButton[5];
-      int        ypos       = ypos0 + i * entryheight + 25 * i;
+      int        ypos       = ypos0 + i * entryHeight + 25 * i;
 
       //rank
-      buttonSlot[0] = createButton("", xpos0, ypos, 110, entryheight, "Leaderboard", SwingConstants.RIGHT);
+      buttonSlot[0] = createButton("", xpos0, ypos, 110, entryHeight, "Leaderboard", SwingConstants.RIGHT);
       //name
-      buttonSlot[1] = createButton("", xpos0 + 130, ypos, 280, entryheight, "Leaderboard", SwingConstants.CENTER);
+      buttonSlot[1] = createButton("", xpos0 + 130, ypos, 280, entryHeight, "Leaderboard", SwingConstants.CENTER);
       //highscore
-      buttonSlot[2] = createButton("", xpos0 + 430, ypos, 280, entryheight, "Leaderboard", SwingConstants.CENTER);
+      buttonSlot[2] = createButton("", xpos0 + 430, ypos, 280, entryHeight, "Leaderboard", SwingConstants.CENTER);
       //time
-      buttonSlot[3] = createButton("", xpos0 + 730, ypos, 170, entryheight, "Leaderboard", SwingConstants.RIGHT);
+      buttonSlot[3] = createButton("", xpos0 + 730, ypos, 170, entryHeight, "Leaderboard", SwingConstants.RIGHT);
       //date
-      buttonSlot[4] = createButton("", xpos0 + 910, ypos, 230, entryheight, "Leaderboard", SwingConstants.CENTER);
+      buttonSlot[4] = createButton("", xpos0 + 910, ypos, 230, entryHeight, "Leaderboard", SwingConstants.CENTER);
 
       buttonSlots.add(buttonSlot);
 
