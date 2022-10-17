@@ -12,12 +12,12 @@ public class MainMenu extends JPanel
   pmButton title_label;
 
   int w = 500;
-  int x = ( Gui.frame_width - w ) / 2;
+  int x = ( Gui.frameWidth - w ) / 2;
 
   int h         = 120;
   int n_offsets = 32;
   int n_buttons = 5;
-  int buffer    = ( Gui.frame_height - ( n_buttons * h ) ) / n_offsets;
+  int buffer    = ( Gui.frameHeight - ( n_buttons * h ) ) / n_offsets;
   int y         = ( n_offsets - n_buttons ) / 2 * buffer + 100;
 
   int selected_index = 0;
@@ -67,20 +67,17 @@ public class MainMenu extends JPanel
     {
       InputListener.getInstance().unsubscribe(listener_id);
       setVisible(false);
+      getParent().remove(this);
     }));
 
     lbButton.addAction(() ->
     {
+      System.out.println("showing OSK");
       OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard();
       getParent().add(onScreenKeyboard);
       onScreenKeyboard.setBounds(0, 0, Gui.frame_width, Gui.frame_height);
     });
 
-    InputListener.getInstance().subscribe(input ->
-    {
-      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
-        buttons.get(selected_index).press();
-    });
   }
 
   public static MainMenu getInstance ()
@@ -89,31 +86,29 @@ public class MainMenu extends JPanel
     return instance;
   }
 
-
-  private void activate ()
+  public void activate ()
   {
     listener_id = InputListener.getInstance().subscribe(input ->
     {
+      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        buttons.get(selected_index).press();
+        return;
+      }
+
       if (input.player().equals(InputListener.Player.playerTwo)) return;
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+        {
+          case up -> -1;
+          case down -> 1;
+          case none -> 0;
+        };
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);
   }
-
-  private void deactivate ()
-  {
-    InputListener.getInstance().unsubscribe(listener_id);
-    setVisible(false);
-  }
-
 
   public void select (int index)
   {

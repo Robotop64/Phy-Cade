@@ -1,15 +1,17 @@
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class Gui
 {
 
-  public static final int frame_width  = 1280;
-  public static final int frame_height = 1024;
-  private static      Gui instance;
+  public static final int       frameWidth         = 1280;
+  public static final int       frameHeight        = 1024;
+  public static final Rectangle defaultFrameBounds = new Rectangle(0, 0, frameWidth, frameHeight);
+  private static      Gui       instance;
 
   JFrame frame;
 
@@ -18,14 +20,12 @@ public class Gui
 
   }
 
-  ;
-
   public void initialize ()
   {
     frame = new JFrame("Pac-Φ");
-    frame.setSize(frame_width, frame_height);
+    frame.setSize(frameWidth, frameHeight);
     frame.setLocationRelativeTo(null);
-    frame.setLocation(-frame_width, 0);
+    frame.setLocation(-frameWidth, 0);
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.setUndecorated(true);
@@ -38,7 +38,7 @@ public class Gui
     inputListener.subscribe(System.out::println);
 
     frame.getContentPane().add(MainMenu.getInstance());
-    MainMenu.getInstance().setBounds(0, 0, frame_width, frame_height);
+    MainMenu.getInstance().setBounds(defaultFrameBounds);
 
 
     pmButton debug = new pmButton("");
@@ -46,7 +46,7 @@ public class Gui
     debug.setBorder(null);
     debug.setFontSize(14);
     frame.getContentPane().add(debug);
-    debug.setBounds(1, frame_height - 55, 400, 40);
+    debug.setBounds(1, frameHeight - 55, 400, 40);
     inputListener.subscribe(input -> debug.setText(input.toString()));
 
 
