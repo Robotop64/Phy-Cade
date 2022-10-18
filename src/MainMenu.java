@@ -78,6 +78,12 @@ public class MainMenu extends JPanel
       LeaderboardMenu.getInstance().activate();
     });
 
+    soundButton.clearActions();
+    soundButton.addAction(() ->
+    {
+      soundButton.setText(soundButton.getText().contains("AUS") ? "TON - AN" : "TON - AUS");
+    });
+
   }
 
   public static MainMenu getInstance ()
