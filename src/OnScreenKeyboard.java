@@ -23,27 +23,27 @@ public class OnScreenKeyboard extends JPanel
   { DE, GREEK }
 
   private final Map <Languages, Layout>  LayoutLangStringMap = Map.of(
-      Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
-      Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
+    Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
+    Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
   private final Map <LayoutHead, String> layoutHeadStringMap = Map.of(
-      LayoutHead.num, "1234567890 ",
-      LayoutHead.numDE, "1234567890ß",
-      LayoutHead.extra, "!\"§$%&/()=?");
+    LayoutHead.num, "1234567890 ",
+    LayoutHead.numDE, "1234567890ß",
+    LayoutHead.extra, "!\"§$%&/()=?");
   private final Map <LayoutBody, String> layoutBodyStringMap = Map.of(
-      //      LayoutBody.empty, "                             ",
+    //      LayoutBody.empty, "                             ",
 
-      LayoutBody.specialSigns1, "    _<>[]# ^  ':;,`~\\|{}      ",
-      LayoutBody.specialSigns2, "°·                           ",
+    LayoutBody.specialSigns1, "    _<>[]# ^  ':;,`~\\|{}      ",
+    LayoutBody.specialSigns2, "°·                           ",
 
-      LayoutBody.math, "+-×÷=±∑∏≂∞∀∃∇≠≈≙√≤≥⋘⋙∫∮⌀∡⦝⟂∂∝",
-      LayoutBody.logic, "→←↓↑⇒⇐⇔⇋↯∧∨⊻⊽⋂⋃¬≡∈∉⊂⊄⊃⊅      ",
-      LayoutBody.mathSets, "ℕℝℚℙℤℍℂ                      ",
-      LayoutBody.roman, "ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅬⅭⅮⅯↀↁↂↇↈ         ",
+    LayoutBody.math, "+-×÷=±∑∏≂∞∀∃∇≠≈≙√≤≥⋘⋙∫∮⌀∡⦝⟂∂∝",
+    LayoutBody.logic, "→←↓↑⇒⇐⇔⇋↯∧∨⊻⊽⋂⋃¬≡∈∉⊂⊄⊃⊅      ",
+    LayoutBody.mathSets, "ℕℝℚℙℤℍℂ                      ",
+    LayoutBody.roman, "ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅬⅭⅮⅯↀↁↂ           ",
 
-      LayoutBody.currency, "€£¥₩₿￠¤₪₹₱₽                  ",
+    LayoutBody.currency, "€£¥₩₿￠¤₪₹₱₽                  ",
 
-      LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
-      LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
+    LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
+    LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
 
   private record Layout(LayoutHead layoutHead, LayoutBody layoutBody)
   { }
@@ -63,21 +63,21 @@ public class OnScreenKeyboard extends JPanel
    */
   private       Point              activeKey = new Point(3, 5);
   private final Map <Point, Point> keyMap    = Map.of(
-      //shift
-      new Point(3, 1), new Point(3, 0),
-      //backspace
-      new Point(3, 10), new Point(3, 8),
-      //extra
-      new Point(4, 1), new Point(4, 0),
-      //space
-      new Point(4, 4), new Point(4, 2),
-      new Point(4, 5), new Point(4, 2),
-      new Point(4, 6), new Point(4, 2),
-      //enter
-      new Point(4, 10), new Point(4, 5)
+    //shift
+    new Point(3, 1), new Point(3, 0),
+    //backspace
+    new Point(3, 10), new Point(3, 8),
+    //extra
+    new Point(4, 1), new Point(4, 0),
+    //space
+    new Point(4, 4), new Point(4, 2),
+    new Point(4, 5), new Point(4, 2),
+    new Point(4, 6), new Point(4, 2),
+    //enter
+    new Point(4, 10), new Point(4, 5)
   );
 
-  private       int          listener_id;
+  private       int          listenerId;
   private       boolean      shifted = false;
   private final char[][]     keyRows = new char[3][];
   private final char[]       topRow  = new char[11];
@@ -356,7 +356,7 @@ public class OnScreenKeyboard extends JPanel
     temp.addAction(action);
     temp.setSize((int) Math.round(buttonBaseSize * size + ( size - 1 ) * buttonBuffer), buttonBaseSize);
     temp.setLocation(( x + 1 ) * buttonBuffer + x * buttonBaseSize + getWidth() / Gui.frameWidth,
-        ( y + 1 ) * buttonBuffer + y * buttonBaseSize + getWidth() / Gui.frameWidth);
+      ( y + 1 ) * buttonBuffer + y * buttonBaseSize + getWidth() / Gui.frameWidth);
     temp.isSelected = false;
     temp.update();
 
@@ -369,24 +369,31 @@ public class OnScreenKeyboard extends JPanel
    */
   private void activate ()
   {
-    listener_id = InputListener.getInstance().subscribe(input ->
+    listenerId = InputListener.getInstance().subscribe(input ->
     {
       if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
       {
         Point p = computeShiftedButton(activeKey);
         buttons[p.y][p.x].press();
       }
-
+      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        InputListener.getInstance().unsubscribe(listenerId);
+        setVisible(false);
+        getParent().remove(this);
+        Gui.getInstance().frame.getContentPane().add(MainMenu.getInstance());
+        MainMenu.getInstance().activate();
+      }
 
       if (input.player().equals(InputListener.Player.playerTwo)) return;
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+        {
+          case up -> -1;
+          case down -> 1;
+          case none -> 0;
+        };
 
       if (input.key().name().equals("horizontal"))
       {
@@ -407,7 +414,7 @@ public class OnScreenKeyboard extends JPanel
    */
   private void deactivate ()
   {
-    InputListener.getInstance().unsubscribe(listener_id);
+    InputListener.getInstance().unsubscribe(listenerId);
     setVisible(false);
   }
 }
