@@ -7,9 +7,7 @@ import java.util.function.Consumer;
 
 public class OnScreenKeyboard extends JPanel
 {
-
-  public static Consumer <String> target;
-
+  public Consumer <String> target;
 
   private enum LayoutHead
   { num, numDE, extra }
@@ -47,6 +45,9 @@ public class OnScreenKeyboard extends JPanel
   private record Point(int y, int x)
   { }
 
+  /**
+   * Position of the active key in space coordinates
+   */
   private       Point              activeKey = new Point(3, 5);
   private final Map <Point, Point> keyMap    = Map.of(
     //shift
@@ -94,6 +95,8 @@ public class OnScreenKeyboard extends JPanel
     activate();
     //end of initialisation
 
+    // tmp consumer
+
 
   }
 
@@ -102,7 +105,7 @@ public class OnScreenKeyboard extends JPanel
    */
   public void setTarget (Consumer <String> target)
   {
-    OnScreenKeyboard.target = target;
+    this.target = target;
   }
 
   /*
@@ -237,14 +240,12 @@ public class OnScreenKeyboard extends JPanel
     this.shifted = !this.shifted;
     if (this.shifted)
     {
-      System.out.println("a");
       setButtonLayout(new Layout(LayoutHead.extra, activeLayout.layoutBody));
     }
     else
     {
       if (activeLanguage.language.equals(Languages.DE))
       {
-        System.out.println("b");
         setButtonLayout(new Layout(LayoutHead.numDE, activeLayout.layoutBody));
       }
       else if (activeLanguage.language.equals(Languages.GREEK))
@@ -309,7 +310,7 @@ public class OnScreenKeyboard extends JPanel
     toggleKey(activeKey);
   }
 
-  /*
+  /**
    * Create a button, capable of printing a key
    */
   private pmButton createPrintableButton (String text, String key, double size, int x, int y)
@@ -317,7 +318,7 @@ public class OnScreenKeyboard extends JPanel
     return createActionButton(text, () -> target.accept(shifted ? key.toUpperCase() : key), size, x, y);
   }
 
-  /*
+  /**
    * Create an actionButton, capable of triggering an event
    */
   private pmButton createActionButton (String text, Runnable action, double size, int x, int y)
@@ -340,6 +341,13 @@ public class OnScreenKeyboard extends JPanel
   {
     listener_id = InputListener.getInstance().subscribe(input ->
     {
+      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        Point p = computeShiftedButton(activeKey);
+        buttons[p.y][p.x].press();
+      }
+
+
       if (input.player().equals(InputListener.Player.playerTwo)) return;
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;

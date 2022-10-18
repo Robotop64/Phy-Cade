@@ -76,6 +76,7 @@ public class MainMenu extends JPanel
       OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard();
       getParent().add(onScreenKeyboard);
       onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
+      onScreenKeyboard.setTarget(System.out::println);
     });
 
   }
