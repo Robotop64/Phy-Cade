@@ -1,5 +1,6 @@
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -70,6 +71,16 @@ public class MainMenu extends JPanel
       getParent().remove(this);
     }));
 
+    spButton.addAction(() ->
+    {
+      GameOverScreen a = new GameOverScreen(1,
+          "Pgacman",
+          5, LocalTime.of(0, 10, 0)
+      );
+      Gui.getInstance().frame.getContentPane().add(a);
+      setVisible(true);
+    });
+
     lbButton.addAction(() ->
     {
       Gui.getInstance().frame.getContentPane().add(LeaderboardMenu.getInstance());
@@ -119,11 +130,11 @@ public class MainMenu extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);
