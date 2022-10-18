@@ -2,6 +2,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -13,7 +14,10 @@ public class OnScreenKeyboard extends JPanel
   { num, numDE, extra }
 
   private enum LayoutBody
-  { empty, extraP1, extraP2, DE, GREEK }
+  { specialSigns1, specialSigns2, math, logic, mathSets, roman, currency, DE, GREEK }
+
+  private List <LayoutBody> specialLayers;
+  private LayoutBody        activeExtra = LayoutBody.DE;
 
   private enum Languages
   { DE, GREEK }
@@ -26,9 +30,18 @@ public class OnScreenKeyboard extends JPanel
       LayoutHead.numDE, "1234567890ß",
       LayoutHead.extra, "!\"§$%&/()=?");
   private final Map <LayoutBody, String> layoutBodyStringMap = Map.of(
-      LayoutBody.empty, "                             ",
-      LayoutBody.extraP1, "                             ",
-      LayoutBody.extraP2, "                             ",
+      //      LayoutBody.empty, "                             ",
+
+      LayoutBody.specialSigns1, "    _<>[]# ^  ':;,`~\\|{}      ",
+      LayoutBody.specialSigns2, "°·                           ",
+
+      LayoutBody.math, "+-×÷=±∑∏≂∞∀∃∇≠≈≙√≤≥⋘⋙∫∮⌀∡⦝⟂∂∝",
+      LayoutBody.logic, "→←↓↑⇒⇐⇔⇋↯∧∨⊻⊽⋂⋃¬≡∈∉⊂⊄⊃⊅      ",
+      LayoutBody.mathSets, "ℕℝℚℙℤℍℂ                      ",
+      LayoutBody.roman, "ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅬⅭⅮⅯↀↁↂↇↈ         ",
+
+      LayoutBody.currency, "€£¥₩₿￠¤₪₹₱₽                  ",
+
       LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
       LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
 
@@ -40,7 +53,7 @@ public class OnScreenKeyboard extends JPanel
   private record Language(Languages language)
   { }
 
-  private Language activeLanguage = new Language(Languages.DE);
+  private Languages activeLanguage = Languages.DE;
 
   private record Point(int y, int x)
   { }
@@ -168,7 +181,7 @@ public class OnScreenKeyboard extends JPanel
     //button right text
     buttons[4][3] = createPrintableButton(".", ".", 1, 7, 4);
     //button lang
-    buttons[4][4] = createActionButton("@", this::selectLang, 1, 8, 4);
+    buttons[4][4] = createActionButton("@", this::cycleLanguage, 1, 8, 4);
     //button enter
     buttons[4][5] = createPrintableButton("↲", "", 2, 9, 4);
     buttons[4][5].setFont(new Font("Ariel", Font.BOLD, 50));
@@ -220,17 +233,6 @@ public class OnScreenKeyboard extends JPanel
 
   }
 
-  //TODO  change layout to new language
-
-  /**
-   * Used to set the active language
-   */
-  private void setActiveLanguage (Languages language)
-  {
-
-    this.activeLanguage = new Language(language);
-  }
-
   /**
    * Toggles the buttons from upper to lower case or reversed
    */
@@ -243,11 +245,11 @@ public class OnScreenKeyboard extends JPanel
     }
     else
     {
-      if (activeLanguage.language.equals(Languages.DE))
+      if (activeLanguage.equals(Languages.DE))
       {
         setButtonLayout(new Layout(LayoutHead.numDE, activeLayout.layoutBody));
       }
-      else if (activeLanguage.language.equals(Languages.GREEK))
+      else if (activeLanguage.equals(Languages.GREEK))
       {
         setButtonLayout(new Layout(LayoutHead.num, activeLayout.layoutBody));
       }
@@ -257,8 +259,20 @@ public class OnScreenKeyboard extends JPanel
   /**
    * Used to toggle the language
    */
-  private void selectLang ()
+  private void cycleLanguage ()
   {
+    List <Languages> languagesList = Arrays.stream(Languages.values()).toList();
+    int              index         = languagesList.indexOf(activeLanguage);
+    Languages        next          = languagesList.get(( index + 1 ) % languagesList.size());
+    activeLanguage = next;
+    setButtonLayout(LayoutLangStringMap.get(next));
+
+    specialLayers = Arrays.stream(LayoutBody.values())
+                          .filter(layoutBody -> ( !Arrays.stream(Languages.values())
+                                                         .map(Enum::name)
+                                                         .toList()
+                                                         .contains(layoutBody.name()) ) || layoutBody.name().equals(activeLanguage.name()))
+                          .toList();
 
   }
 
@@ -267,7 +281,18 @@ public class OnScreenKeyboard extends JPanel
    */
   private void extraLayout ()
   {
-
+    if (specialLayers == null)
+      specialLayers = Arrays.stream(LayoutBody.values())
+                            .filter(layoutBody -> ( !Arrays.stream(Languages.values())
+                                                           .map(Enum::name)
+                                                           .toList()
+                                                           .contains(layoutBody.name()) ) || layoutBody.name().equals(activeLanguage.name()))
+                            .toList();
+    int        index = specialLayers.indexOf(activeExtra);
+    LayoutBody next  = specialLayers.get(( index + 1 ) % specialLayers.size());
+    activeExtra = next;
+    activeLayout = new Layout(activeLayout.layoutHead, next);
+    setButtonLayout(activeLayout);
   }
 
   /**
@@ -289,8 +314,6 @@ public class OnScreenKeyboard extends JPanel
     buttons[pos.y][pos.x].isSelected = !buttons[pos.y][pos.x].isSelected;
     buttons[pos.y][pos.x].update();
   }
-
-  //TODO redo w/o if
 
   /**
    * Used to set a certain key as active
