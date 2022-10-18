@@ -1,26 +1,52 @@
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public abstract class Celebrity<Type> {
+public abstract class Celebrity <Type>
+{
 
-    private static int subId = 0;
-    ConcurrentMap<Integer, Fan<Type>> subscribers = new ConcurrentHashMap<>();
+  private static int subId = 0;
+  ConcurrentMap <Integer, Fan <Type>> subscribersQueue = new ConcurrentHashMap <>();
+  ConcurrentMap <Integer, Fan <Type>> subscribers      = new ConcurrentHashMap <>();
 
-    public void post(Type type){
-        subscribers.forEach((id, fan) -> fan.handle(type));
+  boolean locked = false;
+
+  public void post (Type type)
+  {
+    locked = true;
+    subscribers.forEach((id, fan) -> fan.handle(type));
+    locked = false;
+    subscribers.putAll(subscribersQueue);
+    subscribersQueue.clear();
+    System.out.println("all subs: " + subscribers);
+  }
+
+  public int subscribe (Fan <Type> fan)
+  {
+    int id = subId;
+    subId++;
+    subscribersQueue.put(id, fan);
+    System.out.println(id + " wants to sub");
+    System.out.println("all subs: " + subscribers);
+    System.out.println("sub queue: " + subscribersQueue);
+
+    if (!locked)
+    {
+      subscribers.putAll(subscribersQueue);
+      subscribersQueue.clear();
     }
+    return id;
+  }
 
-    public int subscribe(Fan<Type> fan){
-        subscribers.put(subId, fan);
-        return subId++;
-    }
+  public void unsubscribe (int id)
+  {
+    subscribers.remove(id);
+    System.out.println(id + " unsubbed");
+    System.out.println("all subs: " + subscribers);
+  }
 
-    public void unsubscribe(int id){
-        subscribers.remove(id);
-    }
-
-    interface Fan<Type>{
-        void handle(Type type);
-    }
+  interface Fan <Type>
+  {
+    void handle (Type type);
+  }
 
 }

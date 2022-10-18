@@ -12,16 +12,16 @@ public class MainMenu extends JPanel
   pmButton title_label;
 
   int w = 500;
-  int x = ( Gui.frame_width - w ) / 2;
+  int x = ( Gui.frameWidth - w ) / 2;
 
   int h         = 120;
   int n_offsets = 32;
   int n_buttons = 5;
-  int buffer    = ( Gui.frame_height - ( n_buttons * h ) ) / n_offsets;
+  int buffer    = ( Gui.frameHeight - ( n_buttons * h ) ) / n_offsets;
   int y         = ( n_offsets - n_buttons ) / 2 * buffer + 100;
 
   int selected_index = 0;
-  int listener_id;
+  int listenerId;
 
   List <pmButton> buttons;
 
@@ -65,20 +65,33 @@ public class MainMenu extends JPanel
 
     buttons.forEach(b -> b.addAction(() ->
     {
-      InputListener.getInstance().unsubscribe(listener_id);
+      InputListener.getInstance().unsubscribe(listenerId);
       setVisible(false);
+      getParent().remove(this);
     }));
 
     lbButton.addAction(() ->
     {
-
+      Gui.getInstance().frame.getContentPane().add(LeaderboardMenu.getInstance());
+      LeaderboardMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+      LeaderboardMenu.getInstance().activate();
     });
 
-    InputListener.getInstance().subscribe(input ->
+    mpButton.addAction(() ->
     {
-      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
-        buttons.get(selected_index).press();
+      //      System.out.println("showing OSK");
+      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard(Gui.frameWidth / 2);
+      Gui.getInstance().frame.getContentPane().add(onScreenKeyboard);
+      onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
+      onScreenKeyboard.setTarget(System.out::println);
     });
+
+    soundButton.clearActions();
+    soundButton.addAction(() ->
+    {
+      soundButton.setText(soundButton.getText().contains("AUS") ? "TON - AN" : "TON - AUS");
+    });
+
   }
 
   public static MainMenu getInstance ()
@@ -87,31 +100,34 @@ public class MainMenu extends JPanel
     return instance;
   }
 
-
-  private void activate ()
+  public void activate ()
   {
-    listener_id = InputListener.getInstance().subscribe(input ->
+    listenerId = InputListener.getInstance().subscribe(input ->
     {
+      System.out.println("Main Menu activated");
+      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        buttons.get(selected_index).press();
+        return;
+      }
+      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        System.exit(0);
+      }
+
       if (input.player().equals(InputListener.Player.playerTwo)) return;
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+        {
+          case up -> -1;
+          case down -> 1;
+          case none -> 0;
+        };
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);
   }
-
-  private void deactivate ()
-  {
-    InputListener.getInstance().unsubscribe(listener_id);
-    setVisible(false);
-  }
-
 
   public void select (int index)
   {
