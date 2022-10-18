@@ -19,18 +19,18 @@ public class OnScreenKeyboard extends JPanel
   { DE, GREEK }
 
   private final Map <Languages, Layout>  LayoutLangStringMap = Map.of(
-    Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
-    Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
+      Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
+      Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
   private final Map <LayoutHead, String> layoutHeadStringMap = Map.of(
-    LayoutHead.num, "1234567890 ",
-    LayoutHead.numDE, "1234567890ß",
-    LayoutHead.extra, "!\"§$%&/()=?");
+      LayoutHead.num, "1234567890 ",
+      LayoutHead.numDE, "1234567890ß",
+      LayoutHead.extra, "!\"§$%&/()=?");
   private final Map <LayoutBody, String> layoutBodyStringMap = Map.of(
-    LayoutBody.empty, "                             ",
-    LayoutBody.extraP1, "                             ",
-    LayoutBody.extraP2, "                             ",
-    LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
-    LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
+      LayoutBody.empty, "                             ",
+      LayoutBody.extraP1, "                             ",
+      LayoutBody.extraP2, "                             ",
+      LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
+      LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
 
   private record Layout(LayoutHead layoutHead, LayoutBody layoutBody)
   { }
@@ -50,43 +50,42 @@ public class OnScreenKeyboard extends JPanel
    */
   private       Point              activeKey = new Point(3, 5);
   private final Map <Point, Point> keyMap    = Map.of(
-    //shift
-    new Point(3, 1), new Point(3, 0),
-    //backspace
-    new Point(3, 10), new Point(3, 8),
-    //extra
-    new Point(4, 1), new Point(4, 0),
-    //space
-    new Point(4, 4), new Point(4, 2),
-    new Point(4, 5), new Point(4, 2),
-    new Point(4, 6), new Point(4, 2),
-    //enter
-    new Point(4, 10), new Point(4, 5)
+      //shift
+      new Point(3, 1), new Point(3, 0),
+      //backspace
+      new Point(3, 10), new Point(3, 8),
+      //extra
+      new Point(4, 1), new Point(4, 0),
+      //space
+      new Point(4, 4), new Point(4, 2),
+      new Point(4, 5), new Point(4, 2),
+      new Point(4, 6), new Point(4, 2),
+      //enter
+      new Point(4, 10), new Point(4, 5)
   );
 
-  private              int          listener_id;
-  private              boolean      shifted            = false;
-  private              char[][]     keyRows            = new char[3][];
-  private              char[]       topRow             = new char[11];
-  private final        pmButton[][] buttons            = new pmButton[5][];
-  private final        pmButton     border             = new pmButton("");
-  private static final int          buttonBaseSize     = 80;
-  private static final int          buttonBuffer       = 20;
-  private static final int          buttonOffset       = buttonBaseSize + buttonBuffer;
-  private static final int          maxButtonsInRow    = 11;
-  private static final int          maxButtonsInColumn = 5;
-  private static final int          origin             = Gui.frameWidth / 2 - ( maxButtonsInRow * buttonOffset ) / 2;
-  private static final int          heightOffset       = 375;
-  // total height 520
+  private       int          listener_id;
+  private       boolean      shifted = false;
+  private final char[][]     keyRows = new char[3][];
+  private final char[]       topRow  = new char[11];
+  private final pmButton[][] buttons = new pmButton[5][];
 
-  public OnScreenKeyboard ()
+  private final        int    buttonBaseSize;
+  private final        int    buttonBuffer;
+  private static final int    maxButtonsInRow = 11;
+  public static final  double ratio           = 2.1538461538461537;
+
+  public OnScreenKeyboard (int width)
   {
     //initialisation
+    int buttonDistProp = 6;
+    buttonBaseSize = width * buttonDistProp / ( maxButtonsInRow * 7 + 1 );
+    buttonBuffer = buttonBaseSize / buttonDistProp;
+
     setBackground(Color.black);
     setLayout(null);
-    border.setBounds(origin - 20, origin + heightOffset - 20,
-      maxButtonsInRow * buttonOffset + 20,
-      maxButtonsInColumn * buttonOffset + 20);
+    pmButton border = new pmButton("");
+    border.setBounds(0, 0, width, (int) ( width / ratio ));
     border.update();
     add(border);
     createButtons();
@@ -94,13 +93,11 @@ public class OnScreenKeyboard extends JPanel
     toggleKey(activeKey);
     activate();
     //end of initialisation
-
-    // tmp consumer
-
+    System.out.println(border.getBounds().width / border.getBounds().getHeight());
 
   }
 
-  /*
+  /**
    * Used to tell the keyboard where it should write to
    */
   public void setTarget (Consumer <String> target)
@@ -108,7 +105,7 @@ public class OnScreenKeyboard extends JPanel
     this.target = target;
   }
 
-  /*
+  /**
    * Used to generate the key-strings of the selected layout
    */
   private void createKeyStrings (String top, String mid)
@@ -131,7 +128,7 @@ public class OnScreenKeyboard extends JPanel
 
   }
 
-  /*
+  /**
    * Used to initialize the buttons
    */
   private void createButtons ()
@@ -152,7 +149,7 @@ public class OnScreenKeyboard extends JPanel
       }
     }
     //button shift
-    buttons[3][0] = createActionButton("\uD83E\uDC39", this::toggleShift, 2.3, 0, 3);
+    buttons[3][0] = createActionButton("\uD83E\uDC39", this::toggleShift, 2, 0, 3);
     buttons[3][0].setFont(new Font("Ariel", Font.PLAIN, 64));
     //buttons Y-M
     for (int i = 1; i < buttons[3].length - 1; i++)
@@ -160,20 +157,20 @@ public class OnScreenKeyboard extends JPanel
       buttons[3][i] = createPrintableButton("", "", 1, i + 1, 3);
     }
     //button remove
-    buttons[3][8] = createPrintableButton("\uD83E\uDC44", "", 2.3, 9, 3);
+    buttons[3][8] = createPrintableButton("\uD83E\uDC44", "", 2, 9, 3);
     buttons[3][8].setFont(new Font("Ariel", Font.PLAIN, 40));
     //button extra
-    buttons[4][0] = createActionButton("!#1", this::extraLayout, 2.3, 0, 4);
+    buttons[4][0] = createActionButton("!#1", this::extraLayout, 2, 0, 4);
     //button left text
     buttons[4][1] = createPrintableButton("/", "/", 1, 2, 4);
     //button space bar
-    buttons[4][2] = createPrintableButton("-----", " ", 4.75, 3, 4);
+    buttons[4][2] = createPrintableButton("-----", " ", 4, 3, 4);
     //button right text
     buttons[4][3] = createPrintableButton(".", ".", 1, 7, 4);
     //button lang
     buttons[4][4] = createActionButton("@", this::selectLang, 1, 8, 4);
     //button enter
-    buttons[4][5] = createPrintableButton("↲", "", 2.3, 9, 4);
+    buttons[4][5] = createPrintableButton("↲", "", 2, 9, 4);
     buttons[4][5].setFont(new Font("Ariel", Font.BOLD, 50));
     //add buttons to frame
     for (int j = 0; j < 5; j++)
@@ -186,8 +183,9 @@ public class OnScreenKeyboard extends JPanel
     }
   }
 
-  /*
+  /**
    * Used to change the active layout
+   *
    * @param layout - the new layout
    */
   private void setButtonLayout (Layout layout)
@@ -223,7 +221,8 @@ public class OnScreenKeyboard extends JPanel
   }
 
   //TODO  change layout to new language
-  /*
+
+  /**
    * Used to set the active language
    */
   private void setActiveLanguage (Languages language)
@@ -232,8 +231,8 @@ public class OnScreenKeyboard extends JPanel
     this.activeLanguage = new Language(language);
   }
 
-  /*
-   *Toggles the buttons from upper to lower case or reversed
+  /**
+   * Toggles the buttons from upper to lower case or reversed
    */
   private void toggleShift ()
   {
@@ -255,7 +254,7 @@ public class OnScreenKeyboard extends JPanel
     }
   }
 
-  /*
+  /**
    * Used to toggle the language
    */
   private void selectLang ()
@@ -263,7 +262,7 @@ public class OnScreenKeyboard extends JPanel
 
   }
 
-  /*
+  /**
    * Used to toggle the extra layout
    */
   private void extraLayout ()
@@ -271,7 +270,7 @@ public class OnScreenKeyboard extends JPanel
 
   }
 
-  /*
+  /**
    * Used to recursively compute the target button of the special buttons
    */
   private Point computeShiftedButton (Point coordinate)
@@ -279,8 +278,9 @@ public class OnScreenKeyboard extends JPanel
     return ( coordinate.x == 0 ) ? coordinate : keyMap.getOrDefault(coordinate, new Point(coordinate.y, computeShiftedButton(new Point(coordinate.y, coordinate.x - 1)).x + 1));
   }
 
-  /*
+  /**
    * used to toggle the selection of a key
+   *
    * @param pos - the position of the concerned key in the 11x5 layout
    */
   private void toggleKey (Point pos)
@@ -291,6 +291,12 @@ public class OnScreenKeyboard extends JPanel
   }
 
   //TODO redo w/o if
+
+  /**
+   * Used to set a certain key as active
+   *
+   * @param newKey - the location of the new on a 5x11 board
+   */
   private void setActiveKey (Point newKey)
   {
     toggleKey(activeKey);
@@ -325,8 +331,9 @@ public class OnScreenKeyboard extends JPanel
   {
     pmButton temp = new pmButton(text);
     temp.addAction(action);
-    temp.setSize((int) Math.round(buttonBaseSize * size), buttonBaseSize);
-    temp.setLocation(origin + x * buttonOffset, heightOffset + origin + y * buttonOffset);
+    temp.setSize((int) Math.round(buttonBaseSize * size + ( size - 1 ) * buttonBuffer), buttonBaseSize);
+    temp.setLocation(( x + 1 ) * buttonBuffer + x * buttonBaseSize + getWidth() / Gui.frameWidth,
+        ( y + 1 ) * buttonBuffer + y * buttonBaseSize + getWidth() / Gui.frameWidth);
     temp.isSelected = false;
     temp.update();
 
@@ -334,7 +341,7 @@ public class OnScreenKeyboard extends JPanel
   }
 
 
-  /*
+  /**
    * Activate the Input Listener
    */
   private void activate ()
@@ -352,11 +359,11 @@ public class OnScreenKeyboard extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
 
       if (input.key().name().equals("horizontal"))
       {
@@ -372,7 +379,7 @@ public class OnScreenKeyboard extends JPanel
     setVisible(true);
   }
 
-  /*
+  /**
    * Deactivate the Input Listener
    */
   private void deactivate ()

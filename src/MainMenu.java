@@ -73,8 +73,8 @@ public class MainMenu extends JPanel
     lbButton.addAction(() ->
     {
       System.out.println("showing OSK");
-      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard();
-      getParent().add(onScreenKeyboard);
+      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard(Gui.frameWidth / 2);
+      Gui.getInstance().frame.getContentPane().add(onScreenKeyboard);
       onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
       onScreenKeyboard.setTarget(System.out::println);
     });
@@ -101,11 +101,11 @@ public class MainMenu extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);
