@@ -11,10 +11,12 @@ public class GameOverScreen extends JPanel
 {
   private final int           width   = 700;
   private final int           dist    = 20;
+  private final int           center  = Gui.frameWidth / 2;
   private final int           centerL = Gui.frameWidth / 2 - width / 2;
   private       List <JLabel> labels  = new ArrayList <>(0);
+  private       JLabel        latest;
 
-  public GameOverScreen (int playerCount, String gameName, int score, LocalTime time)
+  public GameOverScreen (int playerCount, String gameName, List <Integer> scores, List <LocalTime> times)
   {
     setBounds(0, 0, Gui.frameWidth, Gui.frameHeight);
     setBackground(Color.black);
@@ -22,12 +24,12 @@ public class GameOverScreen extends JPanel
 
 
     System.out.println(labels.size());
-    createLabels(gameName, score, time);
-    createPlayerLabel(playerCount, gameName, score, time);
+    createLabels(gameName, scores, times);
+    createPlayerLabels(playerCount, gameName, scores, times);
 
   }
 
-  private void createLabels (String gameName, int score, LocalTime time)
+  private void createLabels (String gameName, List <Integer> scores, List <LocalTime> times)
   {
     createCenterLabel("~ " + gameName + " ~", "Fira Code", 60, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.orange, dist);
     createCenterLabel("GAME OVER", "Fira Code", 100, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.red, dist);
@@ -54,15 +56,20 @@ public class GameOverScreen extends JPanel
 
   }
 
-  private void createPlayerLabel (int playerCount, String gameName, int score, LocalTime time)
+  private void createPlayerLabels (int playerCount, String gameName, List <Integer> scores, List <LocalTime> times)
   {
     if (playerCount == 1)
       createCenterLabel("Dein Ergebnis: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, dist * 3);
     else
       createCenterLabel("Ergebnisse: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, dist * 3);
 
-    //    if (singleplayer) else
+    createPlayerLabel(playerCount, scores, times);
 
+    
+  }
+
+  private void createPlayerLabel (int playercount, List <Integer> scores, List <LocalTime> times)
+  {
 
   }
 }

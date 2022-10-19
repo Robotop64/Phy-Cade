@@ -24,7 +24,7 @@ public class LeaderboardMenu extends JPanel
   public List <LeaderboardEntry> entries = new ArrayList <>();
   public List <Leaderboard>      games   = new ArrayList <>();
 
-  private record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) { }
+  public record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) { }
 
   private       int      listener_id;
   private       int      tableOffset   = 0;
@@ -405,11 +405,11 @@ public class LeaderboardMenu extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
 
       if (input.key().name().equals("horizontal")) moveGame(delta);
       if (input.key().name().equals("vertical")) moveActive(delta);

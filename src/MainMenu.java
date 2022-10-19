@@ -1,6 +1,7 @@
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,10 +74,17 @@ public class MainMenu extends JPanel
 
     spButton.addAction(() ->
     {
-      GameOverScreen a = new GameOverScreen(1,
-          "Pgacman",
-          5, LocalTime.of(0, 10, 0)
-      );
+      List <Integer> scores = new ArrayList <>();
+      scores.add(5000);
+      List <LocalTime> times = new ArrayList <>();
+      times.add(LocalTime.of(0, 50, 20));
+
+      GameOverScreen a = new GameOverScreen(
+          1,
+          "Pacman",
+          scores,
+          times);
+
       Gui.getInstance().frame.getContentPane().add(a);
       setVisible(true);
     });
