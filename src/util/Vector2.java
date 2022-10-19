@@ -37,7 +37,7 @@ public class Vector2
 
   public Vector2 polar (long ρ, long φ)
   {
-    return new Vector2((((long)(ρ * Math.cos(φ))) << scale), ((long)(ρ * Math.sin(φ))) << scale, scale);
+    return new Vector2((((long)(ρ * cos(φ))) << scale), ((long)(ρ * sin(φ))) << scale, scale);
   }
 
   public Vector2 add (Vector2 v)
@@ -45,14 +45,34 @@ public class Vector2
     return new Vector2(x + v.x, y + v.y, scale);
   }
 
-  public Vector2 mutliply (long s)
+  public Vector2 addScaled (Vector2 v)
+  {
+    return new Vector2(x + (v.x << scale), y + (v.y << scale), scale);
+  }
+
+  public Vector2 multiply (long s)
   {
     return new Vector2(x * s, y * s, scale);
   }
 
+  public Vector2 multiplyX (long s)
+  {
+    return new Vector2(x * s, y, scale);
+  }
+
+  public Vector2 multiplyY (long s)
+  {
+    return new Vector2(x, y * s, scale);
+  }
+
   public Vector2 subtract (Vector2 v)
   {
-    return add(v.mutliply(-1));
+    return add(v.multiply(-1));
+  }
+
+  public Vector2 rotate (long φ)
+  {
+    return new Vector2((long)(cos(φ) * x - sin(φ) * y), (long)(sin(φ) * x + cos(φ) * y), scale);
   }
 
   public String toString ()
@@ -74,5 +94,27 @@ public class Vector2
   public long getY ()
   {
     return y >> scale;
+  }
+
+  private double sin (long φ)
+  {
+    return Math.sin(Math.toRadians(φ));
+  }
+
+  private double cos (long φ)
+  {
+    return Math.cos(Math.toRadians(φ));
+  }
+
+}
+
+
+class Test
+{
+  public static void main (String[] args)
+  {
+    System.out.println(Math.cos(Math.toRadians(45)));
+    System.out.println(new Vector2(5).polar(100, 45));
+    System.out.println(new Vector2(5).polar(100, 45).rotate(90));
   }
 }
