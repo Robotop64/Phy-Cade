@@ -47,7 +47,7 @@ public class Vector2
 
   public Vector2 addScaled (Vector2 v)
   {
-    return new Vector2(x + (v.x << scale), y + (v.y << scale), scale);
+    return new Vector2(x + (v.getX() << scale), y + (v.getY() << scale), scale);
   }
 
   public Vector2 multiply (long s)
