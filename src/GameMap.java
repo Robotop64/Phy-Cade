@@ -18,32 +18,22 @@ import java.util.stream.IntStream;
 public class GameMap extends JPanel
 {
   private enum Tile
-  { wall, path, none }
+  { wall, path, none, coin, powerUp, gSpawn, pSpawn, portal }
 
   private enum WallTile
   { line, tunnel, corner, tsection, xsection }
 
   private final Vector2   origin;
-  private final int       tileSize = 10;
+  private final int       tileSize = 25;
   private final Dimension gridSize;
 
   private Dimension dim;
 
   //assets.maps the colors to a TileType
-  private static final Map <Color, Tile> colorToTiles = Map.of(
-      Color.black, Tile.wall,
-      Color.blue, Tile.path,
-      Color.white, Tile.none
-  );
-  private static final Map <Tile, Color> tilesToColor = Map.of(
-      Tile.wall, Color.black,
-      Tile.path, Color.black,
-      Tile.none, Color.black
-  );
-
+  private static final Map <Color, Tile> colorToTiles = Map.of(Color.black, Tile.wall, Color.blue, Tile.path, Color.yellow, Tile.coin, new Color(255, 88, 0), Tile.powerUp, Color.cyan, Tile.portal, Color.red, Tile.gSpawn, Color.green, Tile.pSpawn, Color.white, Tile.none);
+  private static final Map <Tile, Color> tilesToColor = Map.of(Tile.wall, Color.black, Tile.path, Color.black, Tile.coin, Color.yellow, Tile.powerUp, Color.orange, Tile.portal, Color.cyan, Tile.gSpawn, Color.red, Tile.pSpawn, Color.green, Tile.none, Color.black);
 
   private final Map <Vector2, Tile> tileMap = new HashMap <>();
-
 
   public GameMap () throws IOException
   {
@@ -55,7 +45,7 @@ public class GameMap extends JPanel
     gridSize = new Dimension(this.getWidth() / tileSize, this.getHeight() / tileSize);
 
 
-    drawMap("./assets/maps/PacMan Map0.bmp", origin);
+    drawMap("./assets/maps/PacManClassic Map.bmp", origin);
 
     SwingUtilities.invokeLater(() ->
     {
@@ -126,40 +116,65 @@ public class GameMap extends JPanel
 
         Vector2 tilePos = new Vector2().cartesian(pixPos.getX() / tileSize, pixPos.getY() / tileSize);
 
-        int bloat = (int) IntStream.range(0, 4)
-                                   .map(n -> 90 * n)
-                                   .mapToObj(φ -> new Vector2().polar(1, φ))
-                                   .map(tilePos::addScaled)
-                                   .map(tileMap::get)
-                                   .filter(Tile.wall::equals)
-                                   .count();
+        int bloat = (int) IntStream.range(0, 4).map(n -> 90 * n).mapToObj(φ -> new Vector2().polar(1, φ)).map(tilePos::addScaled).map(tileMap::get).filter(tile -> Tile.wall == tile || tile == null).count();
 
         for (int i = 0; i < 2; i++)
         {
-          if (i == 0)
+          Tile thisTile = tileMap.get(tilePos);
+          if (thisTile == Tile.wall)
           {
-            g.setColor(Color.blue);
-            gg.setStroke(new BasicStroke(tileSize / 4));
+            if (i == 0)
+            //color ground line
+            {
+              g.setColor(Color.blue);
+              gg.setStroke(new BasicStroke(tileSize / 4));
+            }
+            else
+            //color topLine
+            {
+              g.setColor(Color.cyan);
+              gg.setStroke(new BasicStroke(tileSize / 11));
+            }
           }
-          else
-          {
-            g.setColor(Color.cyan);
-            gg.setStroke(new BasicStroke(tileSize / 11));
-          }
+
+
           for (int φ = 0; φ < 360; φ += 90)
           {
-            Tile    thisTile  = tileMap.get(tilePos);
-            Vector2 offset    = new Vector2().polar(1, φ);
-            Vector2 secPos    = tilePos.addScaled(offset);
-            Tile    neighbour = tileMap.get(secPos);
-
-            if (thisTile == Tile.wall && thisTile == neighbour)
+            if (thisTile == Tile.wall)
             {
-              Vector2 testPos  = tilePos.addScaled(offset.multiply(-1));
-              Tile    testTile = tileMap.get(testPos);
-              if (( testTile == Tile.path && bloat == 3 )) continue;
-              Vector2 v = new Vector2().polar(tileSize / 2, φ);
-              gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + v.getX() ), (int) ( tileSize / 2 + v.getY() ));
+              //diagonal neighbours
+              if (bloat == 4)
+              {
+                {
+                  Vector2 eX         = new Vector2().cartesian(1, 0).rotate(φ);
+                  Vector2 eY         = new Vector2().cartesian(0, 1).rotate(φ);
+                  Vector2 offsetDiag = eX.addScaled(eY);
+                  Vector2 secPos     = tilePos.addScaled(offsetDiag);
+                  Tile    neighbour  = tileMap.get(secPos);
+                  if (neighbour == Tile.coin || neighbour == Tile.path || neighbour == Tile.powerUp)
+                  {
+                    gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eX.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eX.getY() * tileSize / 2 ));
+                    gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eY.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eY.getY() * tileSize / 2 ));
+                  }
+                }
+              }
+              //direct neighbours
+              {
+                Vector2 offset    = new Vector2().polar(1, φ);
+                Vector2 secPos    = tilePos.addScaled(offset);
+                Tile    neighbour = tileMap.get(secPos);
+
+                if (thisTile == neighbour)
+                {
+
+                  Vector2 testPos  = tilePos.addScaled(offset.multiply(-1));
+                  Tile    testTile = tileMap.get(testPos);
+                  if (( ( testTile != Tile.wall && testTile != Tile.none && testTile != null ) && bloat == 3 || bloat == 4 )) continue;
+
+                  Vector2 v = new Vector2().polar(tileSize / 2, φ);
+                  gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + v.getX() ), (int) ( tileSize / 2 + v.getY() ));
+                }
+              }
             }
           }
         }
@@ -170,13 +185,10 @@ public class GameMap extends JPanel
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
     temp.setBounds((int) pixPos.getX(), (int) pixPos.getY(), tileSize, tileSize);
 
-    temp.setForeground(tilesToColor.get(tile));
-
-    temp.setBackground(tilesToColor.get(tile));
+    temp.setBackground(Color.black);
+    //    temp.setBackground(tilesToColor.get(tile));
 
 
     add(temp);
-
-
   }
 }
