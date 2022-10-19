@@ -2,6 +2,7 @@ import util.Util;
 
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -76,8 +77,8 @@ public class MainMenu extends JPanel
     spButton.addAction(() ->
     {
       GameOverScreen a = new GameOverScreen(1,
-        "Pgacman",
-        5, LocalTime.of(0, 10, 0)
+          "Pgacman",
+          5, LocalTime.of(0, 10, 0)
       );
       Gui.getInstance().frame.getContentPane().add(a);
       setVisible(true);
@@ -92,11 +93,22 @@ public class MainMenu extends JPanel
 
     mpButton.addAction(() ->
     {
+      try
+      {
+        GameMap gameMap = new GameMap();
+        Gui.getInstance().frame.getContentPane().add(gameMap);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+
+
       //      System.out.println("showing OSK");
-      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard(Gui.frameWidth / 2);
-      Gui.getInstance().frame.getContentPane().add(onScreenKeyboard);
-      onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
-      onScreenKeyboard.setTarget(System.out::println);
+      //      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard(Gui.frameWidth / 2);
+      //      Gui.getInstance().frame.getContentPane().add(onScreenKeyboard);
+      //      onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
+      //      onScreenKeyboard.setTarget(System.out::println);
     });
 
     soundButton.clearActions();
@@ -132,11 +144,11 @@ public class MainMenu extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);

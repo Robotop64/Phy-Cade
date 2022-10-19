@@ -1,5 +1,7 @@
 package util;
 
+import java.util.Objects;
+
 public class Vector2
 {
 
@@ -37,7 +39,7 @@ public class Vector2
 
   public Vector2 polar (long ρ, long φ)
   {
-    return new Vector2((((long)(ρ * cos(φ))) << scale), ((long)(ρ * sin(φ))) << scale, scale);
+    return new Vector2(( ( (long) ( ρ * cos(φ) ) ) << scale ), ( (long) ( ρ * sin(φ) ) ) << scale, scale);
   }
 
   public Vector2 add (Vector2 v)
@@ -47,7 +49,7 @@ public class Vector2
 
   public Vector2 addScaled (Vector2 v)
   {
-    return new Vector2(x + (v.getX() << scale), y + (v.getY() << scale), scale);
+    return new Vector2(x + ( v.getX() << scale ), y + ( v.getY() << scale ), scale);
   }
 
   public Vector2 multiply (long s)
@@ -72,7 +74,7 @@ public class Vector2
 
   public Vector2 rotate (long φ)
   {
-    return new Vector2((long)(cos(φ) * x - sin(φ) * y), (long)(sin(φ) * x + cos(φ) * y), scale);
+    return new Vector2((long) ( cos(φ) * x - sin(φ) * y ), (long) ( sin(φ) * x + cos(φ) * y ), scale);
   }
 
   public String toString ()
@@ -82,7 +84,7 @@ public class Vector2
 
   public String exactRepresentation ()
   {
-    long divisor = (long)Math.pow(2, scale);
+    long divisor = (long) Math.pow(2, scale);
     return "(%d/%d, %d/%d)".formatted(x, divisor, y, divisor);
   }
 
@@ -106,6 +108,20 @@ public class Vector2
     return Math.cos(Math.toRadians(φ));
   }
 
+  @Override
+  public boolean equals (Object o)
+  {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Vector2 vector2 = (Vector2) o;
+    return x == vector2.x && y == vector2.y;
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return Objects.hash(x, y);
+  }
 }
 
 
