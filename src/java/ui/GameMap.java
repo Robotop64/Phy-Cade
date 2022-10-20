@@ -22,7 +22,6 @@ public class GameMap extends JPanel
   private enum Tile
   { wall, path, none, coin, powerUp, gSpawn, pSpawn, portal }
 
-  private final Vector2 origin;
   private final int     tileSize;
 
   private Dimension dim;
@@ -45,11 +44,7 @@ public class GameMap extends JPanel
     int newHeight = tileSize * dim.height;
     setSize(newWidth, newHeight);
 
-    origin = new Vector2().cartesian(0, 0);
-
-
     drawMap();
-
 
     SwingUtilities.invokeLater(() ->
     {
@@ -198,7 +193,7 @@ public class GameMap extends JPanel
 
 
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
-    temp.setBounds((int) ( (int) pixPos.getX() + origin.getX() ), (int) ( (int) pixPos.getY() + origin.getY() ), tileSize, tileSize);
+    temp.setBounds((int) ( (int) pixPos.getX() ), (int) ( (int) pixPos.getY() ), tileSize, tileSize);
 
     temp.setBackground(Color.black);
     //    temp.setBackground(tilesToColor.get(tile));
