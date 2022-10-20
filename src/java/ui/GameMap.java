@@ -22,9 +22,6 @@ public class GameMap extends JPanel
   private enum Tile
   { wall, path, none, coin, powerUp, gSpawn, pSpawn, portal }
 
-  private enum WallTile
-  { line, tunnel, corner, tsection, xsection }
-
   private final Vector2 origin;
   private final int     tileSize;
 
@@ -41,12 +38,12 @@ public class GameMap extends JPanel
     setBackground(Color.gray);
     setLayout(null);
 
-    readBmpMap("maps/PacManClassic Map.bmp");
+    readBmpMap("src/resources/maps/PacManClassic Map.bmp");
 
-    tileSize = Math.min((width / dim.width), (height / dim.height));
+    tileSize = Math.min(( width / dim.width ), ( height / dim.height ));
     int newWidth  = tileSize * dim.width;
     int newHeight = tileSize * dim.height;
-    setBounds(0, 0, newWidth, newHeight);
+    setSize(newWidth, newHeight);
 
     origin = new Vector2().cartesian(0, 0);
 
@@ -71,7 +68,6 @@ public class GameMap extends JPanel
   public void readBmpMap (String path) throws IOException
   {
     //read bmp file
-    //    BufferedImage image = ImageIO.read(Objects.requireNonNull(getClass().getResource(path)));
     BufferedImage image = ImageIO.read(new File(path));
 
     //save the map dimensions
@@ -93,13 +89,13 @@ public class GameMap extends JPanel
     }
   }
 
-  public void drawMap () throws IOException
+  public void drawMap ()
   {
     for (int w = 0; w < dim.width; w++)
     {
       for (int h = 0; h < dim.height; h++)
       {
-        drawTile(new Vector2().cartesian(w, h).multiply(tileSize), tileMap.get(new Vector2().cartesian(w, h)));
+        drawTile(new Vector2().cartesian(w, h).multiply(tileSize));
       }
     }
     SwingUtilities.invokeLater(() ->
@@ -109,7 +105,7 @@ public class GameMap extends JPanel
     });
   }
 
-  private void drawTile (Vector2 pixPos, Tile tile)
+  private void drawTile (Vector2 pixPos)
   {
     JPanel temp = new JPanel()
     {
@@ -117,10 +113,10 @@ public class GameMap extends JPanel
       protected void paintComponent (Graphics g)
       {
         super.paintComponent(g);
-        Graphics2D gg      = (Graphics2D)g;
+        Graphics2D gg      = (Graphics2D) g;
         Vector2    tilePos = new Vector2().cartesian(pixPos.getX() / tileSize, pixPos.getY() / tileSize);
 
-        int bloat = (int)IntStream.range(0, 4).map(n -> 90 * n).mapToObj(φ -> new Vector2().polar(1, φ)).map(tilePos::addScaled).map(tileMap::get).filter(tile -> Tile.wall == tile || tile == null).count();
+        int bloat = (int) IntStream.range(0, 4).map(n -> 90 * n).mapToObj(φ -> new Vector2().polar(1, φ)).map(tilePos::addScaled).map(tileMap::get).filter(tile -> Tile.wall == tile || tile == null).count();
 
         for (int i = 0; i < 2; i++)
         {
@@ -172,8 +168,8 @@ public class GameMap extends JPanel
                   if (neighbour == Tile.coin || neighbour == Tile.path || neighbour == Tile.powerUp)
                   {
 
-                    gg.drawLine(tileSize / 2, tileSize / 2, (int)(tileSize / 2 + eX.getX() * tileSize / 2), (int)(tileSize / 2 + eX.getY() * tileSize / 2));
-                    gg.drawLine(tileSize / 2, tileSize / 2, (int)(tileSize / 2 + eY.getX() * tileSize / 2), (int)(tileSize / 2 + eY.getY() * tileSize / 2));
+                    gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eX.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eX.getY() * tileSize / 2 ));
+                    gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eY.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eY.getY() * tileSize / 2 ));
                   }
                 }
               }
@@ -188,10 +184,10 @@ public class GameMap extends JPanel
 
                   Vector2 testPos  = tilePos.addScaled(offset.multiply(-1));
                   Tile    testTile = tileMap.get(testPos);
-                  if (((testTile != Tile.wall && testTile != Tile.none && testTile != null) && bloat == 3 || bloat == 4)) continue;
+                  if (( ( testTile != Tile.wall && testTile != Tile.none && testTile != null ) && bloat == 3 || bloat == 4 )) continue;
 
                   Vector2 v = new Vector2().polar(tileSize / 2, φ);
-                  gg.drawLine(tileSize / 2, tileSize / 2, (int)(tileSize / 2 + v.getX()), (int)(tileSize / 2 + v.getY()));
+                  gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + v.getX() ), (int) ( tileSize / 2 + v.getY() ));
                 }
               }
             }
@@ -202,7 +198,7 @@ public class GameMap extends JPanel
 
 
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
-    temp.setBounds((int)((int)pixPos.getX() + origin.getX()), (int)((int)pixPos.getY() + origin.getY()), tileSize, tileSize);
+    temp.setBounds((int) ( (int) pixPos.getX() + origin.getX() ), (int) ( (int) pixPos.getY() + origin.getY() ), tileSize, tileSize);
 
     temp.setBackground(Color.black);
     //    temp.setBackground(tilesToColor.get(tile));
