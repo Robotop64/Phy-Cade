@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,12 +21,12 @@ public class LeaderboardMenu extends JPanel
   //container of the 9 display slots
   private final List <pmButton[]> buttonSlots = new ArrayList <>();
 
-  public record Leaderboard(String name, List <LeaderboardEntry> entries) { }
+  public record Leaderboard(String name, List <LeaderboardEntry> entries) {}
 
   public List <LeaderboardEntry> entries = new ArrayList <>();
   public List <Leaderboard>      games   = new ArrayList <>();
 
-  public record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) { }
+  public record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) {}
 
   private       int      listener_id;
   private       int      tableOffset   = 0;
@@ -268,7 +270,7 @@ public class LeaderboardMenu extends JPanel
     for (int i = 1; i < 10; i++)
     {
       pmButton temp = new pmButton("");
-      temp.setBounds(20, 170 + i * ( entryHeight + 25 ) - 10, Gui.frameWidth - 40, 3);
+      temp.setBounds(20, 170 + i * (entryHeight + 25) - 10, Gui.frameWidth - 40, 3);
       temp.setTheme("Leaderboard-GUI");
       temp.setHorizontalAlignment(SwingConstants.LEFT);
       temp.setBorder(BorderFactory.createLineBorder(new Color(11, 136, 156), 3, true));
@@ -405,11 +407,11 @@ public class LeaderboardMenu extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+        {
+          case up -> -1;
+          case down -> 1;
+          case none -> 0;
+        };
 
       if (input.key().name().equals("horizontal")) moveGame(delta);
       if (input.key().name().equals("vertical")) moveActive(delta);

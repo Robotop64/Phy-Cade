@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import java.awt.Color;
@@ -11,7 +13,7 @@ public class Gui
   public static final Rectangle defaultFrameBounds = new Rectangle(0, 0, frameWidth, frameHeight);
   private static      Gui       instance;
 
-  JFrame frame;
+  public JFrame frame;
 
   private Gui () {}
 

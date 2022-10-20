@@ -1,7 +1,7 @@
 package util;
 
-import java.util.Objects;
 
+import java.util.Objects;
 
 /**
  * @deprecated

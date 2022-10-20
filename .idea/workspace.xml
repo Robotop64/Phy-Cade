@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="Main Menu:&#10;- added soundButton to toggle sound">
-      <change afterPath="$PROJECT_DIR$/tests/util/Vector2dTest.java" afterDir="false" />
+    <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="* FIXED ALL ISSUES with Vector2 and Vector2D">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PacPhi.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PacPhi.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImageBasicShadow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImageBasicShadow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ImageOutline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImageOutline.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/Vector2d.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Vector2d.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Celebrity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/Celebrity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/GameMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameOverScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/GameOverScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Gui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/Gui.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImageBasicShadow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/ImageBasicShadow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImageOutline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/ImageOutline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/InputListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/InputListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LeaderboardMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/LeaderboardMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MainMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/MainMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Observed.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OnScreenKeyboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/OnScreenKeyboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PacPhi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/PacPhi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/maps/PacMan Map0.bmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/maps/PacMan Map1.bmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/maps/PacMan Map3.bmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/maps/PacManClassic Map.bmp" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/maps/PacManClassic Map.bmp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/textures/skins/ghosts/baum/baum.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/textures/skins/ghosts/baum/baum.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pmButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/pmButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/util/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Vector2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/util/Vector2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Vector2d.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/util/Vector2d.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/util/Vector2DTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tests/util/Vector2DTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/util/Vector2Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tests/util/Vector2Test.java" afterDir="false" />
     </list>
     <list id="71df5553-3767-4fe1-863e-913d48bf4a60" name="local" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,17 +48,17 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="fb-onScreenKeyboard" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/Gui.java" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/MainMenu.java" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/PacPhi.java" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/pmButton.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/java/PacPhi.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/java/ui/Gui.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/java/ui/MainMenu.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/java/ui/pmButton.java" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -53,11 +71,11 @@
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
     "Downloaded.Files.Path.Enabled": "false",
     "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "false",
@@ -66,17 +84,23 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "editor.preferences.fonts.default"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\maksa\IdeaProjects\PacPhi\src" />
+      <recent name="C:\Users\maksa\IdeaProjects\PacPhi" />
+    </key>
+  </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="PacPhi" />
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.Vector2dTest">
+  <component name="RunManager" selected="Application.PacPhi">
     <configuration name="PacPhi" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="PacPhi" />
       <module name="PacPhi" />
@@ -84,7 +108,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Vector2dTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="Vector2DTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="PacPhi" />
       <extension name="coverage">
         <pattern>
@@ -93,7 +117,7 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="util" />
-      <option name="MAIN_CLASS_NAME" value="util.Vector2dTest" />
+      <option name="MAIN_CLASS_NAME" value="util.Vector2DTest" />
       <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -101,12 +125,12 @@
     </configuration>
     <list>
       <item itemvalue="Application.PacPhi" />
-      <item itemvalue="JUnit.Vector2dTest" />
+      <item itemvalue="JUnit.Vector2DTestVector2" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.Vector2dTest" />
         <item itemvalue="Application.PacPhi" />
+        <item itemvalue="JUnit.Vector2DTestVector2" />
         <item itemvalue="Application.PacPhi" />
       </list>
     </recent_temporary>
@@ -127,7 +151,21 @@
       <option name="project" value="LOCAL" />
       <updated>1665813250573</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="* attempted merge from shitty Vector2 to even shittier Vector2d">
+      <created>1666280127773</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1666280127773</updated>
+    </task>
+    <task id="LOCAL-00003" summary="* FIXED ALL ISSUES with Vector2 and Vector2D">
+      <created>1666281003253</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1666281003253</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -148,8 +186,11 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Main Menu:&#10;- added soundButton to toggle sound" />
-    <option name="LAST_COMMIT_MESSAGE" value="Main Menu:&#10;- added soundButton to toggle sound" />
+    <MESSAGE value="* attempted merge from shitty Vector2 to even shittier Vector2d" />
+    <MESSAGE value="* FIXED ALL ISSUES with Vector2 and Vector2D" />
+    <option name="LAST_COMMIT_MESSAGE" value="* FIXED ALL ISSUES with Vector2 and Vector2D" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -1,3 +1,5 @@
+package ui;
+
 import util.Vector2d;
 
 import javax.imageio.ImageIO;
@@ -33,7 +35,7 @@ public class ImageBasicShadow extends JPanel
     setLayout(null);
     setBounds(getX(), getY(), width, Gui.frameHeight);
 
-    readBmpMap("./assets/textures/skins/ghosts/baum/baum.png");
+    readBmpMap("/textures/skins/ghosts/baum/baum.png");
 
     Dimension buffer = new Dimension(dim.width + 4, dim.height + 24);
 

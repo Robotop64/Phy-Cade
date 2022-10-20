@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import java.awt.Color;

@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -41,7 +43,7 @@ public class GameOverScreen extends JPanel
     int    nextY = 10;
     if (labels.size() != 0)
     {
-      nextY = (int) ( labels.get(labels.size() - 1).getY() + labels.get(labels.size() - 1).getSize().getHeight() ) + distance;
+      nextY = (int)(labels.get(labels.size() - 1).getY() + labels.get(labels.size() - 1).getSize().getHeight()) + distance;
     }
 
     add(temp);
@@ -65,7 +67,7 @@ public class GameOverScreen extends JPanel
 
     createPlayerLabel(playerCount, scores, times);
 
-    
+
   }
 
   private void createPlayerLabel (int playercount, List <Integer> scores, List <LocalTime> times)

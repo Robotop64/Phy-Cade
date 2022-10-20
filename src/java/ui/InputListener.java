@@ -1,9 +1,12 @@
+package ui;
+
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.Event;
 import net.java.games.input.EventQueue;
 import net.java.games.input.Keyboard;
+import ui.InputListener.Input;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class InputListener extends Celebrity <InputListener.Input>
+public class InputListener extends Celebrity <Input>
 {
 
   private static InputListener instance;
@@ -64,7 +67,7 @@ public class InputListener extends Celebrity <InputListener.Input>
           keyStateMap.keySet()
                      .stream()
                      .map(key -> Map.entry(key, keyboards.stream()
-                                                         .map(keyboard -> ( (Keyboard) keyboard ))
+                                                         .map(keyboard -> ((Keyboard)keyboard))
                                                          .map(keyboard -> keyboard.isKeyDown(key))
                                                          .reduce(Boolean::logicalOr)
                                                          .get() ? State.down : State.none))
@@ -151,7 +154,7 @@ public class InputListener extends Celebrity <InputListener.Input>
       };
   }
 
-  public void start () { thread.start(); }
+  public void start () {thread.start();}
 
   public static InputListener getInstance ()
   {
@@ -162,7 +165,7 @@ public class InputListener extends Celebrity <InputListener.Input>
     return instance;
   }
 
-  record Input(Key key, State state, Player player) { }
+  record Input(Key key, State state, Player player) {}
 
   enum Key
   { vertical, horizontal, A, B, C, D, X, Y }
@@ -173,7 +176,7 @@ public class InputListener extends Celebrity <InputListener.Input>
   enum Player
   { playerOne, playerTwo }
 
-  record InputState(Key key, State state) { }
+  record InputState(Key key, State state) {}
 
   ;
 

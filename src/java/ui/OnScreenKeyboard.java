@@ -1,3 +1,5 @@
+package ui;
+
 import util.Util;
 
 import javax.swing.JPanel;
@@ -48,17 +50,17 @@ public class OnScreenKeyboard extends JPanel
     LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
 
   private record Layout(LayoutHead layoutHead, LayoutBody layoutBody)
-  { }
+  {}
 
   private Layout activeLayout = new Layout(LayoutHead.numDE, LayoutBody.DE);
 
   private record Language(Languages language)
-  { }
+  {}
 
   private Languages activeLanguage = Languages.DE;
 
   private record Point(int y, int x)
-  { }
+  {}
 
   /**
    * Position of the active key in space coordinates
@@ -94,13 +96,13 @@ public class OnScreenKeyboard extends JPanel
   {
     //initialisation
     int buttonDistProp = 6;
-    buttonBaseSize = width * buttonDistProp / ( maxButtonsInRow * 7 + 1 );
+    buttonBaseSize = width * buttonDistProp / (maxButtonsInRow * 7 + 1);
     buttonBuffer = buttonBaseSize / buttonDistProp;
 
     setBackground(Color.black);
     setLayout(null);
     pmButton border = new pmButton("");
-    border.setBounds(0, 0, width, (int) ( width / ratio ));
+    border.setBounds(0, 0, width, (int)(width / ratio));
     border.update();
     add(border);
     createButtons();
@@ -265,15 +267,15 @@ public class OnScreenKeyboard extends JPanel
   {
     List <Languages> languagesList = Arrays.stream(Languages.values()).toList();
     int              index         = languagesList.indexOf(activeLanguage);
-    Languages        next          = languagesList.get(( index + 1 ) % languagesList.size());
+    Languages        next          = languagesList.get((index + 1) % languagesList.size());
     activeLanguage = next;
     setButtonLayout(LayoutLangStringMap.get(next));
 
     specialLayers = Arrays.stream(LayoutBody.values())
-                          .filter(layoutBody -> ( !Arrays.stream(Languages.values())
-                                                         .map(Enum::name)
-                                                         .toList()
-                                                         .contains(layoutBody.name()) ) || layoutBody.name().equals(activeLanguage.name()))
+                          .filter(layoutBody -> (!Arrays.stream(Languages.values())
+                                                        .map(Enum::name)
+                                                        .toList()
+                                                        .contains(layoutBody.name())) || layoutBody.name().equals(activeLanguage.name()))
                           .toList();
 
   }
@@ -285,13 +287,13 @@ public class OnScreenKeyboard extends JPanel
   {
     if (specialLayers == null)
       specialLayers = Arrays.stream(LayoutBody.values())
-                            .filter(layoutBody -> ( !Arrays.stream(Languages.values())
-                                                           .map(Enum::name)
-                                                           .toList()
-                                                           .contains(layoutBody.name()) ) || layoutBody.name().equals(activeLanguage.name()))
+                            .filter(layoutBody -> (!Arrays.stream(Languages.values())
+                                                          .map(Enum::name)
+                                                          .toList()
+                                                          .contains(layoutBody.name())) || layoutBody.name().equals(activeLanguage.name()))
                             .toList();
     int        index = specialLayers.indexOf(activeExtra);
-    LayoutBody next  = specialLayers.get(( index + 1 ) % specialLayers.size());
+    LayoutBody next  = specialLayers.get((index + 1) % specialLayers.size());
     activeExtra = next;
     activeLayout = new Layout(activeLayout.layoutHead, next);
     setButtonLayout(activeLayout);
@@ -302,7 +304,7 @@ public class OnScreenKeyboard extends JPanel
    */
   private Point computeShiftedButton (Point coordinate)
   {
-    return ( coordinate.x == 0 ) ? coordinate : keyMap.getOrDefault(coordinate, new Point(coordinate.y, computeShiftedButton(new Point(coordinate.y, coordinate.x - 1)).x + 1));
+    return (coordinate.x == 0) ? coordinate : keyMap.getOrDefault(coordinate, new Point(coordinate.y, computeShiftedButton(new Point(coordinate.y, coordinate.x - 1)).x + 1));
   }
 
   /**
@@ -356,9 +358,9 @@ public class OnScreenKeyboard extends JPanel
   {
     pmButton temp = new pmButton(text);
     temp.addAction(action);
-    temp.setSize((int) Math.round(buttonBaseSize * size + ( size - 1 ) * buttonBuffer), buttonBaseSize);
-    temp.setLocation(( x + 1 ) * buttonBuffer + x * buttonBaseSize + getWidth() / Gui.frameWidth,
-      ( y + 1 ) * buttonBuffer + y * buttonBaseSize + getWidth() / Gui.frameWidth);
+    temp.setSize((int)Math.round(buttonBaseSize * size + (size - 1) * buttonBuffer), buttonBaseSize);
+    temp.setLocation((x + 1) * buttonBuffer + x * buttonBaseSize + getWidth() / Gui.frameWidth,
+      (y + 1) * buttonBuffer + y * buttonBaseSize + getWidth() / Gui.frameWidth);
     temp.isSelected = false;
     temp.update();
 
