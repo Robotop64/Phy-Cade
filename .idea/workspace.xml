@@ -2,12 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="Main Menu:&#10;- added soundButton to toggle sound">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/util/Vector2dTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Gui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Gui.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/InputListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/InputListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MainMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MainMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PacPhi.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PacPhi.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImageBasicShadow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImageBasicShadow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ImageOutline.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ImageOutline.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/util/Vector2d.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/Vector2d.java" afterDir="false" />
     </list>
     <list id="71df5553-3767-4fe1-863e-913d48bf4a60" name="local" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,6 +34,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/Gui.java" root0="FORCE_HIGHLIGHTING" />
@@ -56,10 +58,17 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "settings.editor.selected.configurable": "preferences.sourceCode.Java"
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
   }
 }]]></component>
   <component name="RunAnythingCache">
@@ -67,7 +76,7 @@
       <command value="PacPhi" />
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.Vector2dTest">
     <configuration name="PacPhi" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="PacPhi" />
       <module name="PacPhi" />
@@ -75,8 +84,28 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Vector2dTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="PacPhi" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="util.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="util" />
+      <option name="MAIN_CLASS_NAME" value="util.Vector2dTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.PacPhi" />
+      <item itemvalue="JUnit.Vector2dTest" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.Vector2dTest" />
         <item itemvalue="Application.PacPhi" />
         <item itemvalue="Application.PacPhi" />
       </list>

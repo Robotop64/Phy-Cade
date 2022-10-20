@@ -1,4 +1,4 @@
-import util.Vector2;
+import util.Vector2d;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -16,15 +16,15 @@ public class ImageBasicShadow extends JPanel
   private enum Tile
   { none, textur, outline }
 
-  private final        Map <Vector2, Tile> tileMap      = new HashMap <>();
-  private static final Map <Tile, Color>   tilesToColor = Map.of(
-      Tile.none, Color.green,
-      Tile.textur, Color.BLUE,
-      Tile.outline, Color.red
+  private final        Map <Vector2d, Tile> tileMap      = new HashMap <>();
+  private static final Map <Tile, Color>    tilesToColor = Map.of(
+    Tile.none, Color.green,
+    Tile.textur, Color.BLUE,
+    Tile.outline, Color.red
   );
 
   private       Dimension dim;
-  private final Vector2   origin;
+  private final Vector2d  origin;
   private final int       tileSize;
 
   public ImageBasicShadow (int width) throws IOException
@@ -46,7 +46,7 @@ public class ImageBasicShadow extends JPanel
       tileSize = width / buffer.width;
     }
 
-    origin = new Vector2().cartesian((long) ( width / 2 ) - dim.width / 2 * tileSize, (long) ( Gui.frameHeight / 2 ) - dim.height / 2 * tileSize);
+    origin = new Vector2d().cartesian((long)(width / 2) - dim.width / 2 * tileSize, (long)(Gui.frameHeight / 2) - dim.height / 2 * tileSize);
 
 
     drawMap();
@@ -89,7 +89,7 @@ public class ImageBasicShadow extends JPanel
         }
 
         //            create map entry of the evaluated pixel consisting of vector and TileType
-        tileMap.put(new Vector2().cartesian(xPixel, yPixel), now);
+        tileMap.put(new Vector2d().cartesian(xPixel, yPixel), now);
 
       }
     }
@@ -101,7 +101,7 @@ public class ImageBasicShadow extends JPanel
     {
       for (int h = 0; h < dim.height; h++)
       {
-        drawTile(new Vector2().cartesian(w, h).multiply(tileSize), tileMap.get(new Vector2().cartesian(w, h)));
+        drawTile(new Vector2d().cartesian(w, h).multiply(tileSize), tileMap.get(new Vector2d().cartesian(w, h)));
       }
     }
     SwingUtilities.invokeLater(() ->
@@ -111,19 +111,19 @@ public class ImageBasicShadow extends JPanel
     });
   }
 
-  private void drawTile (Vector2 pixPos, Tile tile)
+  private void drawTile (Vector2d pixPos, Tile tile)
   {
     JPanel temp = new JPanel();
     temp.setBackground(tilesToColor.get(tile));
 
     for (int φ = 0; φ < 360; φ += 90)
     {
-      Vector2 tilePos  = new Vector2().cartesian(pixPos.getX() / tileSize, pixPos.getY() / tileSize);
-      Tile    thisTile = tileMap.get(tilePos);
+      Vector2d tilePos  = new Vector2d().cartesian(pixPos.getX() / tileSize, pixPos.getY() / tileSize);
+      Tile     thisTile = tileMap.get(tilePos);
 
-      Vector2 offset    = new Vector2().polar(1, φ);
-      Vector2 secPos    = tilePos.addScaled(offset);
-      Tile    neighbour = tileMap.get(secPos);
+      Vector2d offset    = new Vector2d().polar(1, φ);
+      Vector2d secPos    = tilePos.add(offset);
+      Tile     neighbour = tileMap.get(secPos);
 
       if (thisTile == Tile.none && neighbour == Tile.textur)
       {
@@ -138,7 +138,7 @@ public class ImageBasicShadow extends JPanel
 
 
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
-    temp.setBounds((int) ( (int) pixPos.getX() + origin.getX() ), (int) ( (int) pixPos.getY() + origin.getY() ), tileSize, tileSize);
+    temp.setBounds((int)((int)pixPos.getX() + origin.getX()), (int)((int)pixPos.getY() + origin.getY()), tileSize, tileSize);
 
 
     //    temp.setBackground(tilesToColor.get(tile));

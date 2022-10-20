@@ -1,4 +1,4 @@
-import util.Vector2;
+import util.Vector2d;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -12,11 +12,11 @@ public class ImageOutline extends JPanel
   private enum Tile
   { none, textur, outline }
 
-  private final        Map <Vector2, Tile> tileMap      = new HashMap <>();
-  private static final Map <Tile, Color>   tilesToColor = Map.of(
-      Tile.none, Color.green,
-      Tile.textur, Color.BLUE,
-      Tile.outline, Color.red
+  private final        Map <Vector2d, Tile> tileMap      = new HashMap <>();
+  private static final Map <Tile, Color>    tilesToColor = Map.of(
+    Tile.none, Color.green,
+    Tile.textur, Color.BLUE,
+    Tile.outline, Color.red
   );
 
   private Dimension dim;
@@ -63,26 +63,26 @@ public class ImageOutline extends JPanel
         }
 
         //            create map entry of the evaluated pixel consisting of vector and TileType
-        tileMap.put(new Vector2().cartesian(xPixel, yPixel), now);
+        tileMap.put(new Vector2d().cartesian(xPixel, yPixel), now);
 
       }
     }
   }
 
-  private void reClassify (Vector2 pixPos, Map <Vector2, Tile> outLineMap)
+  private void reClassify (Vector2d pixPos, Map <Vector2d, Tile> outLineMap)
   {
 
 
     for (int φ = 0; φ < 360; φ += 90)
     {
-      Vector2 tilePos  = new Vector2().cartesian(pixPos.getX(), pixPos.getY());
-      Tile    thisTile = outLineMap.get(tilePos);
+      Vector2d tilePos  = new Vector2d().cartesian(pixPos.getX(), pixPos.getY());
+      Tile     thisTile = outLineMap.get(tilePos);
 
-      Vector2 offset    = new Vector2().polar(1, φ);
-      Vector2 secPos    = tilePos.addScaled(offset);
-      Tile    neighbour = outLineMap.get(secPos);
+      Vector2d offset    = new Vector2d().polar(1, φ);
+      Vector2d secPos    = tilePos.add(offset);
+      Tile     neighbour = outLineMap.get(secPos);
 
-      if (thisTile == Tile.none && ( neighbour == Tile.textur || neighbour == Tile.outline ))
+      if (thisTile == Tile.none && (neighbour == Tile.textur || neighbour == Tile.outline))
       {
         tileMap.put(tilePos, Tile.outline);
 
@@ -94,12 +94,12 @@ public class ImageOutline extends JPanel
   {
     for (int i = 0; i < width; i++)
     {
-      Map <Vector2, Tile> tileMap2 = Map.copyOf(tileMap);
+      Map <Vector2d, Tile> tileMap2 = Map.copyOf(tileMap);
       for (int w = 0; w < dim.width; w++)
       {
         for (int h = 0; h < dim.height; h++)
         {
-          reClassify(new Vector2().cartesian(w, h), tileMap2);
+          reClassify(new Vector2d().cartesian(w, h), tileMap2);
         }
       }
     }

@@ -13,7 +13,7 @@ public class Vector2d
     y = 0;
   }
 
-  public Vector2d (double x, double y)
+  private Vector2d (double x, double y)
   {
     this.x = x;
     this.y = y;
@@ -34,24 +34,9 @@ public class Vector2d
     return new Vector2d(x + v.x, y + v.y);
   }
 
-  public Vector2d addScaled (Vector2d v)
-  {
-    return new Vector2d(x + v.getX(), y + v.getY());
-  }
-
   public Vector2d multiply (double s)
   {
     return new Vector2d(x * s, y * s);
-  }
-
-  public Vector2d multiplyX (double s)
-  {
-    return new Vector2d(x * s, y);
-  }
-
-  public Vector2d multiplyY (double s)
-  {
-    return new Vector2d(x, y * s);
   }
 
   public Vector2d subtract (Vector2d v)
@@ -66,7 +51,7 @@ public class Vector2d
 
   public String toString ()
   {
-    return "(%d, %d)".formatted(x, y);
+    return "(%f, %f)".formatted(x, y);
   }
 
   /**
