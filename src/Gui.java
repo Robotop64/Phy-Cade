@@ -2,8 +2,6 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import java.awt.Color;
 import java.awt.Rectangle;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class Gui
 {
@@ -15,10 +13,7 @@ public class Gui
 
   JFrame frame;
 
-  private Gui ()
-  {
-
-  }
+  private Gui () {}
 
   public void initialize ()
   {
@@ -53,23 +48,7 @@ public class Gui
     frame.getContentPane().setComponentZOrder(debug, 0);
     frame.getContentPane().setComponentZOrder(MainMenu.getInstance(), 1);
 
-    //    pos();
-
     frame.setVisible(true);
-  }
-
-  private void pos ()
-  {
-    frame.setUndecorated(false);
-    frame.addComponentListener(new ComponentAdapter()
-    {
-      @Override
-      public void componentMoved (ComponentEvent e)
-      {
-        super.componentMoved(e);
-        System.out.println(e);
-      }
-    });
   }
 
   public static Gui getInstance ()
