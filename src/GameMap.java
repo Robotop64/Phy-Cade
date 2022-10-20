@@ -36,22 +36,28 @@ public class GameMap extends JPanel
 
   public GameMap (int width, int height) throws IOException
   {
-    setBackground(Color.black);
+    setBackground(Color.gray);
     setLayout(null);
 
     readBmpMap("./assets/maps/PacManClassic Map.bmp");
 
-    double ratio     = (double) dim.height / dim.width;
-    double newHeight = (double) ( ratio * height );
-    double newWidth  = (double) ( width * ratio );
-    double min       = Math.min(newHeight, newWidth);
 
+    //    double ratio = dim.height * 1.0 / dim.width;
+    //
+    //    int newHeight = (int) Math.min(height, width / ratio);
+    //
+    //    int newWidth = (int) ( newHeight * ratio );
+    //
     //    setBounds(0, 0, newWidth, newHeight);
+    //
+    //    tileSize = newHeight / dim.height;
 
-    tileSize = 25;
+    tileSize = Math.min(( width / dim.width ), ( height / dim.height ));
+    int newWidth  = tileSize * dim.width;
+    int newHeight = tileSize * dim.height;
+    setBounds(0, 0, newWidth, newHeight);
 
-
-    origin = new Vector2().cartesian((long) ( width / 2 ) - dim.width / 2 * tileSize, (long) ( Gui.frameHeight / 2 ) - dim.height / 2 * tileSize);
+    origin = new Vector2().cartesian(0, 0);
 
 
     drawMap();
