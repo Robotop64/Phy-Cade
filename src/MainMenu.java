@@ -1,5 +1,8 @@
+import util.Util;
+
 import javax.swing.JPanel;
 import java.awt.Color;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,11 +101,22 @@ public class MainMenu extends JPanel
 
     mpButton.addAction(() ->
     {
+      try
+      {
+        GameMap gameMap = new GameMap(Gui.frameWidth);
+        Gui.getInstance().frame.getContentPane().add(gameMap);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+
+
       //      System.out.println("showing OSK");
-      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard(Gui.frameWidth / 2);
-      Gui.getInstance().frame.getContentPane().add(onScreenKeyboard);
-      onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
-      onScreenKeyboard.setTarget(System.out::println);
+      //      OnScreenKeyboard onScreenKeyboard = new OnScreenKeyboard(Gui.frameWidth / 2);
+      //      Gui.getInstance().frame.getContentPane().add(onScreenKeyboard);
+      //      onScreenKeyboard.setBounds(Gui.defaultFrameBounds);
+      //      onScreenKeyboard.setTarget(System.out::println);
     });
 
     soundButton.clearActions();
