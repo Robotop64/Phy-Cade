@@ -95,7 +95,7 @@ public class MainMenu extends JPanel
     {
       try
       {
-        GameMap gameMap = new GameMap(Gui.frameWidth);
+        GameMap gameMap = new GameMap(Gui.frameWidth, Gui.frameHeight);
         Gui.getInstance().frame.getContentPane().add(gameMap);
       }
       catch (IOException e)

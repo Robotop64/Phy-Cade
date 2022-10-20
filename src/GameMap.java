@@ -23,9 +23,8 @@ public class GameMap extends JPanel
   private enum WallTile
   { line, tunnel, corner, tsection, xsection }
 
-  private final Vector2   origin;
-  private       int       tileSize;
-  private final Dimension gridSize;
+  private final Vector2 origin;
+  private final int     tileSize;
 
   private Dimension dim;
 
@@ -35,29 +34,24 @@ public class GameMap extends JPanel
 
   private final Map <Vector2, Tile> tileMap = new HashMap <>();
 
-  public GameMap (int width) throws IOException
+  public GameMap (int width, int height) throws IOException
   {
     setBackground(Color.black);
     setLayout(null);
-    setBounds(getX(), getY(), width, Gui.frameHeight);
-
 
     readBmpMap("./assets/maps/PacManClassic Map.bmp");
 
-    Dimension buffer = new Dimension(dim.width + 4, dim.height + 24);
+    double ratio     = (double) dim.height / dim.width;
+    double newHeight = (double) ( ratio * height );
+    double newWidth  = (double) ( width * ratio );
+    double min       = Math.min(newHeight, newWidth);
 
-    if (width > Gui.frameHeight)
-    {
-      tileSize = width / buffer.height;
-    }
-    else
-    {
-      tileSize = width / buffer.width;
-    }
+    //    setBounds(0, 0, newWidth, newHeight);
+
+    tileSize = 25;
+
 
     origin = new Vector2().cartesian((long) ( width / 2 ) - dim.width / 2 * tileSize, (long) ( Gui.frameHeight / 2 ) - dim.height / 2 * tileSize);
-
-    gridSize = new Dimension(this.getWidth() / tileSize, this.getHeight() / tileSize);
 
 
     drawMap();
