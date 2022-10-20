@@ -24,7 +24,7 @@ public class GameMap extends JPanel
   { line, tunnel, corner, tsection, xsection }
 
   private final Vector2   origin;
-  private final int       tileSize = 25;
+  private       int       tileSize;
   private final Dimension gridSize;
 
   private Dimension dim;
@@ -35,17 +35,33 @@ public class GameMap extends JPanel
 
   private final Map <Vector2, Tile> tileMap = new HashMap <>();
 
-  public GameMap () throws IOException
+  public GameMap (int width) throws IOException
   {
     setBackground(Color.black);
     setLayout(null);
-    setBounds(0, 0, Gui.frameWidth, Gui.frameHeight);
+    setBounds(getX(), getY(), width, Gui.frameHeight);
 
-    origin = new Vector2().cartesian(0, 0);
+
+    readBmpMap("./assets/maps/PacManClassic Map.bmp");
+
+    Dimension buffer = new Dimension(dim.width + 4, dim.height + 24);
+
+    if (width > Gui.frameHeight)
+    {
+      tileSize = width / buffer.height;
+    }
+    else
+    {
+      tileSize = width / buffer.width;
+    }
+
+    origin = new Vector2().cartesian((long) ( width / 2 ) - dim.width / 2 * tileSize, (long) ( Gui.frameHeight / 2 ) - dim.height / 2 * tileSize);
+
     gridSize = new Dimension(this.getWidth() / tileSize, this.getHeight() / tileSize);
 
 
-    drawMap("./assets/maps/PacManClassic Map.bmp", origin);
+    drawMap();
+
 
     SwingUtilities.invokeLater(() ->
     {
@@ -85,14 +101,13 @@ public class GameMap extends JPanel
     }
   }
 
-  public void drawMap (String path, Vector2 pos) throws IOException
+  public void drawMap () throws IOException
   {
-    readBmpMap(path);
     for (int w = 0; w < dim.width; w++)
     {
       for (int h = 0; h < dim.height; h++)
       {
-        drawTile(new Vector2().cartesian(pos.getX() + w, pos.getY() + h).multiply(tileSize), tileMap.get(new Vector2().cartesian(w, h)));
+        drawTile(new Vector2().cartesian(w, h).multiply(tileSize), tileMap.get(new Vector2().cartesian(w, h)));
       }
     }
     SwingUtilities.invokeLater(() ->
@@ -110,17 +125,28 @@ public class GameMap extends JPanel
       protected void paintComponent (Graphics g)
       {
         super.paintComponent(g);
-        Graphics2D gg = (Graphics2D) g;
-        g.setColor(Color.blue);
-        gg.setStroke(new BasicStroke(tileSize / 11));
-
-        Vector2 tilePos = new Vector2().cartesian(pixPos.getX() / tileSize, pixPos.getY() / tileSize);
+        Graphics2D gg      = (Graphics2D) g;
+        Vector2    tilePos = new Vector2().cartesian(pixPos.getX() / tileSize, pixPos.getY() / tileSize);
 
         int bloat = (int) IntStream.range(0, 4).map(n -> 90 * n).mapToObj(φ -> new Vector2().polar(1, φ)).map(tilePos::addScaled).map(tileMap::get).filter(tile -> Tile.wall == tile || tile == null).count();
 
         for (int i = 0; i < 2; i++)
         {
           Tile thisTile = tileMap.get(tilePos);
+
+          if (thisTile == Tile.coin)
+          {
+            g.setColor(Color.yellow);
+            gg.setStroke(new BasicStroke(tileSize / 11));
+            gg.fillOval(tileSize / 3, tileSize / 3, tileSize / 3, tileSize / 2);
+          }
+          if (thisTile == Tile.powerUp)
+          {
+            g.setColor(Color.red);
+            gg.setStroke(new BasicStroke(tileSize / 11));
+            gg.fillOval(tileSize / 3, tileSize / 3, tileSize / 2, tileSize / 2);
+          }
+
           if (thisTile == Tile.wall)
           {
             if (i == 0)
@@ -153,6 +179,7 @@ public class GameMap extends JPanel
                   Tile    neighbour  = tileMap.get(secPos);
                   if (neighbour == Tile.coin || neighbour == Tile.path || neighbour == Tile.powerUp)
                   {
+
                     gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eX.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eX.getY() * tileSize / 2 ));
                     gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eY.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eY.getY() * tileSize / 2 ));
                   }
@@ -183,7 +210,7 @@ public class GameMap extends JPanel
 
 
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
-    temp.setBounds((int) pixPos.getX(), (int) pixPos.getY(), tileSize, tileSize);
+    temp.setBounds((int) ( (int) pixPos.getX() + origin.getX() ), (int) ( (int) pixPos.getY() + origin.getY() ), tileSize, tileSize);
 
     temp.setBackground(Color.black);
     //    temp.setBackground(tilesToColor.get(tile));
@@ -191,4 +218,6 @@ public class GameMap extends JPanel
 
     add(temp);
   }
+
+
 }
