@@ -23,8 +23,7 @@ public class GameMap extends JPanel
   private enum WallTile
   { line, tunnel, corner, tsection, xsection }
 
-  private final Vector2 origin;
-  private final int     tileSize;
+  private final int tileSize;
 
   private Dimension dim;
 
@@ -41,27 +40,12 @@ public class GameMap extends JPanel
 
     readBmpMap("./assets/maps/PacManClassic Map.bmp");
 
-
-    //    double ratio = dim.height * 1.0 / dim.width;
-    //
-    //    int newHeight = (int) Math.min(height, width / ratio);
-    //
-    //    int newWidth = (int) ( newHeight * ratio );
-    //
-    //    setBounds(0, 0, newWidth, newHeight);
-    //
-    //    tileSize = newHeight / dim.height;
-
     tileSize = Math.min(( width / dim.width ), ( height / dim.height ));
     int newWidth  = tileSize * dim.width;
     int newHeight = tileSize * dim.height;
     setBounds(0, 0, newWidth, newHeight);
 
-    origin = new Vector2().cartesian(0, 0);
-
-
     drawMap();
-
 
     SwingUtilities.invokeLater(() ->
     {
@@ -210,7 +194,7 @@ public class GameMap extends JPanel
 
 
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
-    temp.setBounds((int) ( (int) pixPos.getX() + origin.getX() ), (int) ( (int) pixPos.getY() + origin.getY() ), tileSize, tileSize);
+    temp.setBounds((int) ( (int) pixPos.getX() ), (int) ( (int) pixPos.getY() ), tileSize, tileSize);
 
     temp.setBackground(Color.black);
     //    temp.setBackground(tilesToColor.get(tile));
