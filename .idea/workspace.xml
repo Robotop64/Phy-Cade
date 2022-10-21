@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="* (WIP) refactored project structure (still bricked)">
-      <change afterPath="$PROJECT_DIR$/src/java/game/BoxObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/game/GameObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/game/GameState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/game/LoggerObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/game/Rendered.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/game/Ticking.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/ui/ClassicPacmanGameScreen.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/ui/UIScreen.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/java/util/Direction.java" afterDir="false" />
+    <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="* (WIP) first working game loop">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PacPhi.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PacPhi.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/ui/Celebrity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/Celebrity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/ui/Gui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/Gui.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/ui/InputListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/InputListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/game/BoxObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/BoxObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/game/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/GameState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/ui/ClassicPacmanGameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/ClassicPacmanGameScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/ui/MainMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/MainMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/util/Direction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/util/Direction.java" afterDir="false" />
     </list>
     <list id="71df5553-3767-4fe1-863e-913d48bf4a60" name="local" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -163,7 +154,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666283871694</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="* (WIP) first working game loop">
+      <created>1666340223725</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1666340223725</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -189,7 +187,8 @@
     <MESSAGE value="* attempted merge from shitty Vector2 to even shittier Vector2d" />
     <MESSAGE value="* FIXED ALL ISSUES with Vector2 and Vector2D" />
     <MESSAGE value="* (WIP) refactored project structure (still bricked)" />
-    <option name="LAST_COMMIT_MESSAGE" value="* (WIP) refactored project structure (still bricked)" />
+    <MESSAGE value="* (WIP) first working game loop" />
+    <option name="LAST_COMMIT_MESSAGE" value="* (WIP) first working game loop" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

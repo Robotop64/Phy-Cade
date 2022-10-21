@@ -5,6 +5,7 @@ import game.GameState;
 import game.LoggerObject;
 import game.Rendered;
 import game.Ticking;
+import ui.InputListener.Input;
 import ui.InputListener.Key;
 import ui.InputListener.Player;
 import util.Direction;
@@ -13,18 +14,21 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClassicPacmanGameScreen extends UIScreen
 {
-  GameState gameState;
-  Direction lastDirection;
-  int       tps          = 60;
-  double    tickDuration = 1_000_000_000.0 / tps;
+  GameState        gameState;
+  Direction        lastDirection;
+  int              tps          = 60;
+  double           tickDuration = 1_000_000_000.0 / tps;
+  Map <Key, Input> joystick     = new HashMap <>();
 
   public ClassicPacmanGameScreen (JPanel parent, Player player)
   {
     super(parent);
-    setBackground(Color.black);
+    setBackground(Color.gray.darker().darker().darker().darker());
     gameState = new GameState();
 
     bindPlayer(player, input ->
@@ -35,17 +39,18 @@ public class ClassicPacmanGameScreen extends UIScreen
         return;
       }
 
-      Direction d = input.toDirection();
-      if (d == null)
+      if (input.toDirection() == null)
       {
-        gameState.playerDirection = lastDirection;
-        lastDirection = null;
+        joystick.remove(input.key());
+        joystick.forEach((key, in) -> gameState.playerDirection = in.toDirection());
       }
       else
       {
-        lastDirection = gameState.playerDirection;
-        gameState.playerDirection = d;
+        joystick.put(input.key(), input);
+        gameState.playerDirection = input.toDirection();
       }
+
+      System.out.println(gameState.playerDirection);
     });
 
     gameState.gameObjects.add(new LoggerObject());

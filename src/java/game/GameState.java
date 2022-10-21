@@ -10,7 +10,7 @@ public class GameState
   public boolean                            running;
   public long                               currentTick;
   public long                               lastTickTime;
-  public Direction                          playerDirection;
+  public Direction                          playerDirection = Direction.right;
   public boolean                            logging;
 
   public GameState ()
