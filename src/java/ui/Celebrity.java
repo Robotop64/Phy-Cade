@@ -19,7 +19,6 @@ public abstract class Celebrity <Type>
     locked = false;
     subscribers.putAll(subscribersQueue);
     subscribersQueue.clear();
-    System.out.println("all subs: " + subscribers);
   }
 
   public int subscribe (Fan <Type> fan)

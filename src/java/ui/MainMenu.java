@@ -7,8 +7,6 @@ import util.Util;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.io.IOException;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,19 +79,9 @@ public class MainMenu extends JPanel
 
     spButton.addAction(() ->
     {
-      List <Integer> scores = new ArrayList <>();
-      scores.add(5000);
-      List <LocalTime> times = new ArrayList <>();
-      times.add(LocalTime.of(0, 50, 20));
-
-      GameOverScreen a = new GameOverScreen(
-        1,
-        "Pacman",
-        scores,
-        times);
-
-      Gui.getInstance().frame.getContentPane().add(a);
-      setVisible(true);
+      ClassicPacmanGameScreen gameScreen = new ClassicPacmanGameScreen(Gui.getInstance().content, Player.playerOne);
+      gameScreen.setBounds(Gui.defaultFrameBounds);
+      gameScreen.setVisible(true);
     });
 
     lbButton.addAction(() ->
@@ -114,13 +102,6 @@ public class MainMenu extends JPanel
       {
         throw new RuntimeException(e);
       }
-
-
-      //      System.out.println("showing OSK");
-      //      ui.OnScreenKeyboard onScreenKeyboard = new ui.OnScreenKeyboard(ui.Gui.frameWidth / 2);
-      //      ui.Gui.getInstance().frame.getContentPane().add(onScreenKeyboard);
-      //      onScreenKeyboard.setBounds(ui.Gui.defaultFrameBounds);
-      //      onScreenKeyboard.setTarget(System.out::println);
     });
 
     soundButton.clearActions();
@@ -139,9 +120,9 @@ public class MainMenu extends JPanel
 
   public void activate ()
   {
+    System.out.println("Main Menu activated");
     listenerId = InputListener.getInstance().subscribe(input ->
     {
-      System.out.println("Main Menu activated");
       if (input.equals(new Input(InputListener.Key.A, InputListener.State.down, Player.playerOne)))
       {
         buttons.get(selected_index).press();

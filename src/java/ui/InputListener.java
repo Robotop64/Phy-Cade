@@ -7,6 +7,7 @@ import net.java.games.input.Event;
 import net.java.games.input.EventQueue;
 import net.java.games.input.Keyboard;
 import ui.InputListener.Input;
+import util.Direction;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -165,7 +166,28 @@ public class InputListener extends Celebrity <Input>
     return instance;
   }
 
-  record Input(Key key, State state, Player player) {}
+  record Input(Key key, State state, Player player)
+  {
+    public Direction toDirection ()
+    {
+      return switch (key())
+        {
+          case vertical -> switch (state())
+            {
+              case up -> Direction.up;
+              case down -> Direction.down;
+              case none -> null;
+            };
+          case horizontal -> switch (state())
+            {
+              case up -> Direction.left;
+              case down -> Direction.right;
+              case none -> null;
+            };
+          default -> null;
+        };
+    }
+  }
 
   enum Key
   { vertical, horizontal, A, B, C, D, X, Y }

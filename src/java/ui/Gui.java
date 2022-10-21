@@ -1,6 +1,7 @@
 package ui;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -14,6 +15,8 @@ public class Gui
   private static      Gui       instance;
 
   public JFrame frame;
+  public JPanel content;
+  pmButton debug;
 
   private Gui () {}
 
@@ -34,23 +37,31 @@ public class Gui
 
     inputListener.subscribe(System.out::println);
 
-    frame.getContentPane().add(MainMenu.getInstance());
-    MainMenu.getInstance().setBounds(defaultFrameBounds);
 
-
-    pmButton debug = new pmButton("");
+    debug = new pmButton("");
     debug.setForeground(Color.red);
     debug.setBorder(null);
     debug.setFontSize(14);
-    frame.getContentPane().add(debug);
+
     debug.setBounds(1, frameHeight - 55, 400, 40);
     inputListener.subscribe(input -> debug.setText(input.toString()));
 
+    content = new JPanel();
+    frame.getContentPane().add(content);
+    content.setBounds(defaultFrameBounds);
+    content.setLayout(null);
+    content.setBackground(Color.orange);
+
+    frame.getContentPane().add(debug);
 
     frame.getContentPane().setComponentZOrder(debug, 0);
-    frame.getContentPane().setComponentZOrder(MainMenu.getInstance(), 1);
+    frame.getContentPane().setComponentZOrder(content, 1);
+
+    content.add(MainMenu.getInstance());
+    MainMenu.getInstance().setBounds(defaultFrameBounds);
 
     frame.setVisible(true);
+    frame.createBufferStrategy(3);
   }
 
   public static Gui getInstance ()
