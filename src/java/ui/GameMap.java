@@ -22,7 +22,7 @@ public class GameMap extends JPanel
   private enum Tile
   { wall, path, none, coin, powerUp, gSpawn, pSpawn, portal }
 
-  private final int     tileSize;
+  private final int tileSize;
 
   private Dimension dim;
 
@@ -30,7 +30,7 @@ public class GameMap extends JPanel
   private static final Map <Color, Tile> colorToTiles = Map.of(Color.black, Tile.wall, Color.blue, Tile.path, Color.yellow, Tile.coin, new Color(255, 88, 0), Tile.powerUp, Color.cyan, Tile.portal, Color.red, Tile.gSpawn, Color.green, Tile.pSpawn, Color.white, Tile.none);
   private static final Map <Tile, Color> tilesToColor = Map.of(Tile.wall, Color.black, Tile.path, Color.black, Tile.coin, Color.yellow, Tile.powerUp, Color.orange, Tile.portal, Color.cyan, Tile.gSpawn, Color.red, Tile.pSpawn, Color.green, Tile.none, Color.black);
 
-  private final Map <Vector2, Tile> tileMap = new HashMap <>();
+  public final Map <Vector2, Tile> tileMap = new HashMap <>();
 
   public GameMap (int width, int height) throws IOException
   {
@@ -39,7 +39,7 @@ public class GameMap extends JPanel
 
     readBmpMap("src/resources/maps/PacManClassic Map.bmp");
 
-    tileSize = Math.min(( width / dim.width ), ( height / dim.height ));
+    tileSize = Math.min((width / dim.width), (height / dim.height));
     int newWidth  = tileSize * dim.width;
     int newHeight = tileSize * dim.height;
     setSize(newWidth, newHeight);
@@ -108,10 +108,16 @@ public class GameMap extends JPanel
       protected void paintComponent (Graphics g)
       {
         super.paintComponent(g);
-        Graphics2D gg      = (Graphics2D) g;
+        Graphics2D gg      = (Graphics2D)g;
         Vector2    tilePos = new Vector2().cartesian(pixPos.getX() / tileSize, pixPos.getY() / tileSize);
 
-        int bloat = (int) IntStream.range(0, 4).map(n -> 90 * n).mapToObj(φ -> new Vector2().polar(1, φ)).map(tilePos::addScaled).map(tileMap::get).filter(tile -> Tile.wall == tile || tile == null).count();
+        int bloat = (int)IntStream.range(0, 4)
+                                  .map(n -> 90 * n)
+                                  .mapToObj(φ -> new Vector2().polar(1, φ))
+                                  .map(tilePos::addScaled)
+                                  .map(tileMap::get)
+                                  .filter(tile -> Tile.wall == tile || tile == null)
+                                  .count();
 
         for (int i = 0; i < 2; i++)
         {
@@ -163,8 +169,8 @@ public class GameMap extends JPanel
                   if (neighbour == Tile.coin || neighbour == Tile.path || neighbour == Tile.powerUp)
                   {
 
-                    gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eX.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eX.getY() * tileSize / 2 ));
-                    gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + eY.getX() * tileSize / 2 ), (int) ( tileSize / 2 + eY.getY() * tileSize / 2 ));
+                    gg.drawLine(tileSize / 2, tileSize / 2, (int)(tileSize / 2 + eX.getX() * tileSize / 2), (int)(tileSize / 2 + eX.getY() * tileSize / 2));
+                    gg.drawLine(tileSize / 2, tileSize / 2, (int)(tileSize / 2 + eY.getX() * tileSize / 2), (int)(tileSize / 2 + eY.getY() * tileSize / 2));
                   }
                 }
               }
@@ -179,10 +185,10 @@ public class GameMap extends JPanel
 
                   Vector2 testPos  = tilePos.addScaled(offset.multiply(-1));
                   Tile    testTile = tileMap.get(testPos);
-                  if (( ( testTile != Tile.wall && testTile != Tile.none && testTile != null ) && bloat == 3 || bloat == 4 )) continue;
+                  if (((testTile != Tile.wall && testTile != Tile.none && testTile != null) && bloat == 3 || bloat == 4)) continue;
 
                   Vector2 v = new Vector2().polar(tileSize / 2, φ);
-                  gg.drawLine(tileSize / 2, tileSize / 2, (int) ( tileSize / 2 + v.getX() ), (int) ( tileSize / 2 + v.getY() ));
+                  gg.drawLine(tileSize / 2, tileSize / 2, (int)(tileSize / 2 + v.getX()), (int)(tileSize / 2 + v.getY()));
                 }
               }
             }
@@ -193,7 +199,7 @@ public class GameMap extends JPanel
 
 
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
-    temp.setBounds((int) ( (int) pixPos.getX() ), (int) ( (int) pixPos.getY() ), tileSize, tileSize);
+    temp.setBounds((int)((int)pixPos.getX()), (int)((int)pixPos.getY()), tileSize, tileSize);
 
     temp.setBackground(Color.black);
     //    temp.setBackground(tilesToColor.get(tile));

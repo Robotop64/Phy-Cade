@@ -36,6 +36,11 @@ public class ClassicPacmanGameScreen extends UIScreen
     {
       if (input.key().equals(Key.B))
       {
+        if (!gameState.running)
+        {
+
+        }
+
         gameState.running = false;
         return;
       }
@@ -74,7 +79,9 @@ public class ClassicPacmanGameScreen extends UIScreen
         if (t - gameState.lastTickTime < tickDuration) continue;
         gameState.currentTick++;
         gameState.lastTickTime = t;
-        gameState.gameObjects.stream().filter(gameObject -> gameObject instanceof Ticking).forEach(gameObject -> ((Ticking)gameObject).tick(gameState));
+        gameState.gameObjects.stream()
+                             .filter(gameObject -> gameObject instanceof Ticking)
+                             .forEach(gameObject -> ((Ticking)gameObject).tick(gameState));
         Gui.getInstance().frame.repaint();
       }
     }).start();
