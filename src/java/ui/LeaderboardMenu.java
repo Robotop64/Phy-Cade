@@ -44,12 +44,12 @@ public class LeaderboardMenu extends JPanel
   private       JLabel   right;
   private final int      entryHeight   = 60;
   private       int      currentActive = -1;
-  private       int      activeGame    = -1;
+  private       int      activeGame    = 0;
 
   private enum GameTitle
   { pacman, supermario, doom }
 
-  ;
+  private GameTitle newActiveGame = GameTitle.pacman;
 
 
   public static LeaderboardMenu getInstance ()
@@ -68,55 +68,29 @@ public class LeaderboardMenu extends JPanel
     setLayout(null);
     createUI();
     createEntrySlots();
+
     loadDatabase();
     toggleSelection(0);
 
-
-    //    addEntries(GameTitle.pacman, 1, 1);
     setEntries(0);
     setGame(GameTitle.pacman);
 
     // end of initialisation
 
-    //examples
-    //    addEntry("PacMan", new LeaderboardEntry("a", 9000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("b", 8000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 7000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 6000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 5000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 4000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 3000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 2000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 1000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 500, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 20000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    //    addEntry("PacMan", new LeaderboardEntry("c", 30000, LocalTime.of(15, 20, 45), LocalDate.now()));
-
-    System.out.println(entries.size());
-
   }
 
-
-  /*
-   * Can be used the create and add a new LeaderboardEntry to the database
-   * @param Board - which game the entry should be added to (Test,PacMan)
-   * @param neu - a leaderboard entry with (Name, Score, Time, Date)
+  /**
+   * Used to load the database entries into the loaded leaderboards
    */
-  private void addEntries (GameTitle g, int start, int end)
-  {
-
-    games.get(g.name()).entries.addAll(DatabaseProvider.getEntries(g.name()));
-
-    setEntries(0);
-  }
-
   private void loadDatabase ()
   {
     games.put(GameTitle.pacman, new Leaderboard("pacman", DatabaseProvider.getEntries("pacman")));
+    games.put(GameTitle.supermario, new Leaderboard("supermario", DatabaseProvider.getEntries("supermario")));
   }
 
-  /*
+  /**
    * Used to scroll up or down by 1
+   *
    * @param change - 1/0/-1  = down/none/up
    */
   public void moveActive (int change)
@@ -178,47 +152,67 @@ public class LeaderboardMenu extends JPanel
 
   }
 
-  //TODO broken
-  /*
+
+  /**
    * Used to move the leaderboard, only useful if more than 2 games available
+   *
    * @param change - either -1 or 1
    */
-  public void moveGame (int change)
+  private void moveGame (int change)
   {
-    activeGame += change;
+
     if (activeGame >= 0 && GameTitle.values().length > 1)
     {
-      //      setGame(gamesTitles[activeGame]);
+      if (change == 0) return;
+
+      List <GameTitle> titleList = Arrays.stream(GameTitle.values()).toList();
+      int              index     = titleList.indexOf(newActiveGame);
+      if (change == -1) change = titleList.size() - 1;
+      GameTitle next = titleList.get(( index + change ) % titleList.size());
+      newActiveGame = next;
+
+      if (currentActive != 0)
+      {
+        toggleSelection(currentActive);
+        tableOffset = 0;
+        toggleSelection(0);
+      }
+
+      setGame(newActiveGame);
+
     }
   }
 
-  /*
+  /**
    * Used to set the game who's Leaderboard should be displayed
    */
-  public void setGame (GameTitle g)
+  private void setGame (GameTitle g)
   {
-    activeGame = 0;
     if (games.size() >= 1)
     {
       entries = getGameLeaderboard(g);
       header.setText("Bestenliste : ~ " + g.name() + " ~");
     }
     setEntries(0);
+
   }
 
-  /*
+  /**
    * Used to get the leaderboard of a certain game
    */
   private List <LeaderboardEntry> getGameLeaderboard (GameTitle g)
   {
     List <LeaderboardEntry> e = new ArrayList <>();
 
+    if (games.get(g) == null) return e;
+
     e = games.get(g).entries;
+
     return e;
 
   }
 
-  /*
+  /**
    * Creates the various Buttons on the GUI in the Leaderboard
    */
   private void createUI ()
@@ -276,7 +270,7 @@ public class LeaderboardMenu extends JPanel
 
   }
 
-  /*
+  /**
    * Is used to create 9 Slots to display entries
    */
   private void createEntrySlots ()
@@ -292,7 +286,7 @@ public class LeaderboardMenu extends JPanel
       int        ypos       = ypos0 + i * entryHeight + 25 * i;
 
       //rank
-      buttonSlot[0] = createButton("", xpos0, ypos, 110, entryHeight, "Leaderboard", SwingConstants.RIGHT);
+      buttonSlot[0] = createButton("0", xpos0, ypos, 110, entryHeight, "Leaderboard", SwingConstants.RIGHT);
       //name
       buttonSlot[1] = createButton("", xpos0 + 130, ypos, 280, entryHeight, "Leaderboard", SwingConstants.CENTER);
       //highscore
@@ -308,7 +302,7 @@ public class LeaderboardMenu extends JPanel
     }
   }
 
-  /*
+  /**
    * Create the buttons to display a line of an entry
    */
   private pmButton createButton (String name, int x, int y, int w, int h, String theme, int align)
@@ -321,8 +315,9 @@ public class LeaderboardMenu extends JPanel
     return temp;
   }
 
-  /*
+  /**
    * Used to select and deselect a certain slot
+   *
    * @param slot - which of the 9 slots (0-8) should be interacted with
    */
   private void toggleSelection (int slot)
@@ -346,8 +341,9 @@ public class LeaderboardMenu extends JPanel
     updateSlot(slot);
   }
 
-  /*
+  /**
    * Used to update a slot after interacting with it
+   *
    * @param slot - which of the 9 slots (0-8) should be interacted with
    */
   private void updateSlot (int slot)
@@ -360,12 +356,33 @@ public class LeaderboardMenu extends JPanel
     }
   }
 
-  /*
+  /**
    * Will enter the needed entries in the display slots
+   *
    * @param offset - by how many changes the entries are shifted from rank 1 being in the 0.slot
    */
   private void setEntries (int offset)
   {
+    if (entries.size() <= 9)
+    {
+      for (int s = 0; s < 9; s++)
+      {
+
+        pmButton[] buttonSlot = buttonSlots.get(s);
+
+        for (int e = 0; e < 5; e++)
+        {
+          buttonSlot[0].setText("");
+          buttonSlot[1].setText("");
+          buttonSlot[2].setText("");
+          DateTimeFormatter newtime = DateTimeFormatter.ofPattern("HH:mm:ss");
+          buttonSlot[3].setText("");
+          DateTimeFormatter newdate = DateTimeFormatter.ofPattern("dd.MM.yy");
+          buttonSlot[4].setText("");
+        }
+      }
+    }
+
 
     for (int s = 0; s < Math.min(9, entries.size()); s++)
     {
@@ -386,6 +403,9 @@ public class LeaderboardMenu extends JPanel
     }
   }
 
+  /**
+   * Used to activate the input Listener
+   */
   public void activate ()
   {
     listener_id = InputListener.getInstance().subscribe(input ->

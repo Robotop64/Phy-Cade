@@ -92,7 +92,7 @@ public class DatabaseProvider
 
   public static List <LeaderboardMenu.LeaderboardEntry> getEntries (String game)
   {
-    return getQuery("select * from " + game + " Order By  score desc , duration desc");
+    return getQuery("select * from " + game + " Order By  score desc , duration asc");
   }
 
   public static void setEntries (String game, LeaderboardMenu.LeaderboardEntry in)
