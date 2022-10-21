@@ -18,14 +18,14 @@ public class Gui
   public JPanel content;
   pmButton debug;
 
-  private Gui () {}
+  private Gui () { }
 
   public void initialize ()
   {
     frame = new JFrame("Pac-Φ");
     frame.setSize(frameWidth, frameHeight);
     frame.setLocationRelativeTo(null);
-    frame.setLocation(-frameWidth, 0);
+    //    frame.setLocation(-frameWidth, 0);
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.setUndecorated(true);
