@@ -39,6 +39,11 @@ public class Vector2d
     return new Vector2d(x * s, y * s);
   }
 
+  public Vector2d divide (double d)
+  {
+    return multiply(1.0 / d);
+  }
+
   public Vector2d subtract (Vector2d v)
   {
     return add(v.multiply(-1));
@@ -47,6 +52,31 @@ public class Vector2d
   public Vector2d rotate (double φ)
   {
     return new Vector2d(cos(φ) * x - sin(φ) * y, sin(φ) * x + cos(φ) * y);
+  }
+
+  public double lenght ()
+  {
+    return Math.sqrt(x * x + y * y);
+  }
+
+  public Vector2d unitVector ()
+  {
+    return divide(lenght());
+  }
+
+  public double scalar (Vector2d other)
+  {
+    return x * other.x + y * other.y;
+  }
+
+  public Vector2d projectOn (Vector2d target)
+  {
+    return target.unitVector().multiply(unitVector().scalar(target.unitVector()) * lenght());
+  }
+
+  public Vector2d orthogonalTo (Vector2d target)
+  {
+    return subtract(projectOn(target));
   }
 
   public String toString ()
