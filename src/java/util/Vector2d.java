@@ -1,6 +1,9 @@
 package util;
 
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Vector2d
 {
@@ -77,6 +80,19 @@ public class Vector2d
   public Vector2d orthogonalTo (Vector2d target)
   {
     return subtract(projectOn(target));
+  }
+
+  /**
+   * creates a stream of all Points in [0, x] × [0, y] ∩ ℕ
+   *
+   * @return {@link Stream} of {@link Vector2d}
+   */
+  public Stream <Vector2d> stream ()
+  {
+    return IntStream.range(0, (int)x)
+                    .mapToObj(i -> IntStream.range(0, (int)y)
+                                            .mapToObj(j -> new Vector2d().cartesian(i, j)))
+                    .flatMap(Function.identity());
   }
 
   public String toString ()
