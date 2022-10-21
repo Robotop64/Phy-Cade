@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="* (WIP) first working game loop">
+    <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="* renamed GameState to ClassicPacmanGameState">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/game/BoxObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/BoxObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/game/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/GameState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/game/PacmanObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/PacmanObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/game/Rendered.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/Rendered.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/java/ui/ClassicPacmanGameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/ClassicPacmanGameScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/ui/MainMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/MainMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/util/Direction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/util/Direction.java" afterDir="false" />
     </list>
     <list id="71df5553-3767-4fe1-863e-913d48bf4a60" name="local" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +18,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -161,7 +160,21 @@
       <option name="project" value="LOCAL" />
       <updated>1666340223725</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="* Game Loop working, Box following user input">
+      <created>1666344375163</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1666344375163</updated>
+    </task>
+    <task id="LOCAL-00007" summary="* renamed GameState to ClassicPacmanGameState">
+      <created>1666349235187</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1666349235187</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -188,7 +201,9 @@
     <MESSAGE value="* FIXED ALL ISSUES with Vector2 and Vector2D" />
     <MESSAGE value="* (WIP) refactored project structure (still bricked)" />
     <MESSAGE value="* (WIP) first working game loop" />
-    <option name="LAST_COMMIT_MESSAGE" value="* (WIP) first working game loop" />
+    <MESSAGE value="* Game Loop working, Box following user input" />
+    <MESSAGE value="* renamed GameState to ClassicPacmanGameState" />
+    <option name="LAST_COMMIT_MESSAGE" value="* renamed GameState to ClassicPacmanGameState" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

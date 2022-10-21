@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class ClassicPacmanGameScreen extends UIScreen
         if (t - gameState.lastTickTime < tickDuration) continue;
         gameState.currentTick++;
         gameState.lastTickTime = t;
-        gameState.gameObjects.stream().filter(gameObject -> gameObject instanceof Ticking).parallel().forEach(gameObject -> ((Ticking)gameObject).tick(gameState));
+        gameState.gameObjects.stream().filter(gameObject -> gameObject instanceof Ticking).forEach(gameObject -> ((Ticking)gameObject).tick(gameState));
         Gui.getInstance().frame.repaint();
       }
     }).start();
@@ -84,7 +85,11 @@ public class ClassicPacmanGameScreen extends UIScreen
   {
     super.paintComponent(g);
     Graphics2D gg = (Graphics2D)g;
-    gameState.gameObjects.stream().filter(gameObject -> gameObject instanceof Rendered).parallel().forEach(gameObject -> ((Rendered)gameObject).paintComponent(gg, gameState));
+    gameState.gameObjects.stream()
+                         .filter(gameObject -> gameObject instanceof Rendered)
+                         .map(gameObject -> (Rendered)gameObject)
+                         .sorted(Comparator.comparingInt(Rendered::paintLayer))
+                         .forEach(gameObject -> (gameObject).paintComponent(gg, gameState));
   }
 
 }

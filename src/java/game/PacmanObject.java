@@ -16,6 +16,12 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   }
 
   @Override
+  public int paintLayer ()
+  {
+    return Integer.MAX_VALUE;
+  }
+
+  @Override
   public void tick (ClassicPacmanGameState gameState)
   {
 

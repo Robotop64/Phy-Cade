@@ -20,6 +20,12 @@ public class BoxObject extends PlacedObject implements Rendered, Ticking
   }
 
   @Override
+  public int paintLayer ()
+  {
+    return 100;
+  }
+
+  @Override
   public void tick (ClassicPacmanGameState gameState)
   {
     pos = pos.add(gameState.playerDirection.toVector());
