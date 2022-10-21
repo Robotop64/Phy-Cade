@@ -1,5 +1,7 @@
 package ui;
 
+import persistence.DatabaseProvider;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -11,8 +13,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LeaderboardMenu extends JPanel
 {
@@ -21,12 +24,15 @@ public class LeaderboardMenu extends JPanel
   //container of the 9 display slots
   private final List <pmButton[]> buttonSlots = new ArrayList <>();
 
-  public record Leaderboard(String name, List <LeaderboardEntry> entries) {}
+  public record LeaderboardEntry(String name, int highScore, LocalTime time, LocalDate date) { }
 
   public List <LeaderboardEntry> entries = new ArrayList <>();
-  public List <Leaderboard>      games   = new ArrayList <>();
 
-  public record LeaderboardEntry(String name, int highscore, LocalTime time, LocalDate date) {}
+  public record Leaderboard(String name, List <LeaderboardEntry> entries) { }
+
+  public Map <GameTitle, Leaderboard> games = new HashMap <>();
+  //  public List <Leaderboard>      games = new ArrayList <>();
+
 
   private       int      listener_id;
   private       int      tableOffset   = 0;
@@ -39,7 +45,11 @@ public class LeaderboardMenu extends JPanel
   private final int      entryHeight   = 60;
   private       int      currentActive = -1;
   private       int      activeGame    = -1;
-  private       String[] gamesTitles   = { "PacMan" };
+
+  private enum GameTitle
+  { pacman, supermario, doom }
+
+  ;
 
 
   public static LeaderboardMenu getInstance ()
@@ -58,28 +68,31 @@ public class LeaderboardMenu extends JPanel
     setLayout(null);
     createUI();
     createEntrySlots();
-    createLeaderboards();
+    loadDatabase();
     toggleSelection(0);
+
+
+    //    addEntries(GameTitle.pacman, 1, 1);
     setEntries(0);
-    setGame("PacMan");
+    setGame(GameTitle.pacman);
 
     // end of initialisation
 
-    // todo read from and to XML file
     //examples
-    addEntry("PacMan", new LeaderboardEntry("a", 9000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("b", 8000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 7000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 6000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 5000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 4000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 3000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 2000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 1000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 500, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 20000, LocalTime.of(15, 20, 45), LocalDate.now()));
-    addEntry("PacMan", new LeaderboardEntry("c", 30000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("a", 9000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("b", 8000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 7000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 6000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 5000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 4000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 3000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 2000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 1000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 500, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 20000, LocalTime.of(15, 20, 45), LocalDate.now()));
+    //    addEntry("PacMan", new LeaderboardEntry("c", 30000, LocalTime.of(15, 20, 45), LocalDate.now()));
 
+    System.out.println(entries.size());
 
   }
 
@@ -89,20 +102,17 @@ public class LeaderboardMenu extends JPanel
    * @param Board - which game the entry should be added to (Test,PacMan)
    * @param neu - a leaderboard entry with (Name, Score, Time, Date)
    */
-  public void addEntry (String Board, LeaderboardEntry neu)
+  private void addEntries (GameTitle g, int start, int end)
   {
-    getGameLeaderboard(Board).add(neu);
-    //sorts the entries by score
-    getGameLeaderboard(Board).sort(new Comparator <LeaderboardEntry>()
-    {
-      @Override
-      public int compare (LeaderboardEntry o1, LeaderboardEntry o2)
-      {
-        return Integer.compare(o2.highscore, o1.highscore);
-      }
-    });
+
+    games.get(g.name()).entries.addAll(DatabaseProvider.getEntries(g.name()));
 
     setEntries(0);
+  }
+
+  private void loadDatabase ()
+  {
+    games.put(GameTitle.pacman, new Leaderboard("pacman", DatabaseProvider.getEntries("pacman")));
   }
 
   /*
@@ -168,6 +178,7 @@ public class LeaderboardMenu extends JPanel
 
   }
 
+  //TODO broken
   /*
    * Used to move the leaderboard, only useful if more than 2 games available
    * @param change - either -1 or 1
@@ -175,48 +186,34 @@ public class LeaderboardMenu extends JPanel
   public void moveGame (int change)
   {
     activeGame += change;
-    if (activeGame >= 0 && gamesTitles.length > 1)
+    if (activeGame >= 0 && GameTitle.values().length > 1)
     {
-      setGame(gamesTitles[activeGame]);
+      //      setGame(gamesTitles[activeGame]);
     }
   }
 
   /*
    * Used to set the game who's Leaderboard should be displayed
    */
-  public void setGame (String name)
+  public void setGame (GameTitle g)
   {
     activeGame = 0;
     if (games.size() >= 1)
     {
-      entries = getGameLeaderboard(name);
-      header.setText("Bestenliste : ~ " + name + " ~");
+      entries = getGameLeaderboard(g);
+      header.setText("Bestenliste : ~ " + g.name() + " ~");
     }
     setEntries(0);
   }
 
   /*
-   * Used to Initialise the existing game Leaderboards
-   */
-  private void createLeaderboards ()
-  {
-    List <LeaderboardEntry> pacMan = new ArrayList <>(0);
-    games.add(new Leaderboard("PacMan", pacMan));
-  }
-
-  /*
    * Used to get the leaderboard of a certain game
    */
-  private List <LeaderboardEntry> getGameLeaderboard (String name)
+  private List <LeaderboardEntry> getGameLeaderboard (GameTitle g)
   {
-    List <LeaderboardEntry> e = null;
-    for (int i = 0; i < games.size(); i++)
-    {
-      if (games.get(i).name.equals(name))
-      {
-        e = games.get(i).entries;
-      }
-    }
+    List <LeaderboardEntry> e = new ArrayList <>();
+
+    e = games.get(g).entries;
     return e;
 
   }
@@ -270,7 +267,7 @@ public class LeaderboardMenu extends JPanel
     for (int i = 1; i < 10; i++)
     {
       pmButton temp = new pmButton("");
-      temp.setBounds(20, 170 + i * (entryHeight + 25) - 10, Gui.frameWidth - 40, 3);
+      temp.setBounds(20, 170 + i * ( entryHeight + 25 ) - 10, Gui.frameWidth - 40, 3);
       temp.setTheme("Leaderboard-GUI");
       temp.setHorizontalAlignment(SwingConstants.LEFT);
       temp.setBorder(BorderFactory.createLineBorder(new Color(11, 136, 156), 3, true));
@@ -380,10 +377,10 @@ public class LeaderboardMenu extends JPanel
       {
         buttonSlot[0].setText(entries.indexOf(slotEntry) + 1 + ".  ");
         buttonSlot[1].setText(slotEntry.name);
-        buttonSlot[2].setText(String.valueOf(slotEntry.highscore));
+        buttonSlot[2].setText(String.valueOf(slotEntry.highScore));
         DateTimeFormatter newtime = DateTimeFormatter.ofPattern("HH:mm:ss");
         buttonSlot[3].setText(slotEntry.time.format(newtime));
-        DateTimeFormatter newdate = DateTimeFormatter.ofPattern("dd:MM:yy");
+        DateTimeFormatter newdate = DateTimeFormatter.ofPattern("dd.MM.yy");
         buttonSlot[4].setText(slotEntry.date.format(newdate));
       }
     }
@@ -407,11 +404,11 @@ public class LeaderboardMenu extends JPanel
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
 
       if (input.key().name().equals("horizontal")) moveGame(delta);
       if (input.key().name().equals("vertical")) moveActive(delta);

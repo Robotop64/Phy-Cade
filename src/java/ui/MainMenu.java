@@ -80,8 +80,8 @@ public class MainMenu extends JPanel
 
     spButton.addAction(() ->
     {
-      System.out.println(DatabaseProvider.getEntries("pacman", 0, 0));
-
+      System.out.println(DatabaseProvider.getEntries("pacman"));
+      //      DatabaseProvider.setEntries("pacman", new LeaderboardMenu.LeaderboardEntry("Peter", 9000, LocalTime.of(00, 20, 0), LocalDate.now()));
       //      ClassicPacmanGameScreen gameScreen = new ClassicPacmanGameScreen(Gui.getInstance().content, Player.playerOne);
       //      gameScreen.setBounds(100, 100, 400, 400);
       //      gameScreen.setVisible(true);
@@ -89,7 +89,7 @@ public class MainMenu extends JPanel
 
     lbButton.addAction(() ->
     {
-      Gui.getInstance().frame.getContentPane().add(LeaderboardMenu.getInstance());
+      Gui.getInstance().content.add(LeaderboardMenu.getInstance());
       LeaderboardMenu.getInstance().setBounds(Gui.defaultFrameBounds);
       LeaderboardMenu.getInstance().activate();
     });
