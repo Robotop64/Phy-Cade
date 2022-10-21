@@ -1,7 +1,7 @@
 package ui;
 
 import game.BoxObject;
-import game.GameState;
+import game.ClassicPacmanGameState;
 import game.LoggerObject;
 import game.Rendered;
 import game.Ticking;
@@ -19,17 +19,17 @@ import java.util.Map;
 
 public class ClassicPacmanGameScreen extends UIScreen
 {
-  GameState        gameState;
-  Direction        lastDirection;
-  int              tps          = 60;
-  double           tickDuration = 1_000_000_000.0 / tps;
-  Map <Key, Input> joystick     = new HashMap <>();
+  ClassicPacmanGameState gameState;
+  Direction              lastDirection;
+  int                    tps          = 60;
+  double                 tickDuration = 1_000_000_000.0 / tps;
+  Map <Key, Input>       joystick     = new HashMap <>();
 
   public ClassicPacmanGameScreen (JPanel parent, Player player)
   {
     super(parent);
     setBackground(Color.gray.darker().darker().darker().darker());
-    gameState = new GameState();
+    gameState = new ClassicPacmanGameState();
 
     bindPlayer(player, input ->
     {

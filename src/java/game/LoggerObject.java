@@ -13,7 +13,7 @@ public class LoggerObject extends GameObject implements Ticking
   }
 
   @Override
-  public void tick (GameState gameState)
+  public void tick (ClassicPacmanGameState gameState)
   {
     times.push(gameState.lastTickTime);
     List <Long> l = times.stream().limit(61).toList();

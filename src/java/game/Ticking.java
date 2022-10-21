@@ -2,5 +2,5 @@ package game;
 
 public interface Ticking
 {
-  public void tick (GameState gameState);
+  public void tick (ClassicPacmanGameState gameState);
 }

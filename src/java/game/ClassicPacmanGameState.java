@@ -4,7 +4,7 @@ import util.Direction;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class GameState
+public class ClassicPacmanGameState
 {
   public ConcurrentLinkedDeque <GameObject> gameObjects;
   public boolean                            running;
@@ -13,7 +13,7 @@ public class GameState
   public Direction                          playerDirection = Direction.right;
   public boolean                            logging;
 
-  public GameState ()
+  public ClassicPacmanGameState ()
   {
     gameObjects = new ConcurrentLinkedDeque <>();
   }
