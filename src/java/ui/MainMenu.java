@@ -84,24 +84,24 @@ public class MainMenu extends JPanel
       gameScreen.setVisible(true);
     });
 
-    lbButton.addAction(() ->
-    {
-      Gui.getInstance().frame.getContentPane().add(LeaderboardMenu.getInstance());
-      LeaderboardMenu.getInstance().setBounds(Gui.defaultFrameBounds);
-      LeaderboardMenu.getInstance().activate();
-    });
-
     mpButton.addAction(() ->
     {
       try
       {
         GameMap gameMap = new GameMap(Gui.frameWidth, Gui.frameHeight);
-        Gui.getInstance().frame.getContentPane().add(gameMap);
+        Gui.getInstance().content.add(gameMap);
       }
       catch (IOException e)
       {
         throw new RuntimeException(e);
       }
+    });
+
+    lbButton.addAction(() ->
+    {
+      Gui.getInstance().content.add(LeaderboardMenu.getInstance());
+      LeaderboardMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+      LeaderboardMenu.getInstance().activate();
     });
 
     soundButton.clearActions();
@@ -145,6 +145,7 @@ public class MainMenu extends JPanel
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);
+    Gui.getInstance().frame.repaint();
   }
 
   public void select (int index)

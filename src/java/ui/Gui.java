@@ -50,7 +50,9 @@ public class Gui
     frame.getContentPane().add(content);
     content.setBounds(defaultFrameBounds);
     content.setLayout(null);
+    // todo remove for release
     content.setBackground(Color.orange);
+    //    content.setBackground(Color.black);
 
     frame.getContentPane().add(debug);
 

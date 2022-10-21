@@ -398,7 +398,7 @@ public class LeaderboardMenu extends JPanel
         InputListener.getInstance().unsubscribe(listener_id);
         setVisible(false);
         getParent().remove(this);
-        Gui.getInstance().frame.getContentPane().add(MainMenu.getInstance());
+        Gui.getInstance().content.add(MainMenu.getInstance());
         MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
         MainMenu.getInstance().activate();
       }
