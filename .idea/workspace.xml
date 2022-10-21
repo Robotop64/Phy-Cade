@@ -3,10 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ba91d26d-c72f-4895-8057-48f67cdc407c" name="Changes" comment="* renamed GameState to ClassicPacmanGameState">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/game/BoxObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/BoxObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/game/PacmanObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/PacmanObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/game/Rendered.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/game/Rendered.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/java/ui/ClassicPacmanGameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ui/ClassicPacmanGameScreen.java" afterDir="false" />
     </list>
     <list id="71df5553-3767-4fe1-863e-913d48bf4a60" name="local" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -57,14 +53,14 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Downloaded.Files.Path.Enabled": "false",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "false",
-    "Repository.Attach.Sources": "false",
+    "Downloaded.Files.Path.Enabled": "true",
+    "Repository.Attach.Annotations": "true",
+    "Repository.Attach.JavaDocs": "true",
+    "Repository.Attach.Sources": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "preferences.sourceCode.Java"
@@ -106,12 +102,11 @@
     </configuration>
     <list>
       <item itemvalue="Application.PacPhi" />
-      <item itemvalue="JUnit.Vector2DTestVector2" />
+      <item itemvalue="JUnit.Vector2DTest" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.PacPhi" />
-        <item itemvalue="JUnit.Vector2DTestVector2" />
         <item itemvalue="Application.PacPhi" />
       </list>
     </recent_temporary>
