@@ -21,34 +21,32 @@ public class GameOverScreen extends JPanel
   private       int           players  = 1;
 
 
-  public GameOverScreen (int playerCount, String gameName, List <Integer> scores, List <LocalTime> times)
+  public GameOverScreen (int players, String gameName, List <Integer> scores, List <LocalTime> times)
   {
     setBounds(Gui.defaultFrameBounds);
     setBackground(Color.black);
     setLayout(null);
 
-    players = 4;
 
     createLabels(gameName);
     createHeader(players);
-    //    , List <Integer> scores, List <LocalTime> times
 
     if (players > 2)
     {
-      addPlayerScreen(0, 1, players);
-      addPlayerScreen(1, 1, players);
-      addPlayerScreen(0, 3, players);
-      addPlayerScreen(1, 3, players);
+      addPlayerScreen(0, 3, players, 1, scores.get(0), times.get(0));
+      addPlayerScreen(1, 3, players, 2, scores.get(1), times.get(1));
+      addPlayerScreen(0, 1, players, 3, scores.get(2), times.get(2));
+      addPlayerScreen(1, 1, players, 4, scores.get(3), times.get(3));
     }
     if (players == 2)
     {
       yOffset = Gui.frameHeight / 4;
-      addPlayerScreen(0, 1, players);
-      addPlayerScreen(1, 1, players);
+      addPlayerScreen(0, 1, players, 1, scores.get(0), times.get(0));
+      addPlayerScreen(1, 1, players, 2, scores.get(1), times.get(1));
     }
     if (players == 1)
     {
-      addPlayerScreen(0, 1, players);
+      addPlayerScreen(0, 1, players, 1, scores.get(0), times.get(0));
     }
 
   }
@@ -90,12 +88,12 @@ public class GameOverScreen extends JPanel
     else createCenterLabel("Eure Ergebnisse: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, distance);
   }
 
-  private void addPlayerScreen (int x, int y, int totalPlayers)
+  private void addPlayerScreen (int x, int y, int totalPlayers, int thisPlayer, int thisScore, LocalTime thisTime)
   {
     int localwidth = 0;
     int xBuffer    = 100;
 
-    if (players >= 2)
+    if (totalPlayers >= 2)
     {
       localwidth = Gui.frameWidth / 2 - 10;
       xBuffer = 0;
@@ -105,7 +103,7 @@ public class GameOverScreen extends JPanel
       localwidth = Gui.frameWidth - 2 * xBuffer - 10;
     }
 
-    GameSummaryScreen gameSummaryScreen = new GameSummaryScreen(localwidth, totalPlayers, 1, 5000, LocalTime.of(00, 50, 10, 50000000));
+    GameSummaryScreen gameSummaryScreen = new GameSummaryScreen(localwidth, totalPlayers, thisPlayer, thisScore, thisTime);
     gameSummaryScreen.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryScreen.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
     gameSummaryScreen.setBackground(Color.black);
     gameSummaryScreen.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));

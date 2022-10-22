@@ -83,18 +83,17 @@ public class MainMenu extends JPanel
     {
       List <Integer> scores = new ArrayList <>();
       scores.add(50000);
+      scores.add(60000);
+      scores.add(70000);
+      scores.add(80000);
       List <LocalTime> times = new ArrayList <>();
+      times.add(LocalTime.of(00, 10, 26));
+      times.add(LocalTime.of(00, 20, 26));
       times.add(LocalTime.of(00, 30, 26));
+      times.add(LocalTime.of(00, 40, 26));
 
-      GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", scores, times);
+      GameOverScreen gameOverScreen = new GameOverScreen(4, "pacman", scores, times);
       Gui.getInstance().content.add(gameOverScreen);
-
-      //
-      //
-      //      OnScreenKeyboard o2 = new OnScreenKeyboard(Gui.frameWidth / 2);
-      //      o2.setLocation(0, Gui.frameHeight - ( o2.getHeight() ));
-      //      o2.setTarget(System.out::println);
-      //      Gui.getInstance().content.add(o2);
 
       Gui.getInstance().frame.invalidate();
       Gui.getInstance().frame.repaint();
