@@ -1,6 +1,5 @@
 package ui;
 
-import persistence.DatabaseProvider;
 import ui.InputListener.Input;
 import ui.InputListener.Player;
 import util.Util;
@@ -8,6 +7,8 @@ import util.Util;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,8 +81,24 @@ public class MainMenu extends JPanel
 
     spButton.addAction(() ->
     {
-      System.out.println(DatabaseProvider.getEntries("pacman"));
-      //      DatabaseProvider.setEntries("pacman", new LeaderboardMenu.LeaderboardEntry("Peter", 9000, LocalTime.of(00, 20, 0), LocalDate.now()));
+      List <Integer> scores = new ArrayList <>();
+      scores.add(50000);
+      List <LocalTime> times = new ArrayList <>();
+      times.add(LocalTime.of(00, 30, 26));
+
+      GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", scores, times);
+      Gui.getInstance().content.add(gameOverScreen);
+
+      //
+      //
+      //      OnScreenKeyboard o2 = new OnScreenKeyboard(Gui.frameWidth / 2);
+      //      o2.setLocation(0, Gui.frameHeight - ( o2.getHeight() ));
+      //      o2.setTarget(System.out::println);
+      //      Gui.getInstance().content.add(o2);
+
+      Gui.getInstance().frame.invalidate();
+      Gui.getInstance().frame.repaint();
+
       //      ClassicPacmanGameScreen gameScreen = new ClassicPacmanGameScreen(Gui.getInstance().content, Player.playerOne);
       //      gameScreen.setBounds(100, 100, 400, 400);
       //      gameScreen.setVisible(true);
