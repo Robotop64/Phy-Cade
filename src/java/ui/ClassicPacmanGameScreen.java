@@ -5,10 +5,12 @@ import game.ClassicPacmanGameState;
 import game.LoggerObject;
 import game.Rendered;
 import game.Ticking;
+import game.map.ClassicPacmanMap;
 import ui.InputListener.Input;
 import ui.InputListener.Key;
 import ui.InputListener.Player;
 import util.Direction;
+import util.Vector2d;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -61,6 +63,7 @@ public class ClassicPacmanGameScreen extends UIScreen
 
     gameState.gameObjects.add(new LoggerObject());
     gameState.gameObjects.add(new BoxObject());
+    gameState.gameObjects.add(new ClassicPacmanMap(new Vector2d().cartesian(20, 20), 600, 600));
 
     startGame();
   }
