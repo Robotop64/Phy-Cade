@@ -1,5 +1,6 @@
 package ui;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -26,28 +27,28 @@ public class GameOverScreen extends JPanel
     setBackground(Color.black);
     setLayout(null);
 
-    players = 1;
+    players = 4;
 
     createLabels(gameName);
-    createHeader(playerCount);
+    createHeader(players);
     //    , List <Integer> scores, List <LocalTime> times
 
     if (players > 2)
     {
-      addPlayerScreen(0, 1);
-      addPlayerScreen(1, 1);
-      addPlayerScreen(0, 3);
-      addPlayerScreen(1, 3);
+      addPlayerScreen(0, 1, players);
+      addPlayerScreen(1, 1, players);
+      addPlayerScreen(0, 3, players);
+      addPlayerScreen(1, 3, players);
     }
     if (players == 2)
     {
       yOffset = Gui.frameHeight / 4;
-      addPlayerScreen(0, 1);
-      addPlayerScreen(1, 1);
+      addPlayerScreen(0, 1, players);
+      addPlayerScreen(1, 1, players);
     }
     if (players == 1)
     {
-      addPlayerScreen(0, 1);
+      addPlayerScreen(0, 1, players);
     }
 
   }
@@ -85,29 +86,31 @@ public class GameOverScreen extends JPanel
 
   private void createHeader (int playerCount)
   {
-    if (playerCount == 1)
-      createCenterLabel("Dein Ergebnis: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, distance);
-    else
-      createCenterLabel("Ergebnisse: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, distance);
+    if (playerCount == 1) createCenterLabel("Dein Ergebnis: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, distance);
+    else createCenterLabel("Eure Ergebnisse: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, distance);
   }
 
-  private void addPlayerScreen (int x, int y)
+  private void addPlayerScreen (int x, int y, int totalPlayers)
   {
     int localwidth = 0;
     int xBuffer    = 100;
+
     if (players >= 2)
     {
-      localwidth = Gui.frameWidth / 2;
+      localwidth = Gui.frameWidth / 2 - 10;
       xBuffer = 0;
     }
     else
     {
-      localwidth = Gui.frameWidth - 2 * xBuffer;
+      localwidth = Gui.frameWidth - 2 * xBuffer - 10;
     }
-    GameSummaryScreen gameSummaryScreen = new GameSummaryScreen(localwidth);
-    gameSummaryScreen.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer, (int) ( Gui.frameHeight - gameSummaryScreen.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset ));
-    gameSummaryScreen.setBackground(Color.red);
-    gameSummaryScreen.addKeyBoard(Gui.frameWidth / 2);
+
+    GameSummaryScreen gameSummaryScreen = new GameSummaryScreen(localwidth, totalPlayers, 1, 5000, LocalTime.of(00, 50, 10, 50000000));
+    gameSummaryScreen.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryScreen.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
+    gameSummaryScreen.setBackground(Color.black);
+    gameSummaryScreen.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
+    //    gameSummaryScreen.addKeyBoard(localwidth);
     Gui.getInstance().content.add(gameSummaryScreen);
   }
+
 }
