@@ -1,9 +1,13 @@
 package util;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static util.Util.cos;
+import static util.Util.sin;
 
 public class Vector2d
 {
@@ -122,14 +126,10 @@ public class Vector2d
     return y;
   }
 
-  private double sin (double φ)
+  //ToDo get better name
+  public void call (BiConsumer <Integer, Integer> consumer)
   {
-    return Math.sin(Math.toRadians(φ));
-  }
-
-  private double cos (double φ)
-  {
-    return Math.cos(Math.toRadians(φ));
+    consumer.accept((int)rounded().x, (int)rounded().y);
   }
 
   @Override
