@@ -2,6 +2,7 @@ package game;
 
 import util.Vector2d;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
@@ -17,6 +18,9 @@ public class BoxObject extends PlacedObject implements Rendered, Ticking
   {
     g.setColor(Color.blue);
     g.fillRect(100 + (int)pos.x - 50, 100 + (int)pos.y - 50, 100, 100);
+    g.setColor(Color.black);
+    g.setStroke(new BasicStroke(2));
+    g.drawRect(100 + (int)pos.x - 50, 100 + (int)pos.y - 50, 100, 100);
   }
 
   @Override
