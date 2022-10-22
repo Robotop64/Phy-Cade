@@ -127,7 +127,7 @@ public class Vector2d
   }
 
   //ToDo get better name
-  public void call (BiConsumer <Integer, Integer> consumer)
+  public void use (BiConsumer <Integer, Integer> consumer)
   {
     consumer.accept((int)rounded().x, (int)rounded().y);
   }
