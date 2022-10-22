@@ -80,7 +80,7 @@ public class MainMenu extends JPanel
     spButton.addAction(() ->
     {
       ClassicPacmanGameScreen gameScreen = new ClassicPacmanGameScreen(Gui.getInstance().content, Player.playerOne);
-      gameScreen.setBounds(100, 100, 400, 400);
+      gameScreen.setBounds(Gui.defaultFrameBounds);
       gameScreen.setVisible(true);
     });
 
