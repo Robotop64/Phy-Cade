@@ -7,8 +7,9 @@ import java.util.stream.Stream;
 
 public class Vector2d
 {
-  public final double x;
-  public final double y;
+  public static final double precision = 1e9;
+  public final        double x;
+  public final        double y;
 
   public Vector2d ()
   {
@@ -95,6 +96,11 @@ public class Vector2d
                     .flatMap(Function.identity());
   }
 
+  public Vector2d rounded ()
+  {
+    return new Vector2d(Math.round(x * precision) / precision, Math.round(y * precision) / precision);
+  }
+
   public String toString ()
   {
     return "(%f, %f)".formatted(x, y);
@@ -132,12 +138,12 @@ public class Vector2d
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Vector2d vector2D = (Vector2d)o;
-    return x == vector2D.x && y == vector2D.y;
+    return rounded().x == vector2D.rounded().x && rounded().y == vector2D.rounded().y;
   }
 
   @Override
   public int hashCode ()
   {
-    return Objects.hash(x, y);
+    return Objects.hash(rounded().x, rounded().y);
   }
 }
