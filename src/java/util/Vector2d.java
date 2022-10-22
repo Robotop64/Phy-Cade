@@ -100,6 +100,11 @@ public class Vector2d
                     .flatMap(Function.identity());
   }
 
+  public Stream <Vector2d> pm (Vector2d v)
+  {
+    return Stream.of(add(v), subtract(v));
+  }
+
   public Vector2d rounded ()
   {
     return new Vector2d(Math.round(x * precision) / precision, Math.round(y * precision) / precision);
