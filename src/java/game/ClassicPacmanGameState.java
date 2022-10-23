@@ -16,6 +16,7 @@ public class ClassicPacmanGameState
   public boolean                            logging;
   public Vector2d                           size;
   public ClassicPacmanMap                   map;
+  public long                               score;
 
   public ClassicPacmanGameState ()
   {
