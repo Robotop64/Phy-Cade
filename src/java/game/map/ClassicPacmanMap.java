@@ -3,7 +3,6 @@ package game.map;
 import game.ClassicPacmanGameState;
 import game.PlacedObject;
 import game.Rendered;
-import game.Ticking;
 import game.map.PacmanMapTile.Type;
 import util.Vector2d;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class ClassicPacmanMap extends PlacedObject implements Rendered, Ticking
+public class ClassicPacmanMap extends PlacedObject implements Rendered
 {
   private static final String            bmpPath       = "src/resources/maps/PacManClassic Map.bmp";
   private static final Map <Color, Type> typeFromColor = Map.of(
@@ -30,11 +29,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered, Ticking
     Color.green, Type.playerSpawn,
     Color.white, Type.none);
 
-  public int tileSize;
-  public int width;
-  public int height;
-  Map <Vector2d, PacmanMapTile> tiles = new HashMap <>();
-  Vector2d                      size;
+  public int                           tileSize;
+  public int                           width;
+  public int                           height;
+  public Map <Vector2d, PacmanMapTile> tiles = new HashMap <>();
+  Vector2d size;
 
   public ClassicPacmanMap (Vector2d pos, int width, int height)
   {
@@ -81,12 +80,6 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered, Ticking
   public int paintLayer ()
   {
     return 0;
-  }
-
-  @Override
-  public void tick (ClassicPacmanGameState gameState)
-  {
-
   }
 
   public record TotalPosition(Vector2d ex, Vector2d in) {}
