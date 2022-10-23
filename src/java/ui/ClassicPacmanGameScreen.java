@@ -60,10 +60,10 @@ public class ClassicPacmanGameScreen extends UIScreen
       System.out.println(gameState.playerDirection);
     });
 
-    int mapOffset = 40;
+    int mapOffset = 50;
 
     gameState.gameObjects.add(new LoggerObject());
-    ClassicPacmanMap map = new ClassicPacmanMap(new Vector2d().cartesian(mapOffset, mapOffset), 900, 900);
+    ClassicPacmanMap map = new ClassicPacmanMap(new Vector2d().cartesian(mapOffset, mapOffset), 800, 800);
     gameState.gameObjects.add(map);
     gameState.map = map;
     gameState.size = new Vector2d().cartesian(map.width, map.height);

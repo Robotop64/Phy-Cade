@@ -16,9 +16,11 @@ public class ClassicPacmanGameState
   public boolean                            logging;
   public Vector2d                           size;
   public ClassicPacmanMap                   map;
-  public long                               score           = 900_000_000;
-  public int                                level           = 1;
-  public int                                uiSize          = 100;
+
+  public long score  = 900_000_000;
+  public int  level  = 1;
+  public int  uiSize = 100;
+  public int  lives  = 7;
 
   public ClassicPacmanGameState ()
   {

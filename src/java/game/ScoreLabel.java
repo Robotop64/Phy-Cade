@@ -30,7 +30,7 @@ public class ScoreLabel extends PlacedObject implements Rendered
 
 
     //dont delete
-    g.drawRect(0, 0, 123 * 3, labelHeight);
+    //    g.drawRect(0, 0, 123 * 3, labelHeight);
 
     pos.multiply(-1).use(g::translate);
   }
