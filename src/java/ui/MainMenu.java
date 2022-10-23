@@ -78,22 +78,22 @@ public class MainMenu extends JPanel
 
     spButton.addAction(() ->
     {
-//      List <Integer> scores = new ArrayList <>();
-//      scores.add(50000);
-//      scores.add(60000);
-//      scores.add(70000);
-//      scores.add(80000);
-//      List <LocalTime> times = new ArrayList <>();
-//      times.add(LocalTime.of(00, 10, 26));
-//      times.add(LocalTime.of(00, 20, 26));
-//      times.add(LocalTime.of(00, 30, 26));
-//      times.add(LocalTime.of(00, 40, 26));
-//
-//      GameOverScreen gameOverScreen = new GameOverScreen(4, "pacman", scores, times);
-//      Gui.getInstance().content.add(gameOverScreen);
-//
-//      Gui.getInstance().frame.invalidate();
-//      Gui.getInstance().frame.repaint();
+      //      List <Integer> scores = new ArrayList <>();
+      //      scores.add(50000);
+      //      scores.add(60000);
+      //      scores.add(70000);
+      //      scores.add(80000);
+      //      List <LocalTime> times = new ArrayList <>();
+      //      times.add(LocalTime.of(00, 10, 26));
+      //      times.add(LocalTime.of(00, 20, 26));
+      //      times.add(LocalTime.of(00, 30, 26));
+      //      times.add(LocalTime.of(00, 40, 26));
+      //
+      //      GameOverScreen gameOverScreen = new GameOverScreen(4, "pacman", scores, times);
+      //      Gui.getInstance().content.add(gameOverScreen);
+      //
+      //      Gui.getInstance().frame.invalidate();
+      //      Gui.getInstance().frame.repaint();
 
       ClassicPacmanGameScreen gameScreen = new ClassicPacmanGameScreen(Gui.getInstance().content, Player.playerOne);
       gameScreen.setBounds(Gui.defaultFrameBounds);
@@ -153,6 +153,7 @@ public class MainMenu extends JPanel
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);
+    Gui.getInstance().frame.invalidate();
     Gui.getInstance().frame.repaint();
   }
 
