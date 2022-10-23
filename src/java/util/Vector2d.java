@@ -137,6 +137,16 @@ public class Vector2d
     consumer.accept((int)rounded().x, (int)rounded().y);
   }
 
+  public Vector2d floor ()
+  {
+    return new Vector2d(Math.floor(x), Math.floor(y));
+  }
+
+  public Vector2d ceil ()
+  {
+    return new Vector2d(Math.ceil(x), Math.ceil(y));
+  }
+
   @Override
   public boolean equals (Object o)
   {
