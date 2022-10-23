@@ -6,7 +6,6 @@ import util.Util;
 
 import javax.swing.JPanel;
 import java.awt.Color;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -86,15 +85,7 @@ public class MainMenu extends JPanel
 
     mpButton.addAction(() ->
     {
-      try
-      {
-        GameMap gameMap = new GameMap(Gui.frameWidth, Gui.frameHeight);
-        Gui.getInstance().content.add(gameMap);
-      }
-      catch (IOException e)
-      {
-        throw new RuntimeException(e);
-      }
+
     });
 
     lbButton.addAction(() ->

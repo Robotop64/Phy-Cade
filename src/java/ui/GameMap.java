@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+/**
+ * @deprecated
+ */
 public class GameMap extends JPanel
 {
   private enum Tile
