@@ -1,6 +1,7 @@
 package ui;
 
 import game.ClassicPacmanGameState;
+import game.HUD;
 import game.LoggerObject;
 import game.PacmanObject;
 import game.Rendered;
@@ -21,10 +22,10 @@ import java.util.Map;
 
 public class ClassicPacmanGameScreen extends UIScreen
 {
-  ClassicPacmanGameState gameState;
-  int                    tps          = 60;
-  double                 tickDuration = 1_000_000_000.0 / tps;
-  Map <Key, Input>       joystick     = new HashMap <>();
+  public ClassicPacmanGameState gameState;
+  int              tps          = 60;
+  double           tickDuration = 1_000_000_000.0 / tps;
+  Map <Key, Input> joystick     = new HashMap <>();
 
   public ClassicPacmanGameScreen (JPanel parent, Player player)
   {
@@ -59,12 +60,15 @@ public class ClassicPacmanGameScreen extends UIScreen
       System.out.println(gameState.playerDirection);
     });
 
+    int mapOffset = 40;
+
     gameState.gameObjects.add(new LoggerObject());
-    ClassicPacmanMap map = new ClassicPacmanMap(new Vector2d().cartesian(20, 20), 900, 900);
+    ClassicPacmanMap map = new ClassicPacmanMap(new Vector2d().cartesian(mapOffset, mapOffset), 900, 900);
     gameState.gameObjects.add(map);
     gameState.map = map;
     gameState.size = new Vector2d().cartesian(map.width, map.height);
-    gameState.gameObjects.add(new PacmanObject((int)(Math.round(map.tileSize * 2. / 3.))));
+    gameState.gameObjects.add(new PacmanObject((int) ( Math.round(map.tileSize * 2. / 3.) )));
+    gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(mapOffset, mapOffset), new Vector2d().cartesian(map.width, map.height)));
 
     startGame();
   }
@@ -85,7 +89,7 @@ public class ClassicPacmanGameScreen extends UIScreen
         gameState.lastTickTime = t;
         gameState.gameObjects.stream()
                              .filter(gameObject -> gameObject instanceof Ticking)
-                             .forEach(gameObject -> ((Ticking)gameObject).tick(gameState));
+                             .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
         Gui.getInstance().frame.repaint();
       }
     }).start();
@@ -95,12 +99,12 @@ public class ClassicPacmanGameScreen extends UIScreen
   protected void paintComponent (Graphics g)
   {
     super.paintComponent(g);
-    Graphics2D gg = (Graphics2D)g;
+    Graphics2D gg = (Graphics2D) g;
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof Rendered)
-                         .map(gameObject -> (Rendered)gameObject)
+                         .map(gameObject -> (Rendered) gameObject)
                          .sorted(Comparator.comparingInt(Rendered::paintLayer))
-                         .forEach(gameObject -> (gameObject).paintComponent(gg, gameState));
+                         .forEach(gameObject -> ( gameObject ).paintComponent(gg, gameState));
   }
 
 }
