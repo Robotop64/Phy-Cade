@@ -83,6 +83,12 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     return Integer.MAX_VALUE - 100;
   }
 
+
+  /**
+   * Event that happens on every tick, ruling of PacMans interactions with the running game
+   *
+   * @param gameState
+   */
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
