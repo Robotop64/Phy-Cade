@@ -15,10 +15,10 @@ import java.util.stream.IntStream;
 
 public class PacmanMapTile extends PlacedObject implements Rendered
 {
-  private final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn);
-  public        Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
-  private       Type                          type;
-  private       int                           size;
+  public static final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn);
+  public              Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
+  public              Type                          type;
+  private             int                           size;
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
   {
@@ -74,6 +74,14 @@ public class PacmanMapTile extends PlacedObject implements Rendered
                    .map(v -> v.multiply(s2))
                    .forEach(v -> g.drawLine(0, 0, (int)v.x, (int)v.y));
         }
+        //        if (neighborWallCount == 2)
+        //        {
+        //          IntStream.range(0, 4)
+        //                   .mapToObj(i -> new Vector2d().polar(1, 90 * i))
+        //                   .filter(v -> neighbors.get(v) == null)
+        //                   .map(v -> v.multiply(s2))
+        //                   .forEach(v -> g.drawLine(0, 0, (int)v.x, (int)v.y));
+        //        }
         g.translate(-s2, -s2);
       }
       case path, none, ghostSpawn, playerSpawn -> {}
@@ -102,6 +110,6 @@ public class PacmanMapTile extends PlacedObject implements Rendered
     return 0;
   }
 
-  enum Type
+  public enum Type
   { wall, path, none, coin, powerUp, ghostSpawn, playerSpawn, portal }
 }
