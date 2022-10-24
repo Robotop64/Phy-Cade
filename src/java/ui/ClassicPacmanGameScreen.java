@@ -1,12 +1,12 @@
 package ui;
 
-import game.ClassicPacmanGameState;
 import game.LoggerObject;
-import game.PacmanObject;
 import game.Rendered;
 import game.Ticking;
 import game.hud.HUD;
-import game.map.ClassicPacmanMap;
+import game.pacman.ClassicPacmanGameState;
+import game.pacman.PacmanObject;
+import game.pacman.map.ClassicPacmanMap;
 import ui.InputListener.Input;
 import ui.InputListener.Key;
 import ui.InputListener.Player;

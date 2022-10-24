@@ -1,9 +1,9 @@
-package game.map;
+package game.pacman.map;
 
-import game.ClassicPacmanGameState;
 import game.PlacedObject;
 import game.Rendered;
-import game.map.PacmanMapTile.Type;
+import game.pacman.ClassicPacmanGameState;
+import game.pacman.map.PacmanMapTile.Type;
 import util.Vector2d;
 
 import javax.imageio.ImageIO;

@@ -1,8 +1,8 @@
 package game.hud;
 
-import game.ClassicPacmanGameState;
 import game.PlacedObject;
 import game.Rendered;
+import game.pacman.ClassicPacmanGameState;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;

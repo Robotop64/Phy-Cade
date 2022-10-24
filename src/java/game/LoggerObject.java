@@ -1,5 +1,7 @@
 package game;
 
+import game.pacman.ClassicPacmanGameState;
+
 import java.util.LinkedList;
 import java.util.List;
 

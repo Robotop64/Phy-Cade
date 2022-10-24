@@ -1,6 +1,7 @@
-package game;
+package game.pacman;
 
-import game.map.ClassicPacmanMap;
+import game.GameObject;
+import game.pacman.map.ClassicPacmanMap;
 import util.Direction;
 import util.Vector2d;
 

@@ -1,8 +1,11 @@
-package game;
+package game.pacman;
 
-import game.map.ClassicPacmanMap.TotalPosition;
-import game.map.PacmanMapTile;
-import game.map.PacmanMapTile.Type;
+import game.PlacedObject;
+import game.Rendered;
+import game.Ticking;
+import game.pacman.map.ClassicPacmanMap.TotalPosition;
+import game.pacman.map.PacmanMapTile;
+import game.pacman.map.PacmanMapTile.Type;
 import ui.GameOverScreen;
 import ui.Gui;
 import util.Direction;

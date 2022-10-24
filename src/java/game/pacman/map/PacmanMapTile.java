@@ -1,8 +1,8 @@
-package game.map;
+package game.pacman.map;
 
-import game.ClassicPacmanGameState;
 import game.PlacedObject;
 import game.Rendered;
+import game.pacman.ClassicPacmanGameState;
 import util.Vector2d;
 
 import java.awt.BasicStroke;
@@ -30,21 +30,21 @@ public class PacmanMapTile extends PlacedObject implements Rendered
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
-    g.translate((int)pos.rounded().x, (int)pos.rounded().y);
+    g.translate((int) pos.rounded().x, (int) pos.rounded().y);
     g.setColor(Color.black);
     g.fillRect(0, 0, size, size);
     switch (type)
     {
       case wall ->
       {
-        g.setStroke(new BasicStroke((float)(size / 11.)));
+        g.setStroke(new BasicStroke((float) ( size / 11. )));
         g.setColor(Color.cyan.darker());
-        int s2 = (int)(size / 2.);
+        int s2 = (int) ( size / 2. );
         g.translate(s2, s2);
-        int neighborWallCount = (int)IntStream.range(0, 4)
-                                              .mapToObj(i -> new Vector2d().polar(1, 90 * i))
-                                              .map(v -> neighbors.get(v))
-                                              .filter(n -> n == null || n.type == Type.wall).count();
+        int neighborWallCount = (int) IntStream.range(0, 4)
+                                               .mapToObj(i -> new Vector2d().polar(1, 90 * i))
+                                               .map(v -> neighbors.get(v))
+                                               .filter(n -> n == null || n.type == Type.wall).count();
         //        g.drawString(String.valueOf(neighborWallCount), 0, 0);
         if (neighborWallCount == 4)
         {
@@ -59,8 +59,8 @@ public class PacmanMapTile extends PlacedObject implements Rendered
                      {
                        if (walkable.contains(n.type))
                        {
-                         g.drawLine(0, 0, s2 * (int)x.x, s2 * (int)x.y);
-                         g.drawLine(0, 0, s2 * (int)y.x, s2 * (int)y.y);
+                         g.drawLine(0, 0, s2 * (int) x.x, s2 * (int) x.y);
+                         g.drawLine(0, 0, s2 * (int) y.x, s2 * (int) y.y);
                        }
                      }
                    });
@@ -72,7 +72,7 @@ public class PacmanMapTile extends PlacedObject implements Rendered
                    .filter(v -> neighborWallCount != 3 || !walkable.contains(neighbors.getOrDefault(v.multiply(-1), new PacmanMapTile(null, 0, Type.none)).type))
                    .filter(v -> neighbors.getOrDefault(v, new PacmanMapTile(null, 0, Type.path)).type == Type.wall)
                    .map(v -> v.multiply(s2))
-                   .forEach(v -> g.drawLine(0, 0, (int)v.x, (int)v.y));
+                   .forEach(v -> g.drawLine(0, 0, (int) v.x, (int) v.y));
         }
         //        if (neighborWallCount == 2)
         //        {
@@ -84,7 +84,9 @@ public class PacmanMapTile extends PlacedObject implements Rendered
         //        }
         g.translate(-s2, -s2);
       }
-      case path, none, ghostSpawn, playerSpawn -> {}
+      case path, none, ghostSpawn, playerSpawn ->
+      {
+      }
       case coin ->
       {
         g.setColor(Color.yellow);
@@ -101,7 +103,7 @@ public class PacmanMapTile extends PlacedObject implements Rendered
         g.fillRect(0, 0, size, size);
       }
     }
-    g.translate(-(int)pos.rounded().x, -(int)pos.rounded().y);
+    g.translate(-(int) pos.rounded().x, -(int) pos.rounded().y);
   }
 
   @Override

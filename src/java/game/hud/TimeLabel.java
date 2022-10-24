@@ -1,8 +1,8 @@
 package game.hud;
 
-import game.ClassicPacmanGameState;
 import game.PlacedObject;
 import game.Rendered;
+import game.pacman.ClassicPacmanGameState;
 import util.Util;
 import util.Vector2d;
 
