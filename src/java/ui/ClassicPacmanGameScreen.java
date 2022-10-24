@@ -1,11 +1,11 @@
 package ui;
 
 import game.ClassicPacmanGameState;
-import game.HUD;
 import game.LoggerObject;
 import game.PacmanObject;
 import game.Rendered;
 import game.Ticking;
+import game.hud.HUD;
 import game.map.ClassicPacmanMap;
 import ui.InputListener.Input;
 import ui.InputListener.Key;
@@ -60,10 +60,10 @@ public class ClassicPacmanGameScreen extends UIScreen
       System.out.println(gameState.playerDirection);
     });
 
-    int mapOffset = 50;
+    int mapOffset = 15;
 
     gameState.gameObjects.add(new LoggerObject());
-    ClassicPacmanMap map = new ClassicPacmanMap(new Vector2d().cartesian(mapOffset, mapOffset), 800, 800);
+    ClassicPacmanMap map = new ClassicPacmanMap(new Vector2d().cartesian(mapOffset, mapOffset), 1000, 1000);
     gameState.gameObjects.add(map);
     gameState.map = map;
     gameState.size = new Vector2d().cartesian(map.width, map.height);

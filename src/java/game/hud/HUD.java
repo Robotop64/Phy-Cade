@@ -1,5 +1,8 @@
-package game;
+package game.hud;
 
+import game.ClassicPacmanGameState;
+import game.PlacedObject;
+import game.Rendered;
 import ui.Gui;
 import util.Vector2d;
 
@@ -14,6 +17,8 @@ public class HUD extends PlacedObject implements Rendered
   Vector2d sideBounds;
   Vector2d sidePos;
 
+  int rowDistance = 10;
+
   public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds)
   {
     botBounds = new Vector2d().cartesian(mapBounds.x, (int) ( Gui.frameHeight - mapBounds.y - mapPos.y * 2 - mapPos.y / 2 ));
@@ -24,8 +29,9 @@ public class HUD extends PlacedObject implements Rendered
 
     if (botBounds.y < sideBounds.x)
     {
-      gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x, sidePos.y), new Vector2d().cartesian(sideBounds.x, 80)));
-      gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x + 20, sidePos.y + 90), gameState.uiSize, gameState.lives));
+      gameState.gameObjects.add(new GameLabel(new Vector2d().cartesian(sidePos.x, 0), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
+      gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
+      gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 2), new Vector2d().cartesian(sideBounds.x, gameState.uiSize), gameState.lives));
     }
     else
     {
