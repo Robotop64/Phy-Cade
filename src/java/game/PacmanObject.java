@@ -3,12 +3,17 @@ package game;
 import game.map.ClassicPacmanMap.TotalPosition;
 import game.map.PacmanMapTile;
 import game.map.PacmanMapTile.Type;
+import ui.GameOverScreen;
+import ui.Gui;
 import util.Direction;
 import util.Vector2d;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static util.Util.round;
@@ -135,16 +140,60 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.score += 50;
       gameState.eatenPills += 1;
 
-      if (gameState.eatenPills == 480)
-      {
-        gameState.eatenPills = 0;
-        gameState.level += 1;
+      checkLevelStatus(gameState);
 
-        spawnPacman(gameState);
+    }
+  }
 
-        gameState.gameObjects.remove(this);
-      }
+  /**
+   * Used to determine if a level has been completed
+   *
+   * @param gameState
+   */
+  private void checkLevelStatus (ClassicPacmanGameState gameState)
+  {
+    if (gameState.eatenPills == 480)
+    {
+      gameState.eatenPills = 0;
+      gameState.level += 1;
 
+      spawnPacman(gameState);
+
+      gameState.gameObjects.remove(this);
+    }
+  }
+
+  /**
+   * Event of a playersdying to a ghost
+   *
+   * @param gameState
+   */
+  private void death (ClassicPacmanGameState gameState)
+  {
+    gameState.gameObjects.remove(this);
+    gameState.lives -= 1;
+    checkGameOver(gameState);
+  }
+
+  /**
+   * Event of a players lives reaching 0
+   *
+   * @param gameState
+   */
+  private void checkGameOver (ClassicPacmanGameState gameState)
+  {
+    if (gameState.lives == 0)
+    {
+      gameState.running = false;
+
+      List <Integer> score = new ArrayList <>();
+      score.add((int) gameState.score);
+      List <LocalTime> time = new ArrayList <>();
+      time.add(gameState.time);
+
+
+      GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", score, time);
+      Gui.getInstance().content.add(gameOverScreen);
     }
   }
 
