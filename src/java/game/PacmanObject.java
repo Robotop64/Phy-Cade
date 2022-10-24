@@ -50,7 +50,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
     g.rotate(Math.toRadians(-θ));
     pos.multiply(-1).use(g::translate);
-    System.out.printf("Tile (%.0f,%.0f), internal (%.0f,%.0f)%n", tp.ex().x, tp.ex().y, tp.in().x, tp.in().y);
+    //    System.out.printf("Tile (%.0f,%.0f), internal (%.0f,%.0f)%n", tp.ex().x, tp.ex().y, tp.in().x, tp.in().y);
   }
 
   @Override

@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class ClassicPacmanGameScreen extends UIScreen
   double           tickDuration = 1_000_000_000.0 / tps;
   Map <Key, Input> joystick     = new HashMap <>();
 
-  public ClassicPacmanGameScreen (JPanel parent, Player player)
+  public ClassicPacmanGameScreen (JPanel parent, Player player) throws IOException
   {
     super(parent);
     setBackground(Color.gray.darker().darker().darker().darker());
@@ -91,6 +92,7 @@ public class ClassicPacmanGameScreen extends UIScreen
                              .filter(gameObject -> gameObject instanceof Ticking)
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
         Gui.getInstance().frame.repaint();
+        gameState.time = gameState.time.plusNanos((long) tickDuration);
       }
     }).start();
   }

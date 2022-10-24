@@ -8,6 +8,7 @@ import util.Vector2d;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.io.IOException;
 
 public class HUD extends PlacedObject implements Rendered
 {
@@ -17,9 +18,8 @@ public class HUD extends PlacedObject implements Rendered
   Vector2d sideBounds;
   Vector2d sidePos;
 
-  int rowDistance = 10;
 
-  public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds)
+  public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds) throws IOException
   {
     botBounds = new Vector2d().cartesian(mapBounds.x, (int) ( Gui.frameHeight - mapBounds.y - mapPos.y * 2 - mapPos.y / 2 ));
     botPos = new Vector2d().cartesian(mapPos.x, mapPos.y + mapBounds.y - mapPos.y / 2);
@@ -30,8 +30,11 @@ public class HUD extends PlacedObject implements Rendered
     if (botBounds.y < sideBounds.x)
     {
       gameState.gameObjects.add(new GameLabel(new Vector2d().cartesian(sidePos.x, 0), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
-      gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
-      gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 2), new Vector2d().cartesian(sideBounds.x, gameState.uiSize), gameState.lives));
+      gameState.gameObjects.add(new LevelLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
+      gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 2), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
+      gameState.gameObjects.add(new TimeLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 3), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
+      gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 4), new Vector2d().cartesian(sideBounds.x, gameState.uiSize), gameState.lives));
+      //      gameState.gameObjects.add(new CollectablesLabel());
     }
     else
     {
