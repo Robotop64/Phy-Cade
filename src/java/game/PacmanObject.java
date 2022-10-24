@@ -44,7 +44,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     g.rotate(Math.toRadians(θ));
 
     double animationDuration = gameState.tps / 2.;
-    int    angle             = (int)Math.round(20 + 40 * sin((gameState.currentTick % animationDuration) / animationDuration * 360.));
+    int    angle             = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
     g.drawArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
     IntStream.of(-1, 1).forEach(i -> new Vector2d().polar(r, i * angle).use((x, y) -> g.drawLine(0, 0, x, y)));
     //filling
@@ -58,12 +58,12 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   private static int getΘ (Direction direction)
   {
     return switch (direction)
-      {
-        case up -> 270;
-        case down -> 90;
-        case left -> 180;
-        case right -> 0;
-      };
+        {
+          case up -> 270;
+          case down -> 90;
+          case left -> 180;
+          case right -> 0;
+        };
   }
 
   private PacmanMapTile getTile (ClassicPacmanGameState gameState)
@@ -84,24 +84,24 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     if (v == null)
     {
       v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
-      System.out.println(v);
+      //      System.out.println(v);
     }
 
     TotalPosition tp          = gameState.map.splitPosition(pos);
     PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
     PacmanMapTile nextTile    = currentTile.neighbors.get(gameState.playerDirection.toVector());
 
-    System.out.println(gameState.playerDirection.toVector());
-    System.out.println(tp.in());
+    //    System.out.println(gameState.playerDirection.toVector());
+    //    System.out.println(tp.in());
 
     //moving towards centre of current tile
     if (round(gameState.playerDirection.toVector().scalar(tp.in())) < 0)
     {
-      System.out.println("moving towards centre");
+      //      System.out.println("moving towards centre");
       // far away from some axis
       if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
       {
-        System.out.println("far away from axis");
+        //        System.out.println("far away from axis");
         pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
       }
       pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
@@ -109,18 +109,18 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     // walking away from centre
     else
     {
-      System.out.println("try moving away from centre");
+      //      System.out.println("try moving away from centre");
       if (tp.in().x + tp.in().y < gameState.map.tileSize / 2. / .3)
       {
-        System.out.println("close to centre");
-        System.out.println(nextTile);
+        //        System.out.println("close to centre");
+        //        System.out.println(nextTile);
         if (nextTile != null && PacmanMapTile.walkable.contains(nextTile.type))
         {
-          System.out.println("next tile is good");
+          //          System.out.println("next tile is good");
           // far away from some axis
           if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
           {
-            System.out.println("far away from axis");
+            //            System.out.println("far away from axis");
             pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
           }
           pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
@@ -128,10 +128,40 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       }
     }
 
+    //eat Pills
     if (getTile(gameState) != null && getTile(gameState).type == Type.coin)
     {
       currentTile.type = Type.path;
       gameState.score += 50;
+      gameState.eatenPills += 1;
+
+      if (gameState.eatenPills == 480)
+      {
+        gameState.eatenPills = 0;
+        gameState.level += 1;
+
+        spawnPacman(gameState);
+
+        gameState.gameObjects.remove(this);
+      }
+
     }
+  }
+
+
+  /**
+   * Used to spawn a Pacman at his spawn
+   *
+   * @param gameState
+   */
+  public static void spawnPacman (ClassicPacmanGameState gameState)
+  {
+    //search all tiles for a pacman spawn
+    gameState.map.tiles.forEach((vec, tile) ->
+    {
+      if (tile.type == PacmanMapTile.Type.playerSpawn)
+        //create new instance of Pacman
+        gameState.gameObjects.add(new PacmanObject((int) ( gameState.map.tileSize * 2. / 3. ), vec.multiply(gameState.map.tileSize).add(new Vector2d().cartesian(4, 4))));
+    });
   }
 }

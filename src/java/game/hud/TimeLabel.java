@@ -27,25 +27,20 @@ public class TimeLabel extends PlacedObject implements Rendered
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
-
+    //format timeCounter
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss.SSS");
     LocalTime         current   = gameState.time;
     String            time      = current.truncatedTo(ChronoUnit.MILLIS).format(formatter);
-
-
-    String text     = " Time:  " + time + " ";
+    //String fontSize
+    String text     = "Time:" + time + "";
     int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
 
+    //Draw String
     pos.use(g::translate);
-
-
     g.setFont(Util.fira(fontSize, Font.PLAIN));
     g.setStroke(new BasicStroke(1));
     g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * fontSize ));
-
-
     //    size.use((x, y) -> g.drawRect(0, 0, x, y));
-
     pos.multiply(-1).use(g::translate);
   }
 

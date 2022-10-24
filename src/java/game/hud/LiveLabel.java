@@ -18,21 +18,20 @@ public class LiveLabel extends PlacedObject implements Rendered
   private Vector2d size;
   private int      liveCount;
 
-  public LiveLabel (Vector2d pos, Vector2d size, int liveCount)
+  public LiveLabel (Vector2d pos, Vector2d size)
   {
     this.pos = pos;
     this.size = size;
-    this.liveCount = liveCount;
   }
 
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
-    pos.use(g::translate);
-
+    //fontSize
     String text     = "❰" + "%9d".formatted(gameState.score) + "❱";
     int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
-
+    //Draw Icon and String
+    pos.use(g::translate);
     //icon radius
     int r     = 20;
     int angle = (int) Math.round(20 + 40 * sin(30));
@@ -48,16 +47,13 @@ public class LiveLabel extends PlacedObject implements Rendered
                      (int) ( size.y / 2 ),
                      2 * r + x,
                      (int) ( size.y / 2 ) + y)));
-
     //filling
     g.setColor(Color.yellow);
     g.fillArc(r, (int) ( size.y / 2 - r ), 2 * r, 2 * r, angle, 360 - 2 * angle);
     //live tracker
-    g.drawString("x" + String.valueOf(liveCount), 4 * r, (int) ( 18.4 * text.length() / 160. * fontSize ));
-    
+    g.drawString("" + String.valueOf(gameState.lives), 4 * r, (int) ( 18.4 * text.length() / 160. * fontSize ));
     g.setStroke(new BasicStroke(1));
-    size.use((x, y) -> g.drawRect(0, 0, x, y));
-
+    //    size.use((x, y) -> g.drawRect(0, 0, x, y));
     pos.multiply(-1).use(g::translate);
   }
 

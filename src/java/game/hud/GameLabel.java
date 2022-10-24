@@ -36,7 +36,7 @@ public class GameLabel extends PlacedObject implements Rendered
     g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * fontSize ));
 
     //dont delete
-    size.use((x, y) -> g.drawRect(0, 0, x, y));
+    //    size.use((x, y) -> g.drawRect(0, 0, x, y));
 
     pos.multiply(-1).use(g::translate);
   }
