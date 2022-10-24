@@ -7,13 +7,13 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static util.Util.cos;
+import static util.Util.round;
 import static util.Util.sin;
 
 public class Vector2d
 {
-  public static final double precision = 1e9;
-  public final        double x;
-  public final        double y;
+  public final double x;
+  public final double y;
 
   public Vector2d ()
   {
@@ -107,7 +107,7 @@ public class Vector2d
 
   public Vector2d rounded ()
   {
-    return new Vector2d(Math.round(x * precision) / precision, Math.round(y * precision) / precision);
+    return new Vector2d(round(x), round(y));
   }
 
   public String toString ()

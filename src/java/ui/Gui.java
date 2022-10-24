@@ -24,8 +24,9 @@ public class Gui
   {
     frame = new JFrame("Pac-Φ");
     frame.setSize(frameWidth, frameHeight);
-    frame.setLocationRelativeTo(null);
-    frame.setLocation(-frameWidth, 0);
+    frame.setLocation(0, 0);
+    //    frame.setLocationRelativeTo(null);
+    //    frame.setLocation(-frameWidth, 0);
 
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     frame.setUndecorated(true);

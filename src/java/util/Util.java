@@ -2,6 +2,7 @@ package util;
 
 public class Util
 {
+  public static final double precision = 1e9;
 
   public static int bounded (int x, int min, int max) {return Math.max(Math.min(x, max), min);}
 
@@ -30,4 +31,10 @@ public class Util
   {
     return Math.cos(Math.toRadians(φ));
   }
+
+  public static double round (double in)
+  {
+    return Math.round(in * precision) / precision;
+  }
+
 }

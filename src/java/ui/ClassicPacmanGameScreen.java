@@ -6,6 +6,7 @@ import game.PacmanObject;
 import game.Rendered;
 import game.Ticking;
 import game.map.ClassicPacmanMap;
+import game.map.PacmanMapTile.Type;
 import ui.InputListener.Input;
 import ui.InputListener.Key;
 import ui.InputListener.Player;
@@ -22,15 +23,15 @@ import java.util.Map;
 public class ClassicPacmanGameScreen extends UIScreen
 {
   ClassicPacmanGameState gameState;
-  int                    tps          = 60;
-  double                 tickDuration = 1_000_000_000.0 / tps;
-  Map <Key, Input>       joystick     = new HashMap <>();
+  double                 tickDuration;
+  Map <Key, Input>       joystick = new HashMap <>();
 
   public ClassicPacmanGameScreen (JPanel parent, Player player)
   {
     super(parent);
     setBackground(Color.gray.darker().darker().darker().darker());
     gameState = new ClassicPacmanGameState();
+    tickDuration = 1_000_000_000.0 / gameState.tps;
 
     bindPlayer(player, input ->
     {
@@ -62,9 +63,13 @@ public class ClassicPacmanGameScreen extends UIScreen
     gameState.gameObjects.add(new LoggerObject());
     ClassicPacmanMap map = new ClassicPacmanMap(new Vector2d().cartesian(20, 20), 900, 900);
     gameState.gameObjects.add(map);
+    map.tiles.forEach((vec, tile) ->
+    {
+      if (tile.type == Type.playerSpawn)
+        gameState.gameObjects.add(new PacmanObject((int)(map.tileSize * 2. / 3.), vec.multiply(map.tileSize).add(new Vector2d().cartesian(4, 4))));
+    });
     gameState.map = map;
     gameState.size = new Vector2d().cartesian(map.width, map.height);
-    gameState.gameObjects.add(new PacmanObject((int)(Math.round(map.tileSize * 2. / 3.))));
 
     startGame();
   }
