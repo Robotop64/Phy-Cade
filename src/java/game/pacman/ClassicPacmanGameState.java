@@ -27,10 +27,10 @@ public class ClassicPacmanGameState
   public long      score      = 0;
   public int       level      = 1;
   public int       uiSize     = 100;
-  public int       lives      = 1;
+  public int       lives      = 5;
   public LocalTime time       = LocalTime.of(0, 0, 0, 0);
   public int       eatenPills = 0;
-  public int       pillsLeft  = 480;
+  public int       pillsLeft  = 484;
 
   //variety of fruits
   public enum Collectables
@@ -38,6 +38,9 @@ public class ClassicPacmanGameState
 
   //how many points a fruit gives
   public Map <Collectables, Integer> collectionPoints = Map.of(
+      Collectables.coin, 10,
+      Collectables.powerUp, 50,
+
       Collectables.cherry, 100,
       Collectables.strawberry, 300,
       Collectables.orange, 500,
