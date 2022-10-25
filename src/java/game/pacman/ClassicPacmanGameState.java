@@ -30,6 +30,7 @@ public class ClassicPacmanGameState
   public int       lives      = 5;
   public LocalTime time       = LocalTime.of(0, 0, 0, 0);
   public int       eatenPills = 0;
+  //TODO accurate number for reset needed, this one is wrong
   public int       pillsLeft  = 484;
 
   //variety of fruits
