@@ -3,9 +3,9 @@ package game.pacman;
 import game.PlacedObject;
 import game.Rendered;
 import game.Ticking;
+import game.pacman.map.ClassicPacmanMap;
 import game.pacman.map.ClassicPacmanMap.TotalPosition;
 import game.pacman.map.PacmanMapTile;
-import game.pacman.map.PacmanMapTile.Type;
 import ui.GameOverScreen;
 import ui.Gui;
 import util.Direction;
@@ -142,13 +142,19 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       }
     }
 
-    //eat Pills
-    if (getTile(gameState) != null && getTile(gameState).type == Type.coin)
+    //eat item
+    if (getTile(gameState).heldItem != null)
     {
-      currentTile.type = Type.path;
-      gameState.score += 50;
-      gameState.eatenPills += 1;
-      gameState.pillsLeft -= 1;
+      if (getTile(gameState).heldItem == ClassicPacmanGameState.Collectables.coin)
+      {
+        gameState.score += 50;
+        gameState.eatenPills += 1;
+        gameState.pillsLeft -= 1;
+      }
+
+
+      //deletes the item held by the tile
+      currentTile.heldItem = null;
 
       checkLevelStatus(gameState);
 
@@ -166,15 +172,11 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     {
       gameState.pillsLeft = 480;
       gameState.level += 1;
+      //resets PacMans position
+      this.pos = ClassicPacmanMap.playerSpawn.pos;
+      //resets the coins and powerups
+      ClassicPacmanMap.setItems(ClassicPacmanMap.tiles);
 
-      this.pos = new Vector2d().cartesian(0, 0);
-      gameState.map.tiles.forEach((vec, tile) ->
-      {
-        if (tile.type == PacmanMapTile.Type.playerSpawn)
-        {
-
-        }
-      });
     }
   }
 

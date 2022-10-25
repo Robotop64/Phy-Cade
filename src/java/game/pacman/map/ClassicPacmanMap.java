@@ -29,11 +29,13 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       Color.green, Type.playerSpawn,
       Color.white, Type.none);
 
-  public int                           tileSize;
-  public int                           width;
-  public int                           height;
-  public Map <Vector2d, PacmanMapTile> tiles = new HashMap <>();
+  public        int                           tileSize;
+  public        int                           width;
+  public        int                           height;
+  public static Map <Vector2d, PacmanMapTile> tiles = new HashMap <>();
   Vector2d size;
+
+  public static PacmanMapTile playerSpawn;
 
   public ClassicPacmanMap (Vector2d pos, int width, int height)
   {
@@ -43,6 +45,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
     loadMapData();
     addTilesToMap();
+    setItems(tiles);
 
   }
 
@@ -107,6 +110,25 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
                                             .flatMap(v -> IntStream.range(0, 4).map(n -> 90 * n).mapToObj(v::rotate))
                                             .filter(v -> tiles.get(position.add(v)) != null)
                                             .forEach(v -> tile.neighbors.put(v, tiles.get(position.add(v)))));
+    tiles.forEach((vec, tile) ->
+    {
+      if (tile.type == PacmanMapTile.Type.playerSpawn)
+        //create new instance of Pacman
+        playerSpawn = tile;
+    });
+  }
+
+  public static void setItems (Map <Vector2d, PacmanMapTile> tiles)
+  {
+    tiles.forEach((vec, tile) ->
+    {
+      switch (tile.type)
+      {
+        case coin -> tile.heldItem = ClassicPacmanGameState.Collectables.coin;
+        case powerUp -> tile.heldItem = ClassicPacmanGameState.Collectables.powerUp;
+        default -> tile.heldItem = null;
+      }
+    });
   }
 
 

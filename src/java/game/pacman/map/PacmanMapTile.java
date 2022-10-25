@@ -40,7 +40,6 @@ public class PacmanMapTile extends PlacedObject implements Rendered
     {
       case wall ->
       {
-        heldItem = null;
         g.setStroke(new BasicStroke((float) ( size / 11. )));
         g.setColor(Color.cyan.darker());
         int s2 = (int) ( size / 2. );
@@ -90,19 +89,12 @@ public class PacmanMapTile extends PlacedObject implements Rendered
       }
       case path, none, ghostSpawn, playerSpawn ->
       {
-        heldItem = null;
       }
       case coin ->
       {
-        heldItem = ClassicPacmanGameState.Collectables.coin;
-        //        g.setColor(Color.yellow);
-        //        g.fillOval(size / 4, size / 4, size / 2, size / 2);
       }
       case powerUp ->
       {
-        heldItem = ClassicPacmanGameState.Collectables.powerUp;
-        //        g.setColor(Color.green);
-        //        g.fillOval(size / 4, size / 4, size / 2, size / 2);
       }
       case portal ->
       {
@@ -110,6 +102,19 @@ public class PacmanMapTile extends PlacedObject implements Rendered
         g.fillRect(0, 0, size, size);
       }
     }
+
+    if (heldItem == ClassicPacmanGameState.Collectables.coin)
+    {
+      g.setColor(Color.yellow);
+      g.fillOval(size / 4, size / 4, size / 2, size / 2);
+    }
+    if (heldItem == ClassicPacmanGameState.Collectables.powerUp)
+    {
+
+      g.setColor(Color.green);
+      g.fillOval(size / 4, size / 4, size / 2, size / 2);
+    }
+
     g.translate(-(int) pos.rounded().x, -(int) pos.rounded().y);
   }
 
