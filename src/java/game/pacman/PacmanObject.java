@@ -148,6 +148,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       currentTile.type = Type.path;
       gameState.score += 50;
       gameState.eatenPills += 1;
+      gameState.pillsLeft -= 1;
 
       checkLevelStatus(gameState);
 
@@ -161,14 +162,19 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
    */
   private void checkLevelStatus (ClassicPacmanGameState gameState)
   {
-    if (gameState.eatenPills == 480)
+    if (gameState.pillsLeft == 0)
     {
-      gameState.eatenPills = 0;
+      gameState.pillsLeft = 480;
       gameState.level += 1;
 
-      spawnPacman(gameState);
+      this.pos = new Vector2d().cartesian(0, 0);
+      gameState.map.tiles.forEach((vec, tile) ->
+      {
+        if (tile.type == PacmanMapTile.Type.playerSpawn)
+        {
 
-      gameState.gameObjects.remove(this);
+        }
+      });
     }
   }
 

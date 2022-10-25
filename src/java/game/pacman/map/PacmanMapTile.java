@@ -15,10 +15,12 @@ import java.util.stream.IntStream;
 
 public class PacmanMapTile extends PlacedObject implements Rendered
 {
-  public static final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn);
-  public              Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
-  public              Type                          type;
-  private             int                           size;
+  public static final List <Type>                         walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn);
+  public              Map <Vector2d, PacmanMapTile>       neighbors = new HashMap <>();
+  public              Type                                type;
+  private             int                                 size;
+  public              ClassicPacmanGameState.Collectables heldItem;
+
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
   {
@@ -33,10 +35,12 @@ public class PacmanMapTile extends PlacedObject implements Rendered
     g.translate((int) pos.rounded().x, (int) pos.rounded().y);
     g.setColor(Color.black);
     g.fillRect(0, 0, size, size);
+
     switch (type)
     {
       case wall ->
       {
+        heldItem = null;
         g.setStroke(new BasicStroke((float) ( size / 11. )));
         g.setColor(Color.cyan.darker());
         int s2 = (int) ( size / 2. );
@@ -86,16 +90,19 @@ public class PacmanMapTile extends PlacedObject implements Rendered
       }
       case path, none, ghostSpawn, playerSpawn ->
       {
+        heldItem = null;
       }
       case coin ->
       {
-        g.setColor(Color.yellow);
-        g.fillOval(size / 4, size / 4, size / 2, size / 2);
+        heldItem = ClassicPacmanGameState.Collectables.coin;
+        //        g.setColor(Color.yellow);
+        //        g.fillOval(size / 4, size / 4, size / 2, size / 2);
       }
       case powerUp ->
       {
-        g.setColor(Color.green);
-        g.fillOval(size / 4, size / 4, size / 2, size / 2);
+        heldItem = ClassicPacmanGameState.Collectables.powerUp;
+        //        g.setColor(Color.green);
+        //        g.fillOval(size / 4, size / 4, size / 2, size / 2);
       }
       case portal ->
       {
