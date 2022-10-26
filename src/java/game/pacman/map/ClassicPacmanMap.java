@@ -20,14 +20,14 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 {
   private static final String            bmpPath       = "src/resources/maps/PacManClassic Map.bmp";
   private static final Map <Color, Type> typeFromColor = Map.of(
-      Color.black, Type.wall,
-      Color.blue, Type.path,
-      Color.yellow, Type.coin,
-      new Color(255, 88, 0), Type.powerUp,
-      Color.cyan, Type.portal,
-      Color.red, Type.ghostSpawn,
-      Color.green, Type.playerSpawn,
-      Color.white, Type.none);
+    Color.black, Type.wall,
+    Color.blue, Type.path,
+    Color.yellow, Type.coin,
+    new Color(255, 88, 0), Type.powerUp,
+    Color.cyan, Type.portal,
+    Color.red, Type.ghostSpawn,
+    Color.green, Type.playerSpawn,
+    Color.white, Type.none);
 
   public        int                           tileSize;
   public        int                           width;
@@ -55,7 +55,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     g.setColor(Color.black);
-    g.translate((int) pos.rounded().x, (int) pos.rounded().y);
+    g.translate((int)pos.rounded().x, (int)pos.rounded().y);
     g.fillRect(0, 0, width, height);
     tiles.forEach((v, tile) -> tile.paintComponent(g, gameState));
 
@@ -91,10 +91,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   {
     try
     {
+      System.out.println(new File(bmpPath));
       BufferedImage image = ImageIO.read(new File(bmpPath));
       size = new Vector2d().cartesian(image.getWidth(), image.getHeight());
-      tileSize = (int) Math.round(Math.min(width / size.x, height / size.y));
-      size.stream().forEach(v -> tiles.put(v, new PacmanMapTile(v.multiply(tileSize), tileSize, typeFromColor.get(new Color(image.getRGB((int) v.x, (int) v.y))))));
+      tileSize = (int)Math.round(Math.min(width / size.x, height / size.y));
+      size.stream().forEach(v -> tiles.put(v, new PacmanMapTile(v.multiply(tileSize), tileSize, typeFromColor.get(new Color(image.getRGB((int)v.x, (int)v.y))))));
     }
     catch (Exception e)
     {
@@ -107,8 +108,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
    */
   public void addTilesToMap ()
   {
-    this.width = (int) Math.round(size.x * tileSize);
-    this.height = (int) Math.round(size.y * tileSize);
+    this.width = (int)Math.round(size.x * tileSize);
+    this.height = (int)Math.round(size.y * tileSize);
     tiles.forEach((position, tile) -> Stream.of(new Vector2d().cartesian(1, 0), new Vector2d().cartesian(1, 1))
                                             .flatMap(v -> IntStream.range(0, 4).map(n -> 90 * n).mapToObj(v::rotate))
                                             .filter(v -> tiles.get(position.add(v)) != null)
@@ -148,7 +149,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     gameState.size = new Vector2d().cartesian(map.width, map.height);
   }
 
-  public record TotalPosition(Vector2d ex, Vector2d in) { }
+  public record TotalPosition(Vector2d ex, Vector2d in) {}
 
 
 }
