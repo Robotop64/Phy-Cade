@@ -45,6 +45,7 @@ public class Gui
     debug.setFontSize(14);
 
     debug.setBounds(1, frameHeight - 55, 400, 40);
+    debug.setVisible(false);
     inputListener.subscribe(input -> debug.setText(input.toString()));
 
     content = new JPanel();

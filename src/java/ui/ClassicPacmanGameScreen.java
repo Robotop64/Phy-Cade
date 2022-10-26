@@ -29,7 +29,7 @@ public class ClassicPacmanGameScreen extends UIScreen
   public ClassicPacmanGameScreen (JPanel parent, Player player) throws IOException
   {
     super(parent);
-    setBackground(Color.gray.darker().darker().darker().darker());
+    setBackground(Color.black.darker().darker().darker().darker());
     gameState = new ClassicPacmanGameState();
     tickDuration = 1_000_000_000.0 / gameState.tps;
 

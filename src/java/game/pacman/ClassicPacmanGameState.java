@@ -26,12 +26,11 @@ public class ClassicPacmanGameState
   //score and counter stuff
   public long      score      = 0;
   public int       level      = 1;
-  public int       uiSize     = 100;
+  public int       uiSize     = 80;
   public int       lives      = 5;
   public LocalTime time       = LocalTime.of(0, 0, 0, 0);
   public int       eatenPills = 0;
-  //TODO accurate number for reset needed, this one is wrong
-  public int       pillsLeft  = 484;
+  public int       pillsLeft  = 244;
 
   //variety of fruits
   public enum Collectables

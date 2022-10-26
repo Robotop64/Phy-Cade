@@ -143,12 +143,12 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     }
 
     //eat item
-    if (getTile(gameState).heldItem != null)
+    if (currentTile.heldItem != null)
     {
       //add score depending on item points
-      gameState.score += ( gameState.collectionPoints.get(getTile(gameState).heldItem) / 2 );
+      gameState.score += gameState.collectionPoints.get(currentTile.heldItem);
 
-      if (getTile(gameState).heldItem == ClassicPacmanGameState.Collectables.coin || getTile(gameState).heldItem == ClassicPacmanGameState.Collectables.powerUp)
+      if (currentTile.heldItem == ClassicPacmanGameState.Collectables.coin || currentTile.heldItem == ClassicPacmanGameState.Collectables.powerUp)
       {
         gameState.eatenPills += 1;
         gameState.pillsLeft -= 1;

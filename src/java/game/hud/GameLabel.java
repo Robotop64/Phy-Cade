@@ -7,7 +7,6 @@ import util.Util;
 import util.Vector2d;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
@@ -31,7 +30,6 @@ public class GameLabel extends PlacedObject implements Rendered
 
 
     g.setFont(Util.fira(fontSize, Font.PLAIN));
-    g.setColor(Color.red.darker());
     g.setStroke(new BasicStroke(1));
     g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * fontSize ));
 

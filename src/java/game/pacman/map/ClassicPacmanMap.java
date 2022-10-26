@@ -54,10 +54,13 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
-    g.setColor(Color.lightGray);
+    g.setColor(Color.black);
     g.translate((int) pos.rounded().x, (int) pos.rounded().y);
     g.fillRect(0, 0, width, height);
     tiles.forEach((v, tile) -> tile.paintComponent(g, gameState));
+
+    g.setColor(Color.cyan.darker());
+    g.drawRect(0, 0, width, height);
   }
 
   //paintLayer

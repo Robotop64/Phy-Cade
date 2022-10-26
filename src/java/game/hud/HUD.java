@@ -7,6 +7,7 @@ import ui.Gui;
 import util.Vector2d;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.IOException;
 
@@ -19,13 +20,13 @@ public class HUD extends PlacedObject implements Rendered
   Vector2d sidePos;
 
   //initialize HUD
-  public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds) throws IOException
+  public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds)
   {
     botBounds = new Vector2d().cartesian(mapBounds.x, (int) ( Gui.frameHeight - mapBounds.y - mapPos.y * 2 - mapPos.y / 2 ));
     botPos = new Vector2d().cartesian(mapPos.x, mapPos.y + mapBounds.y - mapPos.y / 2);
 
-    sideBounds = new Vector2d().cartesian(Gui.frameWidth - mapBounds.x - mapPos.x - mapPos.x * 2 + mapPos.x / 2, mapBounds.y);
-    sidePos = new Vector2d().cartesian(mapPos.x + mapBounds.x - mapPos.x / 2, mapPos.y);
+    sideBounds = new Vector2d().cartesian(Gui.frameWidth - mapBounds.x - mapPos.x - mapPos.x * 2 - mapPos.x / 2, mapBounds.y);
+    sidePos = new Vector2d().cartesian(mapPos.x + mapBounds.x + mapPos.x / 2, mapPos.y);
 
     if (botBounds.y < sideBounds.x)
     {
@@ -47,11 +48,12 @@ public class HUD extends PlacedObject implements Rendered
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
+    g.setColor(Color.cyan.darker());
     g.setStroke(new BasicStroke(1));
-    //    g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
+    //        g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
 
-    g.setStroke(new BasicStroke(1));
-    //    g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
+    g.setStroke(new BasicStroke(3));
+    g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
 
   }
 
