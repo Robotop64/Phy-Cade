@@ -26,9 +26,9 @@ public class ClassicPacmanGameState
   //score and counter stuff
   public long      score      = 0;
   public int       level      = 1;
-  public int       uiSize     = 80;
+  public int       uiSize     = 100;
   public int       lives      = 5;
-  public LocalTime time       = LocalTime.of(0, 0, 0, 0);
+  public LocalTime startTime;
   public int       eatenPills = 0;
   public int       pillsLeft  = 244;
 

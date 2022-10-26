@@ -25,7 +25,7 @@ public class LevelLabel extends PlacedObject implements Rendered
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
 
-    String text     = " Level:  " + "%3d".formatted(gameState.level) + " ";
+    String text     = "Level:  " + "%3d".formatted(gameState.level);
     int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
 
     pos.use(g::translate);

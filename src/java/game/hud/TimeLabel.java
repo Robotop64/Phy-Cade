@@ -11,7 +11,8 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+
+import static java.time.temporal.ChronoUnit.MILLIS;
 
 public class TimeLabel extends PlacedObject implements Rendered
 {
@@ -29,10 +30,14 @@ public class TimeLabel extends PlacedObject implements Rendered
   {
     //format timeCounter
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss.SSS");
-    LocalTime         current   = gameState.time;
-    String            time      = current.truncatedTo(ChronoUnit.MILLIS).format(formatter);
-    //String fontSize
-    String text     = "Time:" + time + "";
+
+    LocalTime currentTime = LocalTime.now();
+
+    long millisBetween = MILLIS.between(gameState.startTime, currentTime);
+
+    LocalTime diff = LocalTime.of(0, 0, 0, 0).plus(millisBetween, MILLIS);
+
+    String text     = "Time: " + diff;
     int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
 
     //Draw String

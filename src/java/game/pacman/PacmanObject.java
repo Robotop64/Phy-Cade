@@ -208,7 +208,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       List <Integer> score = new ArrayList <>();
       score.add((int) gameState.score);
       List <LocalTime> time = new ArrayList <>();
-      time.add(gameState.time);
+      //      time.add(gameState.time);
 
 
       GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", score, time);

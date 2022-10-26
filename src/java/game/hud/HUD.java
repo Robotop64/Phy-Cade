@@ -19,6 +19,10 @@ public class HUD extends PlacedObject implements Rendered
   Vector2d sideBounds;
   Vector2d sidePos;
 
+  int textBounds;
+  int rowHeight;
+  int textBuffer;
+
   //initialize HUD
   public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds)
   {
@@ -28,13 +32,19 @@ public class HUD extends PlacedObject implements Rendered
     sideBounds = new Vector2d().cartesian(Gui.frameWidth - mapBounds.x - mapPos.x - mapPos.x * 2 - mapPos.x / 2, mapBounds.y);
     sidePos = new Vector2d().cartesian(mapPos.x + mapBounds.x + mapPos.x / 2, mapPos.y);
 
+    textBuffer = 15;
+
+    textBounds = (int) ( sideBounds.x - 2 * ( textBuffer ) );
+
+    rowHeight = gameState.uiSize - 20;
+
     if (botBounds.y < sideBounds.x)
     {
-      gameState.gameObjects.add(new GameLabel(new Vector2d().cartesian(sidePos.x, 0), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
-      gameState.gameObjects.add(new LevelLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
-      gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 2), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
-      gameState.gameObjects.add(new TimeLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 3), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
-      gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x, gameState.uiSize * 4), new Vector2d().cartesian(sideBounds.x, gameState.uiSize)));
+      gameState.gameObjects.add(new GameLabel(new Vector2d().cartesian(sidePos.x + textBuffer, 0), new Vector2d().cartesian(textBounds, gameState.uiSize)));
+      gameState.gameObjects.add(new LevelLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight), new Vector2d().cartesian(textBounds, gameState.uiSize)));
+      gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 2), new Vector2d().cartesian(textBounds, gameState.uiSize)));
+      gameState.gameObjects.add(new TimeLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 3), new Vector2d().cartesian(textBounds, gameState.uiSize)));
+      gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 4), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       //      gameState.gameObjects.add(new CollectablesLabel());
     }
     else
@@ -54,6 +64,10 @@ public class HUD extends PlacedObject implements Rendered
 
     g.setStroke(new BasicStroke(3));
     g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
+
+    g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
+    g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
+    g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
 
   }
 

@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class ClassicPacmanGameScreen extends UIScreen
       gameState.running = true;
       gameState.currentTick = 0;
       gameState.lastTickTime = System.nanoTime();
-
+      gameState.startTime = LocalTime.now();
       while (gameState.running)
       {
         long t = System.nanoTime();
@@ -91,7 +92,6 @@ public class ClassicPacmanGameScreen extends UIScreen
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
         Gui.getInstance().frame.repaint();
 
-        gameState.time = gameState.time.plusNanos((long) tickDuration);
       }
     }).start();
   }
