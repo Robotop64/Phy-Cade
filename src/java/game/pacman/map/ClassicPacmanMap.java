@@ -10,9 +10,9 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -91,8 +91,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   {
     try
     {
-      System.out.println(new File(bmpPath));
-      BufferedImage image = ImageIO.read(new File(bmpPath));
+      BufferedImage image = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("maps/PacManClassic Map.bmp")));
       size = new Vector2d().cartesian(image.getWidth(), image.getHeight());
       tileSize = (int)Math.round(Math.min(width / size.x, height / size.y));
       size.stream().forEach(v -> tiles.put(v, new PacmanMapTile(v.multiply(tileSize), tileSize, typeFromColor.get(new Color(image.getRGB((int)v.x, (int)v.y))))));

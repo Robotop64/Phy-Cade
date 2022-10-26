@@ -50,6 +50,7 @@ public class InputListener extends Celebrity <Input>
         controllerPlayerMap.put(controllers.get(0), Player.playerOne);
         controllerPlayerMap.put(controllers.get(1), Player.playerTwo);
 
+
         handleJoystickEvents(controllers, true);
 
         while (true) handleJoystickEvents(controllers, false);
