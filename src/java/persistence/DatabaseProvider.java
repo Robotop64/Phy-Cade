@@ -90,6 +90,16 @@ public class DatabaseProvider
     }
   }
 
+
+  public static List <LeaderboardMenu.LeaderboardEntry> dynLeaderboard (String game, long score)
+  {
+    List <LeaderboardMenu.LeaderboardEntry> out = new ArrayList <>();
+    out.addAll(getQuery("select * from " + game + " where score >" + score + " Order By  score asc LIMIT 1;"));
+    out.addAll(getQuery("select * from " + game + " where score <" + score + " Order By  score desc LIMIT 1;"));
+    return out;
+  }
+
+
   public static List <LeaderboardMenu.LeaderboardEntry> getEntries (String game)
   {
     return getQuery("select * from " + game + " Order By  score desc , duration asc");

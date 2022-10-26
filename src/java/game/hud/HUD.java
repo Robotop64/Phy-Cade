@@ -46,6 +46,7 @@ public class HUD extends PlacedObject implements Rendered
       gameState.gameObjects.add(new TimeLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 3), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 4), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       //      gameState.gameObjects.add(new CollectablesLabel());
+      gameState.gameObjects.add(new DynamicLeaderboard(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 8.5), new Vector2d().cartesian(textBounds, gameState.uiSize)));
     }
     else
     {
@@ -65,9 +66,9 @@ public class HUD extends PlacedObject implements Rendered
     g.setStroke(new BasicStroke(3));
     g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
 
-    g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
-    g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
-    g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
+    //    g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
+    //    g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
+    //    g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
 
   }
 
