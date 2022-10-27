@@ -41,7 +41,7 @@ public class InputListener extends Celebrity <Input>
     thread = new Thread(() ->
     {
       List <Controller> controllers = Arrays.stream(ControllerEnvironment.getDefaultEnvironment().getControllers())
-                                            .filter(controller -> controller.getName().contains("Generic   USB  Joystick"))
+                                            .filter(controller -> controller.getName().contains("Generic   USB  Joystick") || controller.getName().contains("TWIN SHOCK Gamepad"))
                                             .toList();
 
 
@@ -49,6 +49,7 @@ public class InputListener extends Celebrity <Input>
       {
         controllerPlayerMap.put(controllers.get(0), Player.playerOne);
         controllerPlayerMap.put(controllers.get(1), Player.playerTwo);
+
 
         handleJoystickEvents(controllers, true);
 
