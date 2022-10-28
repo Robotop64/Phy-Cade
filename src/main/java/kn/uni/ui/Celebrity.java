@@ -45,7 +45,7 @@ public abstract class Celebrity <Type>
     System.out.println("all subs: " + subscribers);
   }
 
-  interface Fan <Type>
+  public interface Fan <Type>
   {
     void handle (Type type);
   }
