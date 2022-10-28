@@ -44,7 +44,7 @@ public class HUD extends PlacedObject implements Rendered
       gameState.gameObjects.add(new TimeLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 3), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 4), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       //      gameState.gameObjects.add(new CollectablesLabel());
-      gameState.gameObjects.add(new DynamicLeaderboard(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 8.5), new Vector2d().cartesian(textBounds, gameState.uiSize)));
+//      gameState.gameObjects.add(new DynamicLeaderboard(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 8.5), new Vector2d().cartesian(textBounds, gameState.uiSize)));
     }
     else
     {

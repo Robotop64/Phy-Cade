@@ -88,7 +88,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   {
     try
     {
-      BufferedImage image = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("maps/PacManClassic Map.bmp")));
+      BufferedImage image = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("pacman/map/PacManClassic Map.bmp")));
       size = new Vector2d().cartesian(image.getWidth(), image.getHeight());
       tileSize = (int)Math.round(Math.min(width / size.x, height / size.y));
       size.stream().forEach(v -> tiles.put(v, new PacmanMapTile(v.multiply(tileSize), tileSize, typeFromColor.get(new Color(image.getRGB((int)v.x, (int)v.y))))));
