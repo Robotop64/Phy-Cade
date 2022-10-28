@@ -56,22 +56,34 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
+                        <id>intel</id>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>-Djava.library.path=${project.build.directory}/natives</argument>
+                                <argument>-Djinput.loglevel=OFF</argument>
+                                <argument>kn.uni.PacPhi</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>arm</id>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>-Djava.library.path=/lib/jni</argument>
+                                <argument>-Djinput.loglevel=OFF</argument>
+                                <argument>kn.uni.PacPhi</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-classpath</argument>
-                        <classpath/>
-                        <argument>-Djava.library.path=${project.build.directory}/natives</argument>
-                        <argument>-Djinput.loglevel=OFF</argument>
-                        <argument>kn.uni.PacPhi</argument>
-                    </arguments>
-                </configuration>
             </plugin>
+
         </plugins>
     </build>
     <packaging>jar</packaging>
