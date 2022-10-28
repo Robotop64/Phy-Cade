@@ -27,7 +27,7 @@ public class LeaderboardMenu extends JPanel
   //container of the 9 display slots
   private final List <pmButton[]> buttonSlots = new ArrayList <>();
 
-  public record LeaderboardEntry(String name, int highScore, LocalTime time, LocalDate date) { }
+  public record LeaderboardEntry(String name, long highScore, LocalTime time, LocalDate date) { }
 
   public List <LeaderboardEntry> entries = new ArrayList <>();
 

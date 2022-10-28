@@ -18,9 +18,9 @@ public class PacmanDatabaseProvider
 {
   private static List <LeaderboardMenu.LeaderboardEntry> getQuery (String command)
   {
-    String url      = "jdbc:mysql://localhost:3306/leaderboard";
-    String username = "root";
-    String password = "sQuidWart";
+    String url      = "jdbc:mysql://45.9.63.235/pacphiLeaderboard";
+    String username = "pacphi";
+    String password = "pacmacbummbumm";
 
     System.out.println("Connecting database...");
 
@@ -37,7 +37,7 @@ public class PacmanDatabaseProvider
         System.out.println();
         LeaderboardMenu.LeaderboardEntry out = new LeaderboardMenu.LeaderboardEntry(
             resultSet.getString("playername"),
-            Integer.parseInt(resultSet.getString("score")),
+            Long.parseLong(resultSet.getString("score")),
             resultSet.getTime("duration").toLocalTime(),
             resultSet.getDate("datum").toLocalDate());
         listOut.add(out);
@@ -72,7 +72,7 @@ public class PacmanDatabaseProvider
       PreparedStatement preparedStmt = connection.prepareStatement(command);
       preparedStmt.setInt(1, 0);
       preparedStmt.setString(2, in.name());
-      preparedStmt.setInt(3, in.highScore());
+      preparedStmt.setLong(3, in.highScore());
       preparedStmt.setTime(4, new Time(in.time().getHour(), in.time().getMinute(), in.time().getSecond()));
       preparedStmt.setDate(5, new Date(in.date().getYear() - 1900, in.date().getMonthValue() - 1, in.date().getDayOfMonth()));
 
