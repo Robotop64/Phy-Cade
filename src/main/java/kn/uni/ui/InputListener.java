@@ -146,8 +146,8 @@ public class InputListener extends Celebrity <Input>
     // todo map this
     return switch (e.getComponent().getName())
       {
-        case "Y Axis" -> Key.vertical;
-        case "X Axis" -> Key.horizontal;
+        case "Y Axis", "y" -> Key.vertical;
+        case "X Axis", "x" -> Key.horizontal;
         case "Button 1" -> Key.A;
         case "Button 2" -> Key.B;
         case "Button 3" -> Key.C;
