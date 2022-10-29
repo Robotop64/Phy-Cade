@@ -46,7 +46,6 @@ public class PacmanDatabaseProvider
       }
       return listOut;
 
-
     }
     catch (SQLException e)
     {
@@ -64,10 +63,6 @@ public class PacmanDatabaseProvider
 
       System.out.println("Database connected!");
 
-
-      //      java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-      //      String            currentTime  = sdf.format(in.date());
       PreparedStatement preparedStmt = connection.prepareStatement(command);
       preparedStmt.setInt(1, 0);
       preparedStmt.setString(2, in.name());

@@ -3,6 +3,7 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
+import kn.uni.games.classic.pacman.game.hud.DynamicLeaderboard;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
@@ -144,6 +145,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     {
       //add score depending on item points
       gameState.score += gameState.collectionPoints.get(currentTile.heldItem);
+
 
       if (currentTile.heldItem == ClassicPacmanGameState.Collectables.coin || currentTile.heldItem == ClassicPacmanGameState.Collectables.powerUp)
       {

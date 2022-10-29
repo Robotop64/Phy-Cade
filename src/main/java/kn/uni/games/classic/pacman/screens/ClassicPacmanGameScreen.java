@@ -60,7 +60,7 @@ public class ClassicPacmanGameScreen extends UIScreen
         gameState.playerDirection = input.toDirection();
       }
 
-      System.out.println(gameState.playerDirection);
+//      System.out.println(gameState.playerDirection);
     });
 
 

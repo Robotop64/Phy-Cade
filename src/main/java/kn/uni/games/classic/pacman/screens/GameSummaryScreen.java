@@ -55,7 +55,7 @@ public class GameSummaryScreen extends JPanel
 
     OnScreenKeyboard o = new OnScreenKeyboard(width - 60);
     o.setLocation(this.getX() + 30, this.getY() + ( this.getHeight() - o.getHeight() ) - 10);
-    System.out.println(this.getY());
+//    System.out.println(this.getY());
     o.setTarget(System.out::println);
     Gui.getInstance().content.add(o);
   }

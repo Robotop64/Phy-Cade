@@ -15,19 +15,18 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 public class DynamicLeaderboard extends PlacedObject implements Rendered
 {
-  Vector2d                      pos;
-  Vector2d                      size;
-  LeaderboardEntry[]            dynBoard      = new LeaderboardEntry[3];
-  LinkedList <LeaderboardEntry> currentSupply = new LinkedList <>();
-  private boolean useDatabase  = true;
-  private boolean newHighscore = false;
-  private boolean fetching = false;
+  public Vector2d pos;
+  public Vector2d size;
+  private final LeaderboardEntry[]            dynBoard      = new LeaderboardEntry[3];
+  private final LinkedList <LeaderboardEntry> currentSupply = new LinkedList <>();
+  private       boolean                       useDatabase   = true;
+  private       boolean                       newHighscore  = false;
+  private       boolean                       fetching      = false;
+  private int entriesPerFetch = 1000;
 
   public DynamicLeaderboard (Vector2d pos, Vector2d size)
   {
@@ -42,7 +41,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
     //try fetching entries
     try
     {
-      fetchEntries(0, 1, 1000);
+      fetchEntries(0, entriesPerFetch);
     }
     catch (Exception e)
     {
@@ -79,9 +78,6 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
 
     String[] list = { nextScore, nextName, youScore, youName, behindScore, behindName };
 
-
-    int rowHeight = (int) ( size.y / 4 );
-
     pos.use(g::translate);
     g.setFont(Util.firaUnderlined(getFontSize(header, gameState), Font.PLAIN));
     g.drawString(header, 3, (int) ( 18.4 * header.length() / 160. * getFontSize(header, gameState) ));
@@ -109,7 +105,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
   private void drawString (Graphics2D g, String text, ClassicPacmanGameState gameState, int row)
   {
     //used to shift the rows
-    int rowOffset = 0;
+    int rowOffset;
 
     if (row % 2 == 0)
     {
@@ -135,24 +131,27 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
     g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * getFontSize(text, gameState) + rowOffset ));
   }
 
-  private void fetchEntries (long score, int start, int end)
+  private void fetchEntries (long score, int end)
   {
-    if(fetching == false)
+    if (!fetching && !newHighscore)
     {
+      fetching = true;
       Thread thread = new Thread(() ->
       {
 
-        currentSupply.addAll(PacmanDatabaseProvider.dynLeaderboard("pacman", score, start, end));
+        currentSupply.addAll(PacmanDatabaseProvider.dynLeaderboard("pacman", score, 1, end));
 
         if (currentSupply.size() == 0)
         {
           dynBoard[0] = dynBoard[2];
           newHighscore = true;
-          fetching = false;
         }
+        fetching = false;
+        System.out.println("Done fetching new Entries!");
       });
       thread.start();
-      fetching = true;
+
+      System.out.println("Started fetching new Entries!");
     }
 
   }
@@ -163,13 +162,12 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
     {
       if (currentSupply.size() == 0)
       {
-        fetchEntries(gameState.score, 1, 1000);
-
+        fetchEntries(gameState.score, entriesPerFetch);
         return;
       }
       else
       {
-        while (dynBoard[2].highScore() < gameState.score)
+        while (dynBoard[2].highScore() < gameState.score && currentSupply.size() != 0)
         {
           dynBoard[0] = dynBoard[2];
           dynBoard[2] = currentSupply.pop();

@@ -17,9 +17,9 @@ public class ClassicPacmanGameState
   public long                               currentTick;
   public long                               lastTickTime;
   public Direction                          playerDirection = Direction.down;
-  public boolean          logging;
-  public Vector2d         size;
-  public ClassicPacmanMap map;
+  public boolean                            logging;
+  public Vector2d                           size;
+  public ClassicPacmanMap                   map;
   public int                                mapOffset       = 15;
 
   //score and counter stuff

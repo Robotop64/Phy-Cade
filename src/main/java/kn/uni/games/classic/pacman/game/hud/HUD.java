@@ -52,8 +52,8 @@ public class HUD extends PlacedObject implements Rendered
     }
     else
     {
-          gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(20, 920), new Vector2d().cartesian(400, 80)));
-          gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(400, 920), new Vector2d().cartesian(400, 80)));
+//          gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(20, 920), new Vector2d().cartesian(400, 80)));
+//          gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(400, 920), new Vector2d().cartesian(400, 80)));
     }
   }
 
@@ -62,7 +62,7 @@ public class HUD extends PlacedObject implements Rendered
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     g.setColor(Color.cyan.darker());
-    g.setStroke(new BasicStroke(1));
+//    g.setStroke(new BasicStroke(1));
     //        g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
 
     g.setStroke(new BasicStroke(3));

@@ -58,7 +58,7 @@ public class InputListener extends Celebrity <Input>
       else
       {
         // if we don't detect enough joysticks, revert to keyboards
-        System.out.println("keyboard :(");
+//        System.out.println("keyboard :(");
         final List <Controller> keyboards = Arrays.stream(ControllerEnvironment.getDefaultEnvironment().getControllers())
                                                   .filter(controller -> controller.getType().equals(Controller.Type.KEYBOARD))
                                                   .toList();

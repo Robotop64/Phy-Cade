@@ -40,7 +40,7 @@ public class Gui
     InputListener inputListener = InputListener.getInstance();
     inputListener.start();
 
-    inputListener.subscribe(System.out::println);
+//    inputListener.subscribe(System.out::println);
 
 
     debug = new pmButton("");
@@ -50,7 +50,7 @@ public class Gui
 
     debug.setBounds(1, frameHeight - 55, 400, 40);
     debug.setVisible(false);
-    inputListener.subscribe(input -> debug.setText(input.toString()));
+//    inputListener.subscribe(input -> debug.setText(input.toString()));
 
     content = new JPanel();
     frame.getContentPane().add(content);
