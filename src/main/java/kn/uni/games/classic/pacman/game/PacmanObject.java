@@ -169,7 +169,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   {
     if (gameState.pillsLeft == 0)
     {
-      gameState.pillsLeft = 480;
+      gameState.pillsLeft = 244;
       gameState.level += 1;
       //resets PacMans position
       this.pos = ClassicPacmanMap.playerSpawn.pos;

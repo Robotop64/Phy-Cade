@@ -1,7 +1,11 @@
-package kn.uni.games.classic.pacman.game;
+package kn.uni.games.classic.pacman.game.hud;
 
 
 import kn.uni.Gui;
+import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.PlacedObject;
+import kn.uni.games.classic.pacman.game.Rendered;
+import kn.uni.games.classic.pacman.game.ScoreLabel;
 import kn.uni.util.Vector2d;
 
 import java.awt.BasicStroke;
@@ -64,9 +68,9 @@ public class HUD extends PlacedObject implements Rendered
     g.setStroke(new BasicStroke(3));
     g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
 
-    //    g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
-    //    g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
-    //    g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
+//        g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
+//        g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
+//        g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
 
   }
 

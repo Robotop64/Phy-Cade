@@ -1,5 +1,9 @@
-package kn.uni.games.classic.pacman.game;
+package kn.uni.games.classic.pacman.game.hud;
 
+
+import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.PlacedObject;
+import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
 
@@ -7,11 +11,12 @@ import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-public class GameLabel extends PlacedObject implements Rendered
+public class LevelLabel extends PlacedObject implements Rendered
 {
-  private Vector2d size;
+  Vector2d pos;
+  Vector2d size;
 
-  public GameLabel (Vector2d pos, Vector2d size)
+  public LevelLabel (Vector2d pos, Vector2d size)
   {
     this.pos = pos;
     this.size = size;
@@ -20,7 +25,8 @@ public class GameLabel extends PlacedObject implements Rendered
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
-    String text     = "~ Pac-Man ~";
+
+    String text     = "Level:  " + "%3d".formatted(gameState.level);
     int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
 
     pos.use(g::translate);
@@ -30,7 +36,7 @@ public class GameLabel extends PlacedObject implements Rendered
     g.setStroke(new BasicStroke(1));
     g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * fontSize ));
 
-    //dont delete
+
     //    size.use((x, y) -> g.drawRect(0, 0, x, y));
 
     pos.multiply(-1).use(g::translate);

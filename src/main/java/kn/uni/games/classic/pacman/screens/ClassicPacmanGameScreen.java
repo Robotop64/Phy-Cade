@@ -3,7 +3,7 @@ package kn.uni.games.classic.pacman.screens;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap;
-import kn.uni.games.classic.pacman.game.HUD;
+import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.games.classic.pacman.game.LoggerObject;
 import kn.uni.games.classic.pacman.game.PacmanObject;
 import kn.uni.games.classic.pacman.game.Rendered;
