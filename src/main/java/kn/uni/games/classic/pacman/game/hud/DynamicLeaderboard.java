@@ -16,23 +16,42 @@ import java.awt.Graphics2D;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class DynamicLeaderboard extends PlacedObject implements Rendered
 {
-  Vector2d                pos;
-  Vector2d                size;
-  List <LeaderboardEntry> dynBoard = new ArrayList <>();
-
+  Vector2d                      pos;
+  Vector2d                      size;
+  LeaderboardEntry[]            dynBoard      = new LeaderboardEntry[3];
+  LinkedList <LeaderboardEntry> currentSupply = new LinkedList <>();
+  private boolean useDatabase  = true;
+  private boolean newHighscore = false;
+  private boolean fetching = false;
 
   public DynamicLeaderboard (Vector2d pos, Vector2d size)
   {
     this.pos = pos;
     this.size = size;
+
     // in case no entries available
-    dynBoard.add(new LeaderboardMenu.LeaderboardEntry(" ", 0, LocalTime.now(), LocalDate.now()));
-    dynBoard.add(new LeaderboardMenu.LeaderboardEntry(" ", 0, LocalTime.now(), LocalDate.now()));
-    dynBoard = PacmanDatabaseProvider.dynLeaderboard("pacman", 10);
+    dynBoard[0] = new LeaderboardMenu.LeaderboardEntry(" ", 0, LocalTime.now(), LocalDate.now());
+    dynBoard[1] = new LeaderboardMenu.LeaderboardEntry("You", 0, LocalTime.now(), LocalDate.now());
+    dynBoard[2] = new LeaderboardMenu.LeaderboardEntry(" ", 0, LocalTime.now(), LocalDate.now());
+
+    //try fetching entries
+    try
+    {
+      fetchEntries(0, 1, 1000);
+    }
+    catch (Exception e)
+    {
+      useDatabase = false;
+      e.printStackTrace();
+      System.out.println("Can't access database, continue without dynamic leaderboard!");
+    }
+
+
   }
 
   @Override
@@ -40,23 +59,23 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
   {
     String header = "Dynamic Leaderboard:";
 
+    dynBoard[1] = new LeaderboardMenu.LeaderboardEntry("You", gameState.score, LocalTime.now(), LocalDate.now());
 
-    if (dynBoard == null)
-    {
-      dynBoard = PacmanDatabaseProvider.dynLeaderboard("pacman", gameState.score);
-    }
+    setDynBoard(gameState);
 
-    if (gameState.score > dynBoard.get(0).highScore())
-    {
-      dynBoard = PacmanDatabaseProvider.dynLeaderboard("pacman", gameState.score);
-    }
 
-    String nextScore   = "❰" + "%9d".formatted(dynBoard.get(0).highScore()) + "❱";
-    String nextName    = "%1$-16s".formatted(dynBoard.get(0).name());
-    String youScore    = "❰" + "%9d".formatted(gameState.score) + "❱";
+    String nextScore   = "❰" + "%9d".formatted(dynBoard[2].highScore()) + "❱";
+    String nextName    = "%1$-16s".formatted(dynBoard[2].name());
+    String youScore    = "❰" + "%9d".formatted(dynBoard[1].highScore()) + "❱";
     String youName     = "%1$-16s".formatted("You");
-    String behindScore = "❰" + "%9d".formatted(dynBoard.get(1).highScore()) + "❱";
-    String behindName  = "%1$-16s".formatted(dynBoard.get(1).name());
+    String behindScore = "❰" + "%9d".formatted(dynBoard[0].highScore()) + "❱";
+    String behindName  = "%1$-16s".formatted(dynBoard[0].name());
+
+    if (newHighscore)
+    {
+      nextScore = "!Neuer Highscore!";
+      nextName = "%1$-16s".formatted(" ");
+    }
 
     String[] list = { nextScore, nextName, youScore, youName, behindScore, behindName };
 
@@ -115,4 +134,48 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
     g.setStroke(new BasicStroke(1));
     g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * getFontSize(text, gameState) + rowOffset ));
   }
+
+  private void fetchEntries (long score, int start, int end)
+  {
+    if(fetching == false)
+    {
+      Thread thread = new Thread(() ->
+      {
+
+        currentSupply.addAll(PacmanDatabaseProvider.dynLeaderboard("pacman", score, start, end));
+
+        if (currentSupply.size() == 0)
+        {
+          dynBoard[0] = dynBoard[2];
+          newHighscore = true;
+          fetching = false;
+        }
+      });
+      thread.start();
+      fetching = true;
+    }
+
+  }
+
+  private void setDynBoard (ClassicPacmanGameState gameState)
+  {
+    if (useDatabase)
+    {
+      if (currentSupply.size() == 0)
+      {
+        fetchEntries(gameState.score, 1, 1000);
+
+        return;
+      }
+      else
+      {
+        while (dynBoard[2].highScore() < gameState.score)
+        {
+          dynBoard[0] = dynBoard[2];
+          dynBoard[2] = currentSupply.pop();
+        }
+      }
+    }
+  }
+
 }
