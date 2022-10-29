@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class ClassicPacmanGameState
 {
   //engine stuff
-  public int                                tps             = 165;
+  public int                                tps             = 60;
   public ConcurrentLinkedDeque <GameObject> gameObjects;
   public boolean                            running;
   public long                               currentTick;
