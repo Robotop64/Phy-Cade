@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class ClassicPacmanGameState
 {
-  //engine stuff
-  public int                                tps             = 165;
+  //frames will be drawn every second frame
+  public int                                tps             = 120;
   public ConcurrentLinkedDeque <GameObject> gameObjects;
   public boolean                            running;
   public long                               currentTick;
@@ -39,7 +39,6 @@ public class ClassicPacmanGameState
   public Map <Collectables, Integer> collectionPoints = Map.of(
       Collectables.coin, 10,
       Collectables.powerUp, 50,
-
       Collectables.cherry, 100,
       Collectables.strawberry, 300,
       Collectables.orange, 500,

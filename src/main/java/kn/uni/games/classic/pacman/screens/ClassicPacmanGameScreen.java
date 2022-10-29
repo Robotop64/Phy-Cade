@@ -92,7 +92,10 @@ public class ClassicPacmanGameScreen extends UIScreen
         gameState.gameObjects.stream()
                              .filter(gameObject -> gameObject instanceof Ticking)
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
-        Gui.getInstance().frame.repaint();
+        if (gameState.currentTick % 2 == 0)
+        {
+          Gui.getInstance().frame.repaint();
+        }
 
       }
     }).start();

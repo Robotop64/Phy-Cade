@@ -24,7 +24,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
 {
   int r;
   public double tilesPerSecond = 6;
-  //  public double tilesPerSecond = 0.2;
   Vector2d v;
 
   public PacmanObject (int r, Vector2d pos)
@@ -37,28 +36,21 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     TotalPosition tp = gameState.map.splitPosition(pos);
-    g.setStroke(new BasicStroke(4));
-    g.setColor(Color.green);
-    tp.ex().multiply(gameState.map.tileSize).use(g::translate);
-    g.drawRect(0, 0, gameState.map.tileSize, gameState.map.tileSize);
-    tp.ex().multiply(gameState.map.tileSize).multiply(-1).use(g::translate);
-    pos.use(g::translate);
+    pos.rounded().use(g::translate);
 
-    g.setStroke(new BasicStroke(Math.round(r / 3.)));
-    g.setColor(Color.orange.darker());
     int θ = getΘ(gameState.playerDirection);
     g.rotate(Math.toRadians(θ));
-
     double animationDuration = gameState.tps / 2.;
     int    angle             = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
+
+    g.setColor(Color.orange.darker());
+    g.setStroke(new BasicStroke(Math.round(r / 3.)));
     g.drawArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
     IntStream.of(-1, 1).forEach(i -> new Vector2d().polar(r, i * angle).use((x, y) -> g.drawLine(0, 0, x, y)));
-    //filling
     g.setColor(Color.yellow);
     g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
     g.rotate(Math.toRadians(-θ));
-    pos.multiply(-1).use(g::translate);
-    //    System.out.printf("Tile (%.0f,%.0f), internal (%.0f,%.0f)%n", tp.ex().x, tp.ex().y, tp.in().x, tp.in().y);
+    pos.rounded().multiply(-1).rounded().use(g::translate);
   }
 
   private static int getΘ (Direction direction)

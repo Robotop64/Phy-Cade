@@ -31,7 +31,11 @@ public class InputListener extends Celebrity <Input>
     Component.Identifier.Key.A, new InputState(Key.horizontal, State.up),
     Component.Identifier.Key.D, new InputState(Key.horizontal, State.down),
     Component.Identifier.Key.ESCAPE, new InputState(Key.B, State.down),
-    Component.Identifier.Key.SPACE, new InputState(Key.A, State.down)
+    Component.Identifier.Key.SPACE, new InputState(Key.A, State.down),
+    Component.Identifier.Key.H, new InputState(Key.C, State.down),
+    Component.Identifier.Key.J, new InputState(Key.D, State.down),
+    Component.Identifier.Key.K, new InputState(Key.E, State.down),
+    Component.Identifier.Key.L, new InputState(Key.F, State.down)
   );
 
   private InputListener ()
@@ -115,6 +119,7 @@ public class InputListener extends Celebrity <Input>
       {
         if (void_input) continue;
         if (e.getComponent().getName().equals("Z Axis")) continue;
+        if (e.getComponent().getName().equals("z")) continue;
         post(new Input(getKey(e), getState(e), controllerPlayerMap.get(controller)));
       }
     });
@@ -141,17 +146,22 @@ public class InputListener extends Celebrity <Input>
 
   private Key getKey (Event e)
   {
+    // debug
+    System.out.println(e.getComponent().getName());
     // todo map this
     return switch (e.getComponent().getName())
       {
-        case "Y Axis" -> Key.vertical;
-        case "X Axis" -> Key.horizontal;
-        case "Button 1" -> Key.A;
-        case "Button 2" -> Key.B;
-        case "Button 3" -> Key.C;
-        case "Button 4" -> Key.D;
-        case "Button 5" -> Key.X;
-        case "Button 6" -> Key.Y;
+        case "Y Axis", "y" -> Key.vertical;
+        case "X Axis", "x" -> Key.horizontal;
+        case "Button 0", "Trigger" -> Key.A;
+        case "Button 1", "Thumb" -> Key.B;
+        case "Button 2", "Thumb 2" -> Key.C;
+        case "Button 3", "Top" -> Key.D;
+        case "Button 4", "Top 2" -> Key.E;
+        case "Button 5", "Pinkie" -> Key.F;
+        case "Button 6", "Base" -> Key.G;
+        case "Button 7", "Base 2" -> Key.H;
+        case "Button 8", "Base 3" -> Key.J;
         default -> null;
       };
   }
@@ -191,7 +201,7 @@ public class InputListener extends Celebrity <Input>
   }
 
   public enum Key
-  { vertical, horizontal, A, B, C, D, X, Y }
+  { vertical, horizontal, A, B, C, D, J, H, G, F, E}
 
   public enum State
   { up, down, none }
@@ -199,6 +209,6 @@ public class InputListener extends Celebrity <Input>
   public enum Player
   { playerOne, playerTwo }
 
-  record InputState(Key key, State state) {};
+  record InputState(Key key, State state) {}
 
 }
