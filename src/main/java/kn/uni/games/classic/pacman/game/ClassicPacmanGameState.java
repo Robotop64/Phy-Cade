@@ -39,7 +39,6 @@ public class ClassicPacmanGameState
   public Map <Collectables, Integer> collectionPoints = Map.of(
       Collectables.coin, 10,
       Collectables.powerUp, 50,
-
       Collectables.cherry, 100,
       Collectables.strawberry, 300,
       Collectables.orange, 500,

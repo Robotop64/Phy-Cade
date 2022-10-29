@@ -119,6 +119,7 @@ public class InputListener extends Celebrity <Input>
       {
         if (void_input) continue;
         if (e.getComponent().getName().equals("Z Axis")) continue;
+        if (e.getComponent().getName().equals("z")) continue;
         post(new Input(getKey(e), getState(e), controllerPlayerMap.get(controller)));
       }
     });
