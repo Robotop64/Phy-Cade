@@ -160,7 +160,7 @@ public class InputListener extends Celebrity <Input>
         case "Button 5", "Pinkie" -> Key.F;
         case "Button 6", "Base" -> Key.G;
         case "Button 7", "Base 2" -> Key.H;
-        case "Button 8", "Base 3+" -> Key.J;
+        case "Button 8", "Base 3" -> Key.J;
         default -> null;
       };
   }
