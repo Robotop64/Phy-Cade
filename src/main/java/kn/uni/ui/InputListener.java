@@ -141,6 +141,8 @@ public class InputListener extends Celebrity <Input>
 
   private Key getKey (Event e)
   {
+    // debug
+    System.out.println(e.getComponent().getName());
     // todo map this
     return switch (e.getComponent().getName())
       {
