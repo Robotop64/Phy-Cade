@@ -69,9 +69,9 @@ public class Gui
     content.add(MainMenu.getInstance());
     MainMenu.getInstance().setBounds(defaultFrameBounds);
 
-    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
-    frame.setAlwaysOnTop(true);
+//    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
 
+    frame.setAlwaysOnTop(true);
     frame.setVisible(true);
     frame.createBufferStrategy(3);
   }
