@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class ClassicPacmanGameState
 {
-  //engine stuff
-  public int                                tps             = 60;
+  //frames will be drawn every second frame
+  public int                                tps             = 120;
   public ConcurrentLinkedDeque <GameObject> gameObjects;
   public boolean                            running;
   public long                               currentTick;

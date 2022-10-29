@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.Color;
+import java.awt.GraphicsDevice;
 import java.awt.Rectangle;
 
 public class Gui
@@ -67,6 +68,9 @@ public class Gui
 
     content.add(MainMenu.getInstance());
     MainMenu.getInstance().setBounds(defaultFrameBounds);
+
+    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
+    frame.setAlwaysOnTop(true);
 
     frame.setVisible(true);
     frame.createBufferStrategy(3);
