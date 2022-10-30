@@ -16,9 +16,9 @@ import java.util.List;
 
 public class PacmanDatabaseProvider
 {
-  private static String url      = "jdbc:mysql://localhost:3306/leaderboard";
-  private static String username = "root";
-  private static String password = "sQuidWart";
+  private static String url      = "jdbc:mysql://remotepacphidatabase/pacphiLeaderboard";
+  private static String username = "pacphi";
+  private static String password = "pacmacbummbumm";
 
 
   private static List <LeaderboardMenu.LeaderboardEntry> getQuery (String command)
@@ -39,13 +39,12 @@ public class PacmanDatabaseProvider
         System.out.println();
         LeaderboardMenu.LeaderboardEntry out = new LeaderboardMenu.LeaderboardEntry(
             resultSet.getString("playername"),
-            Long.parseLong(resultSet.getString("score")),
+            resultSet.getLong("score"),
             resultSet.getTime("duration").toLocalTime(),
             resultSet.getDate("datum").toLocalDate());
         listOut.add(out);
       }
       return listOut;
-
     }
     catch (SQLException e)
     {
@@ -86,11 +85,11 @@ public class PacmanDatabaseProvider
   }
 
 
-  public static List <LeaderboardMenu.LeaderboardEntry> dynLeaderboard (String game, long score, int start, int end)
+  public static List <LeaderboardMenu.LeaderboardEntry> dynLeaderboard (String game, long score, int end)
   {
     List <LeaderboardMenu.LeaderboardEntry> out = new ArrayList <>();
-    out.addAll(getQuery("select * from " + game + " where score >" + score + " Order By  score asc LIMIT "+ start+","+end+";"));
-//    out.addAll(getQuery("select * from " + game + " where score <" + score + " Order By  score desc LIMIT 1;"));
+    out.addAll(getQuery("select * from " + game + " where score >" + score + " Order By  score asc LIMIT " + 0 + "," + end + ";"));
+    System.out.println(out.size());
     return out;
   }
 
