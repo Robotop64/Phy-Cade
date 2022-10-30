@@ -137,7 +137,11 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     {
       //add score depending on item points
       gameState.score += gameState.collectionPoints.get(currentTile.heldItem);
-
+      System.out.println(gameState.score % 10000);
+      if (gameState.score % 10000 == 0)
+      {
+        gameState.lives += 1;
+      }
 
       if (currentTile.heldItem == ClassicPacmanGameState.Collectables.coin || currentTile.heldItem == ClassicPacmanGameState.Collectables.powerUp)
       {
