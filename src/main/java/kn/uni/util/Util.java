@@ -1,12 +1,32 @@
 package kn.uni.util;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.font.TextAttribute;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 
 public class Util
 {
   public static final double precision = 1e9;
+//  public static final Font fira;
+//
+//  static
+//  {
+//
+//    try
+//    {
+//      fira = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/fonts/FiraCode-Regular.ttf"));
+//    }
+//    catch (FontFormatException | IOException e)
+//    {
+//      throw new RuntimeException(e);
+//    }
+//
+//  }
 
   public static int bounded (int x, int min, int max) { return Math.max(Math.min(x, max), min); }
 
@@ -33,6 +53,8 @@ public class Util
   public static Font fira (int size, int style)
   {
     Font font       = new Font("Fira Code", style, size);
+
+//    Font font = fira.deriveFont(size, style);
     Map  attributes = font.getAttributes();
     attributes.put(TextAttribute.LIGATURES, TextAttribute.LIGATURES_ON);
     font = font.deriveFont(attributes);

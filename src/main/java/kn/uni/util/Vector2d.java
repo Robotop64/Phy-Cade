@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.lang.Math.sqrt;
 import static kn.uni.util.Util.cos;
 import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
@@ -25,6 +26,13 @@ public class Vector2d
   {
     this.x = x;
     this.y = y;
+  }
+
+  public Vector2d copy () {return new Vector2d(x, y);}
+
+  public double magnitude ()
+  {
+    return round(sqrt(x * x + y * y));
   }
 
   public Vector2d cartesian (double x, double y)
@@ -64,7 +72,7 @@ public class Vector2d
 
   public double lenght ()
   {
-    return Math.sqrt(x * x + y * y);
+    return sqrt(x * x + y * y);
   }
 
   public Vector2d unitVector ()

@@ -16,9 +16,9 @@ import java.util.List;
 
 public class PacmanDatabaseProvider
 {
-  private static String url      = "jdbc:mysql://localhost:3306/leaderboard";
-  private static String username = "root";
-  private static String password = "sQuidWart";
+  private static String url      = "jdbc:mysql://pacphidatabase/pacphiLeaderboard";
+  private static String username = "pacphi";
+  private static String password = "pacmacbummbumm";
 
 
   private static List <LeaderboardMenu.LeaderboardEntry> getQuery (String command)

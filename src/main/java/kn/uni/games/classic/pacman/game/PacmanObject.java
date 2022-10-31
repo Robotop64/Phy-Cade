@@ -3,7 +3,7 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
-import kn.uni.games.classic.pacman.game.hud.DynamicLeaderboard;
+import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
@@ -22,14 +22,41 @@ import static kn.uni.util.Util.sin;
 
 public class PacmanObject extends PlacedObject implements Rendered, Ticking
 {
-  int r;
-  public double tilesPerSecond = 6;
+  public double tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
+  int      r;
   Vector2d v;
 
   public PacmanObject (int r, Vector2d pos)
   {
     this.pos = pos;
     this.r = r;
+  }
+
+  private static int getΘ (Direction direction)
+  {
+    return switch (direction)
+      {
+        case up -> 270;
+        case down -> 90;
+        case left -> 180;
+        case right -> 0;
+      };
+  }
+
+  /**
+   * Used to spawn a Pacman at his spawn
+   *
+   * @param gameState
+   */
+  public static void spawnPacman (ClassicPacmanGameState gameState)
+  {
+    //search all tiles for a pacman spawn
+    gameState.map.tiles.forEach((vec, tile) ->
+    {
+      if (tile.type == PacmanMapTile.Type.playerSpawn)
+        //create new instance of Pacman
+        gameState.gameObjects.add(new PacmanObject((int)(gameState.map.tileSize * 2. / 3.), vec.multiply(gameState.map.tileSize).add(new Vector2d().cartesian(4, 4))));
+    });
   }
 
   @Override
@@ -41,7 +68,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     int θ = getΘ(gameState.playerDirection);
     g.rotate(Math.toRadians(θ));
     double animationDuration = gameState.tps / 2.;
-    int    angle             = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
+    int    angle             = (int)Math.round(20 + 40 * sin((gameState.currentTick % animationDuration) / animationDuration * 360.));
 
     g.setColor(Color.orange.darker());
     g.setStroke(new BasicStroke(Math.round(r / 3.)));
@@ -53,29 +80,16 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     pos.rounded().multiply(-1).rounded().use(g::translate);
   }
 
-  private static int getΘ (Direction direction)
-  {
-    return switch (direction)
-        {
-          case up -> 270;
-          case down -> 90;
-          case left -> 180;
-          case right -> 0;
-        };
-  }
-
   private PacmanMapTile getTile (ClassicPacmanGameState gameState)
   {
     return gameState.map.tiles.get(gameState.map.splitPosition(pos).ex());
   }
-
 
   @Override
   public int paintLayer ()
   {
     return Integer.MAX_VALUE - 100;
   }
-
 
   /**
    * Event that happens on every tick, ruling of PacMans interactions with the running game
@@ -114,7 +128,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     else
     {
       //      System.out.println("try moving away from centre");
-      if (tp.in().x + tp.in().y < gameState.map.tileSize / 2. / .3)
+      if (tp.in().x + tp.in().y < gameState.map.tileSize / .3)
       {
         //        System.out.println("close to centre");
         //        System.out.println(nextTile);
@@ -155,6 +169,16 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
 
       checkLevelStatus(gameState);
 
+
+      // check if die
+      if (gameState.gameObjects.stream()
+                               .filter(obj -> obj instanceof Ghost)
+                               .map(ghost -> ((Ghost)ghost).pos)
+                               .map(vec -> vec.subtract(pos).magnitude())
+                               .anyMatch(mag -> mag <= ClassicPacmanGameConstants.ghostRadius + r))
+      {
+        death(gameState);
+      }
     }
   }
 
@@ -173,7 +197,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       this.pos = ClassicPacmanMap.playerSpawn.pos;
       //resets the coins and powerups
       ClassicPacmanMap.setItems(ClassicPacmanMap.tiles);
-
     }
   }
 
@@ -184,6 +207,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
    */
   private void death (ClassicPacmanGameState gameState)
   {
+    System.out.println("DEATHHHHHHH");
     gameState.gameObjects.remove(this);
     gameState.lives -= 1;
     checkGameOver(gameState);
@@ -201,7 +225,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.running = false;
 
       List <Integer> score = new ArrayList <>();
-      score.add((int) gameState.score);
+      score.add((int)gameState.score);
       List <LocalTime> time = new ArrayList <>();
       //      time.add(gameState.time);
 
@@ -209,22 +233,5 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", score, time);
       Gui.getInstance().content.add(gameOverScreen);
     }
-  }
-
-
-  /**
-   * Used to spawn a Pacman at his spawn
-   *
-   * @param gameState
-   */
-  public static void spawnPacman (ClassicPacmanGameState gameState)
-  {
-    //search all tiles for a pacman spawn
-    gameState.map.tiles.forEach((vec, tile) ->
-    {
-      if (tile.type == PacmanMapTile.Type.playerSpawn)
-        //create new instance of Pacman
-        gameState.gameObjects.add(new PacmanObject((int) ( gameState.map.tileSize * 2. / 3. ), vec.multiply(gameState.map.tileSize).add(new Vector2d().cartesian(4, 4))));
-    });
   }
 }

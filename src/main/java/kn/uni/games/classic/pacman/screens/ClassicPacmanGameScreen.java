@@ -3,11 +3,11 @@ package kn.uni.games.classic.pacman.screens;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap;
-import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.games.classic.pacman.game.LoggerObject;
 import kn.uni.games.classic.pacman.game.PacmanObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
+import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Key;
 import kn.uni.ui.InputListener.Player;
@@ -60,10 +60,11 @@ public class ClassicPacmanGameScreen extends UIScreen
         gameState.playerDirection = input.toDirection();
       }
 
-//      System.out.println(gameState.playerDirection);
+      //      System.out.println(gameState.playerDirection);
     });
 
-
+    // WHY THE F*CK ARE THESE METHODS STATIC??
+    // ToDo @Max fix
     LoggerObject.createLogger(gameState);
     ClassicPacmanMap.createMap(gameState);
     PacmanObject.spawnPacman(gameState);
@@ -91,7 +92,7 @@ public class ClassicPacmanGameScreen extends UIScreen
         gameState.lastTickTime = t;
         gameState.gameObjects.stream()
                              .filter(gameObject -> gameObject instanceof Ticking)
-                             .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
+                             .forEach(gameObject -> ((Ticking)gameObject).tick(gameState));
         if (gameState.currentTick % 2 == 0)
         {
           Gui.getInstance().frame.repaint();
@@ -105,12 +106,12 @@ public class ClassicPacmanGameScreen extends UIScreen
   protected void paintComponent (Graphics g)
   {
     super.paintComponent(g);
-    Graphics2D gg = (Graphics2D) g;
+    Graphics2D gg = (Graphics2D)g;
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof Rendered)
-                         .map(gameObject -> (Rendered) gameObject)
+                         .map(gameObject -> (Rendered)gameObject)
                          .sorted(Comparator.comparingInt(Rendered::paintLayer))
-                         .forEach(gameObject -> ( gameObject ).paintComponent(gg, gameState));
+                         .forEach(gameObject -> (gameObject).paintComponent(gg, gameState));
   }
 
 

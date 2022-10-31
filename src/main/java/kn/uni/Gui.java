@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.Color;
-import java.awt.GraphicsDevice;
 import java.awt.Rectangle;
 
 public class Gui
@@ -23,7 +22,17 @@ public class Gui
   public JPanel content;
   pmButton debug;
 
-  private Gui () { }
+  private Gui () {}
+
+  public static Gui getInstance ()
+  {
+    if (instance == null)
+    {
+      instance = new Gui();
+    }
+
+    return instance;
+  }
 
   public void initialize ()
   {
@@ -41,7 +50,7 @@ public class Gui
     InputListener inputListener = InputListener.getInstance();
     inputListener.start();
 
-//    inputListener.subscribe(System.out::println);
+    //    inputListener.subscribe(System.out::println);
 
 
     debug = new pmButton("");
@@ -51,7 +60,7 @@ public class Gui
 
     debug.setBounds(1, frameHeight - 55, 400, 40);
     debug.setVisible(false);
-//    inputListener.subscribe(input -> debug.setText(input.toString()));
+    //    inputListener.subscribe(input -> debug.setText(input.toString()));
 
     content = new JPanel();
     frame.getContentPane().add(content);
@@ -69,20 +78,10 @@ public class Gui
     content.add(MainMenu.getInstance());
     MainMenu.getInstance().setBounds(defaultFrameBounds);
 
-//    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
+    //    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
 
-    frame.setAlwaysOnTop(true);
+    //    frame.setAlwaysOnTop(true);
     frame.setVisible(true);
     frame.createBufferStrategy(3);
-  }
-
-  public static Gui getInstance ()
-  {
-    if (instance == null)
-    {
-      instance = new Gui();
-    }
-
-    return instance;
   }
 }
