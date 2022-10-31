@@ -139,7 +139,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
       Thread thread = new Thread(() ->
       {
 
-        currentSupply.addAll(PacmanDatabaseProvider.dynLeaderboard("pacman", score, 1, end));
+        currentSupply.addAll(PacmanDatabaseProvider.dynLeaderboard("pacman", score, end));
 
         if (currentSupply.size() == 0)
         {
