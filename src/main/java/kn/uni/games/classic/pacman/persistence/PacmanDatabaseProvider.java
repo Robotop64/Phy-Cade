@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PacmanDatabaseProvider
 {
-  private static String url      = "jdbc:mysql://pacphidatabase/pacphiLeaderboard";
+  private static String url      = "jdbc:mysql://pacphidatabase/leaderboard";
   private static String username = "pacphi";
   private static String password = "pacmacbummbumm";
 
@@ -89,7 +89,6 @@ public class PacmanDatabaseProvider
   {
     List <LeaderboardMenu.LeaderboardEntry> out = new ArrayList <>();
     out.addAll(getQuery("select * from " + game + " where score >" + score + " Order By  score asc LIMIT " + 0 + "," + end + ";"));
-    System.out.println(out.size());
     return out;
   }
 

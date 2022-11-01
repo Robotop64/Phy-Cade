@@ -47,7 +47,7 @@ public class HUD extends PlacedObject implements Rendered
       gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 2), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       gameState.gameObjects.add(new TimeLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 3), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 4), new Vector2d().cartesian(textBounds, gameState.uiSize)));
-//            gameState.gameObjects.add(new CollectablesLabel());
+//          gameState.gameObjects.add(new CollectablesLabel());
       gameState.gameObjects.add(new DynamicLeaderboard(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 8.5), new Vector2d().cartesian(textBounds, gameState.uiSize)));
     }
     else
@@ -62,8 +62,8 @@ public class HUD extends PlacedObject implements Rendered
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     g.setColor(Color.cyan.darker());
-//    g.setStroke(new BasicStroke(1));
-    //        g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
+    //    g.setStroke(new BasicStroke(1));
+    //    g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
 
     g.setStroke(new BasicStroke(3));
     g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
@@ -81,9 +81,4 @@ public class HUD extends PlacedObject implements Rendered
     return Integer.MAX_VALUE - 25;
   }
 
-  //create HUD
-  public static void createHUD (ClassicPacmanGameState gameState) throws IOException
-  {
-    gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
-  }
 }

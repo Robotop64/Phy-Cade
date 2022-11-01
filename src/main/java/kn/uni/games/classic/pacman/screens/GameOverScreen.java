@@ -1,10 +1,11 @@
 package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
+import kn.uni.ui.InputListener;
+import kn.uni.ui.UIScreen;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.Font;
@@ -12,7 +13,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameOverScreen extends JPanel
+public class GameOverScreen extends UIScreen
 {
   private final int           width    = 700;
   private final int           distance = 20;
@@ -21,14 +22,17 @@ public class GameOverScreen extends JPanel
   private       int           latestY;
   private       int           yOffset  = 0;
   private       int           players  = 1;
+  public List<UIScreen> children;
 
 
   public GameOverScreen (int players, String gameName, List <Integer> scores, List <LocalTime> times)
   {
+    super(Gui.getInstance().content);
     setBounds(Gui.defaultFrameBounds);
     setBackground(Color.black);
     setLayout(null);
 
+    children = new ArrayList<>();
 
     createLabels(gameName);
     createHeader(players);
@@ -50,6 +54,7 @@ public class GameOverScreen extends JPanel
     {
       addPlayerScreen(0, 1, players, 1, scores.get(0), times.get(0));
     }
+
 
   }
 
@@ -105,12 +110,23 @@ public class GameOverScreen extends JPanel
       localwidth = Gui.frameWidth - 2 * xBuffer - 10;
     }
 
-    GameSummaryScreen gameSummaryScreen = new GameSummaryScreen(localwidth, totalPlayers, thisPlayer, thisScore, thisTime);
-    gameSummaryScreen.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryScreen.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
-    gameSummaryScreen.setBackground(Color.black);
-    gameSummaryScreen.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
+    GameSummaryPanel gameSummaryPanel = new GameSummaryPanel(this,localwidth, totalPlayers, thisPlayer, thisScore, thisTime);
+    gameSummaryPanel.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryPanel.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
+    gameSummaryPanel.setBackground(Color.black);
+    gameSummaryPanel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
     //    gameSummaryScreen.addKeyBoard(localwidth);
-    Gui.getInstance().content.add(gameSummaryScreen);
+    Gui.getInstance().content.add(gameSummaryPanel);
+    children.add(gameSummaryPanel);
+  }
+
+  public void removeSummary(){
+    if(children.size()==0){
+      setVisible(false);
+      getParent().remove(this);
+      Gui.getInstance().content.add(MainMenu.getInstance());
+      MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+      MainMenu.getInstance().activate();
+    }
   }
 
 }

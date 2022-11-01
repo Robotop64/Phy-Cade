@@ -28,6 +28,7 @@ public class ClassicPacmanGameState
   public int       uiSize     = 100;
   public int       lives      = 5;
   public LocalTime startTime;
+  public LocalTime gameDuration = LocalTime.of(0, 0, 0, 0);
   public int       eatenPills = 0;
   public int       pillsLeft  = 244;
 

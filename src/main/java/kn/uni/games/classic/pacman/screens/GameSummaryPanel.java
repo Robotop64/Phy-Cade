@@ -1,7 +1,10 @@
 package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
+import kn.uni.ui.InputListener;
+import kn.uni.ui.UIScreen;
 import kn.uni.ui.pmButton;
+import kn.uni.util.Util;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -13,25 +16,32 @@ import java.awt.Font;
 import java.awt.font.TextAttribute;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GameSummaryScreen extends JPanel
+public class GameSummaryPanel extends UIScreen
 {
-  public static final double        ratio  = 5 / 4.0;
-  private             List <JLabel> labels = new ArrayList <>();
-  private             int           totalPlayers;
-  private             int           thisPlayer;
-  private             int           thisScore;
-  private             LocalTime     thisTime;
-  private             int           width;
+  private             int             listener_id;
+  public static final double          ratio     = 5 / 4.0;
+  private             List <JLabel>   labels    = new ArrayList <>();
+  private             int             totalPlayers;
+  private             int             thisPlayer;
+  private             int             thisScore;
+  private             LocalTime       thisTime;
+  private             int             width;
+  private             int             activeKey = 0;
+  private             List <pmButton> buttons   = new ArrayList <>();
+  private             GameOverScreen        container;
 
-  public GameSummaryScreen (int width, int totalPlayers, int thisPlayer, int thisScore, LocalTime thisTime)
+  public GameSummaryPanel (GameOverScreen container, int width, int totalPlayers, int thisPlayer, int thisScore, LocalTime thisTime)
   {
+    super(Gui.getInstance().content);
     setBackground(Color.black);
     setLayout(null);
     setSize(width, (int) ( width / ratio ) - 150);
 
+    this.container = container;
     this.thisPlayer = thisPlayer;
     this.totalPlayers = totalPlayers;
     this.thisScore = thisScore;
@@ -40,6 +50,7 @@ public class GameSummaryScreen extends JPanel
 
     createElements(thisPlayer);
 
+    activate();
   }
 
   public void addKeyBoard (int width)
@@ -55,11 +66,12 @@ public class GameSummaryScreen extends JPanel
 
     OnScreenKeyboard o = new OnScreenKeyboard(width - 60);
     o.setLocation(this.getX() + 30, this.getY() + ( this.getHeight() - o.getHeight() ) - 10);
-//    System.out.println(this.getY());
+    //    System.out.println(this.getY());
     o.setTarget(System.out::println);
     Gui.getInstance().content.add(o);
   }
 
+  //TODO level label
   private void createElements (int player)
   {
     int fontSize   = width / 30;
@@ -149,7 +161,7 @@ public class GameSummaryScreen extends JPanel
 
     createActionButton(
         "Hauptmenü",
-        null,
+        this::killSummary,
         fontSize,
         this.width - buttonDim.width - 20,
         this.getY() + this.getHeight() - buttonDim.height - 20,
@@ -179,9 +191,68 @@ public class GameSummaryScreen extends JPanel
     temp.setLocation(x, y);
     temp.isSelected = false;
     temp.update();
-    labels.add(temp);
+    buttons.add(temp);
     add(temp);
   }
 
+  private void setActiveKey (int index)
+  {
+    buttons.get(activeKey).isSelected = false;
+    buttons.get(activeKey).update();
+    activeKey = index;
+    buttons.get(index).isSelected = true;
+    buttons.get(index).update();
+  }
 
+  private void killSummary ()
+  {
+    //TODO kill() doesnt remove the listener
+//    kill();
+    //removes the GameSummaryPanel
+    InputListener.getInstance().unsubscribe(listener_id);
+    setVisible(false);
+    getParent().remove(this);
+    //used to remove the GameOverScreen, if all players dismissed the SummaryPanel
+    container.children.remove(this);
+    container.removeSummary();
+  }
+
+  /**
+   * Used to activate the input Listener
+   */
+  public void activate ()
+  {
+    listener_id = InputListener.getInstance().subscribe(input ->
+    {
+      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        InputListener.getInstance().unsubscribe(listener_id);
+        setVisible(false);
+        getParent().remove(this);
+        Gui.getInstance().content.add(MainMenu.getInstance());
+        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+        MainMenu.getInstance().activate();
+      }
+      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        buttons.get(activeKey).press();
+      }
+
+      if (input.player().equals(InputListener.Player.playerTwo)) return;
+      if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
+                 .contains(input.key())) return;
+      int delta = switch (input.state())
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
+
+      if (input.key().name().equals("horizontal"))
+      {
+        setActiveKey(Util.bounded(activeKey + delta, 0, 1));
+      }
+    });
+    setVisible(true);
+  }
 }

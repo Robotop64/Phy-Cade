@@ -27,9 +27,4 @@ public class LoggerObject extends GameObject implements Ticking
     if (gameState.currentTick > 300) gameState.logging = false;
   }
 
-
-  public static void createLogger (ClassicPacmanGameState gameState)
-  {
-    gameState.gameObjects.add(new LoggerObject());
-  }
 }

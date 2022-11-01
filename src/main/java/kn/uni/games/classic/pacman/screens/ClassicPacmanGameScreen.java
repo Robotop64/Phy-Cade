@@ -4,6 +4,7 @@ import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap;
 import kn.uni.games.classic.pacman.game.LoggerObject;
+import kn.uni.games.classic.pacman.game.PacmanMapTile;
 import kn.uni.games.classic.pacman.game.PacmanObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
@@ -12,6 +13,7 @@ import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Key;
 import kn.uni.ui.InputListener.Player;
 import kn.uni.ui.UIScreen;
+import kn.uni.util.Vector2d;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -63,12 +65,26 @@ public class ClassicPacmanGameScreen extends UIScreen
       //      System.out.println(gameState.playerDirection);
     });
 
-    // WHY THE F*CK ARE THESE METHODS STATIC??
-    // ToDo @Max fix
-    LoggerObject.createLogger(gameState);
-    ClassicPacmanMap.createMap(gameState);
-    PacmanObject.spawnPacman(gameState);
-    HUD.createHUD(gameState);
+    //create Logger
+    gameState.gameObjects.add(new LoggerObject());
+    //create Map
+    {
+      ClassicPacmanMap map = new ClassicPacmanMap(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), 1000, 1000);
+      gameState.gameObjects.add(map);
+      gameState.map = map;
+      gameState.size = new Vector2d().cartesian(map.width, map.height);
+    }
+    //create Pacman
+    {
+      gameState.map.tiles.forEach((vec, tile) ->
+      {
+        if (tile.type == PacmanMapTile.Type.playerSpawn)
+          //create new instance of Pacman
+          gameState.gameObjects.add(new PacmanObject((int) ( gameState.map.tileSize * 2. / 3. ), vec.multiply(gameState.map.tileSize).add(new Vector2d().cartesian(4, 4))));
+      });
+    }
+    //create HUD
+    gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
 
     startGame();
   }
@@ -99,6 +115,7 @@ public class ClassicPacmanGameScreen extends UIScreen
         }
 
       }
+      kill();
     }).start();
   }
 

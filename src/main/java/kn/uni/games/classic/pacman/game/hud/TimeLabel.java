@@ -37,7 +37,7 @@ public class TimeLabel extends PlacedObject implements Rendered
     long millisBetween = MILLIS.between(gameState.startTime, currentTime);
 
     LocalTime diff = LocalTime.of(0, 0, 0, 0).plus(millisBetween, MILLIS);
-
+    gameState.gameDuration = diff;
     String text     = "Time: " + diff;
     int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
 

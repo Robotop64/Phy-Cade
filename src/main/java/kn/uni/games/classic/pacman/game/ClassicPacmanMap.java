@@ -8,6 +8,7 @@ import kn.uni.util.Vector2d;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,25 +20,27 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 {
   private static final String                        bmpPath       = "pacman/map/PacManClassic Map.bmp";
   private static final Map <Color, Type>             typeFromColor = Map.of(
-    Color.black, Type.wall,
-    Color.blue, Type.path,
-    Color.yellow, Type.coin,
-    new Color(255, 88, 0), Type.powerUp,
-    Color.cyan, Type.portal,
-    Color.red, Type.ghostSpawn,
-    Color.green, Type.playerSpawn,
-    Color.white, Type.none);
-  public static        PacmanMapTile                 playerSpawn;
+      Color.black, Type.wall,
+      Color.blue, Type.path,
+      Color.yellow, Type.coin,
+      new Color(255, 88, 0), Type.powerUp,
+      Color.cyan, Type.portal,
+      Color.red, Type.ghostSpawn,
+      Color.green, Type.playerSpawn,
+      Color.white, Type.none);
+
+  // Todo @MA wtf, why is this static??????????????????????????????
   /**
    * TileSpace -> Tiles
    */
-  // Todo @MA wtf, why is this static??????????????????????????????
-  public static        Map <Vector2d, PacmanMapTile> tiles         = new HashMap <>();
+  public               Map <Vector2d, PacmanMapTile> tiles         = new HashMap <>();
   public               int                           tileSize;
   public               int                           width;
   public               int                           height;
   Vector2d size;
   private ClassicPacmanGameState gameState;
+
+
 
   public ClassicPacmanMap (ClassicPacmanGameState gameState, Vector2d pos, int width, int height)
   {
@@ -52,7 +55,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   }
 
-  public static void setItems (Map <Vector2d, PacmanMapTile> tiles)
+  public void setItems (Map <Vector2d, PacmanMapTile> tiles)
   {
     tiles.forEach((vec, tile) ->
     {
@@ -65,25 +68,12 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     });
   }
 
-  /**
-   * Used to create a Map on the ClassicGameScreen
-   *
-   * @param gameState
-   */
-  public static void createMap (ClassicPacmanGameState gameState)
-  {
-    ClassicPacmanMap map = new ClassicPacmanMap(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), 1000, 1000);
-    gameState.gameObjects.add(map);
-    gameState.map = map;
-    gameState.size = new Vector2d().cartesian(map.width, map.height);
-  }
-
   //background
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     g.setColor(Color.black);
-    g.translate((int)pos.rounded().x, (int)pos.rounded().y);
+    g.translate((int) pos.rounded().x, (int) pos.rounded().y);
     g.fillRect(0, 0, width, height);
     tiles.forEach((v, tile) -> tile.paintComponent(g, gameState));
 
@@ -120,8 +110,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     {
       BufferedImage image = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource(bmpPath)));
       size = new Vector2d().cartesian(image.getWidth(), image.getHeight());
-      tileSize = (int)Math.round(Math.min(width / size.x, height / size.y));
-      size.stream().forEach(v -> tiles.put(v, new PacmanMapTile(v.multiply(tileSize), tileSize, typeFromColor.get(new Color(image.getRGB((int)v.x, (int)v.y))))));
+      tileSize = (int) Math.round(Math.min(width / size.x, height / size.y));
+      size.stream().forEach(v -> tiles.put(v, new PacmanMapTile(v.multiply(tileSize), tileSize, typeFromColor.get(new Color(image.getRGB((int) v.x, (int) v.y))))));
     }
     catch (Exception e)
     {
@@ -134,27 +124,27 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
    */
   public void addTilesToMap ()
   {
-    this.width = (int)Math.round(size.x * tileSize);
-    this.height = (int)Math.round(size.y * tileSize);
+    this.width = (int) Math.round(size.x * tileSize);
+    this.height = (int) Math.round(size.y * tileSize);
     tiles.forEach((position, tile) -> Stream.of(new Vector2d().cartesian(1, 0), new Vector2d().cartesian(1, 1))
                                             .flatMap(v -> IntStream.range(0, 4).map(n -> 90 * n).mapToObj(v::rotate))
                                             .filter(v -> tiles.get(position.add(v)) != null)
                                             .forEach(v -> tile.neighbors.put(v, tiles.get(position.add(v)))));
     tiles.forEach((vec, tile) ->
     {
-      if (tile.type == Type.playerSpawn)
-        // ToDo @MA
-        // create new instance of Pacman
-        playerSpawn = tile;
+      if (tile.type == Type.playerSpawn){
+
+      }
+
       if (tile.type == Type.ghostSpawn)
       {
         gameState.gameObjects.add(
-          new Ghost("nowak", tile.pos.copy().add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)), new RandomWalkAI()));
+            new Ghost("nowak", tile.pos.copy().add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)), new RandomWalkAI()));
       }
     });
   }
 
-  public record TotalPosition(Vector2d ex, Vector2d in) {}
+  public record TotalPosition(Vector2d ex, Vector2d in) { }
 
 
 }

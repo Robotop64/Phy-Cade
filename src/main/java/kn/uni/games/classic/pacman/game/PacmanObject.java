@@ -4,6 +4,7 @@ package kn.uni.games.classic.pacman.game;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
+import kn.uni.games.classic.pacman.game.hud.TimeLabel;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
@@ -41,22 +42,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
         case left -> 180;
         case right -> 0;
       };
-  }
-
-  /**
-   * Used to spawn a Pacman at his spawn
-   *
-   * @param gameState
-   */
-  public static void spawnPacman (ClassicPacmanGameState gameState)
-  {
-    //search all tiles for a pacman spawn
-    gameState.map.tiles.forEach((vec, tile) ->
-    {
-      if (tile.type == PacmanMapTile.Type.playerSpawn)
-        //create new instance of Pacman
-        gameState.gameObjects.add(new PacmanObject((int)(gameState.map.tileSize * 2. / 3.), vec.multiply(gameState.map.tileSize).add(new Vector2d().cartesian(4, 4))));
-    });
   }
 
   @Override
@@ -193,10 +178,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     {
       gameState.pillsLeft = 244;
       gameState.level += 1;
-      //resets PacMans position
-      this.pos = ClassicPacmanMap.playerSpawn.pos;
       //resets the coins and powerups
-      ClassicPacmanMap.setItems(ClassicPacmanMap.tiles);
+      gameState.map.setItems(gameState.map.tiles);
     }
   }
 
@@ -208,7 +191,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   private void death (ClassicPacmanGameState gameState)
   {
     System.out.println("DEATHHHHHHH");
-    gameState.gameObjects.remove(this);
     gameState.lives -= 1;
     checkGameOver(gameState);
   }
@@ -227,7 +209,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       List <Integer> score = new ArrayList <>();
       score.add((int)gameState.score);
       List <LocalTime> time = new ArrayList <>();
-      //      time.add(gameState.time);
+      time.add(gameState.gameDuration);
 
 
       GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", score, time);
