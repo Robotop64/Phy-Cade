@@ -22,19 +22,20 @@ import java.util.Map;
 
 public class GameSummaryPanel extends UIScreen
 {
-  private             int             listener_id;
-  public static final double          ratio     = 5 / 4.0;
-  private             List <JLabel>   labels    = new ArrayList <>();
-  private             int             totalPlayers;
-  private             int             thisPlayer;
-  private             int             thisScore;
-  private             LocalTime       thisTime;
-  private             int             width;
-  private             int             activeKey = 0;
-  private             List <pmButton> buttons   = new ArrayList <>();
-  private             GameOverScreen  container;
+  private             int                  listener_id;
+  public static final double               ratio     = 5 / 4.0;
+  private             List <JLabel>        labels    = new ArrayList <>();
+  private             int                  totalPlayers;
+  private             int                  thisScore;
+  private             LocalTime            thisTime;
+  private             int                  level;
+  private             int                  width;
+  private             int                  activeKey = 0;
+  private             List <pmButton>      buttons   = new ArrayList <>();
+  private             GameOverScreen       container;
+  private             InputListener.Player player;
 
-  public GameSummaryPanel (GameOverScreen container, int width, int totalPlayers, int thisPlayer, int thisScore, LocalTime thisTime)
+  public GameSummaryPanel (GameOverScreen container, int width, int totalPlayers, InputListener.Player player, int thisScore, LocalTime thisTime, int thisLevel)
   {
     super(Gui.getInstance().content);
     setBackground(Color.black);
@@ -42,16 +43,17 @@ public class GameSummaryPanel extends UIScreen
     setSize(width, (int) ( width / ratio ) - 150);
 
     this.container = container;
-    this.thisPlayer = thisPlayer;
+    this.player = player;
     this.totalPlayers = totalPlayers;
     this.thisScore = thisScore;
     this.thisTime = thisTime;
+    this.level = thisLevel;
     this.width = width;
 
     //TODO bind
-//    bindPlayer();
+    //   bindPlayer();
 
-    createElements(thisPlayer);
+    createElements(player);
 
     activate();
   }
@@ -75,17 +77,17 @@ public class GameSummaryPanel extends UIScreen
 
     //create Keyboard
     {
-      String name="";
-      OnScreenKeyboard o = new OnScreenKeyboard(this,width - 60);
+      String           name = "";
+      OnScreenKeyboard o    = new OnScreenKeyboard(this, width - 60);
       o.setLocation(this.getX() + 30, this.getY() + ( this.getHeight() - o.getHeight() ) - 10);
 
-//      o.setTarget();
+      //      o.setTarget();
       Gui.getInstance().content.add(o);
     }
   }
 
   //TODO level label
-  private void createElements (int player)
+  private void createElements (InputListener.Player player)
   {
     int fontSize   = width / 30;
     int rowDist    = fontSize / 2;
@@ -97,8 +99,14 @@ public class GameSummaryPanel extends UIScreen
 
     Dimension buttonDim = new Dimension(textWidth + textHeight + 50, textHeight);
 
+    int playerNum = 0;
+    if (player.name().equals("playerOne")) playerNum = 1;
+    if (player.name().equals("playerTwo")) playerNum = 2;
+    if (player.name().equals("playerThree")) playerNum = 3;
+    if (player.name().equals("playerFour")) playerNum = 4;
+
     JLabel p = createLabel(
-        " Player " + player + " :",
+        " Player " + playerNum + " :",
         fontSize,
         Font.BOLD,
         this.getX() + xBuffer,
@@ -111,11 +119,29 @@ public class GameSummaryPanel extends UIScreen
     p.setFont(p.getFont().deriveFont(attributes));
 
     createLabel(
-        " Punktzahl : ",
+        " Level : ",
         fontSize,
         Font.BOLD,
         labelPosX,
         this.getY() + textHeight + 2 * rowDist,
+        new Dimension(textWidth, textHeight),
+        SwingConstants.LEFT);
+
+    createLabel(
+        String.valueOf(level),
+        fontSize + 10,
+        Font.PLAIN,
+        numberPosX,
+        this.getY() + textHeight + 2 * rowDist,
+        new Dimension(textWidth * 2, textHeight),
+        SwingConstants.CENTER);
+
+    createLabel(
+        " Punktzahl : ",
+        fontSize,
+        Font.BOLD,
+        labelPosX,
+        this.getY() + textHeight * 2 + 3 * rowDist,
         new Dimension(textWidth, textHeight),
         SwingConstants.LEFT);
 
@@ -124,7 +150,7 @@ public class GameSummaryPanel extends UIScreen
         fontSize + 10,
         Font.PLAIN,
         numberPosX,
-        this.getY() + textHeight + 2 * rowDist,
+        this.getY() + textHeight * 2 + 3 * rowDist,
         new Dimension(textWidth * 2, textHeight),
         SwingConstants.CENTER);
 
@@ -133,7 +159,7 @@ public class GameSummaryPanel extends UIScreen
         fontSize,
         Font.BOLD,
         labelPosX,
-        this.getY() + textHeight * 2 + 3 * rowDist,
+        this.getY() + textHeight * 3 + 4 * rowDist,
         new Dimension(textWidth, textHeight),
         SwingConstants.LEFT);
 
@@ -142,7 +168,7 @@ public class GameSummaryPanel extends UIScreen
         fontSize + 10,
         Font.PLAIN,
         numberPosX,
-        this.getY() + textHeight * 2 + 3 * rowDist,
+        this.getY() + textHeight * 3 + 4 * rowDist,
         new Dimension(textWidth * 2, textHeight),
         SwingConstants.CENTER);
 
@@ -151,7 +177,7 @@ public class GameSummaryPanel extends UIScreen
         fontSize,
         Font.BOLD,
         labelPosX,
-        this.getY() + textHeight * 3 + 4 * rowDist,
+        this.getY() + textHeight * 4 + 5 * rowDist,
         new Dimension(textWidth, textHeight),
         SwingConstants.LEFT);
 
@@ -160,7 +186,7 @@ public class GameSummaryPanel extends UIScreen
         fontSize + 10,
         Font.PLAIN,
         numberPosX,
-        this.getY() + textHeight * 3 + 4 * rowDist,
+        this.getY() + textHeight * 4 + 5 * rowDist,
         new Dimension(textWidth * 2, textHeight),
         SwingConstants.CENTER);
 
@@ -242,6 +268,8 @@ public class GameSummaryPanel extends UIScreen
   {
     listener_id = InputListener.getInstance().subscribe(input ->
     {
+      //filter inputs to match player assigned to this SummaryPanel
+      if (!input.player().equals(player)) return;
       //press a button
       if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
       {

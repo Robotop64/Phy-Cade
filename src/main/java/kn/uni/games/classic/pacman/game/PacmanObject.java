@@ -6,6 +6,7 @@ import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.games.classic.pacman.game.hud.TimeLabel;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
+import kn.uni.ui.InputListener;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -204,15 +205,19 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   {
     if (gameState.lives == 0)
     {
+      //stops the game and removes the GameScreen
       gameState.running = false;
 
+      //TODO Move lists out of here, for mp compatibility
       List <Integer> score = new ArrayList <>();
-      score.add((int)gameState.score);
       List <LocalTime> time = new ArrayList <>();
+      List <Integer> levels = new ArrayList <>();
+
+      score.add((int)gameState.score);
       time.add(gameState.gameDuration);
+      levels.add(gameState.level);
 
-
-      GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", score, time);
+      GameOverScreen gameOverScreen = new GameOverScreen(1, "pacman", score, time, levels);
       Gui.getInstance().content.add(gameOverScreen);
     }
   }
