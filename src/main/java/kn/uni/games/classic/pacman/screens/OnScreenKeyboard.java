@@ -399,7 +399,7 @@ public class OnScreenKeyboard extends UIScreen
         InputListener.getInstance().unsubscribe(listenerId);
         setVisible(false);
         getParent().remove(this);
-        this.parent.activate();
+        this.parent.unmuteSummary();
       }
 
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)

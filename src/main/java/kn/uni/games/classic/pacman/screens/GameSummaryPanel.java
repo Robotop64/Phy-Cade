@@ -34,6 +34,7 @@ public class GameSummaryPanel extends UIScreen
   private             List <pmButton>      buttons   = new ArrayList <>();
   private             GameOverScreen       container;
   private             InputListener.Player player;
+  private JLabel nameLabel;
 
   public GameSummaryPanel (GameOverScreen container, int width, int totalPlayers, InputListener.Player player, int thisScore, LocalTime thisTime, int thisLevel)
   {
@@ -62,27 +63,26 @@ public class GameSummaryPanel extends UIScreen
   {
     //disables the inputListener of the SummaryPanel
     muteSummary();
-
-    //setup name display
+    //disable labels
+    for (JLabel label : labels)
     {
-      JLabel boardText = new JLabel(" PX: ");
-      boardText.setFont(new Font("Fira Code", Font.PLAIN, 24));
-      boardText.setForeground(Color.cyan.darker());
-      boardText.setBackground(Color.black);
-      boardText.setSize(width - 60, 50);
-      boardText.setLocation(this.getX() + 30, this.getY() + 20);
-      boardText.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
-      add(boardText);
+      label.setVisible(false);
     }
+    for (pmButton button : buttons)
+    {
+      button.setVisible(false);
+    }
+    //enable name label
+    nameLabel.setVisible(true);
 
     //create Keyboard
     {
       String           name = "";
       OnScreenKeyboard o    = new OnScreenKeyboard(this, player ,width - 60);
-      o.setLocation(this.getX() + 30, this.getY() + ( this.getHeight() - o.getHeight() ) - 10);
+      o.setLocation((this.getWidth()-o.getWidth())/2, this.getHeight()-o.getHeight()-(this.getWidth()-o.getWidth())/2);
 
-      //      o.setTarget();
-      Gui.getInstance().content.add(o);
+      o.setTarget(System.out::println);
+      add(o);
     }
   }
 
@@ -205,6 +205,16 @@ public class GameSummaryPanel extends UIScreen
         this.width - buttonDim.width - 20,
         this.getY() + this.getHeight() - buttonDim.height - 20,
         buttonDim);
+
+    nameLabel  = new JLabel(" P"+playerNum+": ");
+    nameLabel.setFont(new Font("Fira Code", Font.PLAIN, 24));
+    nameLabel.setForeground(Color.cyan.darker());
+    nameLabel.setBackground(Color.black);
+    nameLabel.setSize(this.getWidth() - 60, 50);
+    nameLabel.setLocation(30, 30);
+    nameLabel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
+    nameLabel.setVisible(false);
+    add(nameLabel);
   }
 
   private JLabel createLabel (String text, int fontSize, int fontStyle, int x, int y, Dimension dim, int align)
@@ -246,6 +256,19 @@ public class GameSummaryPanel extends UIScreen
   private void muteSummary ()
   {
     InputListener.getInstance().unsubscribe(listener_id);
+  }
+
+  public void unmuteSummary(){
+    activate();
+    for (JLabel label : labels)
+    {
+      label.setVisible(true);
+    }
+    for (pmButton button : buttons)
+    {
+      button.setVisible(true);
+    }
+    nameLabel.setVisible(false);
   }
 
   private void killSummary ()
