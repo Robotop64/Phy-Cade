@@ -32,7 +32,7 @@ public class GameSummaryPanel extends UIScreen
   private             int             width;
   private             int             activeKey = 0;
   private             List <pmButton> buttons   = new ArrayList <>();
-  private             GameOverScreen        container;
+  private             GameOverScreen  container;
 
   public GameSummaryPanel (GameOverScreen container, int width, int totalPlayers, int thisPlayer, int thisScore, LocalTime thisTime)
   {
@@ -48,6 +48,9 @@ public class GameSummaryPanel extends UIScreen
     this.thisTime = thisTime;
     this.width = width;
 
+    //TODO bind
+//    bindPlayer();
+
     createElements(thisPlayer);
 
     activate();
@@ -55,20 +58,30 @@ public class GameSummaryPanel extends UIScreen
 
   public void addKeyBoard (int width)
   {
-    JLabel boardText = new JLabel(" PX: ");
-    boardText.setFont(new Font("Fira Code", Font.PLAIN, 24));
-    boardText.setForeground(Color.cyan.darker());
-    boardText.setBackground(Color.black);
-    boardText.setSize(width - 60, 50);
-    boardText.setLocation(this.getX() + 30, this.getY() + 20);
-    boardText.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
-    Gui.getInstance().content.add(boardText);
+    //disables the inputListener of the SummaryPanel
+    muteSummary();
 
-    OnScreenKeyboard o = new OnScreenKeyboard(width - 60);
-    o.setLocation(this.getX() + 30, this.getY() + ( this.getHeight() - o.getHeight() ) - 10);
-    //    System.out.println(this.getY());
-    o.setTarget(System.out::println);
-    Gui.getInstance().content.add(o);
+    //setup name display
+    {
+      JLabel boardText = new JLabel(" PX: ");
+      boardText.setFont(new Font("Fira Code", Font.PLAIN, 24));
+      boardText.setForeground(Color.cyan.darker());
+      boardText.setBackground(Color.black);
+      boardText.setSize(width - 60, 50);
+      boardText.setLocation(this.getX() + 30, this.getY() + 20);
+      boardText.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
+      add(boardText);
+    }
+
+    //create Keyboard
+    {
+      String name="";
+      OnScreenKeyboard o = new OnScreenKeyboard(this,width - 60);
+      o.setLocation(this.getX() + 30, this.getY() + ( this.getHeight() - o.getHeight() ) - 10);
+
+//      o.setTarget();
+      Gui.getInstance().content.add(o);
+    }
   }
 
   //TODO level label
@@ -204,10 +217,15 @@ public class GameSummaryPanel extends UIScreen
     buttons.get(index).update();
   }
 
+  private void muteSummary ()
+  {
+    InputListener.getInstance().unsubscribe(listener_id);
+  }
+
   private void killSummary ()
   {
     //TODO kill() doesnt remove the listener
-//    kill();
+    //    kill();
     //removes the GameSummaryPanel
     InputListener.getInstance().unsubscribe(listener_id);
     setVisible(false);
@@ -224,34 +242,26 @@ public class GameSummaryPanel extends UIScreen
   {
     listener_id = InputListener.getInstance().subscribe(input ->
     {
-      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
-      {
-        InputListener.getInstance().unsubscribe(listener_id);
-        setVisible(false);
-        getParent().remove(this);
-        Gui.getInstance().content.add(MainMenu.getInstance());
-        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
-        MainMenu.getInstance().activate();
-      }
+      //press a button
       if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
       {
         buttons.get(activeKey).press();
       }
-
-      if (input.player().equals(InputListener.Player.playerTwo)) return;
+      //only allow joystick beyond this
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
+      //joystick inputs
       int delta = switch (input.state())
           {
             case up -> -1;
             case down -> 1;
             case none -> 0;
           };
-
       if (input.key().name().equals("horizontal"))
       {
         setActiveKey(Util.bounded(activeKey + delta, 0, 1));
       }
+
     });
     setVisible(true);
   }

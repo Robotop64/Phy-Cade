@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
 import kn.uni.ui.InputListener;
+import kn.uni.ui.UIScreen;
 import kn.uni.ui.pmButton;
 import kn.uni.util.Util;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class OnScreenKeyboard extends JPanel
+public class OnScreenKeyboard extends UIScreen
 {
   public Consumer <String> target;
 
@@ -94,9 +95,12 @@ public class OnScreenKeyboard extends JPanel
   private final        int    buttonBuffer;
   private static final int    maxButtonsInRow = 11;
   public static final  double ratio           = 2.1538461538461537;
+  public GameSummaryPanel parent;
 
-  public OnScreenKeyboard (int width)
+  public OnScreenKeyboard (GameSummaryPanel parent, int width)
   {
+    super(parent);
+    this.parent=parent;
     //initialisation
     int buttonDistProp = 6;
     buttonBaseSize = width * buttonDistProp / ( maxButtonsInRow * 7 + 1 );
@@ -389,8 +393,7 @@ public class OnScreenKeyboard extends JPanel
         InputListener.getInstance().unsubscribe(listenerId);
         setVisible(false);
         getParent().remove(this);
-        Gui.getInstance().frame.getContentPane().add(MainMenu.getInstance());
-        MainMenu.getInstance().activate();
+        this.parent.activate();
       }
 
       if (input.player().equals(InputListener.Player.playerTwo)) return;
