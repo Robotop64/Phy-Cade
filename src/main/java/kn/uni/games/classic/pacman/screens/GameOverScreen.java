@@ -22,6 +22,7 @@ public class GameOverScreen extends UIScreen
   private       int                  latestY;
   private       int                  yOffset  = 0;
   public List<UIScreen> children;
+  public String gameName;
 
 
   public GameOverScreen (int players, String gameName, List <Integer> scores, List <LocalTime> times, List <Integer> levels)
@@ -32,6 +33,7 @@ public class GameOverScreen extends UIScreen
     setLayout(null);
 
     children = new ArrayList<>();
+    this.gameName=gameName;
 
     createLabels(gameName);
     createHeader(players);

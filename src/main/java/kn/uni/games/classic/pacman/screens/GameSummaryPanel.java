@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
+import kn.uni.games.classic.pacman.persistence.PacmanDatabaseProvider;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.UIScreen;
 import kn.uni.ui.pmButton;
@@ -14,6 +15,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.font.TextAttribute;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +61,7 @@ public class GameSummaryPanel extends UIScreen
     activate();
   }
 
-  public void addKeyBoard (int width)
+  private void addKeyBoard (int width)
   {
     //disables the inputListener of the SummaryPanel
     muteSummary();
@@ -84,6 +86,10 @@ public class GameSummaryPanel extends UIScreen
       o.setTarget(System.out::println);
       add(o);
     }
+  }
+
+  private void addEntry(){
+    PacmanDatabaseProvider.setEntries(container.gameName,new LeaderboardMenu.LeaderboardEntry(nameLabel.toString(),thisScore,thisTime, LocalDate.now()));
   }
 
   //TODO level label
@@ -206,7 +212,7 @@ public class GameSummaryPanel extends UIScreen
         this.getY() + this.getHeight() - buttonDim.height - 20,
         buttonDim);
 
-    nameLabel  = new JLabel(" P"+playerNum+": ");
+    nameLabel  = new JLabel("");
     nameLabel.setFont(new Font("Fira Code", Font.PLAIN, 24));
     nameLabel.setForeground(Color.cyan.darker());
     nameLabel.setBackground(Color.black);
