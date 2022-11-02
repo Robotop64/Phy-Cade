@@ -51,7 +51,7 @@ public class GameSummaryPanel extends UIScreen
     this.width = width;
 
     //TODO bind
-    //   bindPlayer();
+//       bindPlayer();
 
     createElements(player);
 
@@ -78,7 +78,7 @@ public class GameSummaryPanel extends UIScreen
     //create Keyboard
     {
       String           name = "";
-      OnScreenKeyboard o    = new OnScreenKeyboard(this, width - 60);
+      OnScreenKeyboard o    = new OnScreenKeyboard(this, player ,width - 60);
       o.setLocation(this.getX() + 30, this.getY() + ( this.getHeight() - o.getHeight() ) - 10);
 
       //      o.setTarget();

@@ -96,11 +96,13 @@ public class OnScreenKeyboard extends UIScreen
   private static final int    maxButtonsInRow = 11;
   public static final  double ratio           = 2.1538461538461537;
   public GameSummaryPanel parent;
+  private  InputListener.Player player;
 
-  public OnScreenKeyboard (GameSummaryPanel parent, int width)
+  public OnScreenKeyboard (GameSummaryPanel parent, InputListener.Player player, int width)
   {
     super(parent);
     this.parent=parent;
+    this.player=player;
     //initialisation
     int buttonDistProp = 6;
     buttonBaseSize = width * buttonDistProp / ( maxButtonsInRow * 7 + 1 );
@@ -383,12 +385,16 @@ public class OnScreenKeyboard extends UIScreen
   {
     listenerId = InputListener.getInstance().subscribe(input ->
     {
-      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
+      //block inputs from players except the assigned player
+      if (!input.player().equals(player)) return;
+
+      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, player)))
       {
         Point p = computeShiftedButton(activeKey);
         buttons[p.y][p.x].press();
       }
-      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
+      //removes&unsub this and sub input listener of parent
+      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, player)))
       {
         InputListener.getInstance().unsubscribe(listenerId);
         setVisible(false);
@@ -396,7 +402,6 @@ public class OnScreenKeyboard extends UIScreen
         this.parent.activate();
       }
 
-      if (input.player().equals(InputListener.Player.playerTwo)) return;
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
