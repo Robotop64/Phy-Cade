@@ -15,17 +15,16 @@ import java.util.List;
 
 public class GameOverScreen extends UIScreen
 {
-  private final int           width    = 700;
-  private final int           distance = 20;
-  private final int           center   = Gui.frameWidth / 2;
-  private       List <JLabel> labels   = new ArrayList <>(0);
-  private       int           latestY;
-  private       int           yOffset  = 0;
-  private       int           players  = 1;
+  private final int                  width    = 700;
+  private final int                  distance = 20;
+  private final int                  center   = Gui.frameWidth / 2;
+  private       List <JLabel>        labels   = new ArrayList <>(0);
+  private       int                  latestY;
+  private       int                  yOffset  = 0;
   public List<UIScreen> children;
 
 
-  public GameOverScreen (int players, String gameName, List <Integer> scores, List <LocalTime> times)
+  public GameOverScreen (int players, String gameName, List <Integer> scores, List <LocalTime> times, List <Integer> levels)
   {
     super(Gui.getInstance().content);
     setBounds(Gui.defaultFrameBounds);
@@ -37,24 +36,23 @@ public class GameOverScreen extends UIScreen
     createLabels(gameName);
     createHeader(players);
 
-    if (players > 2)
-    {
-      addPlayerScreen(0, 3, players, 1, scores.get(0), times.get(0));
-      addPlayerScreen(1, 3, players, 2, scores.get(1), times.get(1));
-      addPlayerScreen(0, 1, players, 3, scores.get(2), times.get(2));
-      addPlayerScreen(1, 1, players, 4, scores.get(3), times.get(3));
-    }
+//    if (players > 2)
+//    {
+//      addPlayerScreen(0, 3, players, 1, scores.get(0), times.get(0));
+//      addPlayerScreen(1, 3, players, 2, scores.get(1), times.get(1));
+//      addPlayerScreen(0, 1, players, 3, scores.get(2), times.get(2));
+//      addPlayerScreen(1, 1, players, 4, scores.get(3), times.get(3));
+//    }
     if (players == 2)
     {
       yOffset = Gui.frameHeight / 4;
-      addPlayerScreen(0, 1, players, 1, scores.get(0), times.get(0));
-      addPlayerScreen(1, 1, players, 2, scores.get(1), times.get(1));
+      addPlayerScreen(0, 1, players, InputListener.Player.playerOne, scores.get(0), times.get(0), levels.get(0));
+      addPlayerScreen(1, 1, players, InputListener.Player.playerTwo, scores.get(1), times.get(1), levels.get(0));
     }
     if (players == 1)
     {
-      addPlayerScreen(0, 1, players, 1, scores.get(0), times.get(0));
+      addPlayerScreen(0, 1, players, InputListener.Player.playerOne, scores.get(0), times.get(0), levels.get(0));
     }
-
 
   }
 
@@ -95,7 +93,7 @@ public class GameOverScreen extends UIScreen
     else createCenterLabel("Eure Ergebnisse: ", "Fira Code", 40, SwingConstants.CENTER, SwingConstants.BOTTOM, Color.cyan, distance);
   }
 
-  private void addPlayerScreen (int x, int y, int totalPlayers, int thisPlayer, int thisScore, LocalTime thisTime)
+  private void addPlayerScreen (int x, int y, int totalPlayers, InputListener.Player player, int thisScore, LocalTime thisTime, int thisLevel)
   {
     int localwidth = 0;
     int xBuffer    = 100;
@@ -109,14 +107,16 @@ public class GameOverScreen extends UIScreen
     {
       localwidth = Gui.frameWidth - 2 * xBuffer - 10;
     }
-
-    GameSummaryPanel gameSummaryPanel = new GameSummaryPanel(this,localwidth, totalPlayers, thisPlayer, thisScore, thisTime);
-    gameSummaryPanel.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryPanel.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
-    gameSummaryPanel.setBackground(Color.black);
-    gameSummaryPanel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
-    //    gameSummaryScreen.addKeyBoard(localwidth);
-    Gui.getInstance().content.add(gameSummaryPanel);
-    children.add(gameSummaryPanel);
+    //create GameSummaryPanel
+    {
+      GameSummaryPanel gameSummaryPanel = new GameSummaryPanel(this, localwidth, totalPlayers, player, thisScore, thisTime, thisLevel);
+      gameSummaryPanel.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryPanel.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
+      gameSummaryPanel.setBackground(Color.black);
+      gameSummaryPanel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
+      //    gameSummaryScreen.addKeyBoard(localwidth);
+      Gui.getInstance().content.add(gameSummaryPanel);
+      children.add(gameSummaryPanel);
+    }
   }
 
   public void removeSummary(){
