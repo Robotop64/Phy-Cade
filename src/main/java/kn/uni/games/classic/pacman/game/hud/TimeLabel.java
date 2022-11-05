@@ -17,7 +17,6 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 
 public class TimeLabel extends PlacedObject implements Rendered
 {
-  Vector2d pos;
   Vector2d size;
 
   public TimeLabel (Vector2d pos, Vector2d size)
@@ -39,13 +38,13 @@ public class TimeLabel extends PlacedObject implements Rendered
     LocalTime diff = LocalTime.of(0, 0, 0, 0).plus(millisBetween, MILLIS);
     gameState.gameDuration = diff;
     String text     = "Time: " + diff;
-    int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
+    int    fontSize = (int)(((size.x / text.length() * 32 / 20) / 100 * gameState.uiSize));
 
     //Draw String
     pos.use(g::translate);
     g.setFont(Util.fira(fontSize, Font.PLAIN));
     g.setStroke(new BasicStroke(1));
-    g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * fontSize ));
+    g.drawString(text, 3, (int)(18.4 * text.length() / 160. * fontSize));
     //    size.use((x, y) -> g.drawRect(0, 0, x, y));
     pos.multiply(-1).use(g::translate);
   }
