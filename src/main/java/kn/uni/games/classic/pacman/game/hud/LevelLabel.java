@@ -13,7 +13,6 @@ import java.awt.Graphics2D;
 
 public class LevelLabel extends PlacedObject implements Rendered
 {
-  Vector2d pos;
   Vector2d size;
 
   public LevelLabel (Vector2d pos, Vector2d size)
@@ -27,14 +26,14 @@ public class LevelLabel extends PlacedObject implements Rendered
   {
 
     String text     = "Level:  " + "%3d".formatted(gameState.level);
-    int    fontSize = (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
+    int    fontSize = (int)(((size.x / text.length() * 32 / 20) / 100 * gameState.uiSize));
 
     pos.use(g::translate);
 
 
     g.setFont(Util.fira(fontSize, Font.PLAIN));
     g.setStroke(new BasicStroke(1));
-    g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * fontSize ));
+    g.drawString(text, 3, (int)(18.4 * text.length() / 160. * fontSize));
 
 
     //    size.use((x, y) -> g.drawRect(0, 0, x, y));
