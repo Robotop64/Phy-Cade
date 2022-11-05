@@ -19,14 +19,13 @@ import java.util.LinkedList;
 
 public class DynamicLeaderboard extends PlacedObject implements Rendered
 {
-  public Vector2d pos;
-  public Vector2d size;
-  private final LeaderboardEntry[]            dynBoard      = new LeaderboardEntry[3];
-  private final LinkedList <LeaderboardEntry> currentSupply = new LinkedList <>();
-  private       boolean                       useDatabase   = true;
-  private       boolean                       newHighscore  = false;
-  private       boolean                       fetching      = false;
-  private int entriesPerFetch = 1000;
+  private final LeaderboardEntry[]            dynBoard        = new LeaderboardEntry[3];
+  private final LinkedList <LeaderboardEntry> currentSupply   = new LinkedList <>();
+  public        Vector2d                      size;
+  private       boolean                       useDatabase     = true;
+  private       boolean                       newHighscore    = false;
+  private       boolean                       fetching        = false;
+  private       int                           entriesPerFetch = 1000;
 
   public DynamicLeaderboard (Vector2d pos, Vector2d size)
   {
@@ -80,7 +79,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
 
     pos.use(g::translate);
     g.setFont(Util.firaUnderlined(getFontSize(header, gameState), Font.PLAIN));
-    g.drawString(header, 3, (int) ( 18.4 * header.length() / 160. * getFontSize(header, gameState) ));
+    g.drawString(header, 3, (int)(18.4 * header.length() / 160. * getFontSize(header, gameState)));
 
     for (int i = 0; i < list.length; i++)
     {
@@ -99,7 +98,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
 
   private int getFontSize (String text, ClassicPacmanGameState gameState)
   {
-    return (int) ( ( ( size.x / text.length() * 32 / 20 ) / 100 * gameState.uiSize ) );
+    return (int)(((size.x / text.length() * 32 / 20) / 100 * gameState.uiSize));
   }
 
   private void drawString (Graphics2D g, String text, ClassicPacmanGameState gameState, int row)
@@ -109,7 +108,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
 
     if (row % 2 == 0)
     {
-      rowOffset = row * ( 40 );
+      rowOffset = row * (40);
     }
     else
     {
@@ -128,7 +127,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
     }
 
     g.setStroke(new BasicStroke(1));
-    g.drawString(text, 3, (int) ( 18.4 * text.length() / 160. * getFontSize(text, gameState) + rowOffset ));
+    g.drawString(text, 3, (int)(18.4 * text.length() / 160. * getFontSize(text, gameState) + rowOffset));
   }
 
   private void fetchEntries (long score, int end)
@@ -163,7 +162,6 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
       if (currentSupply.size() == 0)
       {
         fetchEntries(gameState.score, entriesPerFetch);
-        return;
       }
       else
       {
