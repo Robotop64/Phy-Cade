@@ -11,7 +11,6 @@ import kn.uni.util.Vector2d;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.IOException;
 
 public class HUD extends PlacedObject implements Rendered
 {
@@ -25,10 +24,11 @@ public class HUD extends PlacedObject implements Rendered
   int rowHeight;
   int textBuffer;
 
+  //ToDo remove own will. position and size should be determined by parent object
   //initialize HUD
   public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds)
   {
-    botBounds = new Vector2d().cartesian(mapBounds.x, (int) ( Gui.frameHeight - mapBounds.y - mapPos.y * 2 - mapPos.y / 2 ));
+    botBounds = new Vector2d().cartesian(mapBounds.x, (int)(Gui.frameHeight - mapBounds.y - mapPos.y * 2 - mapPos.y / 2));
     botPos = new Vector2d().cartesian(mapPos.x, mapPos.y + mapBounds.y - mapPos.y / 2);
 
     sideBounds = new Vector2d().cartesian(Gui.frameWidth - mapBounds.x - mapPos.x - mapPos.x * 2 - mapPos.x / 2, mapBounds.y);
@@ -36,7 +36,7 @@ public class HUD extends PlacedObject implements Rendered
 
     textBuffer = 15;
 
-    textBounds = (int) ( sideBounds.x - 2 * ( textBuffer ) );
+    textBounds = (int)(sideBounds.x - 2 * (textBuffer));
 
     rowHeight = gameState.uiSize - 20;
 
@@ -47,13 +47,13 @@ public class HUD extends PlacedObject implements Rendered
       gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 2), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       gameState.gameObjects.add(new TimeLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 3), new Vector2d().cartesian(textBounds, gameState.uiSize)));
       gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 4), new Vector2d().cartesian(textBounds, gameState.uiSize)));
-//          gameState.gameObjects.add(new CollectablesLabel());
+      //          gameState.gameObjects.add(new CollectablesLabel());
       gameState.gameObjects.add(new DynamicLeaderboard(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 8.5), new Vector2d().cartesian(textBounds, gameState.uiSize)));
     }
     else
     {
-//          gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(20, 920), new Vector2d().cartesian(400, 80)));
-//          gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(400, 920), new Vector2d().cartesian(400, 80)));
+      //          gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(20, 920), new Vector2d().cartesian(400, 80)));
+      //          gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(400, 920), new Vector2d().cartesian(400, 80)));
     }
   }
 
@@ -66,11 +66,11 @@ public class HUD extends PlacedObject implements Rendered
     //    g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
 
     g.setStroke(new BasicStroke(3));
-    g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
+    g.drawRect((int)sidePos.x, 0, (int)sideBounds.x, (int)sideBounds.y);
 
-//        g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
-//        g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
-//        g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
+    //        g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
+    //        g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
+    //        g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
 
   }
 
