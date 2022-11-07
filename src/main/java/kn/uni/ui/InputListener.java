@@ -19,12 +19,6 @@ public class InputListener extends Celebrity <Input>
 {
 
   private static InputListener instance;
-
-  Thread                   thread;
-  Map <Controller, Player> controllerPlayerMap = new HashMap <>();
-
-  private Map <Component.Identifier.Key, State> keyStateMap = new HashMap <>();
-
   private final Map <Component.Identifier.Key, InputState> inputMap = Map.of(
     Component.Identifier.Key.W, new InputState(Key.vertical, State.up),
     Component.Identifier.Key.S, new InputState(Key.vertical, State.down),
@@ -37,6 +31,9 @@ public class InputListener extends Celebrity <Input>
     Component.Identifier.Key.K, new InputState(Key.E, State.down),
     Component.Identifier.Key.L, new InputState(Key.F, State.down)
   );
+  Thread                   thread;
+  Map <Controller, Player> controllerPlayerMap = new HashMap <>();
+  private Map <Component.Identifier.Key, State> keyStateMap = new HashMap <>();
 
   private InputListener ()
   {
@@ -62,7 +59,7 @@ public class InputListener extends Celebrity <Input>
       else
       {
         // if we don't detect enough joysticks, revert to keyboards
-//        System.out.println("keyboard :(");
+        //        System.out.println("keyboard :(");
         final List <Controller> keyboards = Arrays.stream(ControllerEnvironment.getDefaultEnvironment().getControllers())
                                                   .filter(controller -> controller.getType().equals(Controller.Type.KEYBOARD))
                                                   .toList();
@@ -106,6 +103,15 @@ public class InputListener extends Celebrity <Input>
         }
       }
     });
+  }
+
+  public static InputListener getInstance ()
+  {
+    if (instance == null)
+    {
+      instance = new InputListener();
+    }
+    return instance;
   }
 
   private void handleJoystickEvents (List <Controller> controllers, boolean void_input)
@@ -159,23 +165,22 @@ public class InputListener extends Celebrity <Input>
         case "Button 3", "Top" -> Key.D;
         case "Button 4", "Top 2" -> Key.E;
         case "Button 5", "Pinkie" -> Key.F;
-        case "Button 6", "Base" -> Key.G;
-        case "Button 7", "Base 2" -> Key.H;
-        case "Button 8", "Base 3" -> Key.J;
+        case "Button 6", "Base" -> Key.A;
+        case "Button 7", "Base 2" -> Key.B;
         default -> null;
       };
   }
 
   public void start () {thread.start();}
 
-  public static InputListener getInstance ()
-  {
-    if (instance == null)
-    {
-      instance = new InputListener();
-    }
-    return instance;
-  }
+  public enum Key
+  { vertical, horizontal, A, B, C, D, J, H, G, F, E }
+
+  public enum State
+  { up, down, none }
+
+  public enum Player
+  { playerOne, playerTwo }
 
   public record Input(Key key, State state, Player player)
   {
@@ -199,15 +204,6 @@ public class InputListener extends Celebrity <Input>
         };
     }
   }
-
-  public enum Key
-  { vertical, horizontal, A, B, C, D, J, H, G, F, E}
-
-  public enum State
-  { up, down, none }
-
-  public enum Player
-  { playerOne, playerTwo }
 
   record InputState(Key key, State state) {}
 
