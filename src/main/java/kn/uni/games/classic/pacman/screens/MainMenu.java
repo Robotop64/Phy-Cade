@@ -22,13 +22,13 @@ public class MainMenu extends JPanel
   pmButton title_label;
 
   int w = 500;
-  int x = ( Gui.frameWidth - w ) / 2;
+  int x = (Gui.frameWidth - w) / 2;
 
   int h         = 120;
   int n_offsets = 32;
   int n_buttons = 5;
-  int buffer    = ( Gui.frameHeight - ( n_buttons * h ) ) / n_offsets;
-  int y         = ( n_offsets - n_buttons ) / 2 * buffer + 100;
+  int buffer    = (Gui.frameHeight - (n_buttons * h)) / n_offsets;
+  int y         = (n_offsets - n_buttons) / 2 * buffer + 100;
 
   int selected_index = 0;
   int listenerId;
@@ -52,19 +52,19 @@ public class MainMenu extends JPanel
     add(spButton);
 
     mpButton = new pmButton("ZWEI SPIELER");
-    mpButton.setBounds(x, y + ( h + buffer ), w, h);
+    mpButton.setBounds(x, y + (h + buffer), w, h);
     add(mpButton);
 
     lbButton = new pmButton("BESTENLISTE");
-    lbButton.setBounds(x, y + 2 * ( h + buffer ), w, h);
+    lbButton.setBounds(x, y + 2 * (h + buffer), w, h);
     add(lbButton);
 
     settingsButton = new pmButton("EINSTELLUNGEN");
-    settingsButton.setBounds(x, y + 3 * ( h + buffer ), w, h);
+    settingsButton.setBounds(x, y + 3 * (h + buffer), w, h);
     add(settingsButton);
 
     soundButton = new pmButton("TON - AN");
-    soundButton.setBounds(x, y + 4 * ( h + buffer ), w, h);
+    soundButton.setBounds(x, y + 4 * (h + buffer), w, h);
     add(soundButton);
 
     buttons = Arrays.asList(spButton, mpButton, lbButton, settingsButton, soundButton);
@@ -148,20 +148,20 @@ public class MainMenu extends JPanel
         buttons.get(selected_index).press();
         return;
       }
-      if (input.equals(new Input(InputListener.Key.B, InputListener.State.down, Player.playerOne)))
-      {
-        System.exit(0);
-      }
+      //      if (input.equals(new Input(InputListener.Key.B, InputListener.State.down, Player.playerOne)))
+      //      {
+      //        System.exit(0);
+      //      }
 
       if (input.player().equals(Player.playerTwo)) return;
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+        {
+          case up -> -1;
+          case down -> 1;
+          case none -> 0;
+        };
       select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
     });
     setVisible(true);
