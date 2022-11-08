@@ -28,7 +28,6 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       Color.green, Type.playerSpawn,
       Color.white, Type.none);
 
-  // Todo @MA wtf, why is this static??????????????????????????????
   /**
    * TileSpace -> Tiles
    */
@@ -52,17 +51,24 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   }
 
-  public void setItems (Map <Vector2d, PacmanMapTile> tiles)
+  public void setItems (Map <PacmanMapTile, ClassicPacmanGameState.Collectables> itemLocations)
   {
-    tiles.forEach((vec, tile) ->
+    if (itemLocations.isEmpty())
     {
-      switch (tile.type)
+      tiles.forEach((vec, tile) ->
       {
-        case coin -> tile.heldItem = ClassicPacmanGameState.Collectables.coin;
-        case powerUp -> tile.heldItem = ClassicPacmanGameState.Collectables.powerUp;
-        default -> tile.heldItem = null;
-      }
-    });
+        switch (tile.type)
+        {
+          case coin -> tile.heldItem = ClassicPacmanGameState.Collectables.coin;
+          case powerUp -> tile.heldItem = ClassicPacmanGameState.Collectables.powerUp;
+          default -> tile.heldItem = null;
+        }
+      });
+    }
+    else
+    {
+      tiles.forEach((vec, tile) -> tile.heldItem = itemLocations.get(tile));
+    }
   }
 
   //background
@@ -141,6 +147,17 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
             new Ghost("nowak", tile.pos.copy().add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)), new RandomWalkAI()));
       }
     });
+  }
+
+  public Map <PacmanMapTile, ClassicPacmanGameState.Collectables> getPlacedItems ()
+  {
+    Map <PacmanMapTile, ClassicPacmanGameState.Collectables> out = new HashMap <>();
+    tiles.forEach((vec, tile) ->
+        {
+          if (tile.heldItem != null) out.put(tile, tile.heldItem);
+        }
+    );
+    return out;
   }
 
   public record TotalPosition(Vector2d ex, Vector2d in) { }
