@@ -51,6 +51,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   }
 
+  // TODO else statement not working (given map is not empty)
   public void setItems (Map <PacmanMapTile, ClassicPacmanGameState.Collectables> itemLocations)
   {
     if (itemLocations.isEmpty())
