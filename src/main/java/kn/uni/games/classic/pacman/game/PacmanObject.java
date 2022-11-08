@@ -13,7 +13,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static kn.uni.util.Util.round;
@@ -180,7 +182,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       //resets the coins and powerups
       //      gameState.map.setItems(gameState.map.tiles);
       reloadLevel(gameState);
-      gameState.map.setItems(gameState.map.tiles);
+      gameState.map.setItems(new HashMap <>());
     }
   }
 
@@ -227,6 +229,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
 
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
+    Map <PacmanMapTile, ClassicPacmanGameState.Collectables> oldItems = gameState.map.getPlacedItems();
+
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof PlacedObject)
                          .filter(gameObject -> gameObject instanceof PacmanObject || gameObject instanceof Ghost || gameObject instanceof ClassicPacmanMap)
@@ -239,6 +243,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
     }
+
+    gameState.map.setItems(oldItems);
   }
 
 }
