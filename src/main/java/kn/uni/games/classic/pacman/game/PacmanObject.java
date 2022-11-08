@@ -4,9 +4,7 @@ package kn.uni.games.classic.pacman.game;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
-import kn.uni.games.classic.pacman.game.hud.TimeLabel;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
-import kn.uni.ui.InputListener;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -37,12 +35,12 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   private static int getΘ (Direction direction)
   {
     return switch (direction)
-      {
-        case up -> 270;
-        case down -> 90;
-        case left -> 180;
-        case right -> 0;
-      };
+        {
+          case up -> 270;
+          case down -> 90;
+          case left -> 180;
+          case right -> 0;
+        };
   }
 
   @Override
@@ -54,7 +52,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     int θ = getΘ(gameState.playerDirection);
     g.rotate(Math.toRadians(θ));
     double animationDuration = gameState.tps / 2.;
-    int    angle             = (int)Math.round(20 + 40 * sin((gameState.currentTick % animationDuration) / animationDuration * 360.));
+    int    angle             = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
 
     g.setColor(Color.orange.darker());
     g.setStroke(new BasicStroke(Math.round(r / 3.)));
@@ -159,7 +157,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       // check if die
       if (gameState.gameObjects.stream()
                                .filter(obj -> obj instanceof Ghost)
-                               .map(ghost -> ((Ghost)ghost).pos)
+                               .map(ghost -> ( (Ghost) ghost ).pos)
                                .map(vec -> vec.subtract(pos).magnitude())
                                .anyMatch(mag -> mag <= ClassicPacmanGameConstants.ghostRadius + r))
       {
@@ -180,6 +178,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.pillsLeft = 244;
       gameState.level += 1;
       //resets the coins and powerups
+      //      gameState.map.setItems(gameState.map.tiles);
+      reloadLevel(gameState);
       gameState.map.setItems(gameState.map.tiles);
     }
   }
@@ -191,8 +191,11 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
    */
   private void death (ClassicPacmanGameState gameState)
   {
-    System.out.println("DEATHHHHHHH");
+    System.out.println("Player died!");
     gameState.lives -= 1;
+
+    reloadLevel(gameState);
+
     checkGameOver(gameState);
   }
 
@@ -209,11 +212,11 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.running = false;
 
       //TODO Move lists out of here, for mp compatibility
-      List <Integer> score = new ArrayList <>();
-      List <LocalTime> time = new ArrayList <>();
-      List <Integer> levels = new ArrayList <>();
+      List <Integer>   score  = new ArrayList <>();
+      List <LocalTime> time   = new ArrayList <>();
+      List <Integer>   levels = new ArrayList <>();
 
-      score.add((int)gameState.score);
+      score.add((int) gameState.score);
       time.add(gameState.gameDuration);
       levels.add(gameState.level);
 
@@ -221,4 +224,21 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       Gui.getInstance().content.add(gameOverScreen);
     }
   }
+
+  private void reloadLevel (ClassicPacmanGameState gameState)
+  {
+    gameState.gameObjects.stream()
+                         .filter(gameObject -> gameObject instanceof PlacedObject)
+                         .filter(gameObject -> gameObject instanceof PacmanObject || gameObject instanceof Ghost || gameObject instanceof ClassicPacmanMap)
+                         .forEach(gameObject -> ( (PlacedObject) gameObject ).expired = true);
+
+    //create new Map
+    {
+      ClassicPacmanMap map = new ClassicPacmanMap(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), 1000, 1000);
+      gameState.gameObjects.add(map);
+      gameState.map = map;
+      gameState.size = new Vector2d().cartesian(map.width, map.height);
+    }
+  }
+
 }
