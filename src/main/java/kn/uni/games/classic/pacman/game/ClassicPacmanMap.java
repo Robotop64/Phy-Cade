@@ -8,7 +8,6 @@ import kn.uni.util.Vector2d;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +17,8 @@ import java.util.stream.Stream;
 
 public class ClassicPacmanMap extends PlacedObject implements Rendered
 {
-  private static final String                        bmpPath       = "pacman/map/PacManClassic Map.bmp";
-  private static final Map <Color, Type>             typeFromColor = Map.of(
+  private static final String            bmpPath       = "pacman/map/PacManClassic Map.bmp";
+  private static final Map <Color, Type> typeFromColor = Map.of(
       Color.black, Type.wall,
       Color.blue, Type.path,
       Color.yellow, Type.coin,
@@ -33,13 +32,12 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   /**
    * TileSpace -> Tiles
    */
-  public               Map <Vector2d, PacmanMapTile> tiles         = new HashMap <>();
-  public               int                           tileSize;
-  public               int                           width;
-  public               int                           height;
+  public Map <Vector2d, PacmanMapTile> tiles = new HashMap <>();
+  public int                           tileSize;
+  public int                           width;
+  public int                           height;
   Vector2d size;
   private ClassicPacmanGameState gameState;
-
 
 
   public ClassicPacmanMap (ClassicPacmanGameState gameState, Vector2d pos, int width, int height)
@@ -51,7 +49,6 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
     loadMapData();
     addTilesToMap();
-    setItems(tiles);
 
   }
 
@@ -132,8 +129,10 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
                                             .forEach(v -> tile.neighbors.put(v, tiles.get(position.add(v)))));
     tiles.forEach((vec, tile) ->
     {
-      if (tile.type == Type.playerSpawn){
-
+      if (tile.type == Type.playerSpawn)
+      {
+        gameState.gameObjects.add(
+            new PacmanObject((int) ( this.tileSize * 2. / 3. ), vec.multiply(this.tileSize).add(new Vector2d().cartesian(4, 4))));
       }
 
       if (tile.type == Type.ghostSpawn)

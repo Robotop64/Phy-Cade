@@ -4,8 +4,7 @@ import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap;
 import kn.uni.games.classic.pacman.game.LoggerObject;
-import kn.uni.games.classic.pacman.game.PacmanMapTile;
-import kn.uni.games.classic.pacman.game.PacmanObject;
+import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
 import kn.uni.games.classic.pacman.game.hud.HUD;
@@ -73,15 +72,7 @@ public class ClassicPacmanGameScreen extends UIScreen
       gameState.gameObjects.add(map);
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
-    }
-    //create Pacman
-    {
-      gameState.map.tiles.forEach((vec, tile) ->
-      {
-        if (tile.type == PacmanMapTile.Type.playerSpawn)
-          //create new instance of Pacman
-          gameState.gameObjects.add(new PacmanObject((int) ( gameState.map.tileSize * 2. / 3. ), vec.multiply(gameState.map.tileSize).add(new Vector2d().cartesian(4, 4))));
-      });
+      map.setItems(gameState.map.tiles);
     }
     //create HUD
     gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
@@ -106,9 +97,17 @@ public class ClassicPacmanGameScreen extends UIScreen
         if (t - gameState.lastTickTime < tickDuration) continue;
         gameState.currentTick++;
         gameState.lastTickTime = t;
+
+        //remove marked objects
+        gameState.gameObjects.stream()
+                             .filter(gameObject -> gameObject instanceof PlacedObject)
+                             .filter(gameObject -> ( (PlacedObject) gameObject ).expired)
+                             .forEach(gameObject -> gameState.gameObjects.remove(gameObject));
+
+        //tick gameObjects
         gameState.gameObjects.stream()
                              .filter(gameObject -> gameObject instanceof Ticking)
-                             .forEach(gameObject -> ((Ticking)gameObject).tick(gameState));
+                             .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
         if (gameState.currentTick % 2 == 0)
         {
           Gui.getInstance().frame.repaint();
@@ -123,12 +122,12 @@ public class ClassicPacmanGameScreen extends UIScreen
   protected void paintComponent (Graphics g)
   {
     super.paintComponent(g);
-    Graphics2D gg = (Graphics2D)g;
+    Graphics2D gg = (Graphics2D) g;
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof Rendered)
-                         .map(gameObject -> (Rendered)gameObject)
+                         .map(gameObject -> (Rendered) gameObject)
                          .sorted(Comparator.comparingInt(Rendered::paintLayer))
-                         .forEach(gameObject -> (gameObject).paintComponent(gg, gameState));
+                         .forEach(gameObject -> ( gameObject ).paintComponent(gg, gameState));
   }
 
 
