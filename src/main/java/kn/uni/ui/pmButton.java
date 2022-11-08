@@ -21,13 +21,15 @@ public class pmButton extends JLabel
     setForeground(Color.yellow);
     setBackground(Color.black);
     setHorizontalAlignment(CENTER);
-    setFont(new Font("Fira Code", Font.PLAIN, 32));
-
+    //    setFont(new Font("Fira Code", Font.PLAIN, 32));
+    setFontSize(32);
+    
   }
 
   public void setFontSize (int size)
   {
-    setFont(new Font("Fira Code", Font.PLAIN, size));
+    Font old = this.getFont();
+    setFont(new Font(old.getName(), old.getStyle(), size));
   }
 
   public void update ()

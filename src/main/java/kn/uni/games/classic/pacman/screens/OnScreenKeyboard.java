@@ -18,40 +18,40 @@ public class OnScreenKeyboard extends UIScreen
   public static final  double                   ratio               = 2.1538461538461537;
   private static final int                      maxButtonsInRow     = 11;
   private final        Map <Languages, Layout>  LayoutLangStringMap = Map.of(
-    Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
-    Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
+      Languages.DE, new Layout(LayoutHead.numDE, LayoutBody.DE),
+      Languages.GREEK, new Layout(LayoutHead.num, LayoutBody.GREEK));
   private final        Map <LayoutHead, String> layoutHeadStringMap = Map.of(
-    LayoutHead.num, "1234567890 ",
-    LayoutHead.numDE, "1234567890ß",
-    LayoutHead.extra, "!\"§$%&/()=?");
+      LayoutHead.num, "1234567890 ",
+      LayoutHead.numDE, "1234567890ß",
+      LayoutHead.extra, "!\"§$%&/()=?");
   private final        Map <LayoutBody, String> layoutBodyStringMap = Map.of(
-    //      LayoutBody.empty, "                             ",
+      //      LayoutBody.empty, "                             ",
 
-    LayoutBody.specialSigns1, "    _<>[]# ^  ':;,`~\\|{}      ",
-    LayoutBody.specialSigns2, "°·                           ",
+      LayoutBody.specialSigns1, "    _<>[]# ^  ':;,`~\\|{}      ",
+      LayoutBody.specialSigns2, "°·                           ",
 
-    LayoutBody.math, "+-×÷=±∑∏≂∞∀∃∇≠≈≙√≤≥⋘⋙∫∮⌀∡⦝⟂∂∝",
-    LayoutBody.logic, "→←↓↑⇒⇐⇔⇋↯∧∨⊻⊽⋂⋃¬≡∈∉⊂⊄⊃⊅      ",
-    LayoutBody.mathSets, "ℕℝℚℙℤℍℂ                      ",
-    LayoutBody.roman, "ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅬⅭⅮⅯↀↁↂ           ",
+      LayoutBody.math, "+-×÷=±∑∏≂∞∀∃∇≠≈≙√≤≥⋘⋙∫∮⌀∡⦝⟂∂∝",
+      LayoutBody.logic, "→←↓↑⇒⇐⇔⇋↯∧∨⊻⊽⋂⋃¬≡∈∉⊂⊄⊃⊅      ",
+      LayoutBody.mathSets, "ℕℝℚℙℤℍℂ                      ",
+      LayoutBody.roman, "ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅬⅭⅮⅯↀↁↂ           ",
 
-    LayoutBody.currency, "€£¥₩₿￠¤₪₹₱₽                  ",
+      LayoutBody.currency, "€£¥₩₿￠¤₪₹₱₽                  ",
 
-    LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
-    LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
+      LayoutBody.DE, "QWERTZUIOPÜASDFGHJKLÖÄYXCVBNM".toLowerCase(),
+      LayoutBody.GREEK, "  ΕΡΤΥΘΙΟΠ ΑΣΔΦΓΗΞΚΛ  ΖΧΨΩΒΝΜ".toLowerCase());
   private final        Map <Point, Point>       keyMap              = Map.of(
-    //shift
-    new Point(3, 1), new Point(3, 0),
-    //backspace
-    new Point(3, 10), new Point(3, 8),
-    //extra
-    new Point(4, 1), new Point(4, 0),
-    //space
-    new Point(4, 4), new Point(4, 2),
-    new Point(4, 5), new Point(4, 2),
-    new Point(4, 6), new Point(4, 2),
-    //enter
-    new Point(4, 10), new Point(4, 5)
+      //shift
+      new Point(3, 1), new Point(3, 0),
+      //backspace
+      new Point(3, 10), new Point(3, 8),
+      //extra
+      new Point(4, 1), new Point(4, 0),
+      //space
+      new Point(4, 4), new Point(4, 2),
+      new Point(4, 5), new Point(4, 2),
+      new Point(4, 6), new Point(4, 2),
+      //enter
+      new Point(4, 10), new Point(4, 5)
   );
   private final        char[][]                 keyRows             = new char[3][];
   private final        char[]                   topRow              = new char[11];
@@ -79,17 +79,17 @@ public class OnScreenKeyboard extends UIScreen
     this.player = player;
     //initialisation
     int buttonDistProp = 6;
-    buttonBaseSize = width * buttonDistProp / (maxButtonsInRow * 7 + 1);
+    buttonBaseSize = width * buttonDistProp / ( maxButtonsInRow * 7 + 1 );
     buttonBuffer = buttonBaseSize / buttonDistProp;
 
     setBackground(Color.black);
     setLayout(null);
 
     pmButton border = new pmButton("");
-    border.setBounds(0, 0, width, (int)(width / ratio));
+    border.setBounds(0, 0, width, (int) ( width / ratio ));
     border.update();
     add(border);
-    setSize(width, (int)(width / ratio));
+    setSize(width, (int) ( width / ratio ));
     createButtons();
     setButtonLayout(activeLayout);
     toggleKey(activeKey);
@@ -251,15 +251,15 @@ public class OnScreenKeyboard extends UIScreen
   {
     List <Languages> languagesList = Arrays.stream(Languages.values()).toList();
     int              index         = languagesList.indexOf(activeLanguage);
-    Languages        next          = languagesList.get((index + 1) % languagesList.size());
+    Languages        next          = languagesList.get(( index + 1 ) % languagesList.size());
     activeLanguage = next;
     setButtonLayout(LayoutLangStringMap.get(next));
 
     specialLayers = Arrays.stream(LayoutBody.values())
-                          .filter(layoutBody -> (!Arrays.stream(Languages.values())
-                                                        .map(Enum::name)
-                                                        .toList()
-                                                        .contains(layoutBody.name())) || layoutBody.name().equals(activeLanguage.name()))
+                          .filter(layoutBody -> ( !Arrays.stream(Languages.values())
+                                                         .map(Enum::name)
+                                                         .toList()
+                                                         .contains(layoutBody.name()) ) || layoutBody.name().equals(activeLanguage.name()))
                           .toList();
 
   }
@@ -271,13 +271,13 @@ public class OnScreenKeyboard extends UIScreen
   {
     if (specialLayers == null)
       specialLayers = Arrays.stream(LayoutBody.values())
-                            .filter(layoutBody -> (!Arrays.stream(Languages.values())
-                                                          .map(Enum::name)
-                                                          .toList()
-                                                          .contains(layoutBody.name())) || layoutBody.name().equals(activeLanguage.name()))
+                            .filter(layoutBody -> ( !Arrays.stream(Languages.values())
+                                                           .map(Enum::name)
+                                                           .toList()
+                                                           .contains(layoutBody.name()) ) || layoutBody.name().equals(activeLanguage.name()))
                             .toList();
     int        index = specialLayers.indexOf(activeExtra);
-    LayoutBody next  = specialLayers.get((index + 1) % specialLayers.size());
+    LayoutBody next  = specialLayers.get(( index + 1 ) % specialLayers.size());
     activeExtra = next;
     activeLayout = new Layout(activeLayout.layoutHead, next);
     setButtonLayout(activeLayout);
@@ -288,7 +288,7 @@ public class OnScreenKeyboard extends UIScreen
    */
   private Point computeShiftedButton (Point coordinate)
   {
-    return (coordinate.x == 0) ? coordinate : keyMap.getOrDefault(coordinate, new Point(coordinate.y, computeShiftedButton(new Point(coordinate.y, coordinate.x - 1)).x + 1));
+    return ( coordinate.x == 0 ) ? coordinate : keyMap.getOrDefault(coordinate, new Point(coordinate.y, computeShiftedButton(new Point(coordinate.y, coordinate.x - 1)).x + 1));
   }
 
   /**
@@ -342,9 +342,9 @@ public class OnScreenKeyboard extends UIScreen
   {
     pmButton temp = new pmButton(text);
     temp.addAction(action);
-    temp.setSize((int)Math.round(buttonBaseSize * size + (size - 1) * buttonBuffer), buttonBaseSize);
-    temp.setLocation((x + 1) * buttonBuffer + x * buttonBaseSize + getWidth() / Gui.frameWidth,
-      (y + 1) * buttonBuffer + y * buttonBaseSize + getWidth() / Gui.frameWidth);
+    temp.setSize((int) Math.round(buttonBaseSize * size + ( size - 1 ) * buttonBuffer), buttonBaseSize);
+    temp.setLocation(( x + 1 ) * buttonBuffer + x * buttonBaseSize + getWidth() / Gui.frameWidth,
+        ( y + 1 ) * buttonBuffer + y * buttonBaseSize + getWidth() / Gui.frameWidth);
     temp.isSelected = false;
     temp.update();
 
@@ -379,11 +379,11 @@ public class OnScreenKeyboard extends UIScreen
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
 
       if (input.key().name().equals("horizontal"))
       {
@@ -418,11 +418,11 @@ public class OnScreenKeyboard extends UIScreen
   { DE, GREEK }
 
   private record Layout(LayoutHead layoutHead, LayoutBody layoutBody)
-  {}
+  { }
 
   private record Language(Languages language)
-  {}
+  { }
 
   private record Point(int y, int x)
-  {}
+  { }
 }
