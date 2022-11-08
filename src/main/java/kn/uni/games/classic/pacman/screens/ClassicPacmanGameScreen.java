@@ -72,7 +72,7 @@ public class ClassicPacmanGameScreen extends UIScreen
       gameState.gameObjects.add(map);
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
-      map.setItems(gameState.map.tiles);
+      map.setItems(new HashMap <>());
     }
     //create HUD
     gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
