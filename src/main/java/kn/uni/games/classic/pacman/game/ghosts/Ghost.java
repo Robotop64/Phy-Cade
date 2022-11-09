@@ -56,10 +56,11 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     int           duration = gameState.tps / animationFrequency;
-    BufferedImage im       = ((gameState.currentTick % duration) * 1. / duration > .5) ? closed : opened;
+    BufferedImage im       = ( ( gameState.currentTick % duration ) * 1. / duration > .5 ) ? closed : opened;
     Vector2d      topLeft  = new Vector2d().cartesian(im.getWidth(), im.getHeight()).multiply(-.5).add(pos);
     topLeft.use(g::translate);
     g.drawImage(im, 0, 0, Gui.getInstance().frame);
+    g.drawOval(0, 0, (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ), (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ));
     topLeft.multiply(-1).use(g::translate);
     direction = Direction.up;
   }
@@ -73,11 +74,11 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
   private double getSpeedScale (ClassicPacmanGameState gameState)
   {
     return switch (gameState.level)
-      {
-        case 1 -> .75;
-        case 2, 3, 4 -> .75;
-        default -> .85;
-      };
+        {
+          case 1 -> .75;
+          case 2, 3, 4 -> .75;
+          default -> .85;
+        };
   }
 
   @Override

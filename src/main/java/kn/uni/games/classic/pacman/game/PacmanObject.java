@@ -8,7 +8,6 @@ import kn.uni.games.classic.pacman.screens.GameOverScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
-import javax.swing.Timer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -200,6 +199,12 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       {
         death(gameState);
       }
+      gameState.gameObjects.stream()
+                           .filter(obj -> obj instanceof Ghost)
+                           .map(ghost -> ( (Ghost) ghost ).pos)
+                           .map(vec -> vec.subtract(pos).magnitude())
+                           .forEach(System.out::println);
+
     }
   }
 
@@ -231,7 +236,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     System.out.println("Player died!");
     gameState.lives -= 1;
 
-    this.playerDead = true;
+    ph(gameState);
+    //    this.playerDead = true;
 
     deadAnimStartTick = gameState.currentTick + 1;
 
@@ -245,13 +251,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     reloadLevel(gameState);
 
     checkGameOver(gameState);
-
-    Timer deathDelay = new Timer(2000, (a) ->
-    {
-
-    });
-    deathDelay.setRepeats(false);
-    //    deathDelay.start();
   }
 
   /**
