@@ -182,7 +182,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       //resets the coins and powerups
       //      gameState.map.setItems(gameState.map.tiles);
       reloadLevel(gameState);
-      gameState.map.setItems(new HashMap <>());
+      gameState.map.setItems(new HashMap <>(), new HashMap <>());
     }
   }
 
@@ -230,6 +230,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
     Map <PacmanMapTile, ClassicPacmanGameState.Collectables> oldItems = gameState.map.getPlacedItems();
+    Map <Vector2d, PacmanMapTile> oldTiles = gameState.map.tiles;
 
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof PlacedObject)
@@ -244,7 +245,9 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.size = new Vector2d().cartesian(map.width, map.height);
     }
 
-    gameState.map.setItems(oldItems);
+
+
+    gameState.map.setItems(oldTiles, oldItems);
   }
 
 }

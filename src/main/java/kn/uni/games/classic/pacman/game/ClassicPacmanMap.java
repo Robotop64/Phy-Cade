@@ -51,8 +51,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   }
 
-  // TODO else statement not working (given map is not empty)
-  public void setItems (Map <PacmanMapTile, ClassicPacmanGameState.Collectables> itemLocations)
+
+  public void setItems (Map <Vector2d, PacmanMapTile> oldTiles, Map <PacmanMapTile, ClassicPacmanGameState.Collectables> itemLocations)
   {
     if (itemLocations.isEmpty())
     {
@@ -68,7 +68,12 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     }
     else
     {
-      tiles.forEach((vec, tile) -> tile.heldItem = itemLocations.get(tile));
+      oldTiles.forEach((vec,tile)->{
+        if (tile.heldItem != null){
+          tiles.get(vec).heldItem=tile.heldItem;
+
+        }
+      });
     }
   }
 
@@ -155,7 +160,9 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     Map <PacmanMapTile, ClassicPacmanGameState.Collectables> out = new HashMap <>();
     tiles.forEach((vec, tile) ->
         {
-          if (tile.heldItem != null) out.put(tile, tile.heldItem);
+          if (tile.heldItem != null) {
+            out.put(tile, tile.heldItem);
+          }
         }
     );
     return out;
