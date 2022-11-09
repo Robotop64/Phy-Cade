@@ -53,6 +53,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   /**
    * This methode is used to set the items in
+   *
    * @param oldTiles
    * @param itemLocations
    */
@@ -72,9 +73,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     }
     else
     {
-      oldTiles.forEach((vec,tile)->{
-        if (tile.heldItem != null && tile.type==tiles.get(vec).type){
-          tiles.get(vec).heldItem=tile.heldItem;
+      oldTiles.forEach((vec, tile) ->
+      {
+        if (tile.heldItem != null && tile.type == tiles.get(vec).type)
+        {
+          tiles.get(vec).heldItem = tile.heldItem;
         }
       });
     }
@@ -160,6 +163,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   /**
    * Returns a map that maps the tiles of the used on map onto the items that those tiles hold
+   *
    * @return Map <PacmanMapTile, ClassicPacmanGameState.Collectables>
    */
   public Map <PacmanMapTile, ClassicPacmanGameState.Collectables> getPlacedItems ()
@@ -167,7 +171,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     Map <PacmanMapTile, ClassicPacmanGameState.Collectables> out = new HashMap <>();
     tiles.forEach((vec, tile) ->
         {
-          if (tile.heldItem != null) {
+          if (tile.heldItem != null)
+          {
             out.put(tile, tile.heldItem);
           }
         }

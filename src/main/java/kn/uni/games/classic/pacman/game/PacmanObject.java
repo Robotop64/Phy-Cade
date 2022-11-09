@@ -8,6 +8,7 @@ import kn.uni.games.classic.pacman.screens.GameOverScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
+import javax.swing.Timer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -27,11 +28,14 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   public double tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
   int      r;
   Vector2d v;
+  boolean  playerDead;
+  long     deadAnimStartTick;
 
   public PacmanObject (int r, Vector2d pos)
   {
     this.pos = pos;
     this.r = r;
+    this.playerDead = false;
   }
 
   private static int getΘ (Direction direction)
@@ -51,19 +55,50 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     TotalPosition tp = gameState.map.splitPosition(pos);
     pos.rounded().use(g::translate);
 
-    int θ = getΘ(gameState.playerDirection);
-    g.rotate(Math.toRadians(θ));
-    double animationDuration = gameState.tps / 2.;
-    int    angle             = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
 
-    g.setColor(Color.orange.darker());
-    g.setStroke(new BasicStroke(Math.round(r / 3.)));
-    g.drawArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
-    IntStream.of(-1, 1).forEach(i -> new Vector2d().polar(r, i * angle).use((x, y) -> g.drawLine(0, 0, x, y)));
-    g.setColor(Color.yellow);
-    g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
-    g.rotate(Math.toRadians(-θ));
+    if (!playerDead)
+    {
+      double animationDuration = gameState.tps / 2.;
+
+      int θ = getΘ(gameState.playerDirection);
+      g.rotate(Math.toRadians(θ));
+
+      int angle = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
+      //
+
+      g.setColor(Color.orange.darker());
+      g.setStroke(new BasicStroke(Math.round(r / 3.)));
+      g.drawArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
+      IntStream.of(-1, 1).forEach(i -> new Vector2d().polar(r, i * angle).use((x, y) -> g.drawLine(0, 0, x, y)));
+      g.setColor(Color.yellow);
+      g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
+      g.rotate(Math.toRadians(-θ));
+    }
+    else
+    {
+
+      double animationDuration = gameState.tps / .1;
+
+      int θ = getΘ(Direction.up);
+      g.rotate(Math.toRadians(θ));
+
+      int angle = (int) Math.round(180 * sin(( ( gameState.currentTick - deadAnimStartTick ) % animationDuration ) / animationDuration * 360.));
+
+      g.setColor(Color.orange.darker());
+      g.setStroke(new BasicStroke(Math.round(r / 3.)));
+      g.drawArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
+      IntStream.of(-1, 1).forEach(i -> new Vector2d().polar(r, i * angle).use((x, y) -> g.drawLine(0, 0, x, y)));
+      g.setColor(Color.yellow);
+      g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
+      g.rotate(Math.toRadians(-θ));
+      if (angle == 180)
+      {
+        ph(gameState);
+      }
+    }
     pos.rounded().multiply(-1).rounded().use(g::translate);
+
+
   }
 
   private PacmanMapTile getTile (ClassicPacmanGameState gameState)
@@ -196,9 +231,27 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     System.out.println("Player died!");
     gameState.lives -= 1;
 
+    this.playerDead = true;
+
+    deadAnimStartTick = gameState.currentTick + 1;
+
+  }
+
+  private void ph (ClassicPacmanGameState gameState)
+  {
+
+    this.playerDead = false;
+
     reloadLevel(gameState);
 
     checkGameOver(gameState);
+
+    Timer deathDelay = new Timer(2000, (a) ->
+    {
+
+    });
+    deathDelay.setRepeats(false);
+    //    deathDelay.start();
   }
 
   /**
@@ -230,7 +283,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
     Map <PacmanMapTile, ClassicPacmanGameState.Collectables> oldItems = gameState.map.getPlacedItems();
-    Map <Vector2d, PacmanMapTile> oldTiles = gameState.map.tiles;
+    Map <Vector2d, PacmanMapTile>                            oldTiles = gameState.map.tiles;
 
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof PlacedObject)
@@ -244,7 +297,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
     }
-
 
 
     gameState.map.setItems(oldTiles, oldItems);
