@@ -150,7 +150,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       if (tile.type == Type.playerSpawn)
       {
         gameState.gameObjects.add(
-            new PacmanObject((int) ( this.tileSize * 2. / 3. ), vec.multiply(this.tileSize).add(new Vector2d().cartesian(4, 4))));
+            new PacmanObject((int) ( this.tileSize * 2. / 3. ), vec.multiply(this.tileSize).add(new Vector2d().cartesian(4, 4)),gameState));
       }
 
       if (tile.type == Type.ghostSpawn)

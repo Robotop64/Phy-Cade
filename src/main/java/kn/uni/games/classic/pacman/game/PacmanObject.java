@@ -28,13 +28,15 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   int      r;
   Vector2d v;
   boolean  playerDead;
-  long     deadAnimStartTick;
+  long     deadAnimStartTick = 0;
+  double deadAnimDuration;
 
-  public PacmanObject (int r, Vector2d pos)
+  public PacmanObject (int r, Vector2d pos, ClassicPacmanGameState gameState)
   {
     this.pos = pos;
     this.r = r;
     this.playerDead = false;
+    deadAnimDuration= gameState.tps / .1;
   }
 
   private static int getΘ (Direction direction)
@@ -76,7 +78,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     else
     {
 
-      double animationDuration = gameState.tps / .1;
+      double animationDuration = deadAnimDuration;
 
       int θ = getΘ(Direction.up);
       g.rotate(Math.toRadians(θ));
@@ -90,10 +92,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       g.setColor(Color.yellow);
       g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
       g.rotate(Math.toRadians(-θ));
-      if (angle == 180)
-      {
-        ph(gameState);
-      }
     }
     pos.rounded().multiply(-1).rounded().use(g::translate);
 
@@ -199,12 +197,17 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       {
         death(gameState);
       }
-      gameState.gameObjects.stream()
-                           .filter(obj -> obj instanceof Ghost)
-                           .map(ghost -> ( (Ghost) ghost ).pos)
-                           .map(vec -> vec.subtract(pos).magnitude())
-                           .forEach(System.out::println);
+      //gameState.gameObjects.stream()
+        //                   .filter(obj -> obj instanceof Ghost)
+          //                 .map(ghost -> ( (Ghost) ghost ).pos)
+            //               .map(vec -> vec.subtract(pos).magnitude())
+              //             .forEach(System.out::println);
 
+    }
+
+    //check for reset
+    if (playerDead && (gameState.currentTick-deadAnimStartTick)/(deadAnimDuration/4) >1) {
+      ph(gameState);
     }
   }
 
@@ -236,13 +239,13 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     System.out.println("Player died!");
     gameState.lives -= 1;
 
-    ph(gameState);
-    //    this.playerDead = true;
+    this.playerDead = true;
 
     deadAnimStartTick = gameState.currentTick + 1;
 
   }
 
+  //TODO rename this method
   private void ph (ClassicPacmanGameState gameState)
   {
 
