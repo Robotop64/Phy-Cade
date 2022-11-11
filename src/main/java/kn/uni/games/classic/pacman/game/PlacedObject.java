@@ -10,10 +10,13 @@ public class PlacedObject extends GameObject
 
   public boolean expired;
 
+  public boolean movable;
+
   public PlacedObject ()
   {
     pos = new Vector2d();
     expired = false;
+    movable = false;
   }
 
 }
