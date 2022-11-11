@@ -25,9 +25,9 @@ import static kn.uni.util.Util.sin;
 public class PacmanObject extends PlacedObject implements Rendered, Ticking
 {
   public double tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
-  int      r;
-  Vector2d v;
-  boolean  playerDead;
+  public int      r;
+  public Vector2d v;
+  public boolean  playerDead;
   long     deadAnimStartTick = 0;
   double deadAnimDuration;
 
@@ -93,8 +93,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
       g.rotate(Math.toRadians(-θ));
     }
-    pos.rounded().multiply(-1).rounded().use(g::translate);
 
+    pos.rounded().multiply(-1).rounded().use(g::translate);
 
   }
 
@@ -189,20 +189,25 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
 
 
       // check if die
+      /*
       if (gameState.gameObjects.stream()
                                .filter(obj -> obj instanceof Ghost)
                                .map(ghost -> ( (Ghost) ghost ).pos)
                                .map(vec -> vec.subtract(pos).magnitude())
                                .anyMatch(mag -> mag <= ClassicPacmanGameConstants.ghostRadius + r))
+
+
       {
         death(gameState);
       }
-      //gameState.gameObjects.stream()
-        //                   .filter(obj -> obj instanceof Ghost)
-          //                 .map(ghost -> ( (Ghost) ghost ).pos)
-            //               .map(vec -> vec.subtract(pos).magnitude())
-              //             .forEach(System.out::println);
 
+
+      gameState.gameObjects.stream()
+                         .filter(obj -> obj instanceof Ghost)
+                           .map(ghost -> ( (Ghost) ghost ).pos)
+                           .map(vec -> vec.subtract(pos).magnitude())
+                           .forEach(System.out::println);
+      */
     }
 
     //check for reset
@@ -234,7 +239,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
    *
    * @param gameState
    */
-  private void death (ClassicPacmanGameState gameState)
+  public void death(ClassicPacmanGameState gameState)
   {
     System.out.println("Player died!");
     gameState.lives -= 1;

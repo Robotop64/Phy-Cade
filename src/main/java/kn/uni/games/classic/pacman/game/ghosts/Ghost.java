@@ -1,13 +1,8 @@
 package kn.uni.games.classic.pacman.game.ghosts;
 
 import kn.uni.Gui;
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.*;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
-import kn.uni.games.classic.pacman.game.PacmanMapTile;
-import kn.uni.games.classic.pacman.game.PlacedObject;
-import kn.uni.games.classic.pacman.game.Rendered;
-import kn.uni.games.classic.pacman.game.Ticking;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -17,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Ghost extends PlacedObject implements Ticking, Rendered
 {
@@ -60,9 +56,15 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     Vector2d      topLeft  = new Vector2d().cartesian(im.getWidth(), im.getHeight()).multiply(-.5).add(pos);
     topLeft.use(g::translate);
     g.drawImage(im, 0, 0, Gui.getInstance().frame);
-    g.drawOval(0, 0, (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ), (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ));
     topLeft.multiply(-1).use(g::translate);
     direction = Direction.up;
+
+    /*
+    gameState.gameObjects.stream()
+            .filter(gameObject -> gameObject instanceof PlacedObject)
+            .filter(gameObject -> gameObject instanceof PacmanObject)
+            .forEach(gameObject -> g.drawLine((int)this.pos.x,(int)this.pos.y,(int)((PacmanObject) gameObject).pos.x,(int)((PacmanObject) gameObject).pos.y));
+     */
   }
 
   @Override
@@ -126,5 +128,20 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
       pos = pos.add(direction.multiply(v));
     }
 
+    final PacmanObject[] pac = new PacmanObject[1];
+
+    gameState.gameObjects.stream()
+            .filter(pacman -> pacman instanceof PlacedObject)
+            .filter(pacman -> pacman instanceof PacmanObject)
+            .forEach(pacman-> pac[0] = (PacmanObject) pacman);
+
+    double critDist = ClassicPacmanGameConstants.ghostRadius + pac[0].r;
+
+    double dist = pac[0].pos.subtract(this.pos).lenght();
+
+    if (dist < critDist && pac[0].playerDead==false)
+    {
+       pac[0].death(gameState);
+    }
   }
 }
