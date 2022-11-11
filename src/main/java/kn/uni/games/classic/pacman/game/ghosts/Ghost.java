@@ -31,6 +31,7 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     loadImages("%s%s/%s-".formatted(dirPath, profName, profName));
     this.pos = pos;
     ai = ghostAI;
+    movable = true;
   }
 
   private void loadImages (String path)
@@ -91,41 +92,35 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     int           ts          = gameState.map.tileSize;
     PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
 
-    if (targetTile == null)
-    {
-      targetTile = Arrays.stream(Direction.values())
-                         .map(direction -> direction.toVector())
-                         .map(vec -> currentTile.neighbors.get(vec))
-                         .filter(Objects::nonNull)
-                         .filter(tile -> PacmanMapTile.walkable.contains(tile.type)).findFirst().get();
-      //      direction = Arrays.stream(Direction.values()).filter(dir -> currentTile.neighbors.get(dir.toVector()) == targetTile).findFirst().get();
-    }
+    if (movable){
+      if (targetTile == null) {
+        targetTile = Arrays.stream(Direction.values())
+                .map(direction -> direction.toVector())
+                .map(vec -> currentTile.neighbors.get(vec))
+                .filter(Objects::nonNull)
+                .filter(tile -> PacmanMapTile.walkable.contains(tile.type)).findFirst().get();
+        //      direction = Arrays.stream(Direction.values()).filter(dir -> currentTile.neighbors.get(dir.toVector()) == targetTile).findFirst().get();
+      }
 
-    Vector2d direction = gameState.map.splitPosition(targetTile.pos).ex().subtract(gameState.map.splitPosition(pos).ex());
+      Vector2d direction = gameState.map.splitPosition(targetTile.pos).ex().subtract(gameState.map.splitPosition(pos).ex());
 
-    if (currentTile == targetTile)
-    {
-      //      System.out.println("reached target tile");
-      if (direction.scalar(tp.in()) < 0)
-      {
-        //        System.out.println("moving towards centre");
+      if (currentTile == targetTile) {
+        //      System.out.println("reached target tile");
+        if (direction.scalar(tp.in()) < 0) {
+          //        System.out.println("moving towards centre");
+          pos = pos.add(direction.multiply(v));
+        } else {
+          //        System.out.println("reached centre, looking for new target");
+          do {
+            //          System.out.println("rerolling");
+            targetTile = currentTile.neighbors.get(ai.getNextDirection(gameState).toVector());
+          } while (targetTile == null || !PacmanMapTile.walkable.contains(targetTile.type));
+          //        System.out.println("found new target");
+        }
+      } else {
+        //      System.out.println("walking towards target");
         pos = pos.add(direction.multiply(v));
       }
-      else
-      {
-        //        System.out.println("reached centre, looking for new target");
-        do
-        {
-          //          System.out.println("rerolling");
-          targetTile = currentTile.neighbors.get(ai.getNextDirection(gameState).toVector());
-        } while (targetTile == null || !PacmanMapTile.walkable.contains(targetTile.type));
-        //        System.out.println("found new target");
-      }
-    }
-    else
-    {
-      //      System.out.println("walking towards target");
-      pos = pos.add(direction.multiply(v));
     }
 
     final PacmanObject[] pac = new PacmanObject[1];
@@ -142,6 +137,11 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     if (dist < critDist && pac[0].playerDead==false)
     {
        pac[0].death(gameState);
+      pac[0].movable = false;
+      gameState.gameObjects.stream()
+              .filter(ghost -> ghost instanceof PlacedObject)
+              .filter(ghost -> ghost instanceof Ghost)
+              .forEach(ghost -> ((Ghost) ghost).movable = false);
     }
   }
 }

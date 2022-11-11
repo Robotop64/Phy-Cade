@@ -37,6 +37,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     this.r = r;
     this.playerDead = false;
     deadAnimDuration= gameState.tps / .1;
+    movable = true;
   }
 
   private static int getΘ (Direction direction)
@@ -117,49 +118,44 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
-    if (v == null)
-    {
-      v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
-      //      System.out.println(v);
-    }
-
-    TotalPosition tp          = gameState.map.splitPosition(pos);
+    TotalPosition tp = gameState.map.splitPosition(pos);
     PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
-    PacmanMapTile nextTile    = currentTile.neighbors.get(gameState.playerDirection.toVector());
+    PacmanMapTile nextTile = currentTile.neighbors.get(gameState.playerDirection.toVector());
 
-    //    System.out.println(gameState.playerDirection.toVector());
-    //    System.out.println(tp.in());
-
-    //moving towards centre of current tile
-    if (round(gameState.playerDirection.toVector().scalar(tp.in())) < 0)
-    {
-      //      System.out.println("moving towards centre");
-      // far away from some axis
-      if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
-      {
-        //        System.out.println("far away from axis");
-        pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
+    if (movable){
+      if (v == null) {
+        v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
+        //      System.out.println(v);
       }
-      pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
-    }
-    // walking away from centre
-    else
-    {
-      //      System.out.println("try moving away from centre");
-      if (tp.in().x + tp.in().y < gameState.map.tileSize / .3)
-      {
-        //        System.out.println("close to centre");
-        //        System.out.println(nextTile);
-        if (nextTile != null && PacmanMapTile.walkable.contains(nextTile.type))
-        {
-          //          System.out.println("next tile is good");
-          // far away from some axis
-          if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
-          {
-            //            System.out.println("far away from axis");
-            pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
+
+      //    System.out.println(gameState.playerDirection.toVector());
+      //    System.out.println(tp.in());
+
+      //moving towards centre of current tile
+      if (round(gameState.playerDirection.toVector().scalar(tp.in())) < 0) {
+        //      System.out.println("moving towards centre");
+        // far away from some axis
+        if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.) {
+          //        System.out.println("far away from axis");
+          pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
+        }
+        pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
+      }
+      // walking away from centre
+      else {
+        //      System.out.println("try moving away from centre");
+        if (tp.in().x + tp.in().y < gameState.map.tileSize / .3) {
+          //        System.out.println("close to centre");
+          //        System.out.println(nextTile);
+          if (nextTile != null && PacmanMapTile.walkable.contains(nextTile.type)) {
+            //          System.out.println("next tile is good");
+            // far away from some axis
+            if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.) {
+              //            System.out.println("far away from axis");
+              pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
+            }
+            pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
           }
-          pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
         }
       }
     }
