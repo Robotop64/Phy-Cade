@@ -153,7 +153,7 @@ public class OnScreenKeyboard extends UIScreen
     }
     //button shift
     buttons[3][0] = createActionButton("\uD83E\uDC39", this::toggleShift, 2, 0, 3);
-    buttons[3][0].setFont(new Font("Ariel", Font.PLAIN, 64));
+    buttons[3][0].setFont(buttons[3][0].getFont().deriveFont(64f));
     //buttons Y-M
     for (int i = 1; i < buttons[3].length - 1; i++)
     {
@@ -161,7 +161,7 @@ public class OnScreenKeyboard extends UIScreen
     }
     //button remove
     buttons[3][8] = createPrintableButton("\uD83E\uDC44", "", 2, 9, 3);
-    buttons[3][8].setFont(new Font("Ariel", Font.PLAIN, 40));
+    buttons[3][8].setFont(buttons[3][8].getFont().deriveFont(40f));
     //button extra
     buttons[4][0] = createActionButton("!#1", this::extraLayout, 2, 0, 4);
     //button left text
@@ -174,7 +174,7 @@ public class OnScreenKeyboard extends UIScreen
     buttons[4][4] = createActionButton("@", this::cycleLanguage, 1, 8, 4);
     //button enter
     buttons[4][5] = createPrintableButton("↲", "", 2, 9, 4);
-    buttons[4][5].setFont(new Font("Ariel", Font.BOLD, 50));
+    buttons[4][5].setFont(buttons[4][5].getFont().deriveFont(Font.BOLD, 50f));
     //add buttons to frame
     for (int j = 0; j < 5; j++)
     {
