@@ -64,9 +64,6 @@ public class OnScreenKeyboard extends UIScreen
   private              LayoutBody               activeExtra         = LayoutBody.DE;
   private              Layout                   activeLayout        = new Layout(LayoutHead.numDE, LayoutBody.DE);
   private              Languages                activeLanguage      = Languages.DE;
-  /**
-   * Position of the active key in space coordinates
-   */
   private              Point                    activeKey           = new Point(3, 5);
   private              int                      listenerId;
   private              boolean                  shifted             = false;
@@ -77,24 +74,26 @@ public class OnScreenKeyboard extends UIScreen
     super(parent);
     this.parent = parent;
     this.player = player;
-    //initialisation
+    //initialisation//
+    //button size
     int buttonDistProp = 6;
     buttonBaseSize = width * buttonDistProp / ( maxButtonsInRow * 7 + 1 );
     buttonBuffer = buttonBaseSize / buttonDistProp;
-
+    //frame style
     setBackground(Color.black);
     setLayout(null);
-
+    //border creation
     pmButton border = new pmButton("");
     border.setBounds(0, 0, width, (int) ( width / ratio ));
     border.update();
     add(border);
+    //frame creation
     setSize(width, (int) ( width / ratio ));
     createButtons();
     setButtonLayout(activeLayout);
     toggleKey(activeKey);
     activate();
-    //end of initialisation
+    //end of initialisation//
 
   }
 
@@ -111,20 +110,21 @@ public class OnScreenKeyboard extends UIScreen
    */
   private void createKeyStrings (String top, String mid)
   {
+    //array containing the characters of the rows
     char[] arr  = mid.toCharArray();
     char[] arr2 = top.toCharArray();
-
+    //key row length
     int[] l = { 11, 11, 7 };
+    //create 2D array of the keys
     for (int i = 0; i < 3; i++)
     {
       keyRows[i] = new char[l[i]];
     }
-
+    //fill the 2D array
     for (int j = 0; j < 3; j++)
     {
       System.arraycopy(arr, j * 11, keyRows[j], 0, keyRows[j].length);
     }
-
     System.arraycopy(arr2, 0, topRow, 0, topRow.length);
 
   }
@@ -135,7 +135,9 @@ public class OnScreenKeyboard extends UIScreen
   private void createButtons ()
   {
     //create button array
+    //define button row lengths
     int[] l = { 11, 11, 11, 9, 6 };
+    //create buttons in array
     for (int i = 0; i < 5; i++)
     {
       buttons[i] = new pmButton[l[i]];
@@ -187,12 +189,14 @@ public class OnScreenKeyboard extends UIScreen
   /**
    * Used to change the active layout
    *
-   * @param layout - the new layout
+   * @param layout - the layout to be assigned to the keyboard
    */
   private void setButtonLayout (Layout layout)
   {
     activeLayout = layout;
+    //convert strings to char arrays
     createKeyStrings(layoutHeadStringMap.get(activeLayout.layoutHead), layoutBodyStringMap.get(activeLayout.layoutBody));
+    //set button text in top row
     for (int i = 0; i < 11; i++)
     {
       String c = Character.toString(this.topRow[i]);
@@ -201,6 +205,7 @@ public class OnScreenKeyboard extends UIScreen
       buttons[0][i].addAction(() -> target.accept(shifted ? c.toUpperCase() : c));
 
     }
+    //set button text in middle rows
     for (int j = 0; j < 2; j++)
     {
       for (int i = 0; i < buttons[j + 1].length; i++)
@@ -211,6 +216,7 @@ public class OnScreenKeyboard extends UIScreen
         buttons[j + 1][i].addAction(() -> target.accept(shifted ? c.toUpperCase() : c));
       }
     }
+    //set button text in row above space bar
     for (int i = 1; i < buttons[3].length - 1; i++)
     {
       String c = Character.toString(keyRows[2][i - 1]);
@@ -226,7 +232,9 @@ public class OnScreenKeyboard extends UIScreen
    */
   private void toggleShift ()
   {
+    //invert shift state
     this.shifted = !this.shifted;
+    //refreshes the keys on the buttons
     if (this.shifted)
     {
       setButtonLayout(new Layout(LayoutHead.extra, activeLayout.layoutBody));
@@ -246,6 +254,7 @@ public class OnScreenKeyboard extends UIScreen
 
   /**
    * Used to toggle the language
+   * used to cycle through the languages
    */
   private void cycleLanguage ()
   {
@@ -266,6 +275,7 @@ public class OnScreenKeyboard extends UIScreen
 
   /**
    * Used to toggle the extra layout
+   * used to cycle through the extra layouts
    */
   private void extraLayout ()
   {
@@ -311,7 +321,7 @@ public class OnScreenKeyboard extends UIScreen
   private void setActiveKey (Point newKey)
   {
     toggleKey(activeKey);
-
+    //move active key if interaction is with an action button
     if (activeKey.y >= 3)
     {
       if (activeKey.x == 0 && newKey.x == 1) newKey = new Point(activeKey.y, activeKey.x + 2);
@@ -361,7 +371,7 @@ public class OnScreenKeyboard extends UIScreen
     {
       //block inputs from players except the assigned player
       if (!input.player().equals(player)) return;
-
+      //press a button
       if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, player)))
       {
         Point p = computeShiftedButton(activeKey);
@@ -375,7 +385,7 @@ public class OnScreenKeyboard extends UIScreen
         getParent().remove(this);
         this.parent.unmuteSummary();
       }
-
+      //only joystick inputs are allowed from here on
       if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
                  .contains(input.key())) return;
       int delta = switch (input.state())
