@@ -26,18 +26,11 @@ public class LeaderboardMenu extends JPanel
 
   //container of the 9 display slots
   private final List <pmButton[]> buttonSlots = new ArrayList <>();
-
-  public record LeaderboardEntry(String name, long highScore, LocalTime time, LocalDate date) { }
-
+  private final int      entryHeight   = 60;
   public List <LeaderboardEntry> entries = new ArrayList <>();
-
-  public record Leaderboard(String name, List <LeaderboardEntry> entries) { }
-
   public Map <GameTitle, Leaderboard> games = new HashMap <>();
-  //  public List <Leaderboard>      games = new ArrayList <>();
-
-
   private       int      listener_id;
+  //  public List <Leaderboard>      games = new ArrayList <>();
   private       int      tableOffset   = 0;
   private       pmButton header;
   private       pmButton ybuffer;
@@ -45,25 +38,12 @@ public class LeaderboardMenu extends JPanel
   private       JLabel   label;
   private       JLabel   left;
   private       JLabel   right;
-  private final int      entryHeight   = 60;
   private       int      currentActive = -1;
   private       int      activeGame    = 0;
-
-  private enum GameTitle
-  { pacman, supermario, doom }
-
   private GameTitle newActiveGame = GameTitle.pacman;
-
-
-  public static LeaderboardMenu getInstance ()
-  {
-    if (instance == null)
-    {
-      instance = new LeaderboardMenu();
-    }
-    return instance;
-  }
-
+  /**
+   * constructor for the leaderboard menu
+   */
   private LeaderboardMenu ()
   {
     // Initialisation
@@ -73,13 +53,28 @@ public class LeaderboardMenu extends JPanel
     createEntrySlots();
 
     loadDatabase();
+    //set default slot to active
     toggleSelection(0);
-
+    //loads the first entries into the slots
     setEntries(0);
+    //set default game to active
     setGame(GameTitle.pacman);
 
     // end of initialisation
+  }
 
+  /**
+   * turns this menu into a singleton
+   *
+   * @return the instance of this menu
+   */
+  public static LeaderboardMenu getInstance ()
+  {
+    if (instance == null)
+    {
+      instance = new LeaderboardMenu();
+    }
+    return instance;
   }
 
   /**
@@ -154,7 +149,6 @@ public class LeaderboardMenu extends JPanel
     }
 
   }
-
 
   /**
    * Used to move the leaderboard, only useful if more than 2 games available
@@ -438,6 +432,13 @@ public class LeaderboardMenu extends JPanel
     });
     setVisible(true);
   }
+
+  private enum GameTitle
+  { pacman, supermario, doom }
+
+  public record LeaderboardEntry(String name, long highScore, LocalTime time, LocalDate date) { }
+
+  public record Leaderboard(String name, List <LeaderboardEntry> entries) { }
 }
 
 
