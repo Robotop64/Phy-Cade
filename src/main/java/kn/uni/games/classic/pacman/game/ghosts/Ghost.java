@@ -1,8 +1,13 @@
 package kn.uni.games.classic.pacman.game.ghosts;
 
 import kn.uni.Gui;
-import kn.uni.games.classic.pacman.game.*;
+import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
+import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
+import kn.uni.games.classic.pacman.game.PacmanMapTile;
+import kn.uni.games.classic.pacman.game.PlacedObject;
+import kn.uni.games.classic.pacman.game.Rendered;
+import kn.uni.games.classic.pacman.game.Ticking;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -12,7 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Ghost extends PlacedObject implements Ticking, Rendered
 {
@@ -60,12 +64,6 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     topLeft.multiply(-1).use(g::translate);
     direction = Direction.up;
 
-    /*
-    gameState.gameObjects.stream()
-            .filter(gameObject -> gameObject instanceof PlacedObject)
-            .filter(gameObject -> gameObject instanceof PacmanObject)
-            .forEach(gameObject -> g.drawLine((int)this.pos.x,(int)this.pos.y,(int)((PacmanObject) gameObject).pos.x,(int)((PacmanObject) gameObject).pos.y));
-     */
   }
 
   @Override
@@ -92,56 +90,45 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     int           ts          = gameState.map.tileSize;
     PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
 
-    if (movable){
-      if (targetTile == null) {
+    if (movable)
+    {
+      if (targetTile == null)
+      {
         targetTile = Arrays.stream(Direction.values())
-                .map(direction -> direction.toVector())
-                .map(vec -> currentTile.neighbors.get(vec))
-                .filter(Objects::nonNull)
-                .filter(tile -> PacmanMapTile.walkable.contains(tile.type)).findFirst().get();
+                           .map(direction -> direction.toVector())
+                           .map(vec -> currentTile.neighbors.get(vec))
+                           .filter(Objects::nonNull)
+                           .filter(tile -> PacmanMapTile.walkable.contains(tile.type)).findFirst().get();
         //      direction = Arrays.stream(Direction.values()).filter(dir -> currentTile.neighbors.get(dir.toVector()) == targetTile).findFirst().get();
       }
 
       Vector2d direction = gameState.map.splitPosition(targetTile.pos).ex().subtract(gameState.map.splitPosition(pos).ex());
 
-      if (currentTile == targetTile) {
+      if (currentTile == targetTile)
+      {
         //      System.out.println("reached target tile");
-        if (direction.scalar(tp.in()) < 0) {
+        if (direction.scalar(tp.in()) < 0)
+        {
           //        System.out.println("moving towards centre");
           pos = pos.add(direction.multiply(v));
-        } else {
+        }
+        else
+        {
           //        System.out.println("reached centre, looking for new target");
-          do {
+          do
+          {
             //          System.out.println("rerolling");
             targetTile = currentTile.neighbors.get(ai.getNextDirection(gameState).toVector());
           } while (targetTile == null || !PacmanMapTile.walkable.contains(targetTile.type));
           //        System.out.println("found new target");
         }
-      } else {
+      }
+      else
+      {
         //      System.out.println("walking towards target");
         pos = pos.add(direction.multiply(v));
       }
     }
 
-    final PacmanObject[] pac = new PacmanObject[1];
-
-    gameState.gameObjects.stream()
-            .filter(pacman -> pacman instanceof PlacedObject)
-            .filter(pacman -> pacman instanceof PacmanObject)
-            .forEach(pacman-> pac[0] = (PacmanObject) pacman);
-
-    double critDist = ClassicPacmanGameConstants.ghostRadius + pac[0].r;
-
-    double dist = pac[0].pos.subtract(this.pos).lenght();
-
-    if (dist < critDist && pac[0].playerDead==false)
-    {
-       pac[0].death(gameState);
-      pac[0].movable = false;
-      gameState.gameObjects.stream()
-              .filter(ghost -> ghost instanceof PlacedObject)
-              .filter(ghost -> ghost instanceof Ghost)
-              .forEach(ghost -> ((Ghost) ghost).movable = false);
-    }
   }
 }

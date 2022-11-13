@@ -31,6 +31,7 @@ public class ClassicPacmanGameState
   public LocalTime gameDuration = LocalTime.of(0, 0, 0, 0);
   public int       eatenPills   = 0;
   public int       pillsLeft    = 244;
+  public boolean   fruitSpawned = false;
 
 
   // @David Do we need this? and if we need it, do we need it here? ~Max

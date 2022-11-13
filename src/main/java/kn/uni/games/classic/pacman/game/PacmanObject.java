@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.levelFruit;
 import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
 
@@ -122,6 +123,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
     PacmanMapTile nextTile    = currentTile.neighbors.get(gameState.playerDirection.toVector());
 
+    //movement of PacMan
     if (movable)
     {
       if (v == null)
@@ -183,6 +185,24 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       {
         gameState.eatenPills += 1;
         gameState.pillsLeft -= 1;
+
+
+      }
+
+      if (!gameState.fruitSpawned && gameState.pillsLeft <= 240)
+      {
+        ClassicPacmanGameConstants.Collectables nextFruit = getFruit(gameState.level);
+        gameState.map.tiles.forEach((vec, tile) ->
+        {
+          if (tile.type == PacmanMapTile.Type.playerSpawn)
+          {
+            gameState.gameObjects.add(
+                new ClassicPacmanItemObject(tile.pos, gameState, nextFruit));
+          }
+
+        });
+        gameState.fruitSpawned = true;
+        System.out.println("fruit spawned");
       }
 
       //deletes the item held by the tile
@@ -190,33 +210,59 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
 
       checkLevelStatus(gameState);
 
-
-      // check if die
-      /*
-      if (gameState.gameObjects.stream()
-                               .filter(obj -> obj instanceof Ghost)
-                               .map(ghost -> ( (Ghost) ghost ).pos)
-                               .map(vec -> vec.subtract(pos).magnitude())
-                               .anyMatch(mag -> mag <= ClassicPacmanGameConstants.ghostRadius + r))
-
-
-      {
-        death(gameState);
-      }
-
-
-      gameState.gameObjects.stream()
-                         .filter(obj -> obj instanceof Ghost)
-                           .map(ghost -> ( (Ghost) ghost ).pos)
-                           .map(vec -> vec.subtract(pos).magnitude())
-                           .forEach(System.out::println);
-      */
     }
+
+    //check collision
+    //TODO remove hardcode ghost count
+    final List <Ghost> ghostsList = new ArrayList <>();
+
+    gameState.gameObjects.stream()
+                         .filter(ghost -> ghost instanceof PlacedObject)
+                         .filter(ghost -> ghost instanceof Ghost)
+                         .forEach(ghost -> ghostsList.add((Ghost) ghost));
+
+    double critDist = ClassicPacmanGameConstants.ghostRadius + this.r - 20;
+
+    ghostsList.stream().forEach(ghost ->
+    {
+      if (ghost.pos.subtract(this.pos).lenght() < critDist && !playerDead)
+      {
+        //TODO implement later (make ghost eatable)
+        //        if (ghost.isVulnerable)
+        //        {
+        //          gameState.score += 200;
+        //          ghost.deadAnimStartTick = gameState.currentTick;
+        //          ghost.movable = false;
+        //          ghost.vulnerableAnimStartTick = gameState.currentTick;
+        //          ghost.isVulnerable = false;
+        //        }
+        //        else
+        //        {
+        //          if (gameState.lives > 0)
+        //          {
+        //            gameState.lives -= 1;
+        //            gameState.gameObjects.remove(this);
+        //            gameState.gameObjects.add(new ClassicPacmanPlayerObject(gameState.map.tiles.get(new Vector2d(14, 23)).pos, gameState));
+        //          }
+        //          else
+        //          {
+        //            gameState.gameObjects.remove(this);
+        //          }
+        //        }
+        death(gameState);
+        movable = false;
+        ghost.movable = false;
+      }
+    });
 
     //check for reset
     if (playerDead && ( gameState.currentTick - deadAnimStartTick ) / ( deadAnimDuration / 4 ) > 1)
     {
-      ph(gameState);
+      this.playerDead = false;
+
+      reloadLevel(gameState);
+
+      checkGameOver(gameState);
     }
   }
 
@@ -232,8 +278,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       gameState.pillsLeft = 244;
       gameState.level += 1;
       //resets the coins and powerups
-      //      gameState.map.setItems(gameState.map.tiles);
       reloadLevel(gameState);
+      gameState.fruitSpawned = false;
       gameState.map.setItems(new HashMap <>(), new HashMap <>());
     }
   }
@@ -252,17 +298,6 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
 
     deadAnimStartTick = gameState.currentTick + 1;
 
-  }
-
-  //TODO rename this method
-  private void ph (ClassicPacmanGameState gameState)
-  {
-
-    this.playerDead = false;
-
-    reloadLevel(gameState);
-
-    checkGameOver(gameState);
   }
 
   /**
@@ -313,4 +348,9 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     gameState.map.setItems(oldTiles, oldItems);
   }
 
+  private ClassicPacmanGameConstants.Collectables getFruit (int level)
+  {
+    level = ( level - 1 ) % levelFruit.length;
+    return levelFruit[level];
+  }
 }
