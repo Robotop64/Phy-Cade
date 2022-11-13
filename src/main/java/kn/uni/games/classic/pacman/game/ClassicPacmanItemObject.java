@@ -7,7 +7,7 @@ import kn.uni.util.Vector2d;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-public class ClassicPacmanItemObject extends PlacedObject implements Rendered, Ticking, Collidable
+public class ClassicPacmanItemObject extends CollidablePlacedObject implements Rendered, Ticking
 {
   public  Vector2d                                pos;
   public  ClassicPacmanGameConstants.Collectables type;

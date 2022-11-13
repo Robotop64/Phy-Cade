@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.collectionPoints;
 import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.levelFruit;
 import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
 
 
-public class PacmanObject extends PlacedObject implements Rendered, Ticking, Collidable
+public class PacmanObject extends CollidablePlacedObject implements Rendered, Ticking
 {
   public double   tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
   public int      r;
@@ -254,6 +255,18 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking, Col
         ghost.movable = false;
       }
     });
+    //check for collision with items
+    if (getCollisions(this, gameState.gameObjects).stream().toList().size() > 0)
+    {
+      if (getCollisions(this, gameState.gameObjects).get(0) instanceof ClassicPacmanItemObject)
+      {
+        ClassicPacmanItemObject item = (ClassicPacmanItemObject) getCollisions(this, gameState.gameObjects).get(0);
+
+        gameState.score += collectionPoints.get(item.type);
+        gameState.gameObjects.remove(item);
+
+      }
+    }
 
 
     //check for reset
