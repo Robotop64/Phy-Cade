@@ -212,6 +212,9 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     }
 
     //check collision
+    //TODO compact with getCollision for all collidables
+    //add collide action to Collidableobject
+
     //check ghost collision
     final List <Ghost> ghostsList = new ArrayList <>();
 
