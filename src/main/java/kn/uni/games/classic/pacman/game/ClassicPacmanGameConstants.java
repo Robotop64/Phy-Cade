@@ -21,6 +21,20 @@ public class ClassicPacmanGameConstants
       Collectables.key, 5000
   );
 
+  //array deciding which fruit is will spawn
+  //Level= index+1
+  public static final Collectables[] levelFruit = {
+      Collectables.cherry, Collectables.strawberry,
+      Collectables.orange, Collectables.orange,
+      Collectables.apple, Collectables.apple,
+      Collectables.melon, Collectables.melon,
+      Collectables.galaxian, Collectables.galaxian,
+      Collectables.bell, Collectables.bell,
+      Collectables.key, Collectables.key,
+      Collectables.key, Collectables.key,
+      Collectables.key, Collectables.key,
+      Collectables.key, Collectables.key };
+
   //variety of fruits
   public enum Collectables
   { coin, powerUp, cherry, strawberry, apple, orange, melon, galaxian, bell, key }
