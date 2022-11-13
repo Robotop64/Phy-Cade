@@ -198,7 +198,7 @@ public class PacmanObject extends CollidablePlacedObject implements Rendered, Ti
           if (tile.type == PacmanMapTile.Type.playerSpawn)
           {
             gameState.gameObjects.add(
-                new ClassicPacmanItemObject(tile.pos, gameState, ClassicPacmanGameConstants.Collectables.apple));
+                new ClassicPacmanItemObject(tile.pos, gameState, nextFruit));
           }
 
         });
