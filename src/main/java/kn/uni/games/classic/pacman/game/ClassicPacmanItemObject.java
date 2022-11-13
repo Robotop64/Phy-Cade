@@ -7,7 +7,7 @@ import kn.uni.util.Vector2d;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-public class ClassicPacmanItemObject extends PlacedObject
+public class ClassicPacmanItemObject extends PlacedObject implements Rendered, Ticking, Collidable
 {
   public  Vector2d                                pos;
   public  ClassicPacmanGameConstants.Collectables type;
@@ -35,5 +35,17 @@ public class ClassicPacmanItemObject extends PlacedObject
   public int paintLayer ()
   {
     return Integer.MAX_VALUE - 120;
+  }
+
+  @Override
+  public void tick (ClassicPacmanGameState gameState)
+  {
+
+  }
+
+  @Override
+  public Vector2d getSize ()
+  {
+    return new Vector2d().cartesian(icon.getWidth(), icon.getHeight());
   }
 }
