@@ -24,7 +24,7 @@ import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
 
 
-public class PacmanObject extends CollidablePlacedObject implements Rendered, Ticking
+public class PacmanObject extends CollidableObject implements Rendered, Ticking
 {
   public double   tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
   public int      r;
@@ -176,7 +176,7 @@ public class PacmanObject extends CollidablePlacedObject implements Rendered, Ti
     {
       //add score depending on item points
       gameState.score += ClassicPacmanGameConstants.collectionPoints.get(currentTile.heldItem);
-
+      //add 1 live for every 10000 points
       if (gameState.score % 10000 == 0)
       {
         gameState.lives += 1;
@@ -186,10 +186,8 @@ public class PacmanObject extends CollidablePlacedObject implements Rendered, Ti
       {
         gameState.eatenPills += 1;
         gameState.pillsLeft -= 1;
-
-
       }
-
+      //spawn fruit after eating half of the pills
       if (!gameState.fruitSpawned && gameState.pillsLeft <= 240)
       {
         ClassicPacmanGameConstants.Collectables nextFruit = getFruit(gameState.level);
