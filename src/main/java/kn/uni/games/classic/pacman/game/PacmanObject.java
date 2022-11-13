@@ -23,7 +23,7 @@ import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
 
 
-public class PacmanObject extends PlacedObject implements Rendered, Ticking
+public class PacmanObject extends PlacedObject implements Rendered, Ticking, Collidable
 {
   public double   tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
   public int      r;
@@ -197,7 +197,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
           if (tile.type == PacmanMapTile.Type.playerSpawn)
           {
             gameState.gameObjects.add(
-                new ClassicPacmanItemObject(tile.pos, gameState, nextFruit));
+                new ClassicPacmanItemObject(tile.pos, gameState, ClassicPacmanGameConstants.Collectables.apple));
           }
 
         });
@@ -213,7 +213,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     }
 
     //check collision
-    //TODO remove hardcode ghost count
+    //check ghost collision
     final List <Ghost> ghostsList = new ArrayList <>();
 
     gameState.gameObjects.stream()
@@ -254,6 +254,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
         ghost.movable = false;
       }
     });
+
 
     //check for reset
     if (playerDead && ( gameState.currentTick - deadAnimStartTick ) / ( deadAnimDuration / 4 ) > 1)
@@ -352,5 +353,11 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   {
     level = ( level - 1 ) % levelFruit.length;
     return levelFruit[level];
+  }
+
+  @Override
+  public Vector2d getSize ()
+  {
+    return new Vector2d().cartesian(2 * r, 2 * r);
   }
 }
