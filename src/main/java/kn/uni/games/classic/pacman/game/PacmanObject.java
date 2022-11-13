@@ -24,11 +24,11 @@ import static kn.uni.util.Util.sin;
 
 public class PacmanObject extends PlacedObject implements Rendered, Ticking
 {
-  public double tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
+  public double   tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
   public int      r;
   public Vector2d v;
   public boolean  playerDead;
-  long     deadAnimStartTick = 0;
+  long   deadAnimStartTick = 0;
   double deadAnimDuration;
 
   public PacmanObject (int r, Vector2d pos, ClassicPacmanGameState gameState)
@@ -36,7 +36,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     this.pos = pos;
     this.r = r;
     this.playerDead = false;
-    deadAnimDuration= gameState.tps / .1;
+    deadAnimDuration = gameState.tps / .1;
     movable = true;
   }
 
@@ -118,12 +118,14 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
-    TotalPosition tp = gameState.map.splitPosition(pos);
+    TotalPosition tp          = gameState.map.splitPosition(pos);
     PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
-    PacmanMapTile nextTile = currentTile.neighbors.get(gameState.playerDirection.toVector());
+    PacmanMapTile nextTile    = currentTile.neighbors.get(gameState.playerDirection.toVector());
 
-    if (movable){
-      if (v == null) {
+    if (movable)
+    {
+      if (v == null)
+      {
         v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
         //      System.out.println(v);
       }
@@ -132,25 +134,31 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
       //    System.out.println(tp.in());
 
       //moving towards centre of current tile
-      if (round(gameState.playerDirection.toVector().scalar(tp.in())) < 0) {
+      if (round(gameState.playerDirection.toVector().scalar(tp.in())) < 0)
+      {
         //      System.out.println("moving towards centre");
         // far away from some axis
-        if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.) {
+        if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
+        {
           //        System.out.println("far away from axis");
           pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
         }
         pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
       }
       // walking away from centre
-      else {
+      else
+      {
         //      System.out.println("try moving away from centre");
-        if (tp.in().x + tp.in().y < gameState.map.tileSize / .3) {
+        if (tp.in().x + tp.in().y < gameState.map.tileSize / .3)
+        {
           //        System.out.println("close to centre");
           //        System.out.println(nextTile);
-          if (nextTile != null && PacmanMapTile.walkable.contains(nextTile.type)) {
+          if (nextTile != null && PacmanMapTile.walkable.contains(nextTile.type))
+          {
             //          System.out.println("next tile is good");
             // far away from some axis
-            if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.) {
+            if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
+            {
               //            System.out.println("far away from axis");
               pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
             }
@@ -164,19 +172,18 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     if (currentTile.heldItem != null)
     {
       //add score depending on item points
-      gameState.score += gameState.collectionPoints.get(currentTile.heldItem);
+      gameState.score += ClassicPacmanGameConstants.collectionPoints.get(currentTile.heldItem);
 
       if (gameState.score % 10000 == 0)
       {
         gameState.lives += 1;
       }
-
-      if (currentTile.heldItem == ClassicPacmanGameState.Collectables.coin || currentTile.heldItem == ClassicPacmanGameState.Collectables.powerUp)
+      //action if item is coin or powerup
+      if (currentTile.heldItem == ClassicPacmanGameConstants.Collectables.coin || currentTile.heldItem == ClassicPacmanGameConstants.Collectables.powerUp)
       {
         gameState.eatenPills += 1;
         gameState.pillsLeft -= 1;
       }
-
 
       //deletes the item held by the tile
       currentTile.heldItem = null;
@@ -207,7 +214,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
     }
 
     //check for reset
-    if (playerDead && (gameState.currentTick-deadAnimStartTick)/(deadAnimDuration/4) >1) {
+    if (playerDead && ( gameState.currentTick - deadAnimStartTick ) / ( deadAnimDuration / 4 ) > 1)
+    {
       ph(gameState);
     }
   }
@@ -235,7 +243,7 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
    *
    * @param gameState
    */
-  public void death(ClassicPacmanGameState gameState)
+  public void death (ClassicPacmanGameState gameState)
   {
     System.out.println("Player died!");
     gameState.lives -= 1;
@@ -285,8 +293,8 @@ public class PacmanObject extends PlacedObject implements Rendered, Ticking
 
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
-    Map <PacmanMapTile, ClassicPacmanGameState.Collectables> oldItems = gameState.map.getPlacedItems();
-    Map <Vector2d, PacmanMapTile>                            oldTiles = gameState.map.tiles;
+    Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> oldItems = gameState.map.getPlacedItems();
+    Map <Vector2d, PacmanMapTile>                                oldTiles = gameState.map.tiles;
 
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof PlacedObject)

@@ -57,7 +57,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
    * @param oldTiles
    * @param itemLocations
    */
-  public void setItems (Map <Vector2d, PacmanMapTile> oldTiles, Map <PacmanMapTile, ClassicPacmanGameState.Collectables> itemLocations)
+  public void setItems (Map <Vector2d, PacmanMapTile> oldTiles, Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> itemLocations)
   {
     if (itemLocations.isEmpty())
     {
@@ -65,8 +65,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       {
         switch (tile.type)
         {
-          case coin -> tile.heldItem = ClassicPacmanGameState.Collectables.coin;
-          case powerUp -> tile.heldItem = ClassicPacmanGameState.Collectables.powerUp;
+          case coin -> tile.heldItem = ClassicPacmanGameConstants.Collectables.coin;
+          case powerUp -> tile.heldItem = ClassicPacmanGameConstants.Collectables.powerUp;
           default -> tile.heldItem = null;
         }
       });
@@ -150,7 +150,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       if (tile.type == Type.playerSpawn)
       {
         gameState.gameObjects.add(
-            new PacmanObject((int) ( this.tileSize * 2. / 3. ), vec.multiply(this.tileSize).add(new Vector2d().cartesian(4, 4)),gameState));
+            new PacmanObject((int) ( this.tileSize * 2. / 3. ), vec.multiply(this.tileSize).add(new Vector2d().cartesian(4, 4)), gameState));
       }
 
       if (tile.type == Type.ghostSpawn)
@@ -166,9 +166,9 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
    *
    * @return Map <PacmanMapTile, ClassicPacmanGameState.Collectables>
    */
-  public Map <PacmanMapTile, ClassicPacmanGameState.Collectables> getPlacedItems ()
+  public Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> getPlacedItems ()
   {
-    Map <PacmanMapTile, ClassicPacmanGameState.Collectables> out = new HashMap <>();
+    Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> out = new HashMap <>();
     tiles.forEach((vec, tile) ->
         {
           if (tile.heldItem != null)

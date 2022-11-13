@@ -13,11 +13,11 @@ import java.util.stream.IntStream;
 
 public class PacmanMapTile extends PlacedObject implements Rendered
 {
-  public static final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn);
-  public              Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
-  public              Type                          type;
-  private             int                                 size;
-  public              ClassicPacmanGameState.Collectables heldItem;
+  public static final List <Type>                             walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn);
+  public              Map <Vector2d, PacmanMapTile>           neighbors = new HashMap <>();
+  public              Type                                    type;
+  public              ClassicPacmanGameConstants.Collectables heldItem;
+  private             int                                     size;
 
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
@@ -101,12 +101,12 @@ public class PacmanMapTile extends PlacedObject implements Rendered
       }
     }
 
-    if (heldItem == ClassicPacmanGameState.Collectables.coin)
+    if (heldItem == ClassicPacmanGameConstants.Collectables.coin)
     {
       g.setColor(Color.yellow);
       g.fillOval(size / 4, size / 4, size / 2, size / 2);
     }
-    if (heldItem == ClassicPacmanGameState.Collectables.powerUp)
+    if (heldItem == ClassicPacmanGameConstants.Collectables.powerUp)
     {
 
       g.setColor(Color.green);

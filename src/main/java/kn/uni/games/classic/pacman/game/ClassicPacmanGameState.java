@@ -33,12 +33,10 @@ public class ClassicPacmanGameState
   public int       pillsLeft    = 244;
 
 
-  // ToDo move this to a better place (has nothing to do with the game state) ~Max
-
-
   // @David Do we need this? and if we need it, do we need it here? ~Max
+  //@Max we do, needed for game summary (GameSummaryPanel) ~David
   // how many items were collected
-  public Map <Collectables, Integer> collectionCount;
+  public Map <ClassicPacmanGameConstants.Collectables, Integer> collectionCount;
 
   //objects added to game
   public ClassicPacmanGameState ()
@@ -46,8 +44,4 @@ public class ClassicPacmanGameState
     gameObjects = new ConcurrentLinkedDeque <>();
   }
 
-  // ToDo move this to a better place (has nothing to do with the game state) (same as above) ~Max
-  //variety of fruits
-  public enum Collectables
-  { coin, powerUp, cherry, strawberry, apple, orange, melon, galaxian, bell, key }
 }

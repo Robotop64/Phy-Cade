@@ -8,16 +8,20 @@ public class ClassicPacmanGameConstants
   public static final double ghostRadius = 31;
 
   //how many points a fruit gives
-  public static final Map <ClassicPacmanGameState.Collectables, Integer> collectionPoints = Map.of(
-      ClassicPacmanGameState.Collectables.coin, 10,
-      ClassicPacmanGameState.Collectables.powerUp, 50,
-      ClassicPacmanGameState.Collectables.cherry, 100,
-      ClassicPacmanGameState.Collectables.strawberry, 300,
-      ClassicPacmanGameState.Collectables.orange, 500,
-      ClassicPacmanGameState.Collectables.apple, 700,
-      ClassicPacmanGameState.Collectables.melon, 1000,
-      ClassicPacmanGameState.Collectables.galaxian, 2000,
-      ClassicPacmanGameState.Collectables.bell, 3000,
-      ClassicPacmanGameState.Collectables.key, 5000
+  public static final Map <Collectables, Integer> collectionPoints = Map.of(
+      Collectables.coin, 10,
+      Collectables.powerUp, 50,
+      Collectables.cherry, 100,
+      Collectables.strawberry, 300,
+      Collectables.orange, 500,
+      Collectables.apple, 700,
+      Collectables.melon, 1000,
+      Collectables.galaxian, 2000,
+      Collectables.bell, 3000,
+      Collectables.key, 5000
   );
+
+  //variety of fruits
+  public enum Collectables
+  { coin, powerUp, cherry, strawberry, apple, orange, melon, galaxian, bell, key }
 }

@@ -1,5 +1,6 @@
 package kn.uni.games.classic.pacman.game.hud;
 
+import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
@@ -15,15 +16,15 @@ import java.util.Map;
 
 public class CollectablesLabel extends PlacedObject implements Rendered
 {
-  public Map <ClassicPacmanGameState.Collectables, BufferedImage> icons = new HashMap <>();
+  public Map <ClassicPacmanGameConstants.Collectables, BufferedImage> icons = new HashMap <>();
 
   public CollectablesLabel () throws IOException
   {
     String path = "src/resources/textures/collectables/PH/";
 
-    List <ClassicPacmanGameState.Collectables> a = List.of(ClassicPacmanGameState.Collectables.values());
+    List <ClassicPacmanGameConstants.Collectables> a = List.of(ClassicPacmanGameConstants.Collectables.values());
 
-    for (int i = 0; i < ClassicPacmanGameState.Collectables.values().length; i++)
+    for (int i = 0; i < ClassicPacmanGameConstants.Collectables.values().length; i++)
     {
       icons.put(a.get(i), ImageIO.read(new File(path + a.get(i).toString() + ".png")));
     }
@@ -34,7 +35,7 @@ public class CollectablesLabel extends PlacedObject implements Rendered
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
-    g.drawImage(icons.get(ClassicPacmanGameState.Collectables.cherry), 0, 0, 500, 500, null);
+    g.drawImage(icons.get(ClassicPacmanGameConstants.Collectables.cherry), 0, 0, 500, 500, null);
     g.drawRect(0, 0, 500, 500);
 
   }
