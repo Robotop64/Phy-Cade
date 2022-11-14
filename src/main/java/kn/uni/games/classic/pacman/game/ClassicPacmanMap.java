@@ -37,6 +37,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   public int                           height;
   Vector2d size;
   private ClassicPacmanGameState gameState;
+  //TODO add variable for pills at start here
 
 
   public ClassicPacmanMap (ClassicPacmanGameState gameState, Vector2d pos, int width, int height)

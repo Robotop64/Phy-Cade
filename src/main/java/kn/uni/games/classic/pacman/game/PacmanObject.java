@@ -188,7 +188,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
         gameState.pillsLeft -= 1;
       }
       //spawn fruit after eating half of the pills
-      if (!gameState.fruitSpawned && gameState.pillsLeft <= 240)
+      if (!gameState.fruitSpawned && gameState.pillsLeft <= 122)
       {
         ClassicPacmanGameConstants.Collectables nextFruit = getFruit(gameState.level);
         gameState.map.tiles.forEach((vec, tile) ->
@@ -196,7 +196,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
           if (tile.type == PacmanMapTile.Type.playerSpawn)
           {
             gameState.gameObjects.add(
-                new ClassicPacmanItemObject(tile.pos, gameState, nextFruit));
+                new ClassicPacmanItemObject(tile.pos.add(new Vector2d().cartesian(gameState.map.tileSize/2.,gameState.map.tileSize/2.)), gameState, nextFruit));
 
           }
 

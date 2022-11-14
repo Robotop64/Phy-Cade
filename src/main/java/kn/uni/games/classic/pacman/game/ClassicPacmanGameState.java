@@ -30,6 +30,7 @@ public class ClassicPacmanGameState
   public LocalTime startTime;
   public LocalTime gameDuration = LocalTime.of(0, 0, 0, 0);
   public int       eatenPills   = 0;
+  //TODO get this from map
   public int       pillsLeft    = 244;
   public boolean   fruitSpawned = false;
 
