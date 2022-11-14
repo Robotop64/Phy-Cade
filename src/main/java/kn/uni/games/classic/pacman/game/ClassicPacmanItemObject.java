@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 
 public class ClassicPacmanItemObject extends CollidableObject implements Rendered, Ticking
 {
-  public  Vector2d                                pos;
   public  ClassicPacmanGameConstants.Collectables type;
   private BufferedImage                           icon;
 
@@ -22,6 +21,7 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
 
     //load icon texture
     icon = TextureLoader.getInstance().loadTexture("items", type.name() + ".png");
+    this.hitbox = new Vector2d().cartesian(icon.getWidth(), icon.getHeight());
   }
 
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
@@ -43,9 +43,4 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
 
   }
 
-  @Override
-  public Vector2d getSize ()
-  {
-    return new Vector2d().cartesian(icon.getWidth(), icon.getHeight());
-  }
 }

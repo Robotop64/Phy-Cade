@@ -197,6 +197,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
           {
             gameState.gameObjects.add(
                 new ClassicPacmanItemObject(tile.pos, gameState, nextFruit));
+
           }
 
         });
