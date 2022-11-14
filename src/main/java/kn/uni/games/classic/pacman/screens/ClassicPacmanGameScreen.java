@@ -47,6 +47,9 @@ public class ClassicPacmanGameScreen extends UIScreen
         //        }
 
         gameState.running = false;
+        Gui.getInstance().content.add(MainMenu.getInstance());
+        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+        MainMenu.getInstance().activate();
         return;
       }
 
