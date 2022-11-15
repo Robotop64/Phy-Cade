@@ -9,6 +9,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.collectionColor;
+import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.collectionPoints;
+
 public class ClassicPacmanItemObject extends CollidableObject implements Rendered, Ticking
 {
   public  ClassicPacmanGameConstants.Collectables type;
@@ -17,7 +20,6 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
   public  long                                    eatenTick;
   public  long                                    despawnTicks = 200;
   private BufferedImage                           icon;
-  private Color                                   scoreColor;
 
   public ClassicPacmanItemObject (Vector2d pos, ClassicPacmanGameState gameState, ClassicPacmanGameConstants.Collectables type, boolean eatable, Color scoreColor)
   {
@@ -27,7 +29,11 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
     this.movable = false;
     this.eatable = eatable;
     this.eaten = false;
-    this.scoreColor = scoreColor;
+
+    this.collideAction = () ->
+    {
+      eat(gameState);
+    };
 
 
     //load icon texture
@@ -52,17 +58,15 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
       int scorePosY = (int) ( gameState.map.tileSize + Util.progression(eatenTick, despawnTicks, gameState) * -10 );
       int scorePosX = (int) ( gameState.map.tileSize + Util.progression(eatenTick, despawnTicks, gameState) * -5 );
       //score color fade out
-      g.setColor(new Color(255, 0, 0, (int) ( 255 * ( 1. - Util.progression(eatenTick, despawnTicks, gameState) ) )));
+      Color scoreColor = collectionColor.get(type);
+      g.setColor(new Color(scoreColor.getRed(), scoreColor.getGreen(), scoreColor.getBlue(), (int) ( 255 * ( 1. - Util.progression(eatenTick, despawnTicks, gameState) ) )));
       g.setFont(Gui.getInstance().content.getFont().deriveFont(20f));
       g.drawString(ClassicPacmanGameConstants.collectionPoints.get(type).toString(), scorePosX, scorePosY);
     }
     topLeft.multiply(-1).use(g::translate);
   }
 
-  public int paintLayer ()
-  {
-    return Integer.MAX_VALUE - 120;
-  }
+  public int paintLayer () { return Integer.MAX_VALUE - 120; }
 
   @Override
   public void tick (ClassicPacmanGameState gameState)
@@ -73,9 +77,13 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
     }
   }
 
-  public void eat ()
+  private void eat (ClassicPacmanGameState gameState)
   {
-
+    if (!eaten)
+    {
+      gameState.score += collectionPoints.get(this.type);
+      this.eaten = true;
+      this.eatenTick = gameState.currentTick;
+    }
   }
-
 }

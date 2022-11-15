@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.collectionPoints;
 import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.levelFruit;
 import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
@@ -226,10 +225,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                   //collision with item
                                                   if (collidable instanceof ClassicPacmanItemObject item && item.eatable)
                                                   {
-                                                    gameState.score += collectionPoints.get(item.type);
-                                                    item.eaten = true;
-                                                    item.eatenTick = gameState.currentTick;
-                                                    item.eat();
+                                                    item.collide();
                                                   }
                                                   //collision with ghost
                                                   //TODO implement later (make ghost eatable)

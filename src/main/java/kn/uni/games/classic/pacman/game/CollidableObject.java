@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class CollidableObject extends PlacedObject
 {
   public Vector2d hitbox;
+  public Runnable collideAction;
 
   public CollidableObject ()
   {
@@ -32,5 +33,13 @@ public class CollidableObject extends PlacedObject
   public Vector2d getSize ()
   {
     return hitbox;
+  }
+
+  public void collide ()
+  {
+    if (collideAction != null)
+    {
+      collideAction.run();
+    }
   }
 }
