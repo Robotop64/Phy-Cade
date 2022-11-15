@@ -1,5 +1,6 @@
 package kn.uni.games.classic.pacman.game;
 
+import java.awt.Color;
 import java.util.Map;
 
 public class ClassicPacmanGameConstants
@@ -19,6 +20,20 @@ public class ClassicPacmanGameConstants
       Collectables.galaxian, 2000,
       Collectables.bell, 3000,
       Collectables.key, 5000
+  );
+
+  //what color the score text should be
+  public static final Map <Collectables, Color> collectionColor = Map.of(
+      Collectables.coin, Color.yellow,
+      Collectables.powerUp, Color.orange,
+      Collectables.cherry, Color.red,
+      Collectables.strawberry, Color.red,
+      Collectables.orange, Color.orange,
+      Collectables.apple, Color.red,
+      Collectables.melon, Color.green,
+      Collectables.galaxian, Color.blue,
+      Collectables.bell, Color.cyan,
+      Collectables.key, Color.cyan
   );
 
   //array deciding which fruit is will spawn
