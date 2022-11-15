@@ -178,87 +178,44 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking 
 
                 });
                 gameState.fruitSpawned = true;
-                System.out.println("fruit spawned");
             }
 
             //deletes the item held by the tile
             currentTile.heldItem = null;
 
             checkLevelStatus(gameState);
-
         }
 
         //check collision
-        //TODO compact with getCollision for all collidables
-        //add collide action to Collidableobject
-
-        //check ghost collision
-        final List<Ghost> ghostsList = new ArrayList<>();
-
-        gameState.gameObjects.stream()
-                .filter(ghost -> ghost instanceof PlacedObject)
-                .filter(ghost -> ghost instanceof Ghost)
-                .forEach(ghost -> ghostsList.add((Ghost) ghost));
-
-        double critDist = ClassicPacmanGameConstants.ghostRadius + this.r - 20;
-
-        ghostsList.stream().forEach(ghost ->
-        {
-            if (ghost.pos.subtract(this.pos).lenght() < critDist && !playerDead) {
-                //TODO implement later (make ghost eatable)
-                //        if (ghost.isVulnerable)
-                //        {
-                //          gameState.score += 200;
-                //          ghost.deadAnimStartTick = gameState.currentTick;
-                //          ghost.movable = false;
-                //          ghost.vulnerableAnimStartTick = gameState.currentTick;
-                //          ghost.isVulnerable = false;
-                //        }
-                //        else
-                //        {
-                //          if (gameState.lives > 0)
-                //          {
-                //            gameState.lives -= 1;
-                //            gameState.gameObjects.remove(this);
-                //            gameState.gameObjects.add(new ClassicPacmanPlayerObject(gameState.map.tiles.get(new Vector2d(14, 23)).pos, gameState));
-                //          }
-                //          else
-                //          {
-                //            gameState.gameObjects.remove(this);
-                //          }
-                //        }
-                death(gameState);
-                movable = false;
-                ghostsList.forEach(ghost2 -> ghost2.movable = false);
-            }
-        });
-        //check for collision with items
+        //there are collisions
         if (getCollisions(this, gameState.gameObjects).stream().toList().size() > 0) {
+            //execute action for each collision
+            getCollisions(this, gameState.gameObjects).stream()
+                    .forEach(collidable -> {
+                        //collision with item
+                        if (collidable instanceof ClassicPacmanItemObject item) {
+                            gameState.score += collectionPoints.get(item.type);
+                            gameState.gameObjects.remove(item);
+                        }
+                        //collision with ghost
+                        //TODO implement later (make ghost eatable)
+                        if (collidable instanceof Ghost && !playerDead) {
+                            //get all ghosts
+                            final List<Ghost> ghostList = new ArrayList<>();
+                            gameState.gameObjects.stream()
+                                    .filter(ghost -> ghost instanceof PlacedObject)
+                                    .filter(ghost -> ghost instanceof Ghost)
+                                    .forEach(ghost -> ghostList.add((Ghost) ghost));
 
-            //getCollisions(this, gameState.gameObjects).stream()
-            //        .forEach(collidable -> {
-            //            if (collidable instanceof ClassicPacmanItemObject) {
-                 //           ClassicPacmanItemObject item = (ClassicPacmanItemObject) collidable;
-                   //         gameState.score += collectionPoints.get(item.type);
-                     //       gameState.gameObjects.remove(item);
-                 //     }
-                        // if (collidable instanceof Ghost){}
-
-
-             //       });
-
-
-            if (getCollisions(this, gameState.gameObjects).get(0) instanceof ClassicPacmanItemObject) {
-                ClassicPacmanItemObject item = (ClassicPacmanItemObject) getCollisions(this, gameState.gameObjects).get(0);
-
-                gameState.score += collectionPoints.get(item.type);
-                gameState.gameObjects.remove(item);
-
-            }
+                            death(gameState);
+                            //freeze pacman and the ghosts
+                            movable = false;
+                            ghostList.forEach(ghost2 -> ghost2.movable = false);
+                        }
+                    });
         }
 
-
-        //check for reset
+        //check for reset and wait for death animation to end
         if (playerDead && (gameState.currentTick - deadAnimStartTick) / (deadAnimDuration / 4) > 1) {
             this.playerDead = false;
 

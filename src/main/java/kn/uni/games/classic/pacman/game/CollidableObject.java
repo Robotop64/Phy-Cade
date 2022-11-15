@@ -1,5 +1,6 @@
 package kn.uni.games.classic.pacman.game;
 
+import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.util.Vector2d;
 
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class CollidableObject extends PlacedObject
 {
-  Vector2d hitbox;
+  public Vector2d hitbox;
 
   public CollidableObject ()
   {
@@ -21,14 +22,12 @@ public class CollidableObject extends PlacedObject
   {
     List<CollidableObject> collidables = objects.stream().filter(o -> o instanceof CollidableObject).map(o -> (CollidableObject) o).toList();
 
-    collidables.stream()
+    List<CollidableObject> colliding = collidables.stream()
             .filter(o -> o != target)
-           .forEach(o -> System.out.println(o.pos.subtract(target.pos).lenght()));
-    //TODO works but origin of item is in top left and not on the fruit
-    return collidables.stream()
-                  .filter(o -> o != target)
-                  .filter(o -> o.pos.subtract(target.pos).lenght() <  o.getSize().x / 2 + target.getSize().x / 2)
-                  .toList();
+            .filter(o -> o.pos.subtract(target.pos).lenght() <  o.getSize().x / 2 + target.getSize().x / 2)
+            .toList();
+
+    return colliding;
   }
 
 

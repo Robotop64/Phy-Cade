@@ -1,13 +1,8 @@
 package kn.uni.games.classic.pacman.game.ghosts;
 
 import kn.uni.Gui;
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.*;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
-import kn.uni.games.classic.pacman.game.PacmanMapTile;
-import kn.uni.games.classic.pacman.game.PlacedObject;
-import kn.uni.games.classic.pacman.game.Rendered;
-import kn.uni.games.classic.pacman.game.Ticking;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -18,12 +13,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Ghost extends PlacedObject implements Ticking, Rendered
+public class Ghost extends CollidableObject implements Ticking, Rendered
 {
   private final int           animationFrequency = 8;
   private final String        dirPath            = "pacman/textures/ghosts/";
   public        GhostAI       ai;
-  public        Vector2d      pos;
   private       BufferedImage opened;
   private       BufferedImage closed;
   private       PacmanMapTile targetTile;
@@ -36,6 +30,7 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     this.pos = pos;
     ai = ghostAI;
     movable = true;
+    this.hitbox = new Vector2d().cartesian(ClassicPacmanGameConstants.ghostRadius*2, ClassicPacmanGameConstants.ghostRadius*2);
   }
 
   private void loadImages (String path)
@@ -131,4 +126,5 @@ public class Ghost extends PlacedObject implements Ticking, Rendered
     }
 
   }
+
 }
