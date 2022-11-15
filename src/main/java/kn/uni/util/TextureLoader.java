@@ -25,10 +25,7 @@ public class TextureLoader
   {
     try
     {
-      //      BufferedImage out = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("pacman/textures/ghosts/nowak/nowak-closed.png")));
       BufferedImage out = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(texturePath + "/" + category + "/" + name)));
-      System.out.println("loaded texture " + texturePath + "/" + category + "/" + name);
-      System.out.println(out);
       return out;
     }
     catch (IOException e)
