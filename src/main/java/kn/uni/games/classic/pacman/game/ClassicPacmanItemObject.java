@@ -2,22 +2,33 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
 import kn.uni.util.TextureLoader;
+import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 public class ClassicPacmanItemObject extends CollidableObject implements Rendered, Ticking
 {
   public  ClassicPacmanGameConstants.Collectables type;
+  public  boolean                                 eatable;
+  public  boolean                                 eaten;
+  public  long                                    eatenTick;
+  public  long                                    despawnTicks = 200;
   private BufferedImage                           icon;
+  private Color                                   scoreColor;
 
-  public ClassicPacmanItemObject (Vector2d pos, ClassicPacmanGameState gameState, ClassicPacmanGameConstants.Collectables type)
+  public ClassicPacmanItemObject (Vector2d pos, ClassicPacmanGameState gameState, ClassicPacmanGameConstants.Collectables type, boolean eatable, Color scoreColor)
   {
     super();
     this.pos = pos;
     this.type = type;
     this.movable = false;
+    this.eatable = eatable;
+    this.eaten = false;
+    this.scoreColor = scoreColor;
+
 
     //load icon texture
     icon = TextureLoader.getInstance().loadTexture("items", type.name() + ".png");
@@ -26,9 +37,25 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
 
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
+
     Vector2d topLeft = new Vector2d().cartesian(icon.getWidth(), icon.getHeight()).multiply(-.5).add(pos);
     topLeft.use(g::translate);
-    g.drawImage(icon, 0, 0, Gui.getInstance().frame);
+    //draw icon if item is not eaten
+    if (!eaten)
+    {
+      g.drawImage(icon, 0, 0, Gui.getInstance().frame);
+    }
+    else
+    //draw score earned by eating fruit
+    {
+      //scorePos X&Y are used to determine the offset&progression of the score text from the fruit origin
+      int scorePosY = (int) ( gameState.map.tileSize + Util.progression(eatenTick, despawnTicks, gameState) * -10 );
+      int scorePosX = (int) ( gameState.map.tileSize + Util.progression(eatenTick, despawnTicks, gameState) * -5 );
+      //score color fade out
+      g.setColor(new Color(255, 0, 0, (int) ( 255 * ( 1. - Util.progression(eatenTick, despawnTicks, gameState) ) )));
+      g.setFont(Gui.getInstance().content.getFont().deriveFont(20f));
+      g.drawString(ClassicPacmanGameConstants.collectionPoints.get(type).toString(), scorePosX, scorePosY);
+    }
     topLeft.multiply(-1).use(g::translate);
   }
 
@@ -39,6 +66,14 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
 
   @Override
   public void tick (ClassicPacmanGameState gameState)
+  {
+    if (eaten && ( gameState.currentTick > eatenTick + despawnTicks ))
+    {
+      gameState.gameObjects.remove(this);
+    }
+  }
+
+  public void eat ()
   {
 
   }
