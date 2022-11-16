@@ -170,8 +170,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
 
     //eat items
-    System.out.println(gameState.map.getPillCount());
-
     if (gameState.score % 10000 == 0)
     {
       gameState.lives += 1;
