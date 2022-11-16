@@ -20,6 +20,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class ClassicPacmanGameScreen extends UIScreen
       gameState.gameObjects.add(map);
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
-      map.setItems(new HashMap <>(), new HashMap <>());
+      map.setItems(new ArrayList <>());
     }
     //create HUD
     gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));

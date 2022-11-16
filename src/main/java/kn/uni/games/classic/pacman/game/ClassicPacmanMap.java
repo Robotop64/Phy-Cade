@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -54,33 +55,43 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   /**
    * This methode is used to set the items in
-   *
-   * @param oldTiles
-   * @param itemLocations
    */
-  public void setItems (Map <Vector2d, PacmanMapTile> oldTiles, Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> itemLocations)
+  public void setItems (List <ClassicPacmanItemObject> items)
   {
-    if (itemLocations.isEmpty())
+
+    if (items.size() == 0)
     {
       tiles.forEach((vec, tile) ->
       {
         switch (tile.type)
         {
-          case coin -> tile.heldItem = ClassicPacmanGameConstants.Collectables.coin;
-          case powerUp -> tile.heldItem = ClassicPacmanGameConstants.Collectables.powerUp;
-          default -> tile.heldItem = null;
+          case coin -> gameState.gameObjects.add(
+              new ClassicPacmanItemObject(
+                  tile.pos.add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)),
+                  gameState,
+                  ClassicPacmanGameConstants.Collectables.coin,
+                  true,
+                  ClassicPacmanGameConstants.collectionColor.get(ClassicPacmanGameConstants.Collectables.coin)));
+
+          case powerUp -> gameState.gameObjects.add(
+              new ClassicPacmanItemObject(
+                  tile.pos.add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)),
+                  gameState,
+                  ClassicPacmanGameConstants.Collectables.powerUp,
+                  true,
+                  ClassicPacmanGameConstants.collectionColor.get(ClassicPacmanGameConstants.Collectables.powerUp)));
+
+          default ->
+          {
+          }
         }
       });
     }
     else
     {
-      oldTiles.forEach((vec, tile) ->
-      {
-        if (tile.heldItem != null && tile.type == tiles.get(vec).type)
-        {
-          tiles.get(vec).heldItem = tile.heldItem;
-        }
-      });
+      items.stream().forEach(o -> o.expired = false);
+
+      gameState.gameObjects.addAll(items);
     }
   }
 
@@ -159,6 +170,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
         gameState.gameObjects.add(
             new Ghost("nowak", tile.pos.copy().add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)), new RandomWalkAI()));
       }
+
     });
   }
 
@@ -167,18 +179,21 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
    *
    * @return Map <PacmanMapTile, ClassicPacmanGameState.Collectables>
    */
-  public Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> getPlacedItems ()
+  public List <ClassicPacmanItemObject> getPlacedItems ()
   {
-    Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> out = new HashMap <>();
-    tiles.forEach((vec, tile) ->
-        {
-          if (tile.heldItem != null)
-          {
-            out.put(tile, tile.heldItem);
-          }
-        }
-    );
-    return out;
+    List <ClassicPacmanItemObject> items = gameState.gameObjects.stream()
+                                                                .filter(o -> o instanceof ClassicPacmanItemObject)
+                                                                .map(o -> (ClassicPacmanItemObject) o)
+                                                                .toList();
+    return items;
+  }
+
+  public int getPillCount ()
+  {
+    List <ClassicPacmanItemObject> pillCount = gameState.map.getPlacedItems().stream()
+                                                            .filter(o -> o.type == ClassicPacmanGameConstants.Collectables.coin || o.type == ClassicPacmanGameConstants.Collectables.powerUp)
+                                                            .toList();
+    return pillCount.size();
   }
 
   public record TotalPosition(Vector2d ex, Vector2d in) { }

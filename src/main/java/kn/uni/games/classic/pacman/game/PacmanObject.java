@@ -13,9 +13,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.levelFruit;
@@ -170,49 +168,37 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       }
     }
 
-    //eat item
-    if (currentTile.heldItem != null)
+
+    //eat items
+    System.out.println(gameState.map.getPillCount());
+
+    if (gameState.score % 10000 == 0)
     {
-      //add score depending on item points
-      gameState.score += ClassicPacmanGameConstants.collectionPoints.get(currentTile.heldItem);
-      //add 1 live for every 10000 points
-      if (gameState.score % 10000 == 0)
-      {
-        gameState.lives += 1;
-      }
-      //action if item is coin or powerup
-      if (currentTile.heldItem == ClassicPacmanGameConstants.Collectables.coin || currentTile.heldItem == ClassicPacmanGameConstants.Collectables.powerUp)
-      {
-        gameState.eatenPills += 1;
-        gameState.pillsLeft -= 1;
-      }
-      //spawn fruit after eating half of the pills
-      if (!gameState.fruitSpawned && gameState.pillsLeft <= 240)
-      {
-        ClassicPacmanGameConstants.Collectables nextFruit = getFruit(gameState.level);
-        gameState.map.tiles.forEach((vec, tile) ->
-        {
-          if (tile.type == PacmanMapTile.Type.playerSpawn)
-          {
-            gameState.gameObjects.add(
-                new ClassicPacmanItemObject(
-                    tile.pos.add(new Vector2d().cartesian(gameState.map.tileSize / 2., gameState.map.tileSize / 2.)),
-                    gameState,
-                    nextFruit,
-                    true,
-                    ClassicPacmanGameConstants.collectionColor.get(nextFruit)));
-
-          }
-
-        });
-        gameState.fruitSpawned = true;
-      }
-
-      //deletes the item held by the tile
-      currentTile.heldItem = null;
-
-      checkLevelStatus(gameState);
+      gameState.lives += 1;
     }
+
+    //spawn fruit after eating half of the pills
+    if (!gameState.fruitSpawned && gameState.map.getPillCount() <= 122)
+    {
+      ClassicPacmanGameConstants.Collectables nextFruit = getFruit(gameState.level);
+      gameState.map.tiles.forEach((vec, tile) ->
+      {
+        if (tile.type == PacmanMapTile.Type.playerSpawn)
+        {
+          gameState.gameObjects.add(
+              new ClassicPacmanItemObject(
+                  tile.pos.add(new Vector2d().cartesian(gameState.map.tileSize / 2., gameState.map.tileSize / 2.)),
+                  gameState,
+                  nextFruit,
+                  true,
+                  ClassicPacmanGameConstants.collectionColor.get(nextFruit)));
+        }
+      });
+      gameState.fruitSpawned = true;
+    }
+
+    checkLevelStatus(gameState);
+
 
     //check collision
     //there are collisions
@@ -264,14 +250,13 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
    */
   private void checkLevelStatus (ClassicPacmanGameState gameState)
   {
-    if (gameState.pillsLeft == 0)
+    if (gameState.map.getPillCount() == 0)
     {
-      gameState.pillsLeft = 244;
       gameState.level += 1;
       //resets the coins and powerups
       reloadLevel(gameState);
       gameState.fruitSpawned = false;
-      gameState.map.setItems(new HashMap <>(), new HashMap <>());
+      gameState.map.setItems(new ArrayList <>());
     }
   }
 
@@ -319,9 +304,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
-    Map <PacmanMapTile, ClassicPacmanGameConstants.Collectables> oldItems = gameState.map.getPlacedItems();
-    Map <Vector2d, PacmanMapTile>                                oldTiles = gameState.map.tiles;
-
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof PlacedObject)
                          .filter(gameObject -> gameObject instanceof PacmanObject || gameObject instanceof Ghost || gameObject instanceof ClassicPacmanMap)
@@ -334,9 +316,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
     }
-
-
-    gameState.map.setItems(oldTiles, oldItems);
   }
 
   private ClassicPacmanGameConstants.Collectables getFruit (int level)
