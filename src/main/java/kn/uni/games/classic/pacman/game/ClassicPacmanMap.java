@@ -3,6 +3,7 @@ package kn.uni.games.classic.pacman.game;
 import kn.uni.games.classic.pacman.game.PacmanMapTile.Type;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.games.classic.pacman.game.ghosts.RandomWalkAI;
+import kn.uni.games.classic.pacman.game.ghosts.StalkAI;
 import kn.uni.util.Vector2d;
 
 import javax.imageio.ImageIO;
@@ -167,8 +168,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
       if (tile.type == Type.ghostSpawn)
       {
-        gameState.gameObjects.add(
-            new Ghost("nowak", tile.pos.copy().add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)), new RandomWalkAI()));
+
+          gameState.gameObjects.add(
+                  //.copy().add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.))
+                  new Ghost("nowak", tile.pos, new StalkAI()));
+
       }
 
     });

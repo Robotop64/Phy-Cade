@@ -164,6 +164,16 @@ public class Vector2d
     return rounded().x == vector2D.rounded().x && rounded().y == vector2D.rounded().y;
   }
 
+  public Direction toDirection ()
+  {
+    if (x == 0 && y == 0) return null;
+    if (x == 0 && y == -1) return Direction.up;
+    if (x == 0 && y == 1) return Direction.down;
+    if (x == 1 && y == 0) return Direction.right;
+    if (x == -1 && y == 0) return Direction.left;
+    throw new IllegalStateException("Vector2d is not a Direction");
+  }
+
   @Override
   public int hashCode ()
   {

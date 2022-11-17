@@ -17,6 +17,7 @@ public class PacmanMapTile extends PlacedObject implements Rendered
   public              Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
   public              Type                          type;
   private             int                           size;
+  public Color color;
 
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
@@ -24,13 +25,14 @@ public class PacmanMapTile extends PlacedObject implements Rendered
     this.pos = pos;
     this.size = size;
     this.type = type;
+    this.color = Color.black;
   }
 
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     g.translate((int) pos.rounded().x, (int) pos.rounded().y);
-    g.setColor(Color.black);
+    g.setColor(color);
     g.fillRect(0, 0, size, size);
 
     switch (type)
