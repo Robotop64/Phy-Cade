@@ -11,16 +11,17 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class ClassicPacmanGameState
 {
   //frames will be drawn every second frame
-  public int                                tps             = 120;
+  public int                                tps = 120;
   public ConcurrentLinkedDeque <GameObject> gameObjects;
   public boolean                            running;
-  public long                               currentTick;
-  public long                               lastTickTime;
-  public Direction                          playerDirection = Direction.down;
-  public boolean                            logging;
-  public Vector2d                           size;
-  public ClassicPacmanMap                   map;
-  public int                                mapOffset       = 15;
+
+  public long             currentTick;
+  public long             lastTickTime;
+  public Direction        playerDirection = Direction.down;
+  public boolean          logging;
+  public Vector2d         size;
+  public ClassicPacmanMap map;
+  public int              mapOffset       = 15;
 
   //score and counter stuff
   public long      score        = 0;
@@ -29,9 +30,6 @@ public class ClassicPacmanGameState
   public int       lives        = 5;
   public LocalTime startTime;
   public LocalTime gameDuration = LocalTime.of(0, 0, 0, 0);
-  public int       eatenPills   = 0;
-  //TODO get this from map
-  public int       pillsLeft    = 244;
   public boolean   fruitSpawned = false;
 
 

@@ -4,7 +4,9 @@ package kn.uni.games.classic.pacman.game;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
+import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
+import kn.uni.ui.InputListener;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -229,6 +231,14 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                   }
                                                 });
     }
+
+    //TODO get player
+    List <String> debugData = DebugDisplay.getDebugList(InputListener.Player.playerOne, gameState);
+    debugData.set(6, "PlayerData:" +
+        " [Dir:" + gameState.playerDirection +
+        "][Dead:" + this.playerDead +
+        "][Speed:" + this.tilesPerSecond + "]");
+    System.out.println();
 
     //check for reset and wait for death animation to end
     if (playerDead && ( gameState.currentTick - deadAnimStartTick ) / ( deadAnimDuration / 4 ) > 1)

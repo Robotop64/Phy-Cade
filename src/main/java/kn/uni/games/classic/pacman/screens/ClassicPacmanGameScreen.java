@@ -7,6 +7,7 @@ import kn.uni.games.classic.pacman.game.LoggerObject;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
+import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Key;
@@ -23,6 +24,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClassicPacmanGameScreen extends UIScreen
@@ -30,6 +32,7 @@ public class ClassicPacmanGameScreen extends UIScreen
   public ClassicPacmanGameState gameState;
   double           tickDuration;
   Map <Key, Input> joystick = new HashMap <>();
+  Player           player;
 
   public ClassicPacmanGameScreen (JPanel parent, Player player) throws IOException
   {
@@ -37,6 +40,7 @@ public class ClassicPacmanGameScreen extends UIScreen
     setBackground(Color.black.darker().darker().darker().darker());
     gameState = new ClassicPacmanGameState();
     tickDuration = 1_000_000_000.0 / gameState.tps;
+    this.player = player;
 
     bindPlayer(player, input ->
     {
@@ -67,7 +71,8 @@ public class ClassicPacmanGameScreen extends UIScreen
 
       //      System.out.println(gameState.playerDirection);
     });
-
+    //create DebugDisplay
+    gameState.gameObjects.add(new DebugDisplay(gameState, new Vector2d().cartesian(10, 10), player));
     //create Logger
     gameState.gameObjects.add(new LoggerObject());
     //create Map
@@ -80,6 +85,7 @@ public class ClassicPacmanGameScreen extends UIScreen
     }
     //create HUD
     gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
+
 
     startGame();
   }
@@ -112,11 +118,24 @@ public class ClassicPacmanGameScreen extends UIScreen
         gameState.gameObjects.stream()
                              .filter(gameObject -> gameObject instanceof Ticking)
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
+
+        List <String> debugData = DebugDisplay.getDebugList(player, gameState);
+        debugData.set(1, "GameState-running:" + gameState.running);
+        debugData.set(3, "ObjectCount:" + gameState.gameObjects.size());
+        debugData.set(4, "LevelData:" +
+            " [Lvl:" + gameState.level +
+            "][HP:" + gameState.lives +
+            "][Score:" + gameState.score +
+            "][IL:" + gameState.map.getPlacedItems().size() + "]");
+        debugData.set(5,
+            "[FrS:" + gameState.fruitSpawned +
+                "][Gs:" + gameState.startTime +
+                "][Gd:" + gameState.gameDuration + "]");
+
         if (gameState.currentTick % 2 == 0)
         {
           Gui.getInstance().frame.repaint();
         }
-
       }
       kill();
     }).start();

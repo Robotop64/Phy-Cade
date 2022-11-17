@@ -1,6 +1,9 @@
 package kn.uni.games.classic.pacman.game;
 
 
+import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
+import kn.uni.ui.InputListener;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,8 +25,12 @@ public class LoggerObject extends GameObject implements Ticking
     times.addAll(l);
     double d = times.getFirst() - times.getLast();
     if (gameState.logging || gameState.currentTick % ( 2L * gameState.tps ) == 0)
-      System.out.printf("Tick %d at Time %.6f. Last %d ticks took %f seconds%n", gameState.currentTick, gameState.lastTickTime / 1_000_000_000.0, gameState.tps, d / 1_000_000_000.0);
-
+    {
+      DebugDisplay.getDebugList(InputListener.Player.playerOne, gameState)
+                  .set(2,
+                      "TPS:[Target:" + gameState.tps + "]" +
+                          "[Last: took " + d / 1_000_000_000.0 + "s]");
+    }
     if (gameState.currentTick > 300) gameState.logging = false;
   }
 
