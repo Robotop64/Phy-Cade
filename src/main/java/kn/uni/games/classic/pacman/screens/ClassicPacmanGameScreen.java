@@ -119,18 +119,16 @@ public class ClassicPacmanGameScreen extends UIScreen
                              .filter(gameObject -> gameObject instanceof Ticking)
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
 
-        List <String> debugData = DebugDisplay.getDebugList(player, gameState);
-        debugData.set(1, "GameState-running:" + gameState.running);
-        debugData.set(3, "ObjectCount:" + gameState.gameObjects.size());
-        debugData.set(4, "LevelData:" +
-            " [Lvl:" + gameState.level +
-            "][HP:" + gameState.lives +
-            "][Score:" + gameState.score +
-            "][IL:" + gameState.map.getPlacedItems().size() + "]");
-        debugData.set(5,
-            "[FrS:" + gameState.fruitSpawned +
-                "][Gs:" + gameState.startTime +
-                "][Gd:" + gameState.gameDuration + "]");
+        Map <DebugDisplay.DebugType, Map<DebugDisplay.DebugSubType, String>>debugData = DebugDisplay.getDebugList(player, gameState);
+        debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.running, "[Run: " + gameState.running + "]");
+        debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.objectCount, "[Objs: " + gameState.gameObjects.size() + "]");
+        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Lvl, "[Lvl: " + gameState.level + "]");
+        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Lives, "[HP: " + gameState.lives + "]");
+        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Score, "[Score: " + gameState.score + "]");
+        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.ItemsLeft, "[Items: " + gameState.map.getPlacedItems().size() + "]");
+        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.FruitsSpawned, "[FruitSp: " + gameState.fruitSpawned + "]");
+        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.GameStart, "[Start: " + gameState.startTime + "]");
+        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.GameDuration, "[Dur: " + gameState.gameDuration + "]");
 
         if (gameState.currentTick % 2 == 0)
         {

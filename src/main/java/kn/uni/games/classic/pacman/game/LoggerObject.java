@@ -6,6 +6,7 @@ import kn.uni.ui.InputListener;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class LoggerObject extends GameObject implements Ticking
 {
@@ -26,10 +27,8 @@ public class LoggerObject extends GameObject implements Ticking
     double d = times.getFirst() - times.getLast();
     if (gameState.logging || gameState.currentTick % ( 2L * gameState.tps ) == 0)
     {
-      DebugDisplay.getDebugList(InputListener.Player.playerOne, gameState)
-                  .set(2,
-                      "TPS:[Target:" + gameState.tps + "]" +
-                          "[Last: took " + d / 1_000_000_000.0 + "s]");
+      Map <DebugDisplay.DebugType, Map<DebugDisplay.DebugSubType, String>>debugData = DebugDisplay.getDebugList(InputListener.Player.playerOne, gameState);
+      debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.TPS, "TPS:[Target:" + gameState.tps + "]" +"[Last: took " + d / 1_000_000_000.0 + "s]");
     }
     if (gameState.currentTick > 300) gameState.logging = false;
   }
