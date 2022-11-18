@@ -53,4 +53,11 @@ public class ClassicPacmanGameConstants
   //variety of fruits
   public enum Collectables
   { coin, powerUp, cherry, strawberry, apple, orange, melon, galaxian, bell, key }
+
+
+  public enum mode
+  { CHASE, SCATTER, FRIGHTENED, EXIT }
+
+  public enum ghostNames
+  { BLINKY, PINKY, INKY, CLYDE }
 }

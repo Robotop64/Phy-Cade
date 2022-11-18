@@ -1,5 +1,6 @@
 package kn.uni.games.classic.pacman.game.ghosts;
 
+import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.PacmanMapTile;
 import kn.uni.util.Direction;
@@ -7,14 +8,16 @@ import kn.uni.util.Vector2d;
 
 import java.awt.Color;
 
-public class StalkAI extends GhostAI
+public class ShyAI extends GhostAI
 {
 
-  public StalkAI (ClassicPacmanGameState gameState)
+  public ShyAI (ClassicPacmanGameState gameState)
   {
-    borderColor = Color.red;
-    scatter = new Vector2d().cartesian(gameState.map.width, 0);
+    borderColor = Color.pink;
+    scatter = new Vector2d().cartesian(0, 0);
     exitSpawn = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostExit).get(0).pos;
+
+    name = ClassicPacmanGameConstants.ghostNames.PINKY;
   }
 
   @Override
@@ -26,8 +29,8 @@ public class StalkAI extends GhostAI
   @Override
   public void setCasePos (ClassicPacmanGameState gameState, Ghost ghost)
   {
-    chase = getPacmanPos(gameState).get(0);
-    if (ghost.currentMode == GhostAI.mode.CHASE)
+    chase = getPacmanPos(gameState).get(0).add(gameState.playerDirection.toVector().multiply(5 * gameState.map.tileSize));
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
     {
       activeTarget = chase;
     }

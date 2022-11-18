@@ -7,6 +7,7 @@ import kn.uni.games.classic.pacman.game.LoggerObject;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
+import kn.uni.games.classic.pacman.game.ghosts.ConfusedAI;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.ui.InputListener.Input;
@@ -81,6 +82,7 @@ public class ClassicPacmanGameScreen extends UIScreen
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
       map.setItems(new ArrayList <>());
+      map.lastAI = new ConfusedAI(gameState);
       map.addEntities(gameState);
     }
     //create HUD

@@ -20,16 +20,16 @@ import java.util.Objects;
 
 public class Ghost extends CollidableObject implements Ticking, Rendered
 {
-  private final int           animationFrequency = 8;
-  private final String        dirPath            = "pacman/textures/ghosts/";
-  public        GhostAI       ai;
-  public        Direction     direction;
-  public        PacmanMapTile currentTile;
-  public        GhostAI.mode  currentMode;
-  public        boolean       canUseDoor;
-  private       BufferedImage opened;
-  private       BufferedImage closed;
-  private       PacmanMapTile nextTile;
+  private final int                             animationFrequency = 8;
+  private final String                          dirPath            = "pacman/textures/ghosts/";
+  public        GhostAI                         ai;
+  public        Direction                       direction;
+  public        PacmanMapTile                   currentTile;
+  public        ClassicPacmanGameConstants.mode currentMode;
+  public        boolean                         canUseDoor;
+  private       BufferedImage                   opened;
+  private       BufferedImage                   closed;
+  private       PacmanMapTile                   nextTile;
 
 
   public Ghost (String profName, Vector2d pos, GhostAI ghostAI)
@@ -41,7 +41,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     canUseDoor = true;
     this.hitbox = new Vector2d().cartesian(ClassicPacmanGameConstants.ghostRadius * 2, ClassicPacmanGameConstants.ghostRadius * 2);
     this.direction = Direction.up;
-    ai.setMode(GhostAI.mode.EXIT, this);
+    ai.setMode(ClassicPacmanGameConstants.mode.EXIT, this);
 
   }
 
@@ -128,7 +128,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
             //        System.out.println("reached centre, looking for new target");
             if (currentTile.type.equals(PacmanMapTile.Type.ghostExit))
             {
-              ai.setMode(GhostAI.mode.CHASE, this);
+              ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this);
               this.canUseDoor = false;
             }
             do

@@ -1,5 +1,6 @@
 package kn.uni.games.classic.pacman.game.ghosts;
 
+import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.PacmanMapTile;
 import kn.uni.games.classic.pacman.game.PacmanObject;
@@ -23,12 +24,14 @@ public abstract class GhostAI
   protected     Vector2d scatter;
   protected     Vector2d exitSpawn;
 
+  protected ClassicPacmanGameConstants.ghostNames name;
+
   @Deprecated
   public abstract Direction getNextDirection (ClassicPacmanGameState gameState);
 
   public abstract void setCasePos (ClassicPacmanGameState gameState, Ghost ghost);
 
-  public void setMode (mode mode, Ghost ghost)
+  public void setMode (ClassicPacmanGameConstants.mode mode, Ghost ghost)
   {
     switch (mode)
     {
@@ -50,9 +53,9 @@ public abstract class GhostAI
     }
   }
 
-  public Direction nextDirection2 (ClassicPacmanGameState gameState, Ghost ghost, mode mode)
+  public Direction nextDirection2 (ClassicPacmanGameState gameState, Ghost ghost, ClassicPacmanGameConstants.mode mode)
   {
-    if (mode != GhostAI.mode.FRIGHTENED)
+    if (mode != ClassicPacmanGameConstants.mode.FRIGHTENED)
     {//find all valid tiles
       List <PacmanMapTile> possibleTiles =
           Arrays.stream(Direction.values())
@@ -131,6 +134,16 @@ public abstract class GhostAI
     return pacPos;
   }
 
-  public enum mode
-  { CHASE, SCATTER, FRIGHTENED, EXIT }
+  public List <Vector2d> getBlinkyPos (ClassicPacmanGameState gameState)
+  {
+    List <Vector2d> blinkyPos = new ArrayList <>();
+
+    gameState.gameObjects.stream()
+                         .filter(o -> o instanceof Ghost)
+                         .map(o -> (Ghost) o)
+                         .filter(o -> o.ai.name.equals(ClassicPacmanGameConstants.ghostNames.BLINKY))
+                         .forEach(o -> blinkyPos.add(o.pos));
+    return blinkyPos;
+  }
+
 }

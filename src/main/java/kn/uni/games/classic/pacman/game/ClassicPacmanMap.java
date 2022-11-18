@@ -1,14 +1,19 @@
 package kn.uni.games.classic.pacman.game;
 
 import kn.uni.games.classic.pacman.game.PacmanMapTile.Type;
+import kn.uni.games.classic.pacman.game.ghosts.AggressiveAI;
+import kn.uni.games.classic.pacman.game.ghosts.ConfusedAI;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
-import kn.uni.games.classic.pacman.game.ghosts.StalkAI;
+import kn.uni.games.classic.pacman.game.ghosts.GhostAI;
+import kn.uni.games.classic.pacman.game.ghosts.ShyAI;
+import kn.uni.games.classic.pacman.game.ghosts.SneakyAI;
 import kn.uni.util.Vector2d;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +43,9 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   public int                           tileSize;
   public int                           width;
   public int                           height;
+  public GhostAI                       lastAI;
   Vector2d size;
   private ClassicPacmanGameState gameState;
-  //TODO add variable for pills at start here
 
 
   public ClassicPacmanMap (ClassicPacmanGameState gameState, Vector2d pos, int width, int height)
@@ -52,6 +57,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
     loadMapData();
     addTilesToMap();
+
 
   }
 
@@ -190,6 +196,12 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   public void addEntities (ClassicPacmanGameState gameState)
   {
+    List <GhostAI> subAIs = new ArrayList <>();
+    subAIs.add(new AggressiveAI(gameState));
+    subAIs.add(new ShyAI(gameState));
+    subAIs.add(new SneakyAI(gameState));
+    subAIs.add(new ConfusedAI(gameState));
+
     tiles.forEach((vec, tile) ->
     {
       if (tile.type == Type.playerSpawn)
@@ -200,13 +212,21 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
       if (tile.type == Type.ghostSpawn)
       {
-
+        int indexLastAI = subAIs.indexOf(lastAI);
+        int indexNextAI = ( indexLastAI + 1 ) % subAIs.size();
+        lastAI = subAIs.get(indexNextAI);
+        System.out.println("AI: " + lastAI.getClass().getSimpleName());
         gameState.gameObjects.add(
-            new Ghost("nowak", tile.pos, new StalkAI(gameState)));
-
+            new Ghost("nowak", tile.pos, lastAI));
       }
 
     });
+
+    gameState.gameObjects.stream()
+                         .filter(o -> o instanceof Ghost)
+                         .map(o -> (Ghost) o)
+                         .forEach(g -> System.out.println(g.ai.getClass().getSimpleName()));
+
   }
 
   public record TotalPosition(Vector2d ex, Vector2d in) { }
