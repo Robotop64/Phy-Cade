@@ -27,11 +27,9 @@ public class DebugDisplay extends PlacedObject implements Rendered
     GhostPosition, GhostDirection, GhostSpeed, GhostState, GhostVulnerable}
   private int[] subTypeLength = {1,7,14,19,6};
 
-  public List <String> diagnostics = new ArrayList <>();
   public Map <DebugType, Map<DebugSubType, String>> diagnostics2 = new HashMap<>();
 
-
-  public DebugDisplay (ClassicPacmanGameState gameState, Vector2d pos, InputListener.Player player)
+  public DebugDisplay (Vector2d pos, InputListener.Player player)
   {
     //enabled = true;
     this.pos = pos;

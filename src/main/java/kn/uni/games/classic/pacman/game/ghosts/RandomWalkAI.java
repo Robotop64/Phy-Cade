@@ -28,7 +28,5 @@ public class RandomWalkAI extends GhostAI
   }
 
   @Override
-  public Vector2d targetPos(ClassicPacmanGameState gameState) {
-    return null;
-  }
+  public void setTargetPos(ClassicPacmanGameState gameState) {}
 }

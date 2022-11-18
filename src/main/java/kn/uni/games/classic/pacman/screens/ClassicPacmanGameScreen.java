@@ -7,6 +7,8 @@ import kn.uni.games.classic.pacman.game.LoggerObject;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
+import kn.uni.games.classic.pacman.game.ghosts.Ghost;
+import kn.uni.games.classic.pacman.game.ghosts.GhostAI;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.ui.InputListener.Input;
@@ -72,7 +74,7 @@ public class ClassicPacmanGameScreen extends UIScreen
       //      System.out.println(gameState.playerDirection);
     });
     //create DebugDisplay
-    gameState.gameObjects.add(new DebugDisplay(gameState, new Vector2d().cartesian(10, 10), player));
+    gameState.gameObjects.add(new DebugDisplay(new Vector2d().cartesian(10, 10), player));
     //create Logger
     gameState.gameObjects.add(new LoggerObject());
     //create Map
@@ -86,6 +88,10 @@ public class ClassicPacmanGameScreen extends UIScreen
     //create HUD
     gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
 
+
+    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ((Ghost) o).ai.setTargetPos(gameState));
+
+    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ((Ghost) o).ai.setMode(GhostAI.mode.CHASE, (Ghost) o));
 
     startGame();
   }

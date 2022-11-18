@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.games.classic.pacman.game.PacmanMapTile.Type;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
+import kn.uni.games.classic.pacman.game.ghosts.GhostAI;
 import kn.uni.games.classic.pacman.game.ghosts.RandomWalkAI;
 import kn.uni.games.classic.pacman.game.ghosts.StalkAI;
 import kn.uni.util.Vector2d;
@@ -28,6 +29,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       Color.cyan, Type.portal,
       Color.red, Type.ghostSpawn,
       Color.green, Type.playerSpawn,
+        Color.pink, Type.ghostExit,
       Color.white, Type.none);
 
   /**
@@ -170,8 +172,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       {
 
           gameState.gameObjects.add(
-                  //.copy().add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.))
-                  new Ghost("nowak", tile.pos, new StalkAI()));
+                  new Ghost("nowak", tile.pos, new StalkAI(gameState)));
 
       }
 
@@ -198,6 +199,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
                                                             .filter(o -> o.type == ClassicPacmanGameConstants.Collectables.coin || o.type == ClassicPacmanGameConstants.Collectables.powerUp)
                                                             .toList();
     return pillCount.size();
+  }
+
+  public List<PacmanMapTile> getTilesOfType(Type type)
+  {
+    return tiles.values().stream().filter(tile -> tile.type == type).toList();
   }
 
   public record TotalPosition(Vector2d ex, Vector2d in) { }

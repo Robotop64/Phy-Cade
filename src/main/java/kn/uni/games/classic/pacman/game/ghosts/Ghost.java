@@ -21,6 +21,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered {
     private PacmanMapTile nextTile;
     public Direction direction;
     public PacmanMapTile currentTile;
+    public GhostAI.mode currentMode;
 
 
     public Ghost(String profName, Vector2d pos, GhostAI ghostAI) {
@@ -30,6 +31,8 @@ public class Ghost extends CollidableObject implements Ticking, Rendered {
         movable = true;
         this.hitbox = new Vector2d().cartesian(ClassicPacmanGameConstants.ghostRadius * 2, ClassicPacmanGameConstants.ghostRadius * 2);
         this.direction = Direction.up;
+        //ai.setMode(GhostAI.mode.CHASE,this);
+
     }
 
     private void loadImages(String path) {
@@ -53,7 +56,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered {
         topLeft.multiply(-1).use(g::translate);
 
         g.translate(pos.x, pos.y);
-        Direction a = ai.nextDirection2(gameState,this);
+        Direction a = ai.nextDirection2(gameState,this,currentMode);
         Vector2d b = a.toVector().multiply(gameState.map.tileSize);
         g.drawLine(0,0, (int) b.x, (int) b.y);
         g.translate(-pos.x, -pos.y);
@@ -83,7 +86,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered {
 
         if (movable) {
 
-            if (nextTile==null) nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this).toVector());
+            if (nextTile==null) nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this, currentMode).toVector());
 
             Vector2d nextTilePos = gameState.map.splitPosition(nextTile.pos).ex().subtract(gameState.map.splitPosition(pos).ex());
             if (nextTile != null) {
@@ -98,7 +101,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered {
                         //        System.out.println("reached centre, looking for new target");
                         do {
                             //          System.out.println("rerolling");
-                            nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this).toVector());
+                            nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this,currentMode).toVector());
                         } while (nextTile == null || !PacmanMapTile.walkable.contains(nextTile.type));
                         //        System.out.println("found new target");
                     }

@@ -106,5 +106,5 @@ public class PacmanMapTile extends PlacedObject implements Rendered
   }
 
   public enum Type
-  { wall, path, none, coin, powerUp, ghostSpawn, playerSpawn, portal }
+  { wall, path, none, coin, powerUp, ghostSpawn, playerSpawn, portal, ghostExit }
 }
