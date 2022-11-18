@@ -7,8 +7,6 @@ import kn.uni.games.classic.pacman.game.LoggerObject;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
-import kn.uni.games.classic.pacman.game.ghosts.Ghost;
-import kn.uni.games.classic.pacman.game.ghosts.GhostAI;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.ui.InputListener.Input;
@@ -26,7 +24,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ClassicPacmanGameScreen extends UIScreen
@@ -84,14 +81,15 @@ public class ClassicPacmanGameScreen extends UIScreen
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
       map.setItems(new ArrayList <>());
+      map.addEntities(gameState);
     }
     //create HUD
     gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
 
 
-    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ((Ghost) o).ai.setTargetPos(gameState));
+    //    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ( (Ghost) o ).ai.setCasePos(gameState));
 
-    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ((Ghost) o).ai.setMode(GhostAI.mode.CHASE, (Ghost) o));
+    //    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ( (Ghost) o ).ai.setMode(GhostAI.mode.CHASE, (Ghost) o));
 
     startGame();
   }
@@ -125,7 +123,7 @@ public class ClassicPacmanGameScreen extends UIScreen
                              .filter(gameObject -> gameObject instanceof Ticking)
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
 
-        Map <DebugDisplay.DebugType, Map<DebugDisplay.DebugSubType, String>>debugData = DebugDisplay.getDebugList(player, gameState);
+        Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(player, gameState);
         debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.running, "[Run: " + gameState.running + "]");
         debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.objectCount, "[Objs: " + gameState.gameObjects.size() + "]");
         debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Lvl, "[Lvl: " + gameState.level + "]");

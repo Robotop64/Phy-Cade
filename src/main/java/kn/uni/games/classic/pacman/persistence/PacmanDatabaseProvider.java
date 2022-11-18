@@ -48,7 +48,7 @@ public class PacmanDatabaseProvider
     }
     catch (SQLException e)
     {
-      throw new IllegalStateException("Cannot connect the database!", e);
+      throw new IllegalStateException("Cannot connect the database!");
     }
   }
 
@@ -78,9 +78,9 @@ public class PacmanDatabaseProvider
       System.err.println("Got an exception!");
       // printStackTrace method
       // prints line numbers + call stack
-      e.printStackTrace();
+      //      e.printStackTrace();
       // Prints what exception has been thrown
-      System.out.println(e);
+      //      System.out.println(e);
     }
   }
 

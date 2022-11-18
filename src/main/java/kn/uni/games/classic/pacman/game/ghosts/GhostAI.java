@@ -7,98 +7,130 @@ import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
-public abstract class GhostAI {
+public abstract class GhostAI
+{
 
-    protected Color borderColor;
+  private final Random   random       = new Random(System.nanoTime());
+  protected     Color    borderColor;
+  protected     Vector2d activeTarget = new Vector2d().cartesian(0, 0);
+  protected     Vector2d chase;
+  protected     Vector2d scatter;
+  protected     Vector2d exitSpawn;
 
-    protected Vector2d activeTarget = new Vector2d().cartesian(0, 0);
-    protected Vector2d chase;
-    protected Vector2d scatter;
-    protected Vector2d exitSpawn;
+  @Deprecated
+  public abstract Direction getNextDirection (ClassicPacmanGameState gameState);
 
-    private final Random random = new Random(System.nanoTime());
+  public abstract void setCasePos (ClassicPacmanGameState gameState, Ghost ghost);
 
-    @Deprecated
-    public abstract Direction getNextDirection(ClassicPacmanGameState gameState);
-
-    public abstract void setTargetPos(ClassicPacmanGameState gameState);
-
-    public enum mode {CHASE, SCATTER, FRIGHTENED, EXIT}
-
-    public void setMode(mode mode, Ghost ghost) {
-        switch (mode) {
-            case CHASE:
-                activeTarget = chase;
-                ghost.currentMode = mode;
-                break;
-            case SCATTER:
-                activeTarget = scatter;
-                ghost.currentMode = mode;
-                break;
-            case FRIGHTENED:
-                ghost.currentMode = mode;
-                break;
-            case EXIT:
-                activeTarget = exitSpawn;
-                ghost.currentMode = mode;
-                break;
-        }
+  public void setMode (mode mode, Ghost ghost)
+  {
+    switch (mode)
+    {
+      case CHASE:
+        activeTarget = chase;
+        ghost.currentMode = mode;
+        break;
+      case SCATTER:
+        activeTarget = scatter;
+        ghost.currentMode = mode;
+        break;
+      case FRIGHTENED:
+        ghost.currentMode = mode;
+        break;
+      case EXIT:
+        activeTarget = exitSpawn;
+        ghost.currentMode = mode;
+        break;
     }
+  }
 
-    public Direction nextDirection2(ClassicPacmanGameState gameState, Ghost ghost, mode mode) {
-        if (mode != GhostAI.mode.FRIGHTENED) {//find all valid tiles
-            List<PacmanMapTile> possibleTiles =
-                    Arrays.stream(Direction.values())
-                            .filter(d -> d != ghost.direction.opposite())
-                            .map(Direction::toVector)
-                            .map(vec -> ghost.currentTile.neighbors.get(vec))
-                            .filter(Objects::nonNull)
-                            .filter(tile -> PacmanMapTile.walkable.contains(tile.type))
-                            .toList();
+  public Direction nextDirection2 (ClassicPacmanGameState gameState, Ghost ghost, mode mode)
+  {
+    if (mode != GhostAI.mode.FRIGHTENED)
+    {//find all valid tiles
+      List <PacmanMapTile> possibleTiles =
+          Arrays.stream(Direction.values())
+                .filter(d -> d != ghost.direction.opposite())
+                .map(Direction::toVector)
+                .map(vec -> ghost.currentTile.neighbors.get(vec))
+                .filter(Objects::nonNull)
+                //              &&
+                .filter(tile -> PacmanMapTile.walkable.contains(tile.type))
+                .filter(tile -> !tile.type.equals(PacmanMapTile.Type.door) || ghost.canUseDoor)
+                //                .filter(tile -> tile.type.equals(PacmanMapTile.Type.door) || !ghost.canUseDoor)
+                .toList();
 
-            gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
-            possibleTiles.stream().forEach(tile -> tile.color = Color.blue);
-            //sort tiles by distance to target, target = indexed at 0
-            possibleTiles =
-                    possibleTiles.stream()
-                            .sorted((a, b) -> {
-                                Vector2d aVec = a.pos.subtract(ghost.ai.activeTarget);
-                                Vector2d bVec = b.pos.subtract(ghost.ai.activeTarget);
-                                double aDist = aVec.lenght();
-                                double bDist = bVec.lenght();
-                                if (aDist == bDist) {
-                                    return 0;
-                                } else if (aDist < bDist) {
-                                    return -1;
-                                } else {
-                                    return 1;
-                                }
-                            })
-                            .toList();
-            //get direction of target tile
-            Vector2d goTo = possibleTiles.get(0).pos.subtract(ghost.currentTile.pos);
-            Direction newDirection = goTo.divide(goTo.lenght()).toDirection();
-            ghost.direction = newDirection;
-            return newDirection;
+      //visual feedback of possible tiles
+      gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
+      possibleTiles.stream().forEach(tile -> tile.color = Color.blue);
 
-        } else {
-            Direction currentDirection = Direction.up;
-            if (random.nextFloat() < .25) {
-                currentDirection = Direction.values()[random.nextInt(4)];
-            }
-            return currentDirection;
-        }
+      //sort tiles by distance to target, target = indexed at 0
+      possibleTiles =
+          possibleTiles.stream()
+                       .sorted((a, b) ->
+                       {
+                         Vector2d aVec  = a.pos.subtract(ghost.ai.activeTarget);
+                         Vector2d bVec  = b.pos.subtract(ghost.ai.activeTarget);
+                         double   aDist = aVec.lenght();
+                         double   bDist = bVec.lenght();
+                         if (aDist == bDist)
+                         {
+                           return 0;
+                         }
+                         else if (aDist < bDist)
+                         {
+                           return -1;
+                         }
+                         else
+                         {
+                           return 1;
+                         }
+                       })
+                       .toList();
+
+      //get direction of target tile
+      Vector2d goTo;
+      //      if possibleTiles available get best, else return old direction
+      if (possibleTiles.size() > 0)
+      {
+        goTo = possibleTiles.get(0).pos.subtract(ghost.currentTile.pos);
+        Direction newDirection = goTo.divide(goTo.lenght()).toDirection();
+        ghost.direction = newDirection;
+        return newDirection;
+      }
+      else
+      {
+        return ghost.direction;
+      }
     }
-
-    public List<Vector2d> getPacmanPos(ClassicPacmanGameState gameState) {
-        List<Vector2d> pacPos = new ArrayList<>();
-
-        gameState.gameObjects.stream()
-                .filter(o -> o instanceof PacmanObject)
-                .map(o -> (PacmanObject) o)
-                .forEach(o -> pacPos.add(o.pos));
-        return pacPos;
+    else
+    {
+      Direction currentDirection = Direction.up;
+      if (random.nextFloat() < .25)
+      {
+        currentDirection = Direction.values()[random.nextInt(4)];
+      }
+      return currentDirection;
     }
+  }
+
+  public List <Vector2d> getPacmanPos (ClassicPacmanGameState gameState)
+  {
+    List <Vector2d> pacPos = new ArrayList <>();
+
+    gameState.gameObjects.stream()
+                         .filter(o -> o instanceof PacmanObject)
+                         .map(o -> (PacmanObject) o)
+                         .forEach(o -> pacPos.add(o.pos));
+    return pacPos;
+  }
+
+  public enum mode
+  { CHASE, SCATTER, FRIGHTENED, EXIT }
 }

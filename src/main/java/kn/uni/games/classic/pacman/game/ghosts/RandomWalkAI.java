@@ -2,7 +2,6 @@ package kn.uni.games.classic.pacman.game.ghosts;
 
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.util.Direction;
-import kn.uni.util.Vector2d;
 
 import java.awt.Color;
 import java.util.Random;
@@ -28,5 +27,5 @@ public class RandomWalkAI extends GhostAI
   }
 
   @Override
-  public void setTargetPos(ClassicPacmanGameState gameState) {}
+  public void setCasePos (ClassicPacmanGameState gameState, Ghost ghost) { }
 }

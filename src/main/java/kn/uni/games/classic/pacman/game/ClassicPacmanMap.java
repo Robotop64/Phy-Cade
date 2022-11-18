@@ -2,8 +2,6 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.games.classic.pacman.game.PacmanMapTile.Type;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
-import kn.uni.games.classic.pacman.game.ghosts.GhostAI;
-import kn.uni.games.classic.pacman.game.ghosts.RandomWalkAI;
 import kn.uni.games.classic.pacman.game.ghosts.StalkAI;
 import kn.uni.util.Vector2d;
 
@@ -29,7 +27,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       Color.cyan, Type.portal,
       Color.red, Type.ghostSpawn,
       Color.green, Type.playerSpawn,
-        Color.pink, Type.ghostExit,
+      Color.pink, Type.ghostExit,
+      new Color(255, 0, 255), Type.door,
       Color.white, Type.none);
 
   /**
@@ -160,23 +159,6 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
                                             .flatMap(v -> IntStream.range(0, 4).map(n -> 90 * n).mapToObj(v::rotate))
                                             .filter(v -> tiles.get(position.add(v)) != null)
                                             .forEach(v -> tile.neighbors.put(v, tiles.get(position.add(v)))));
-    tiles.forEach((vec, tile) ->
-    {
-      if (tile.type == Type.playerSpawn)
-      {
-        gameState.gameObjects.add(
-            new PacmanObject((int) ( this.tileSize * 2. / 3. ), vec.multiply(this.tileSize).add(new Vector2d().cartesian(4, 4)), gameState));
-      }
-
-      if (tile.type == Type.ghostSpawn)
-      {
-
-          gameState.gameObjects.add(
-                  new Ghost("nowak", tile.pos, new StalkAI(gameState)));
-
-      }
-
-    });
   }
 
   /**
@@ -201,9 +183,30 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     return pillCount.size();
   }
 
-  public List<PacmanMapTile> getTilesOfType(Type type)
+  public List <PacmanMapTile> getTilesOfType (Type type)
   {
     return tiles.values().stream().filter(tile -> tile.type == type).toList();
+  }
+
+  public void addEntities (ClassicPacmanGameState gameState)
+  {
+    tiles.forEach((vec, tile) ->
+    {
+      if (tile.type == Type.playerSpawn)
+      {
+        gameState.gameObjects.add(
+            new PacmanObject((int) ( this.tileSize * 2. / 3. ), vec.multiply(this.tileSize).add(new Vector2d().cartesian(4, 4)), gameState));
+      }
+
+      if (tile.type == Type.ghostSpawn)
+      {
+
+        gameState.gameObjects.add(
+            new Ghost("nowak", tile.pos, new StalkAI(gameState)));
+
+      }
+
+    });
   }
 
   public record TotalPosition(Vector2d ex, Vector2d in) { }

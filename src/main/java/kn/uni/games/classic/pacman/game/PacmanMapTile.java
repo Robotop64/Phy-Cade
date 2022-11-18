@@ -13,11 +13,11 @@ import java.util.stream.IntStream;
 
 public class PacmanMapTile extends PlacedObject implements Rendered
 {
-  public static final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn);
+  public static final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn, Type.door, Type.ghostExit);
   public              Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
   public              Type                          type;
+  public              Color                         color;
   private             int                           size;
-  public Color color;
 
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
@@ -86,9 +86,6 @@ public class PacmanMapTile extends PlacedObject implements Rendered
         //        }
         g.translate(-s2, -s2);
       }
-      case path, none, ghostSpawn, playerSpawn ->
-      {
-      }
       case portal ->
       {
         g.setColor(Color.orange);
@@ -106,5 +103,5 @@ public class PacmanMapTile extends PlacedObject implements Rendered
   }
 
   public enum Type
-  { wall, path, none, coin, powerUp, ghostSpawn, playerSpawn, portal, ghostExit }
+  { wall, path, none, coin, powerUp, ghostSpawn, playerSpawn, portal, ghostExit, door }
 }
