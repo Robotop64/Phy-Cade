@@ -13,11 +13,11 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -43,7 +43,6 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   public int                           tileSize;
   public int                           width;
   public int                           height;
-  public GhostAI                       lastAI;
   Vector2d size;
   private ClassicPacmanGameState gameState;
 
@@ -196,11 +195,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   public void addEntities (ClassicPacmanGameState gameState)
   {
-    List <GhostAI> subAIs = new ArrayList <>();
+    ConcurrentLinkedDeque <GhostAI> subAIs = new ConcurrentLinkedDeque <>();
     subAIs.add(new AggressiveAI(gameState));
-    subAIs.add(new ShyAI(gameState));
     subAIs.add(new SneakyAI(gameState));
     subAIs.add(new ConfusedAI(gameState));
+    subAIs.add(new ShyAI(gameState));
 
     tiles.forEach((vec, tile) ->
     {
@@ -212,11 +211,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
       if (tile.type == Type.ghostSpawn)
       {
-        int indexLastAI = subAIs.indexOf(lastAI);
-        int indexNextAI = ( indexLastAI + 1 ) % subAIs.size();
-        lastAI = subAIs.get(indexNextAI);
         gameState.gameObjects.add(
-            new Ghost("nowak", tile.pos, lastAI, lastAI.name)
+            new Ghost("nowak", tile.pos, subAIs.getFirst(), subAIs.pop().name)
         );
       }
 
