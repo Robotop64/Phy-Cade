@@ -40,7 +40,7 @@ public class Util
   }
 
   /**
-   * Rounds to given precision
+   * Rounds to pre defined precision
    *
    * @param in
    * @return
@@ -50,9 +50,23 @@ public class Util
     return Math.round(in * precision) / precision;
   }
 
+  /**
+   * cutts off after n digits
+   *
+   * @param in
+   * @return
+   */
+  public static double roundTo (double in, double precision)
+  {
+
+    return Math.round(in * ( 1 / precision )) / ( 1 / precision );
+  }
+
+
   public static double progression (long start, long duration, ClassicPacmanGameState gameState)
   {
     return Math.min(Math.max(( gameState.currentTick - start ) * 1.0 / ( duration ), 0), 1);
   }
+
 
 }
