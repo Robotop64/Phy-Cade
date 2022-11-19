@@ -3,11 +3,11 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
-import kn.uni.games.classic.pacman.game.ghosts.ConfusedAI;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
 import kn.uni.util.Direction;
+import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
 
 import java.awt.BasicStroke;
@@ -236,7 +236,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPosition, "[Pos: " + this.pos.toString() + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerDirection, "[Dir: " + gameState.playerDirection + "]");
-    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerSpeed, "[Speed: " + this.v + "]");
+    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerSpeed, "[Speed: " + Util.roundTo(this.v.x, 0.1) + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerState, "[Alive: " + !this.playerDead + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerVulnerable, "[Vul: " + this.isVulnerable + "]");
 
@@ -323,7 +323,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       gameState.gameObjects.add(map);
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
-      map.lastAI = new ConfusedAI(gameState);
       map.addEntities(gameState);
     }
   }

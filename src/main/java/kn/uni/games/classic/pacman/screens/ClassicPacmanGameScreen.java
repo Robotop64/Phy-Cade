@@ -7,7 +7,6 @@ import kn.uni.games.classic.pacman.game.LoggerObject;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
-import kn.uni.games.classic.pacman.game.ghosts.ConfusedAI;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.game.hud.HUD;
 import kn.uni.ui.InputListener.Input;
@@ -42,12 +41,10 @@ public class ClassicPacmanGameScreen extends UIScreen
 
     bindPlayer(player, input ->
     {
+      DebugDisplay.setData(gameState, DebugDisplay.DebugType.General, DebugDisplay.DebugSubType.input, "[Input: " + input + "]");
+
       if (input.key().equals(Key.B))
       {
-        //        if (!gameState.running)
-        //        {
-        //
-        //        }
 
         gameState.running = false;
         Gui.getInstance().content.add(MainMenu.getInstance());
@@ -67,7 +64,6 @@ public class ClassicPacmanGameScreen extends UIScreen
         gameState.playerDirection = input.toDirection();
       }
 
-      //      System.out.println(gameState.playerDirection);
     });
     //create DebugDisplay
     gameState.gameObjects.add(new DebugDisplay(new Vector2d().cartesian(10, 10), player));
@@ -80,16 +76,10 @@ public class ClassicPacmanGameScreen extends UIScreen
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
       map.setItems(new ArrayList <>());
-      map.lastAI = new ConfusedAI(gameState);
       map.addEntities(gameState);
     }
     //create HUD
     gameState.gameObjects.add(new HUD(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), new Vector2d().cartesian(gameState.map.width, gameState.map.height)));
-
-
-    //    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ( (Ghost) o ).ai.setCasePos(gameState));
-
-    //    gameState.gameObjects.stream().filter(o -> o instanceof Ghost).forEach(o -> ( (Ghost) o ).ai.setMode(GhostAI.mode.CHASE, (Ghost) o));
 
     startGame();
   }

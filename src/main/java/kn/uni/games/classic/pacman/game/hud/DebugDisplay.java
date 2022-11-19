@@ -71,13 +71,13 @@ public class DebugDisplay extends PlacedObject implements Rendered
 
     diagnostics2.put(DebugType.Ghost, new HashMap <>());
 
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostPosition, "[Pos:");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostDirection, "[Dir:");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostSpeed, "[Speed:");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostAI, "[AI:");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostState, "[State:");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostVulnerable, "[Vul:");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostTargetDist, "[Dist:");
+    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostPosition, "[Pos:    ");
+    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostDirection, "[Dir:    ");
+    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostSpeed, "[Speed:  ");
+    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostAI, "[AI:     ");
+    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostState, "[State:  ");
+    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostVulnerable, "[Vul:    ");
+    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostTargetDist, "[TarDist:");
 
     ghostNames = new ArrayList <>(4);
     ghostNames.add("NaN");

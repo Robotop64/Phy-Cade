@@ -10,10 +10,10 @@ import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.util.Direction;
+import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -28,6 +28,8 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
   public        PacmanMapTile                         currentTile;
   public        ClassicPacmanGameConstants.mode       currentMode;
   public        boolean                               canUseDoor;
+  public        boolean                               vulnerable;
+  public        int                                   pixSpeed;
   public        ClassicPacmanGameConstants.ghostNames name;
   private       BufferedImage                         opened;
   private       BufferedImage                         closed;
@@ -42,6 +44,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     this.name = name;
     movable = true;
     canUseDoor = false;
+    vulnerable = false;
     this.hitbox = new Vector2d().cartesian(ClassicPacmanGameConstants.ghostRadius * 2, ClassicPacmanGameConstants.ghostRadius * 2);
     this.direction = Direction.up;
     ai.setMode(ClassicPacmanGameConstants.mode.EXIT, this);
@@ -73,17 +76,26 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     g.drawImage(im, 0, 0, Gui.getInstance().frame);
     topLeft.multiply(-1).use(g::translate);
 
-    g.translate(pos.x, pos.y);
-    g.setColor(ai.borderColor);
-    g.drawOval((int) -ClassicPacmanGameConstants.ghostRadius, (int) -ClassicPacmanGameConstants.ghostRadius, (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ), (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ));
 
     if (DebugDisplay.getDebug(gameState).enabled)
     {
+      g.translate(pos.x, pos.y);
+      //set color to character color
+      g.setColor(ai.borderColor);
+      //draw debug outline
+      g.drawOval((int) -ClassicPacmanGameConstants.ghostRadius, (int) -ClassicPacmanGameConstants.ghostRadius, (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ), (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ));
       Direction a = ai.nextDirection2(gameState, this, currentMode);
       Vector2d  b = a.toVector().multiply(gameState.map.tileSize);
+      //draw debug looking direction
       g.drawLine(0, 0, (int) b.x, (int) b.y);
+      g.translate(-pos.x, -pos.y);
+
+      g.translate(ai.activeTarget.x, ai.activeTarget.y);
+      //draw debug target location
+      g.fillOval(-10, -10, 20, 20);
+      g.translate(-ai.activeTarget.x, -ai.activeTarget.y);
     }
-    g.translate(-pos.x, -pos.y);
+
 
   }
 
@@ -107,64 +119,75 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
   public void tick (ClassicPacmanGameState gameState)
   {
     //player      velocity           = tileSpeed * speedScale * tileToPixel * pixelPerTick
-    double        velocity = ClassicPacmanGameConstants.pacmanSpeed * getSpeedScale(gameState) * gameState.map.tileSize * 1. / gameState.tps;
-    TotalPosition tp       = gameState.map.splitPosition(pos);
-    int           ts       = gameState.map.tileSize;
+    double velocity = ClassicPacmanGameConstants.pacmanSpeed * getSpeedScale(gameState) * gameState.map.tileSize * 1. / gameState.tps;
+    this.pixSpeed = (int) velocity;
+    TotalPosition tp = gameState.map.splitPosition(pos);
+    int           ts = gameState.map.tileSize;
     currentTile = gameState.map.tiles.get(tp.ex());
 
     if (movable)
     {
       ai.setCasePos(gameState, this);
 
-      if (nextTile == null) nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this, currentMode).toVector());
+      //      if (nextTile == null) nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this, currentMode).toVector());
+      //
+      //      Vector2d nextTilePos = gameState.map.splitPosition(nextTile.pos).ex().subtract(gameState.map.splitPosition(pos).ex());
 
-      Vector2d nextTilePos = gameState.map.splitPosition(nextTile.pos).ex().subtract(gameState.map.splitPosition(pos).ex());
-      if (nextTile != null)
+      pos = pos.add(ai.nextDirection2(gameState, this, currentMode).toVector().multiply(velocity));
+
+      if (currentTile.type.equals(PacmanMapTile.Type.ghostExit))
       {
-        if (currentTile == nextTile)
-        {
-
-
-          //      System.out.println("reached target tile");
-          if (nextTilePos.scalar(tp.in()) < 0)
-          {
-            //        System.out.println("moving towards centre");
-            pos = pos.add(nextTilePos.multiply(velocity));
-          }
-          else
-          {
-            //        System.out.println("reached centre, looking for new target");
-            if (currentTile.type.equals(PacmanMapTile.Type.ghostExit))
-            {
-              ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this);
-              this.canUseDoor = false;
-            }
-            do
-            {
-              //          System.out.println("rerolling");
-              nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this, currentMode).toVector());
-            } while (nextTile == null || !PacmanMapTile.walkable.contains(nextTile.type));
-            //        System.out.println("found new target");
-          }
-        }
-        else
-        {
-          if (DebugDisplay.getDebug(gameState).enabled)
-          {
-            currentTile.color = Color.black;
-            nextTile.color = Color.green;
-          }
-          //      System.out.println("walking towards target");
-          pos = pos.add(nextTilePos.multiply(velocity));
-        }
+        ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this);
+        this.canUseDoor = false;
       }
+
+      //      if (nextTile != null)
+      //      {
+      //        if (currentTile == nextTile)
+      //        {
+      //          //      System.out.println("reached target tile");
+      //          if (nextTilePos.scalar(tp.in()) < 0)
+      //          {
+      //            //        System.out.println("moving towards centre");
+      //            pos = pos.add(nextTilePos.multiply(velocity));
+      //          }
+      //          else
+      //          {
+      //            //        System.out.println("reached centre, looking for new target");
+      //            if (currentTile.type.equals(PacmanMapTile.Type.ghostExit))
+      //            {
+      //              ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this);
+      //              this.canUseDoor = false;
+      //            }
+      //            do
+      //            {
+      //              //          System.out.println("rerolling");
+      //              nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this, currentMode).toVector());
+      //            } while (nextTile == null || !PacmanMapTile.walkable.contains(nextTile.type));
+      //            //        System.out.println("found new target");
+      //          }
+      //        }
+      //        else
+      //        {
+      //          if (DebugDisplay.getDebug(gameState).enabled)
+      //          {
+      //            currentTile.color = Color.black;
+      //            nextTile.color = Color.green;
+      //          }
+      //          //      System.out.println("walking towards target");
+      //          pos = pos.add(nextTilePos.multiply(velocity));
+      //        }
+      //      }
     }
 
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostName, this, String.valueOf(name));
-    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostPosition, this, String.valueOf(pos));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostPosition, this, "(" + Util.roundTo(pos.x, 0.1) + "," + Util.roundTo(pos.y, 0.1) + ")");
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostDirection, this, String.valueOf(direction));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostSpeed, this, String.valueOf(pixSpeed));
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostAI, this, ai.getClass().getSimpleName());
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostState, this, String.valueOf(currentMode));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostVulnerable, this, String.valueOf(this.vulnerable));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostTargetDist, this, "(" + Util.roundTo(this.pos.subtract(ai.activeTarget).lenght(), 0.1) + ")");
   }
 
 }
