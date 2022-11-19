@@ -216,7 +216,8 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
         int indexNextAI = ( indexLastAI + 1 ) % subAIs.size();
         lastAI = subAIs.get(indexNextAI);
         gameState.gameObjects.add(
-            new Ghost("nowak", tile.pos, lastAI));
+            new Ghost("nowak", tile.pos, lastAI, lastAI.name)
+        );
       }
 
     });

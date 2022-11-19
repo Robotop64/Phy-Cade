@@ -123,16 +123,16 @@ public class ClassicPacmanGameScreen extends UIScreen
                              .filter(gameObject -> gameObject instanceof Ticking)
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
 
-        Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(gameState);
-        debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.running, "[Run: " + gameState.running + "]");
-        debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.objectCount, "[Objs: " + gameState.gameObjects.size() + "]");
-        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Lvl, "[Lvl: " + gameState.level + "]");
-        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Lives, "[HP: " + gameState.lives + "]");
-        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Score, "[Score: " + gameState.score + "]");
-        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.ItemsLeft, "[Items: " + gameState.map.getPlacedItems().size() + "]");
-        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.FruitsSpawned, "[FruitSp: " + gameState.fruitSpawned + "]");
-        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.GameStart, "[Start: " + gameState.startTime + "]");
-        debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.GameDuration, "[Dur: " + gameState.gameDuration + "]");
+
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.General, DebugDisplay.DebugSubType.running, "[Run: " + gameState.running + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.General, DebugDisplay.DebugSubType.objectCount, "[Objs: " + gameState.gameObjects.size() + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.Lvl, "[Lvl: " + gameState.level + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.Lives, "[Lives: " + gameState.lives + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.Score, "[Score: " + gameState.score + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.ItemsLeft, "[Items: " + gameState.map.getPlacedItems().size() + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.FruitsSpawned, "[FruitSp: " + gameState.fruitSpawned + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.GameStart, "[Start: " + gameState.startTime + "]");
+        DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.GameDuration, "[Dur: " + gameState.gameDuration + "]");
 
         if (gameState.currentTick % 2 == 0)
         {

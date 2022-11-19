@@ -16,7 +16,6 @@ import java.awt.Graphics2D;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.levelFruit;
@@ -235,12 +234,12 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                 });
     }
 
-    Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(gameState);
-    debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerPosition, "[Pos: " + this.pos.toString() + "]");
-    debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerDirection, "[Dir: " + gameState.playerDirection + "]");
-    debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerSpeed, "[Speed: " + this.v + "]");
-    debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerState, "[Alive: " + !this.playerDead + "]");
-    debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerVulnerable, "[Vul: " + this.isVulnerable + "]");
+    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPosition, "[Pos: " + this.pos.toString() + "]");
+    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerDirection, "[Dir: " + gameState.playerDirection + "]");
+    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerSpeed, "[Speed: " + this.v + "]");
+    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerState, "[Alive: " + !this.playerDead + "]");
+    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerVulnerable, "[Vul: " + this.isVulnerable + "]");
+
 
     //check for reset and wait for death animation to end
     if (playerDead && ( gameState.currentTick - deadAnimStartTick ) / ( deadAnimDuration / 4 ) > 1)

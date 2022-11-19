@@ -4,6 +4,7 @@ import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.PacmanMapTile;
 import kn.uni.games.classic.pacman.game.PacmanObject;
+import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -17,14 +18,13 @@ import java.util.Random;
 public abstract class GhostAI
 {
 
-  private final Random   random       = new Random(System.nanoTime());
-  protected     Color    borderColor;
-  protected     Vector2d activeTarget = new Vector2d().cartesian(0, 0);
-  protected     Vector2d chase;
-  protected     Vector2d scatter;
-  protected     Vector2d exitSpawn;
-
-  protected ClassicPacmanGameConstants.ghostNames name;
+  private final Random                                random       = new Random(System.nanoTime());
+  public        ClassicPacmanGameConstants.ghostNames name;
+  protected     Color                                 borderColor;
+  protected     Vector2d                              activeTarget = new Vector2d().cartesian(0, 0);
+  protected     Vector2d                              chase;
+  protected     Vector2d                              scatter;
+  protected     Vector2d                              exitSpawn;
 
   @Deprecated
   public abstract Direction getNextDirection (ClassicPacmanGameState gameState);
@@ -70,8 +70,11 @@ public abstract class GhostAI
                 .toList();
 
       //visual feedback of possible tiles
-      gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
-      possibleTiles.stream().forEach(tile -> tile.color = Color.blue);
+      if (DebugDisplay.getDebug(gameState).enabled)
+      {
+        gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
+        possibleTiles.stream().forEach(tile -> tile.color = Color.blue);
+      }
 
       //sort tiles by distance to target, target = indexed at 0
       possibleTiles =

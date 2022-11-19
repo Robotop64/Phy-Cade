@@ -5,7 +5,6 @@ import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class LoggerObject extends GameObject implements Ticking
 {
@@ -26,8 +25,7 @@ public class LoggerObject extends GameObject implements Ticking
     double d = times.getFirst() - times.getLast();
     if (gameState.logging || gameState.currentTick % ( 2L * gameState.tps ) == 0)
     {
-      Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(gameState);
-      debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.TPS, "TPS:[Target:" + gameState.tps + "]" + "[Last: took " + d / 1_000_000_000.0 + "s]");
+      DebugDisplay.setData(gameState, DebugDisplay.DebugType.General, DebugDisplay.DebugSubType.TPS, "TPS:[Target:" + gameState.tps + "]" + "[Last: took " + d / 1_000_000_000.0 + "s]");
     }
     if (gameState.currentTick > 300) gameState.logging = false;
   }

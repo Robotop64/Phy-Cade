@@ -18,29 +18,30 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Ghost extends CollidableObject implements Ticking, Rendered
 {
-  private final int                             animationFrequency = 8;
-  private final String                          dirPath            = "pacman/textures/ghosts/";
-  public        GhostAI                         ai;
-  public        Direction                       direction;
-  public        PacmanMapTile                   currentTile;
-  public        ClassicPacmanGameConstants.mode currentMode;
-  public        boolean                         canUseDoor;
-  private       BufferedImage                   opened;
-  private       BufferedImage                   closed;
-  private       PacmanMapTile                   nextTile;
+  private final int                                   animationFrequency = 8;
+  private final String                                dirPath            = "pacman/textures/ghosts/";
+  public        GhostAI                               ai;
+  public        Direction                             direction;
+  public        PacmanMapTile                         currentTile;
+  public        ClassicPacmanGameConstants.mode       currentMode;
+  public        boolean                               canUseDoor;
+  public        ClassicPacmanGameConstants.ghostNames name;
+  private       BufferedImage                         opened;
+  private       BufferedImage                         closed;
+  private       PacmanMapTile                         nextTile;
 
 
-  public Ghost (String profName, Vector2d pos, GhostAI ghostAI)
+  public Ghost (String profName, Vector2d pos, GhostAI ghostAI, ClassicPacmanGameConstants.ghostNames name)
   {
     loadImages("%s%s/%s-".formatted(dirPath, profName, profName));
     this.pos = pos;
     ai = ghostAI;
+    this.name = name;
     movable = true;
-    canUseDoor = true;
+    canUseDoor = false;
     this.hitbox = new Vector2d().cartesian(ClassicPacmanGameConstants.ghostRadius * 2, ClassicPacmanGameConstants.ghostRadius * 2);
     this.direction = Direction.up;
     ai.setMode(ClassicPacmanGameConstants.mode.EXIT, this);
@@ -73,9 +74,15 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     topLeft.multiply(-1).use(g::translate);
 
     g.translate(pos.x, pos.y);
-    Direction a = ai.nextDirection2(gameState, this, currentMode);
-    Vector2d  b = a.toVector().multiply(gameState.map.tileSize);
-    g.drawLine(0, 0, (int) b.x, (int) b.y);
+    g.setColor(ai.borderColor);
+    g.drawOval((int) -ClassicPacmanGameConstants.ghostRadius, (int) -ClassicPacmanGameConstants.ghostRadius, (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ), (int) ( ClassicPacmanGameConstants.ghostRadius * 2 ));
+
+    if (DebugDisplay.getDebug(gameState).enabled)
+    {
+      Direction a = ai.nextDirection2(gameState, this, currentMode);
+      Vector2d  b = a.toVector().multiply(gameState.map.tileSize);
+      g.drawLine(0, 0, (int) b.x, (int) b.y);
+    }
     g.translate(-pos.x, -pos.y);
 
   }
@@ -116,7 +123,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
       {
         if (currentTile == nextTile)
         {
-          currentTile.color = Color.black;
+
 
           //      System.out.println("reached target tile");
           if (nextTilePos.scalar(tp.in()) < 0)
@@ -142,23 +149,22 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
         }
         else
         {
-          nextTile.color = Color.green;
+          if (DebugDisplay.getDebug(gameState).enabled)
+          {
+            currentTile.color = Color.black;
+            nextTile.color = Color.green;
+          }
           //      System.out.println("walking towards target");
           pos = pos.add(nextTilePos.multiply(velocity));
         }
       }
     }
 
-    Optional <DebugDisplay> d = gameState.gameObjects.stream().filter(o -> o instanceof DebugDisplay).map(o -> (DebugDisplay) o).findFirst();
-    if (d.isPresent())
-    {
-      d.get().ghostNames.set(ai.name.ordinal(), String.valueOf(ai.name));
-      d.get().ghostPositions.set(ai.name.ordinal(), String.valueOf(pos));
-      d.get().ghostDirections.set(ai.name.ordinal(), String.valueOf(direction));
-      d.get().ghostAI.set(ai.name.ordinal(), String.valueOf(ai.getClass().getSimpleName()));
-      d.get().ghostModes.set(ai.name.ordinal(), String.valueOf(currentMode));
-    }
-
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostName, this, String.valueOf(name));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostPosition, this, String.valueOf(pos));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostDirection, this, String.valueOf(direction));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostAI, this, ai.getClass().getSimpleName());
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostState, this, String.valueOf(currentMode));
   }
 
 }

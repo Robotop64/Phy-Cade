@@ -4,6 +4,7 @@ import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
+import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.ui.InputListener;
 import kn.uni.util.Fira;
 import kn.uni.util.Vector2d;
@@ -34,7 +35,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
 
   public DebugDisplay (Vector2d pos, InputListener.Player player)
   {
-    enabled = true;
+    //    enabled = true;
     this.pos = pos;
     this.player = player;
 
@@ -119,6 +120,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
     ghostsTargetDistance.add("NaN");
     ghostsTargetDistance.add("NaN");
 
+    ghostData.put(DebugSubType.GhostName.ordinal(), ghostNames);
     ghostData.put(DebugSubType.GhostPosition.ordinal(), ghostPositions);
     ghostData.put(DebugSubType.GhostDirection.ordinal(), ghostDirections);
     ghostData.put(DebugSubType.GhostSpeed.ordinal(), ghostSpeeds);
@@ -129,14 +131,36 @@ public class DebugDisplay extends PlacedObject implements Rendered
 
   }
 
-  public static Map <DebugType, Map <DebugSubType, String>> getDebugList (ClassicPacmanGameState gameState)
+  public static DebugDisplay getDebug (ClassicPacmanGameState gameState)
   {
     return Objects.requireNonNull(gameState.gameObjects.stream()
                                                        .filter(o -> o instanceof DebugDisplay)
                                                        .map(o -> (DebugDisplay) o)
                                                        .filter(o -> o.player == gameState.player)
                                                        .findFirst()
-                                                       .orElse(null)).diagnostics2;
+                                                       .orElse(null));
+  }
+
+  public static void setData (ClassicPacmanGameState gameState, DebugType type, DebugSubType subType, String data)
+  {
+    Objects.requireNonNull(gameState.gameObjects.stream()
+                                                .filter(o -> o instanceof DebugDisplay)
+                                                .map(o -> (DebugDisplay) o)
+                                                .filter(o -> o.player == gameState.player)
+                                                .findFirst()
+                                                .orElse(null)).diagnostics2.get(type).put(subType, data);
+  }
+
+  public static void setGhostData (ClassicPacmanGameState gameState, DebugSubType SubType, Ghost ghost, String data)
+  {
+    Objects.requireNonNull(gameState.gameObjects.stream()
+                                                .filter(o -> o instanceof DebugDisplay)
+                                                .map(o -> (DebugDisplay) o)
+                                                .filter(o -> o.player == gameState.player)
+                                                .findFirst()
+                                                .orElse(null)).ghostData.get(SubType.ordinal()).set(ghost.name.ordinal(), data);
+
+
   }
 
   @Override
@@ -168,7 +192,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
           g.drawString(type.name() + "s:" + ghostNames, 10, 20 * ( type.ordinal() + subTypeLength[type.ordinal()] ));
           map.forEach((subType, s) ->
           {
-            g.drawString(s + ghostData.get(subType.ordinal()), 20, 20 * ( subType.ordinal() + type.ordinal() + 2 ));
+            g.drawString(s + ghostData.get(subType.ordinal()), 20, 20 * ( subType.ordinal() + type.ordinal() + 1 ));
           });
         }
       });
@@ -194,6 +218,6 @@ public class DebugDisplay extends PlacedObject implements Rendered
     running, TPS, dataBase, dataBaseDuration, objectCount, input,
     Lvl, Lives, Score, ItemsLeft, FruitsSpawned, GameStart, GameDuration,
     PlayerPosition, PlayerDirection, PlayerSpeed, PlayerState, PlayerVulnerable,
-    GhostPosition, GhostDirection, GhostSpeed, GhostAI, GhostState, GhostVulnerable, GhostTargetDist
+    GhostName, GhostPosition, GhostDirection, GhostSpeed, GhostAI, GhostState, GhostVulnerable, GhostTargetDist
   }
 }
