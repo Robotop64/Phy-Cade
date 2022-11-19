@@ -8,6 +8,7 @@ import kn.uni.games.classic.pacman.game.CollidableObject;
 import kn.uni.games.classic.pacman.game.PacmanMapTile;
 import kn.uni.games.classic.pacman.game.Rendered;
 import kn.uni.games.classic.pacman.game.Ticking;
+import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -17,6 +18,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Ghost extends CollidableObject implements Ticking, Rendered
 {
@@ -105,7 +107,6 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
 
     if (movable)
     {
-
       ai.setCasePos(gameState, this);
 
       if (nextTile == null) nextTile = currentTile.neighbors.get(ai.nextDirection2(gameState, this, currentMode).toVector());
@@ -146,6 +147,16 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
           pos = pos.add(nextTilePos.multiply(velocity));
         }
       }
+    }
+
+    Optional <DebugDisplay> d = gameState.gameObjects.stream().filter(o -> o instanceof DebugDisplay).map(o -> (DebugDisplay) o).findFirst();
+    if (d.isPresent())
+    {
+      d.get().ghostNames.set(ai.name.ordinal(), String.valueOf(ai.name));
+      d.get().ghostPositions.set(ai.name.ordinal(), String.valueOf(pos));
+      d.get().ghostDirections.set(ai.name.ordinal(), String.valueOf(direction));
+      d.get().ghostAI.set(ai.name.ordinal(), String.valueOf(ai.getClass().getSimpleName()));
+      d.get().ghostModes.set(ai.name.ordinal(), String.valueOf(currentMode));
     }
 
   }

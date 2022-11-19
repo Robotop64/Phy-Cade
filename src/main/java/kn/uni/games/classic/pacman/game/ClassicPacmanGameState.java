@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.game;
 
 
+import kn.uni.ui.InputListener;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -14,6 +15,7 @@ public class ClassicPacmanGameState
   public int                                tps = 120;
   public ConcurrentLinkedDeque <GameObject> gameObjects;
   public boolean                            running;
+  public InputListener.Player               player;
 
   public long             currentTick;
   public long             lastTickTime;
@@ -39,8 +41,9 @@ public class ClassicPacmanGameState
   public Map <ClassicPacmanGameConstants.Collectables, Integer> collectionCount;
 
   //objects added to game
-  public ClassicPacmanGameState ()
+  public ClassicPacmanGameState (InputListener.Player player)
   {
+    this.player = player;
     gameObjects = new ConcurrentLinkedDeque <>();
   }
 

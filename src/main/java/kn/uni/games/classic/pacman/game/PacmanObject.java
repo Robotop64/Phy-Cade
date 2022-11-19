@@ -3,10 +3,10 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
+import kn.uni.games.classic.pacman.game.ghosts.ConfusedAI;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
-import kn.uni.ui.InputListener;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
@@ -30,7 +30,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   public int      r;
   public Vector2d v;
   public boolean  playerDead;
-  public boolean isVulnerable;
+  public boolean  isVulnerable;
   long   deadAnimStartTick = 0;
   double deadAnimDuration;
 
@@ -235,8 +235,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                 });
     }
 
-    //TODO get player
-    Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(InputListener.Player.playerOne, gameState);
+    Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(gameState);
     debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerPosition, "[Pos: " + this.pos.toString() + "]");
     debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerDirection, "[Dir: " + gameState.playerDirection + "]");
     debugData.get(DebugDisplay.DebugType.Player).put(DebugDisplay.DebugSubType.PlayerSpeed, "[Speed: " + this.v + "]");
@@ -278,7 +277,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
    */
   public void death (ClassicPacmanGameState gameState)
   {
-    System.out.println("Player died!");
     gameState.lives -= 1;
 
     this.playerDead = true;
@@ -326,6 +324,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       gameState.gameObjects.add(map);
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);
+      map.lastAI = new ConfusedAI(gameState);
       map.addEntities(gameState);
     }
   }

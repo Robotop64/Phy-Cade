@@ -215,18 +215,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
         int indexLastAI = subAIs.indexOf(lastAI);
         int indexNextAI = ( indexLastAI + 1 ) % subAIs.size();
         lastAI = subAIs.get(indexNextAI);
-        System.out.println("AI: " + lastAI.getClass().getSimpleName());
         gameState.gameObjects.add(
             new Ghost("nowak", tile.pos, lastAI));
       }
 
     });
-
-    gameState.gameObjects.stream()
-                         .filter(o -> o instanceof Ghost)
-                         .map(o -> (Ghost) o)
-                         .forEach(g -> System.out.println(g.ai.getClass().getSimpleName()));
-
   }
 
   public record TotalPosition(Vector2d ex, Vector2d in) { }

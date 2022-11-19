@@ -32,15 +32,13 @@ public class ClassicPacmanGameScreen extends UIScreen
   public ClassicPacmanGameState gameState;
   double           tickDuration;
   Map <Key, Input> joystick = new HashMap <>();
-  Player           player;
 
   public ClassicPacmanGameScreen (JPanel parent, Player player) throws IOException
   {
     super(parent);
     setBackground(Color.black.darker().darker().darker().darker());
-    gameState = new ClassicPacmanGameState();
+    gameState = new ClassicPacmanGameState(player);
     tickDuration = 1_000_000_000.0 / gameState.tps;
-    this.player = player;
 
     bindPlayer(player, input ->
     {
@@ -125,7 +123,7 @@ public class ClassicPacmanGameScreen extends UIScreen
                              .filter(gameObject -> gameObject instanceof Ticking)
                              .forEach(gameObject -> ( (Ticking) gameObject ).tick(gameState));
 
-        Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(player, gameState);
+        Map <DebugDisplay.DebugType, Map <DebugDisplay.DebugSubType, String>> debugData = DebugDisplay.getDebugList(gameState);
         debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.running, "[Run: " + gameState.running + "]");
         debugData.get(DebugDisplay.DebugType.General).put(DebugDisplay.DebugSubType.objectCount, "[Objs: " + gameState.gameObjects.size() + "]");
         debugData.get(DebugDisplay.DebugType.Level).put(DebugDisplay.DebugSubType.Lvl, "[Lvl: " + gameState.level + "]");
