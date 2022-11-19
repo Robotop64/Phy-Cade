@@ -30,7 +30,7 @@ public class SneakyAI extends GhostAI
   public void setCasePos (ClassicPacmanGameState gameState, Ghost ghost)
   {
     Vector2d pacOffset = getPacmanPos(gameState).get(0).add(gameState.playerDirection.toVector().multiply(3 * gameState.map.tileSize));
-    Vector2d rad       = getPacmanPos(gameState).get(0).add(pacOffset).subtract(getBlinkyPos(gameState).get(0));
+    Vector2d rad       = pacOffset.subtract(getBlinkyPos(gameState).get(0));
     chase = pacOffset.add(rad);
     if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
     {
