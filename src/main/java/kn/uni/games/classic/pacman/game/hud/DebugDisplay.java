@@ -12,126 +12,64 @@ import kn.uni.util.Vector2d;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class DebugDisplay extends PlacedObject implements Rendered
 {
-  public  boolean                                     enabled       = false;
-  public  InputListener.Player                        player;
-  public  Map <DebugType, Map <DebugSubType, String>> diagnostics2  = new HashMap <>();
-  public  List <String>                               ghostNames;
-  public  List <String>                               ghostPositions;
-  public  List <String>                               ghostDirections;
-  public  List <String>                               ghostSpeeds;
-  public  List <String>                               ghostAI;
-  public  List <String>                               ghostModes;
-  public  List <String>                               ghostsVulnerable;
-  public  List <String>                               ghostsTargetDistance;
-  private int[]                                       subTypeLength = { 1, 7, 14, 19, 6 };
-  private Map <Integer, List <String>>                ghostData     = new HashMap <>();
+  private final int[]                                       subTypeDist          = { 1, 7, 14, 19, 6 };
+  private final Map <Integer, List <String>>                ghostData            = new HashMap <>();
+  public        boolean                                     enabled              = false;
+  public        InputListener.Player                        player;
+  public        Map <DebugType, Map <DebugSubType, String>> diagnostics2         = new HashMap <>();
+  public        List <String>                               ghostNames           = new ArrayList <>(4);
+  public        List <String>                               ghostPositions       = new ArrayList <>(4);
+  public        List <String>                               ghostDirections      = new ArrayList <>(4);
+  public        List <String>                               ghostSpeeds          = new ArrayList <>(4);
+  public        List <String>                               ghostAI              = new ArrayList <>(4);
+  public        List <String>                               ghostModes           = new ArrayList <>(4);
+  public        List <String>                               ghostsVulnerable     = new ArrayList <>(4);
+  public        List <String>                               ghostsTargetDistance = new ArrayList <>(4);
+
 
   public DebugDisplay (Vector2d pos, InputListener.Player player)
   {
-    //    enabled = true;
+    enabled = true;
     this.pos = pos;
     this.player = player;
 
-    diagnostics2.put(DebugType.General, new HashMap <>());
-
-    diagnostics2.get(DebugType.General).put(DebugSubType.running, "Running: NaN");
-    diagnostics2.get(DebugType.General).put(DebugSubType.TPS, "TPS: NaN");
-    diagnostics2.get(DebugType.General).put(DebugSubType.dataBase, "DataBase: NaN");
-    diagnostics2.get(DebugType.General).put(DebugSubType.dataBaseDuration, "DataBase Duration: NaN");
-    diagnostics2.get(DebugType.General).put(DebugSubType.objectCount, "Object Count: NaN");
-    diagnostics2.get(DebugType.General).put(DebugSubType.input, "Input: NaN");
+    //initialise Maps
+    IntStream.range(0, DebugType.values().length).forEach(i -> diagnostics2.put(Arrays.stream(DebugType.values()).toList().get(i), new HashMap <>()));
 
 
-    diagnostics2.put(DebugType.Level, new HashMap <>());
+    //assign prefixes to other maps
+    String[] otherPrefixes = { "[Run:", "[TPS:", "[DBC:", "[DBT:", "[ObC:", "[InP:",
+                               "[Lvl:", "[HP :", "[Sc :", "[ItL:", "[FSp:", "[ST :", "[Dur:",
+                               "[Pos:", "[Dir:", "[Spe:", "[Ali:", "[Vul:" };
+    int[] range = { 0, 6, 13, 19 };
 
-    diagnostics2.get(DebugType.Level).put(DebugSubType.Lvl, "[Lvl: NaN]");
-    diagnostics2.get(DebugType.Level).put(DebugSubType.Lives, "[HP: NaN]");
-    diagnostics2.get(DebugType.Level).put(DebugSubType.Score, "[Score: NaN]");
-    diagnostics2.get(DebugType.Level).put(DebugSubType.ItemsLeft, "[Items: NaN]");
-    diagnostics2.get(DebugType.Level).put(DebugSubType.FruitsSpawned, "[FruitSp: NaN]");
-    diagnostics2.get(DebugType.Level).put(DebugSubType.GameStart, "[Start: NaN]");
-    diagnostics2.get(DebugType.Level).put(DebugSubType.GameDuration, "[Dur: NaN]");
-
-
-    diagnostics2.put(DebugType.Player, new HashMap <>());
-
-    diagnostics2.get(DebugType.Player).put(DebugSubType.PlayerPosition, "[Pos: NaN]");
-    diagnostics2.get(DebugType.Player).put(DebugSubType.PlayerDirection, "[Dir: NaN]");
-    diagnostics2.get(DebugType.Player).put(DebugSubType.PlayerSpeed, "[Speed: NaN]");
-    diagnostics2.get(DebugType.Player).put(DebugSubType.PlayerState, "[Alive: NaN]");
-    diagnostics2.get(DebugType.Player).put(DebugSubType.PlayerVulnerable, "[Vul: NaN]");
+    IntStream.range(0, 3).forEach(k -> IntStream.range(range[k], range[k + 1] - 1).forEach(i ->
+        diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(k))
+                    .put(Arrays.stream(DebugSubType.values()).toList().get(i), otherPrefixes[i])));
 
 
-    diagnostics2.put(DebugType.Ghost, new HashMap <>());
-
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostPosition, "[Pos:    ");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostDirection, "[Dir:    ");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostSpeed, "[Speed:  ");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostAI, "[AI:     ");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostState, "[State:  ");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostVulnerable, "[Vul:    ");
-    diagnostics2.get(DebugType.Ghost).put(DebugSubType.GhostTargetDist, "[TarDist:");
-
-    ghostNames = new ArrayList <>(4);
-    ghostNames.add("NaN");
-    ghostNames.add("NaN");
-    ghostNames.add("NaN");
-    ghostNames.add("NaN");
-    ghostPositions = new ArrayList <>(4);
-    ghostPositions.add("NaN");
-    ghostPositions.add("NaN");
-    ghostPositions.add("NaN");
-    ghostPositions.add("NaN");
-    ghostDirections = new ArrayList <>(4);
-    ghostDirections.add("NaN");
-    ghostDirections.add("NaN");
-    ghostDirections.add("NaN");
-    ghostDirections.add("NaN");
-    ghostSpeeds = new ArrayList <>(4);
-    ghostSpeeds.add("NaN");
-    ghostSpeeds.add("NaN");
-    ghostSpeeds.add("NaN");
-    ghostSpeeds.add("NaN");
-    ghostAI = new ArrayList <>(4);
-    ghostAI.add("NaN");
-    ghostAI.add("NaN");
-    ghostAI.add("NaN");
-    ghostAI.add("NaN");
-    ghostModes = new ArrayList <>(4);
-    ghostModes.add("NaN");
-    ghostModes.add("NaN");
-    ghostModes.add("NaN");
-    ghostModes.add("NaN");
-    ghostsVulnerable = new ArrayList <>(4);
-    ghostsVulnerable.add("NaN");
-    ghostsVulnerable.add("NaN");
-    ghostsVulnerable.add("NaN");
-    ghostsVulnerable.add("NaN");
-    ghostsTargetDistance = new ArrayList <>(4);
-    ghostsTargetDistance.add("NaN");
-    ghostsTargetDistance.add("NaN");
-    ghostsTargetDistance.add("NaN");
-    ghostsTargetDistance.add("NaN");
-
-    ghostData.put(DebugSubType.GhostName.ordinal(), ghostNames);
-    ghostData.put(DebugSubType.GhostPosition.ordinal(), ghostPositions);
-    ghostData.put(DebugSubType.GhostDirection.ordinal(), ghostDirections);
-    ghostData.put(DebugSubType.GhostSpeed.ordinal(), ghostSpeeds);
-    ghostData.put(DebugSubType.GhostAI.ordinal(), ghostAI);
-    ghostData.put(DebugSubType.GhostState.ordinal(), ghostModes);
-    ghostData.put(DebugSubType.GhostVulnerable.ordinal(), ghostsVulnerable);
-    ghostData.put(DebugSubType.GhostTargetDist.ordinal(), ghostsTargetDistance);
+    String[] ghostPrefixes = { "[Pos:    ", "[Dir:    ", "[Speed:  ", "[AI:     ", "[Mode:   ", "[Vuln:   ", "[Target: " };
+    //assign prefixes to ghost map
+    IntStream.range(19, 25).forEach(i -> diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(3)).put(Arrays.stream(DebugSubType.values()).toList().get(i), ghostPrefixes[i - 19]));
+    //create iterable of data lists
+    List <List <String>> lists = new ArrayList <>(Arrays.asList(ghostNames, ghostPositions, ghostDirections, ghostSpeeds, ghostAI, ghostModes, ghostsVulnerable, ghostsTargetDistance));
+    //initialise ghost data lists
+    lists.forEach(i -> IntStream.range(0, 4).forEach(j -> i.add(" NaN")));
+    //initialise ghost data
+    IntStream.range(18, 26).forEach(i -> ghostData.put(i, lists.get(i - 18)));
 
   }
 
-  public static DebugDisplay getDebug (ClassicPacmanGameState gameState)
+  public static DebugDisplay getDebugDisplay (ClassicPacmanGameState gameState)
   {
     return Objects.requireNonNull(gameState.gameObjects.stream()
                                                        .filter(o -> o instanceof DebugDisplay)
@@ -180,7 +118,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
         //exclude ghost for extra rendering
         if (type != DebugType.Ghost)
         {
-          g.drawString(type.name() + ":", 10, 20 * ( type.ordinal() + subTypeLength[type.ordinal()] ));
+          g.drawString(type.name() + ":", 10, 20 * ( type.ordinal() + subTypeDist[type.ordinal()] ));
           //for each subtype
           map.forEach((subType, s) ->
           {
@@ -189,7 +127,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
         }
         else
         {
-          g.drawString(type.name() + "s:" + ghostNames, 10, 20 * ( type.ordinal() + subTypeLength[type.ordinal()] ));
+          g.drawString(type.name() + "s:   " + ghostNames, 10, 20 * ( type.ordinal() + subTypeDist[type.ordinal()] ));
           map.forEach((subType, s) ->
           {
             g.drawString(s + ghostData.get(subType.ordinal()), 20, 20 * ( subType.ordinal() + type.ordinal() + 1 ));
@@ -203,11 +141,6 @@ public class DebugDisplay extends PlacedObject implements Rendered
   public int paintLayer ()
   {
     return Integer.MAX_VALUE;
-  }
-
-  private int getRowPos (int index)
-  {
-    return index * 20;
   }
 
   public enum DebugType

@@ -77,7 +77,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     topLeft.multiply(-1).use(g::translate);
 
 
-    if (DebugDisplay.getDebug(gameState).enabled)
+    if (DebugDisplay.getDebugDisplay(gameState).enabled)
     {
       g.translate(pos.x, pos.y);
       //set color to character color

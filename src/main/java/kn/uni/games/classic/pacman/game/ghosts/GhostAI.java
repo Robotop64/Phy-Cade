@@ -70,7 +70,7 @@ public abstract class GhostAI
                 .toList();
 
       //visual feedback of possible tiles
-      if (DebugDisplay.getDebug(gameState).enabled)
+      if (DebugDisplay.getDebugDisplay(gameState).enabled)
       {
         gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
         possibleTiles.stream().forEach(tile -> tile.color = Color.blue);
