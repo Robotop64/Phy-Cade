@@ -38,7 +38,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     this.pos = pos;
     this.r = r;
     this.playerDead = false;
-    this.isVulnerable = true;
+    this.isVulnerable = false;
     deadAnimDuration = gameState.tps / .1;
     movable = true;
   }
@@ -226,10 +226,14 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                                          .filter(ghost -> ghost instanceof Ghost)
                                                                          .forEach(ghost -> ghostList.add((Ghost) ghost));
 
-                                                    death(gameState);
-                                                    //freeze pacman and the ghosts
-                                                    movable = false;
-                                                    ghostList.forEach(ghost2 -> ghost2.movable = false);
+                                                    if (isVulnerable)
+                                                    {
+                                                      death(gameState);
+
+                                                      //freeze pacman and the ghosts
+                                                      movable = false;
+                                                      ghostList.forEach(ghost2 -> ghost2.movable = false);
+                                                    }
                                                   }
                                                 });
     }
@@ -259,13 +263,31 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
    */
   private void checkLevelStatus (ClassicPacmanGameState gameState)
   {
-    if (gameState.map.getPillCount() == 0)
+    if (gameState.map.getPillCount() <= 0)
     {
       gameState.level += 1;
       //resets the coins and powerups
       reloadLevel(gameState);
       gameState.fruitSpawned = false;
       gameState.map.setItems(new ArrayList <>());
+
+      if (gameState.level < 4)
+      {
+        gameState.gameObjects.stream()
+                             .filter(ghost -> ghost instanceof Ghost)
+                             .map(ghost -> (Ghost) ghost)
+                             .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
+                             .forEach(ghost -> ghost.canUseDoor = true);
+      }
+      else
+      {
+        gameState.gameObjects.stream()
+                             .filter(ghost -> ghost instanceof Ghost)
+                             .map(ghost -> (Ghost) ghost)
+                             .forEach(ghost -> ghost.canUseDoor = true);
+      }
+
+
     }
   }
 
