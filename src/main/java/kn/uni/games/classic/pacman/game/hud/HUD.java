@@ -5,7 +5,6 @@ import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
 import kn.uni.games.classic.pacman.game.PlacedObject;
 import kn.uni.games.classic.pacman.game.Rendered;
-import kn.uni.games.classic.pacman.game.ScoreLabel;
 import kn.uni.util.Vector2d;
 
 import java.awt.BasicStroke;
@@ -28,7 +27,7 @@ public class HUD extends PlacedObject implements Rendered
   //initialize HUD
   public HUD (ClassicPacmanGameState gameState, Vector2d mapPos, Vector2d mapBounds)
   {
-    botBounds = new Vector2d().cartesian(mapBounds.x, (int)(Gui.frameHeight - mapBounds.y - mapPos.y * 2 - mapPos.y / 2));
+    botBounds = new Vector2d().cartesian(mapBounds.x, (int) ( Gui.frameHeight - mapBounds.y - mapPos.y * 2 - mapPos.y / 2 ));
     botPos = new Vector2d().cartesian(mapPos.x, mapPos.y + mapBounds.y - mapPos.y / 2);
 
     sideBounds = new Vector2d().cartesian(Gui.frameWidth - mapBounds.x - mapPos.x - mapPos.x * 2 - mapPos.x / 2, mapBounds.y);
@@ -36,7 +35,7 @@ public class HUD extends PlacedObject implements Rendered
 
     textBuffer = 15;
 
-    textBounds = (int)(sideBounds.x - 2 * (textBuffer));
+    textBounds = (int) ( sideBounds.x - 2 * ( textBuffer ) );
 
     rowHeight = gameState.uiSize - 20;
 
@@ -66,7 +65,7 @@ public class HUD extends PlacedObject implements Rendered
     //    g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
 
     g.setStroke(new BasicStroke(3));
-    g.drawRect((int)sidePos.x, 0, (int)sideBounds.x, (int)sideBounds.y);
+    g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
 
     //        g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
     //        g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
