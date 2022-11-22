@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 
 public class DebugDisplay extends PlacedObject implements Rendered
 {
-  private final int[]                                       subTypeDist          = { 1, 7, 14, 19, 6 };
+  private final int[]                                       subTypeDist          = { 1, 7, 14, 20, 6 };
   private final Map <Integer, List <String>>                ghostData            = new HashMap <>();
   public        boolean                                     enabled              = false;
   public        InputListener.Player                        player;
@@ -49,8 +49,8 @@ public class DebugDisplay extends PlacedObject implements Rendered
     //assign prefixes to other maps
     String[] otherPrefixes = { "[Run:", "[TPS:", "[DBC:", "[DBT:", "[ObC:", "[InP:",
                                "[Lvl:", "[HP :", "[Sc :", "[ItL:", "[FSp:", "[ST :", "[Dur:",
-                               "[Pos:", "[Dir:", "[Spe:", "[Ali:", "[Vul:" };
-    int[] range = { 0, 6, 13, 19 };
+                               "[Pos:", "[Dir:", "[Spe:", "[Ali:", "[Vul:", "[Pow:" };
+    int[] range = { 0, 6, 13, 20 };
 
     IntStream.range(0, 3).forEach(k -> IntStream.range(range[k], range[k + 1] - 1).forEach(i ->
         diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(k))
@@ -59,13 +59,13 @@ public class DebugDisplay extends PlacedObject implements Rendered
 
     String[] ghostPrefixes = { "[Pos:    ", "[Dir:    ", "[Speed:  ", "[AI:     ", "[Mode:   ", "[Vuln:   ", "[Target: " };
     //assign prefixes to ghost map
-    IntStream.range(19, 25).forEach(i -> diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(3)).put(Arrays.stream(DebugSubType.values()).toList().get(i), ghostPrefixes[i - 19]));
+    IntStream.range(20, 26).forEach(i -> diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(3)).put(Arrays.stream(DebugSubType.values()).toList().get(i), ghostPrefixes[i - 20]));
     //create iterable of data lists
     List <List <String>> lists = new ArrayList <>(Arrays.asList(ghostNames, ghostPositions, ghostDirections, ghostSpeeds, ghostAI, ghostModes, ghostsVulnerable, ghostsTargetDistance));
     //initialise ghost data lists
     lists.forEach(i -> IntStream.range(0, 4).forEach(j -> i.add(" NaN")));
     //initialise ghost data
-    IntStream.range(18, 26).forEach(i -> ghostData.put(i, lists.get(i - 18)));
+    IntStream.range(19, 27).forEach(i -> ghostData.put(i, lists.get(i - 19)));
 
   }
 
@@ -150,7 +150,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
   {
     running, TPS, dataBase, dataBaseDuration, objectCount, input,
     Lvl, Lives, Score, ItemsLeft, FruitsSpawned, GameStart, GameDuration,
-    PlayerPosition, PlayerDirection, PlayerSpeed, PlayerState, PlayerVulnerable,
+    PlayerPosition, PlayerDirection, PlayerSpeed, PlayerState, PlayerVulnerable, PlayerPowered,
     GhostName, GhostPosition, GhostDirection, GhostSpeed, GhostAI, GhostState, GhostVulnerable, GhostTargetDist
   }
 }
