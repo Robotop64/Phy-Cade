@@ -32,6 +32,8 @@ public class ConfusedAI extends GhostAI
     Vector2d pacPos   = getPacmanPos(gameState).get(0);
     double   distance = 8 * gameState.map.tileSize;
 
+    escape = pacPos;
+
     if (pacPos.subtract(ghost.pos).lenght() > distance)
     {
       chase = pacPos;
@@ -43,6 +45,9 @@ public class ConfusedAI extends GhostAI
     if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
     {
       activeTarget = chase;
+    }
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED){
+      activeTarget = escape;
     }
   }
 

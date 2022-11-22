@@ -30,9 +30,16 @@ public class ShyAI extends GhostAI
   public void setCasePos (ClassicPacmanGameState gameState, Ghost ghost)
   {
     chase = getPacmanPos(gameState).get(0).add(gameState.playerDirection.toVector().multiply(5 * gameState.map.tileSize));
+
+    escape = getPacmanPos(gameState).get(0);
+
     if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
     {
       activeTarget = chase;
+    }
+
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED){
+      activeTarget = escape;
     }
   }
 

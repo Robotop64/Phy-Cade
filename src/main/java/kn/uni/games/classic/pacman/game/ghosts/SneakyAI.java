@@ -32,9 +32,16 @@ public class SneakyAI extends GhostAI
     Vector2d pacOffset = getPacmanPos(gameState).get(0).add(gameState.playerDirection.toVector().multiply(3 * gameState.map.tileSize));
     Vector2d rad       = pacOffset.subtract(getBlinkyPos(gameState).get(0));
     chase = pacOffset.add(rad);
+
+    escape = getPacmanPos(gameState).get(0);
+
     if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
     {
       activeTarget = chase;
+    }
+
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED){
+      activeTarget = escape;
     }
   }
 

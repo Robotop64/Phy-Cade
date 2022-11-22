@@ -29,9 +29,14 @@ public class AggressiveAI extends GhostAI
   public void setCasePos (ClassicPacmanGameState gameState, Ghost ghost)
   {
     chase = getPacmanPos(gameState).get(0);
+    escape = chase;
     if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
     {
       activeTarget = chase;
+    }
+
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED){
+      activeTarget = escape;
     }
   }
 
