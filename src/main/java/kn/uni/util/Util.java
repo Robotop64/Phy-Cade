@@ -58,11 +58,17 @@ public class Util
    */
   public static double roundTo (double in, double precision)
   {
-
     return Math.round(in * ( 1 / precision )) / ( 1 / precision );
   }
 
-
+  /**
+   * gives a value between 0 and 1 for a given starttick and a waiting duration
+   *
+   * @param start     the start tick
+   * @param duration  the duration
+   * @param gameState the gamestate
+   * @return a value between 0 and 1
+   */
   public static double progression (long start, long duration, ClassicPacmanGameState gameState)
   {
     return Math.min(Math.max(( gameState.currentTick - start ) * 1.0 / ( duration ), 0), 1);
