@@ -40,7 +40,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
 
   public DebugDisplay (Vector2d pos, InputListener.Player player)
   {
-    enabled = true;
+    //enabled = true;
     this.pos = pos;
     this.player = player;
 

@@ -19,4 +19,9 @@ public class PlacedObject extends GameObject
     movable = false;
   }
 
+  public void markExpired ()
+  {
+    expired = true;
+  }
+
 }
