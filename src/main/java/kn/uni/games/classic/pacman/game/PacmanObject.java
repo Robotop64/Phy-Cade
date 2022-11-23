@@ -26,12 +26,12 @@ import static kn.uni.util.Util.sin;
 
 public class PacmanObject extends CollidableObject implements Rendered, Ticking
 {
-  public double   tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
-  public int      r;
-  public Vector2d v;
-  public boolean  playerDead;
-  public boolean  isVulnerable;
-  public boolean  isPoweredUp;
+  public double               tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
+  public int                  r;
+  public Vector2d             v;
+  public boolean              playerDead;
+  public boolean              isVulnerable;
+  public boolean              isPoweredUp;
   public InputListener.Player player;
   long   powerUpStart;
   long   powerUpDuration   = 20 * 120;
@@ -44,7 +44,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     this.r = r;
     this.player = player;
     this.playerDead = false;
-    this.isVulnerable = false;
+    this.isVulnerable = true;
     deadAnimDuration = gameState.tps / .1;
     movable = true;
   }
@@ -245,7 +245,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                     if (isPoweredUp)
                                                     {
 
-
                                                       gameState.score += ( 4 / ghostList.size() ) * 200;
 
                                                       gameState.map.spawn(PacmanMapTile.Type.ghostSpawn, collidable);
@@ -267,6 +266,16 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     if (gameState.currentTick > powerUpStart + powerUpDuration)
     {
       isPoweredUp = false;
+      isVulnerable = true;
+      gameState.gameObjects.stream()
+                           .filter(o -> o instanceof Ghost)
+                           .map(o -> (Ghost) o)
+                           .filter(ghost -> ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED)
+                           .forEach(ghost ->
+                           {
+                             ghost.currentMode = ClassicPacmanGameConstants.mode.CHASE;
+                             ghost.vulnerable = false;
+                           });
     }
 
     //check for reset and wait for death animation to end
@@ -333,6 +342,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   public void powerUp (ClassicPacmanGameState gameState)
   {
     isPoweredUp = true;
+    isVulnerable = false;
     powerUpStart = gameState.currentTick;
   }
 
@@ -365,9 +375,9 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
     gameState.gameObjects.stream()
-                         .filter(gameObject -> gameObject instanceof PlacedObject)
                          .filter(gameObject -> gameObject instanceof PacmanObject || gameObject instanceof Ghost || gameObject instanceof ClassicPacmanMap)
-                         .forEach(gameObject -> ( (PlacedObject) gameObject ).expired = true);
+                         .map(gameObject -> (PlacedObject) gameObject)
+                         .forEach(PlacedObject::markExpired);
 
     //create new Map
     {
