@@ -21,8 +21,11 @@ import java.util.stream.IntStream;
 
 public class DebugDisplay extends PlacedObject implements Rendered
 {
-  private final int[]                                       subTypeDist          = { 1, 7, 14, 20, 6 };
   private final Map <Integer, List <String>>                ghostData            = new HashMap <>();
+  private final DebugSubType[]                              generals             = { DebugSubType.running, DebugSubType.TPS, DebugSubType.dataBase, DebugSubType.dataBaseDuration, DebugSubType.objectCount, DebugSubType.input };
+  private final DebugSubType[]                              levels               = { DebugSubType.Lvl, DebugSubType.Lives, DebugSubType.Score, DebugSubType.ItemsLeft, DebugSubType.FruitsSpawned, DebugSubType.GameStart, DebugSubType.GameDuration };
+  private final DebugSubType[]                              players              = { DebugSubType.PlayerPosition, DebugSubType.PlayerDirection, DebugSubType.PlayerSpeed, DebugSubType.PlayerState, DebugSubType.PlayerVulnerable, DebugSubType.PlayerPowered };
+  private final DebugSubType[]                              ghosts               = { DebugSubType.GhostName, DebugSubType.GhostPosition, DebugSubType.GhostDirection, DebugSubType.GhostSpeed, DebugSubType.GhostAI, DebugSubType.GhostState, DebugSubType.GhostVulnerable, DebugSubType.GhostTargetDist };
   public        boolean                                     enabled              = false;
   public        InputListener.Player                        player;
   public        Map <DebugType, Map <DebugSubType, String>> diagnostics2         = new HashMap <>();
@@ -35,7 +38,6 @@ public class DebugDisplay extends PlacedObject implements Rendered
   public        List <String>                               ghostsVulnerable     = new ArrayList <>(4);
   public        List <String>                               ghostsTargetDistance = new ArrayList <>(4);
 
-
   public DebugDisplay (Vector2d pos, InputListener.Player player)
   {
     enabled = true;
@@ -45,27 +47,33 @@ public class DebugDisplay extends PlacedObject implements Rendered
     //initialise Maps
     IntStream.range(0, DebugType.values().length).forEach(i -> diagnostics2.put(Arrays.stream(DebugType.values()).toList().get(i), new HashMap <>()));
 
-
     //assign prefixes to other maps
-    String[] otherPrefixes = { "[Run:", "[TPS:", "[DBC:", "[DBT:", "[ObC:", "[InP:",
-                               "[Lvl:", "[HP :", "[Sc :", "[ItL:", "[FSp:", "[ST :", "[Dur:",
-                               "[Pos:", "[Dir:", "[Spe:", "[Ali:", "[Vul:", "[Pow:" };
-    int[] range = { 0, 6, 13, 20 };
+    List <String> otherPrefixes = new ArrayList <>(Arrays.asList(
+        "[Run:", "[TPS:", "[DBC:", "[DBT:", "[ObC:", "[InP:",
+        "[Lvl:", "[HP :", "[Sc :", "[ItL:", "[FSp:", "[ST :", "[Dur:",
+        "[Pos:", "[Dir:", "[Spe:", "[Ali:", "[Vul:", "[Pow:"));
+    int[] range = { 0, otherPrefixes.indexOf("[Lvl:"), otherPrefixes.indexOf("[Pos:"), 20 };
+    IntStream.range(0, DebugType.Ghost.ordinal())
+             .forEach(k ->
+                 IntStream.range(range[k], range[k + 1] - 1)
+                          .forEach(i ->
+                              diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(k))
+                                          .put(Arrays.stream(DebugSubType.values()).toList()
+                                                     .get(i), otherPrefixes.get(i))));
 
-    IntStream.range(0, 3).forEach(k -> IntStream.range(range[k], range[k + 1] - 1).forEach(i ->
-        diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(k))
-                    .put(Arrays.stream(DebugSubType.values()).toList().get(i), otherPrefixes[i])));
-
-
-    String[] ghostPrefixes = { "[Pos:    ", "[Dir:    ", "[Speed:  ", "[AI:     ", "[Mode:   ", "[Vuln:   ", "[Target: " };
-    //assign prefixes to ghost map
-    IntStream.range(20, 26).forEach(i -> diagnostics2.get(Arrays.stream(DebugType.values()).toList().get(3)).put(Arrays.stream(DebugSubType.values()).toList().get(i), ghostPrefixes[i - 20]));
-    //create iterable of data lists
+    //assign prefixes to ghost maps
+    List <String> ghostPrefixes = new ArrayList <>(Arrays.asList("[Pos:    ", "[Dir:    ", "[Speed:  ", "[AI:     ", "[Mode:   ", "[Vuln:   ", "[Target: "));
+    IntStream.range(DebugSubType.GhostName.ordinal() + 1, DebugSubType.GhostTargetDist.ordinal())
+             .forEach(i ->
+                 diagnostics2.get(Arrays.stream(DebugType.values()).toList()
+                                        .get(DebugType.Ghost.ordinal())).put(Arrays.stream(DebugSubType.values()).toList()
+                                                                                   .get(i), ghostPrefixes.get(i - range[DebugType.Ghost.ordinal()])));
+    //create list of data lists
     List <List <String>> lists = new ArrayList <>(Arrays.asList(ghostNames, ghostPositions, ghostDirections, ghostSpeeds, ghostAI, ghostModes, ghostsVulnerable, ghostsTargetDistance));
     //initialise ghost data lists
     lists.forEach(i -> IntStream.range(0, 4).forEach(j -> i.add(" NaN")));
     //initialise ghost data
-    IntStream.range(19, 27).forEach(i -> ghostData.put(i, lists.get(i - 19)));
+    IntStream.range(DebugSubType.GhostName.ordinal(), DebugSubType.GhostTargetDist.ordinal() + 1).forEach(i -> ghostData.put(i, lists.get(i - 19)));
 
   }
 
@@ -106,6 +114,8 @@ public class DebugDisplay extends PlacedObject implements Rendered
   {
     if (enabled)
     {
+      int[] subTypeDist = { 1, generals.length + 1, generals.length + levels.length + 2, generals.length + levels.length + players.length + 1, 6 };
+
       pos.use(g::translate);
       //panel background
       g.setColor(new Color(40, 40, 40, 220));

@@ -32,11 +32,11 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   public boolean  playerDead;
   public boolean  isVulnerable;
   public boolean  isPoweredUp;
-  long powerUpStart;
-  long powerUpDuration  = 20*120;
+  public InputListener.Player player;
+  long   powerUpStart;
+  long   powerUpDuration   = 20 * 120;
   long   deadAnimStartTick = 0;
   double deadAnimDuration;
-  public InputListener.Player player;
 
   public PacmanObject (int r, Vector2d pos, ClassicPacmanGameState gameState, InputListener.Player player)
   {
@@ -219,7 +219,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                   //collision with item
                                                   if (collidable instanceof ClassicPacmanItemObject item && item.eatable)
                                                   {
-                                                    item.collide(this);
+                                                    item.collide();
                                                   }
                                                   //collision with ghost
                                                   //TODO implement later (make ghost eatable)
@@ -242,11 +242,11 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                       ghostList.forEach(ghost2 -> ghost2.movable = false);
                                                     }
 
-                                                    if(isPoweredUp)
+                                                    if (isPoweredUp)
                                                     {
 
 
-                                                      gameState.score += (4/ghostList.size())*200;
+                                                      gameState.score += ( 4 / ghostList.size() ) * 200;
 
                                                       gameState.map.spawn(PacmanMapTile.Type.ghostSpawn, collidable);
 
@@ -263,8 +263,8 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerState, "[Alive: " + !this.playerDead + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerVulnerable, "[Vul: " + this.isVulnerable + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPowered, "[Pow: " + this.isPoweredUp + "]");
-    
-    if (gameState.currentTick > powerUpStart+powerUpDuration)
+
+    if (gameState.currentTick > powerUpStart + powerUpDuration)
     {
       isPoweredUp = false;
     }
@@ -329,11 +329,13 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     deadAnimStartTick = gameState.currentTick + 1;
 
   }
-  
-  public void powerUp(ClassicPacmanGameState gameState){
-      isPoweredUp = true;
-      powerUpStart  = gameState.currentTick;
+
+  public void powerUp (ClassicPacmanGameState gameState)
+  {
+    isPoweredUp = true;
+    powerUpStart = gameState.currentTick;
   }
+
   /**
    * Event of a players lives reaching 0
    *
