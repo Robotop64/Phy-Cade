@@ -436,7 +436,7 @@ public class LeaderboardMenu extends JPanel
   private enum GameTitle
   { pacman, supermario, doom }
 
-  public record LeaderboardEntry(String name, long highScore, LocalTime time, LocalDate date) { }
+  public record LeaderboardEntry(int accNum, String name, int level, long highScore, LocalTime time, LocalDate date, String version, String notes) { }
 
   public record Leaderboard(String name, List <LeaderboardEntry> entries) { }
 }

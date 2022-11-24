@@ -32,9 +32,9 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
 		this.size = size;
 
 		// in case no entries available
-		dynBoard[0] = new LeaderboardMenu.LeaderboardEntry(" ", 0, LocalTime.now(), LocalDate.now());
-		dynBoard[1] = new LeaderboardMenu.LeaderboardEntry("You", 0, LocalTime.now(), LocalDate.now());
-		dynBoard[2] = new LeaderboardMenu.LeaderboardEntry(" ", 0, LocalTime.now(), LocalDate.now());
+		dynBoard[0] = new LeaderboardMenu.LeaderboardEntry(0," ", 0,0, LocalTime.now(), LocalDate.now(),"","");
+		dynBoard[1] = new LeaderboardMenu.LeaderboardEntry(0,"You", 0,0, LocalTime.now(), LocalDate.now(),"","");
+		dynBoard[2] = new LeaderboardMenu.LeaderboardEntry(0," ", 0,0, LocalTime.now(), LocalDate.now(),"","");
 
 		//try fetching entries
 		try
@@ -56,7 +56,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
 	{
 		String header = "Dynamic Leaderboard:";
 
-		dynBoard[1] = new LeaderboardMenu.LeaderboardEntry("You", gameState.score, LocalTime.now(), LocalDate.now());
+		dynBoard[1] = new LeaderboardMenu.LeaderboardEntry(0,"You",0, gameState.score, LocalTime.now(), LocalDate.now(),"","");
 
 		setDynBoard(gameState);
 

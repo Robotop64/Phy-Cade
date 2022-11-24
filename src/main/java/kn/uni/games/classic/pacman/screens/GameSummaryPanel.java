@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
+import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.persistence.PacmanDatabaseProvider;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.UIScreen;
@@ -79,16 +80,17 @@ public class GameSummaryPanel extends UIScreen
     //create Keyboard
     {
       String           name = "";
-      OnScreenKeyboard osk  = new OnScreenKeyboard(this, player, width - 60);
+      OnScreenKeyboard osk  = new OnScreenKeyboard(this, player, width - 60, this::addEntry);
       osk.setLocation((this.getWidth() - osk.getWidth()) / 2, this.getHeight() - osk.getHeight() - (this.getWidth() - osk.getWidth()) / 2);
-      osk.setTarget(symbol -> nameLabel.setText(nameLabel.getText() + symbol));
+      osk.setTarget(symbol -> nameLabel.setText(symbol));
       add(osk);
     }
   }
 
   private void addEntry ()
   {
-    PacmanDatabaseProvider.setEntries(container.gameName, new LeaderboardMenu.LeaderboardEntry(nameLabel.toString(), thisScore, thisTime, LocalDate.now()));
+    PacmanDatabaseProvider.setEntries(container.gameName, new LeaderboardMenu.LeaderboardEntry(0,nameLabel.toString(),level, thisScore, thisTime, LocalDate.now(), PacPhi.GAME_VERSION,""));
+    killSummary();
   }
 
   //TODO level label
