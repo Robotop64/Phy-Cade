@@ -61,9 +61,12 @@ public class PacmanDatabaseProvider {
             PreparedStatement preparedStmt = connection.prepareStatement(command);
             preparedStmt.setInt(1, 0);
             preparedStmt.setString(2, in.name());
-            preparedStmt.setLong(3, in.highScore());
-            preparedStmt.setTime(4, new Time(in.time().getHour(), in.time().getMinute(), in.time().getSecond()));
-            preparedStmt.setDate(5, new Date(in.date().getYear() - 1900, in.date().getMonthValue() - 1, in.date().getDayOfMonth()));
+            preparedStmt.setInt(3, in.level());
+            preparedStmt.setLong(4, in.highScore());
+            preparedStmt.setTime(5, new Time(in.time().getHour(), in.time().getMinute(), in.time().getSecond()));
+            preparedStmt.setDate(6, new Date(in.date().getYear() - 1900, in.date().getMonthValue() - 1, in.date().getDayOfMonth()));
+            preparedStmt.setString(7, in.version());
+            preparedStmt.setString(8, in.notes());
 
             preparedStmt.execute();
             System.out.println("Entry successfully added!");

@@ -2,7 +2,7 @@ package kn.uni;
 
 public class PacPhi
 {
-  public static final String GAME_VERSION = "BETA-1.0.2";
+  public static final String GAME_VERSION = "BETA-1.0.2-unstable";
 
   public static void main (String[] args)
   {
