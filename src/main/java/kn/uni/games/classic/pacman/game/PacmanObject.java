@@ -263,7 +263,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerVulnerable, "[Vul: " + this.isVulnerable + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPowered, "[Pow: " + this.isPoweredUp + "]");
 
-    if (gameState.currentTick > powerUpStart + powerUpDuration)
+    if (gameState.currentTick > powerUpStart + powerUpDuration && isPoweredUp)
     {
       isPoweredUp = false;
       isVulnerable = true;

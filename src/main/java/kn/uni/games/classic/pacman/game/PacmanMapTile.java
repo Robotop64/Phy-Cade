@@ -17,12 +17,14 @@ public class PacmanMapTile extends PlacedObject implements Rendered
   public              Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
   public              Type                          type;
   public              Color                         color;
+  public Vector2d center;
   private             int                           size;
 
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
   {
     this.pos = pos;
+    if (pos != null) this.center = this.pos.add(new Vector2d().cartesian(size/2.,size/2.));
     this.size = size;
     this.type = type;
     this.color = Color.black;

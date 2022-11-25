@@ -53,17 +53,17 @@ public abstract class GhostAI
 
   public Direction nextDirection2 (ClassicPacmanGameState gameState, Ghost ghost, ClassicPacmanGameConstants.mode mode)
   {
+
+
     //find all valid tiles
-      List <PacmanMapTile> possibleTiles =
+    List <PacmanMapTile> possibleTiles =
           Arrays.stream(Direction.values())
                 .filter(d -> d != ghost.direction.opposite())
                 .map(Direction::toVector)
                 .map(vec -> ghost.currentTile.neighbors.get(vec))
                 .filter(Objects::nonNull)
-                //              &&
                 .filter(tile -> PacmanMapTile.walkable.contains(tile.type))
                 .filter(tile -> !tile.type.equals(PacmanMapTile.Type.door) || ghost.canUseDoor)
-                //                .filter(tile -> tile.type.equals(PacmanMapTile.Type.door) || !ghost.canUseDoor)
                 .toList();
 
       //visual feedback of possible tiles
@@ -106,18 +106,18 @@ public abstract class GhostAI
         if (mode != ClassicPacmanGameConstants.mode.FRIGHTENED)
         {
           //reduce distance to target
-          goTo = possibleTiles.get(0).pos.subtract(ghost.currentTile.pos);
+          goTo = possibleTiles.get(0).center.subtract(ghost.currentTile.center);
         } else {
           //increase distance to target
-          goTo = possibleTiles.get(possibleTiles.size()-1).pos.subtract(ghost.currentTile.pos);
+          goTo = possibleTiles.get(possibleTiles.size()-1).center.subtract(ghost.currentTile.center);
         }
-
         Direction newDirection = goTo.divide(goTo.lenght()).toDirection();
         ghost.direction = newDirection;
         return newDirection;
       }
       else
       {
+        ghost.direction = ghost.direction.opposite();
         return ghost.direction;
       }
 

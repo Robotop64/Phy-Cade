@@ -215,7 +215,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
         while (subAIs.size() != 0)
         {
           gameState.gameObjects.add(
-              new Ghost("nowak", tile.pos, subAIs.getFirst(), subAIs.pop().name)
+              new Ghost("nowak", tile.center, subAIs.getFirst(), subAIs.pop().name)
           );
         }
       }
