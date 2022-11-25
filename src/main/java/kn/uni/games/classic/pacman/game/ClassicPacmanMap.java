@@ -250,7 +250,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
         if (standartLocation == Type.ghostSpawn)
         {
           Ghost oldGhost = (Ghost) spawnable;
-          Ghost newGhost = new Ghost("nowak", tile.pos, oldGhost.ai, oldGhost.ai.name);
+          Ghost newGhost = new Ghost("nowak", tile.center, oldGhost.ai, oldGhost.ai.name);
           newGhost.canUseDoor = true;
           entity = newGhost;
         }

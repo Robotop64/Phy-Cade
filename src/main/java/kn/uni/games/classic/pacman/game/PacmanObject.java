@@ -304,23 +304,27 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       gameState.fruitSpawned = false;
       gameState.map.setItems(new ArrayList <>());
 
-      if (gameState.level < 4)
-      {
-        gameState.gameObjects.stream()
-                             .filter(ghost -> ghost instanceof Ghost)
-                             .map(ghost -> (Ghost) ghost)
-                             .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
-                             .forEach(ghost -> ghost.canUseDoor = true);
-      }
-      else
-      {
-        gameState.gameObjects.stream()
-                             .filter(ghost -> ghost instanceof Ghost)
-                             .map(ghost -> (Ghost) ghost)
-                             .forEach(ghost -> ghost.canUseDoor = true);
-      }
 
 
+
+    }
+  }
+
+  private void unlockGhosts(ClassicPacmanGameState gameState){
+    if (gameState.level < 4)
+    {
+      gameState.gameObjects.stream()
+              .filter(ghost -> ghost instanceof Ghost)
+              .map(ghost -> (Ghost) ghost)
+              .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
+              .forEach(ghost -> ghost.canUseDoor = true);
+    }
+    else
+    {
+      gameState.gameObjects.stream()
+              .filter(ghost -> ghost instanceof Ghost)
+              .map(ghost -> (Ghost) ghost)
+              .forEach(ghost -> ghost.canUseDoor = true);
     }
   }
 
@@ -387,6 +391,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       gameState.size = new Vector2d().cartesian(map.width, map.height);
       map.addEntities(gameState);
     }
+    unlockGhosts(gameState);
   }
 
   private ClassicPacmanGameConstants.Collectables getFruit (int level)
