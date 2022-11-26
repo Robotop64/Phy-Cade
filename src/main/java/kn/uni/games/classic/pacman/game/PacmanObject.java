@@ -81,7 +81,14 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       g.setStroke(new BasicStroke(Math.round(r / 3.)));
       g.drawArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
       IntStream.of(-1, 1).forEach(i -> new Vector2d().polar(r, i * angle).use((x, y) -> g.drawLine(0, 0, x, y)));
-      g.setColor(Color.yellow);
+      if (!isPoweredUp)
+      {
+        g.setColor(Color.yellow);
+      }
+      else
+      {
+        g.setColor(Color.blue);
+      }
       g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
       g.rotate(Math.toRadians(-θ));
     }
@@ -305,26 +312,25 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       gameState.map.setItems(new ArrayList <>());
 
 
-
-
     }
   }
 
-  private void unlockGhosts(ClassicPacmanGameState gameState){
+  private void unlockGhosts (ClassicPacmanGameState gameState)
+  {
     if (gameState.level < 4)
     {
       gameState.gameObjects.stream()
-              .filter(ghost -> ghost instanceof Ghost)
-              .map(ghost -> (Ghost) ghost)
-              .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
-              .forEach(ghost -> ghost.canUseDoor = true);
+                           .filter(ghost -> ghost instanceof Ghost)
+                           .map(ghost -> (Ghost) ghost)
+                           .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
+                           .forEach(ghost -> ghost.canUseDoor = true);
     }
     else
     {
       gameState.gameObjects.stream()
-              .filter(ghost -> ghost instanceof Ghost)
-              .map(ghost -> (Ghost) ghost)
-              .forEach(ghost -> ghost.canUseDoor = true);
+                           .filter(ghost -> ghost instanceof Ghost)
+                           .map(ghost -> (Ghost) ghost)
+                           .forEach(ghost -> ghost.canUseDoor = true);
     }
   }
 
