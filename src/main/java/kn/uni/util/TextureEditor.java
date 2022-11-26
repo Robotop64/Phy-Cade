@@ -47,20 +47,20 @@ public class TextureEditor
     //create outputImage
     BufferedImage output = new BufferedImage(imageIn.getWidth(), imageIn.getHeight(), BufferedImage.TYPE_INT_ARGB);
     //for each pixelRow in the image
-    IntStream.range(0, imageIn.getWidth() - 1).forEach(xPixel ->
+    IntStream.range(0, imageIn.getWidth() - thickness).forEach(xPixel ->
     {
       //for each pixelColumn in the image
-      IntStream.range(0, imageIn.getHeight() - 1).forEach(yPixel ->
+      IntStream.range(0, imageIn.getHeight() - thickness).forEach(yPixel ->
       {
         //color of evaluated pixel
         Color currentPixel = new Color(imageIn.getRGB(xPixel, yPixel), true);
-        //filter for only border pixels
+        //exclude pixels with texture
         if (currentPixel.getAlpha() == 0)
         {
           //check if pixel has texture neighbors
           for (int φ = 0; φ < 360; φ += 90)
           {
-            Vector2d v              = new Vector2d().polar(1, φ);
+            Vector2d v              = new Vector2d().polar(thickness, φ);
             int      nextX          = Util.bounded((int) ( xPixel + v.x ), 0, imageIn.getWidth());
             int      nextY          = Util.bounded((int) ( yPixel + v.y ), 0, imageIn.getHeight());
             Color    neighbourPixel = new Color(imageIn.getRGB(nextX, nextY), true);
