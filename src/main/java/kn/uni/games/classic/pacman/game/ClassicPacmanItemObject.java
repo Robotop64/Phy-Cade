@@ -2,7 +2,7 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
-import kn.uni.util.TextureLoader;
+import kn.uni.util.TextureEditor;
 import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
 
@@ -39,7 +39,7 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
     };
 
     //load icon texture
-    icon = TextureLoader.getInstance().loadTexture("items", type.name() + ".png");
+    icon = TextureEditor.getInstance().loadTexture("items", type.name() + ".png");
     this.hitbox = new Vector2d().cartesian(icon.getWidth() - 10, icon.getHeight() - 10);
   }
 
