@@ -4,18 +4,14 @@ import kn.uni.games.classic.pacman.game.*;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public abstract class GhostAI
 {
-
-  private final Random                                random       = new Random(System.nanoTime());
   public        ClassicPacmanGameConstants.ghostNames name;
   protected     Color                                 borderColor;
   protected     Vector2d                              activeTarget = new Vector2d().cartesian(0, 0);
@@ -29,7 +25,7 @@ public abstract class GhostAI
 
   public abstract void setCasePos (ClassicPacmanGameState gameState, Ghost ghost);
 
-  public void setMode (ClassicPacmanGameConstants.mode mode, Ghost ghost, ClassicPacmanGameState gameState)
+  public void setMode (ClassicPacmanGameConstants.mode mode, Ghost ghost)
   {
     switch (mode) {
       case CHASE -> {
@@ -51,7 +47,7 @@ public abstract class GhostAI
     }
   }
 
-  public Direction nextDirection2 (ClassicPacmanGameState gameState, Ghost ghost, ClassicPacmanGameConstants.mode mode)
+  public void nextDirection2 (ClassicPacmanGameState gameState, Ghost ghost, ClassicPacmanGameConstants.mode mode)
   {
 
 
@@ -80,20 +76,9 @@ public abstract class GhostAI
                        {
                          Vector2d aVec  = a.pos.subtract(ghost.ai.activeTarget);
                          Vector2d bVec  = b.pos.subtract(ghost.ai.activeTarget);
-                         double   aDist = aVec.lenght();
-                         double   bDist = bVec.lenght();
-                         if (aDist == bDist)
-                         {
-                           return 0;
-                         }
-                         else if (aDist < bDist)
-                         {
-                           return -1;
-                         }
-                         else
-                         {
-                           return 1;
-                         }
+                         double   aDist = aVec.length();
+                         double   bDist = bVec.length();
+                         return Double.compare(aDist, bDist);
                        })
                        .toList();
 
@@ -111,14 +96,11 @@ public abstract class GhostAI
           //increase distance to target
           goTo = possibleTiles.get(possibleTiles.size()-1).center.subtract(ghost.currentTile.center);
         }
-        Direction newDirection = goTo.divide(goTo.lenght()).toDirection();
-        ghost.direction = newDirection;
-        return newDirection;
+        ghost.direction = goTo.divide(goTo.length()).toDirection();
       }
       else
       {
         ghost.direction = ghost.direction.opposite();
-        return ghost.direction;
       }
 
   }
@@ -134,6 +116,7 @@ public abstract class GhostAI
     return pacPos;
   }
 
+  @SuppressWarnings({"typo", "SpellCheckingInspection"})
   public List <Vector2d> getBlinkyPos (ClassicPacmanGameState gameState)
   {
     List <Vector2d> blinkyPos = new ArrayList <>();

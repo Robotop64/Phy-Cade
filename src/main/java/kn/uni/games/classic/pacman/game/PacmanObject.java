@@ -24,6 +24,7 @@ import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
 
 
+@SuppressWarnings("NonAsciiCharacters")
 public class PacmanObject extends CollidableObject implements Rendered, Ticking
 {
   public double               tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
@@ -63,15 +64,16 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
-    TotalPosition tp = gameState.map.splitPosition(pos);
     pos.rounded().use(g::translate);
 
+    double animationDuration;
+    int θ;
 
     if (!playerDead)
     {
-      double animationDuration = gameState.tps / 2.;
+      animationDuration = gameState.tps / 2.;
 
-      int θ = getΘ(gameState.playerDirection);
+      θ = getΘ(gameState.playerDirection);
       g.rotate(Math.toRadians(θ));
 
       int angle = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
@@ -90,14 +92,13 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
         g.setColor(Color.blue);
       }
       g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
-      g.rotate(Math.toRadians(-θ));
     }
     else
     {
 
-      double animationDuration = deadAnimDuration;
+      animationDuration = deadAnimDuration;
 
-      int θ = getΘ(Direction.up);
+      θ = getΘ(Direction.up);
       g.rotate(Math.toRadians(θ));
 
       int angle = (int) Math.round(180 * sin(( ( gameState.currentTick - deadAnimStartTick ) % animationDuration ) / animationDuration * 360.));
@@ -108,13 +109,14 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       IntStream.of(-1, 1).forEach(i -> new Vector2d().polar(r, i * angle).use((x, y) -> g.drawLine(0, 0, x, y)));
       g.setColor(Color.yellow);
       g.fillArc(-r, -r, 2 * r, 2 * r, angle, 360 - 2 * angle);
-      g.rotate(Math.toRadians(-θ));
     }
+    g.rotate(Math.toRadians(-θ));
 
     pos.rounded().multiply(-1).rounded().use(g::translate);
 
   }
 
+  @SuppressWarnings("unused")
   private PacmanMapTile getTile (ClassicPacmanGameState gameState)
   {
     return gameState.map.tiles.get(gameState.map.splitPosition(pos).ex());
@@ -129,8 +131,9 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   /**
    * Event that happens on every tick, ruling of PacMans interactions with the running game
    *
-   * @param gameState
+   * @param gameState the current game state
    */
+  @SuppressWarnings("SpellCheckingInspection")
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
@@ -144,40 +147,30 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       if (v == null)
       {
         v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
-        //      System.out.println(v);
       }
-
-      //    System.out.println(gameState.playerDirection.toVector());
-      //    System.out.println(tp.in());
 
       //moving towards centre of current tile
       if (round(gameState.playerDirection.toVector().scalar(tp.in())) < 0)
       {
-        //      System.out.println("moving towards centre");
-        // far away from some axis
+        //walk towards centre of tile
         if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
         {
-          //        System.out.println("far away from axis");
-          pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
+          pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.length()));
         }
         pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
       }
       // walking away from centre
       else
       {
-        //      System.out.println("try moving away from centre");
+        // near center
         if (tp.in().x + tp.in().y < gameState.map.tileSize / .3)
         {
-          //        System.out.println("close to centre");
-          //        System.out.println(nextTile);
           if (nextTile != null && PacmanMapTile.walkable.contains(nextTile.type))
           {
-            //          System.out.println("next tile is good");
-            // far away from some axis
+            //next tile is valid
             if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
             {
-              //            System.out.println("far away from axis");
-              pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.lenght()));
+              pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.length()));
             }
             pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
           }
@@ -220,7 +213,8 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     if (getCollisions(this, gameState.gameObjects).stream().toList().size() > 0)
     {
       //execute action for each collision
-      getCollisions(this, gameState.gameObjects).stream()
+      getCollisions(this, gameState.gameObjects)
+
                                                 .forEach(collidable ->
                                                 {
                                                   //collision with item
@@ -299,14 +293,14 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   /**
    * Used to determine if a level has been completed
    *
-   * @param gameState
+   * @param gameState the current game state
    */
   private void checkLevelStatus (ClassicPacmanGameState gameState)
   {
     if (gameState.map.getPillCount() <= 0)
     {
       gameState.level += 1;
-      //resets the coins and powerups
+      //resets the coins and powerUps
       reloadLevel(gameState);
       gameState.fruitSpawned = false;
       gameState.map.setItems(new ArrayList <>());
@@ -335,9 +329,9 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   }
 
   /**
-   * Event of a playersdying to a ghost
+   * Event of a player dying to a ghost
    *
-   * @param gameState
+   * @param gameState the current game state
    */
   public void death (ClassicPacmanGameState gameState)
   {
@@ -359,7 +353,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   /**
    * Event of a players lives reaching 0
    *
-   * @param gameState
+   * @param gameState the current game state
    */
   private void checkGameOver (ClassicPacmanGameState gameState)
   {

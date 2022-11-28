@@ -11,6 +11,7 @@ import static kn.uni.util.Util.cos;
 import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
 
+@SuppressWarnings({"unused", "NonAsciiCharacters"})
 public class Vector2d
 {
   public final double x;
@@ -70,14 +71,14 @@ public class Vector2d
     return new Vector2d(cos(φ) * x - sin(φ) * y, sin(φ) * x + cos(φ) * y);
   }
 
-  public double lenght ()
+  public double length()
   {
     return sqrt(x * x + y * y);
   }
 
   public Vector2d unitVector ()
   {
-    return divide(lenght());
+    return divide(length());
   }
 
   public double scalar (Vector2d other)
@@ -87,7 +88,7 @@ public class Vector2d
 
   public Vector2d projectOn (Vector2d target)
   {
-    return target.unitVector().multiply(unitVector().scalar(target.unitVector()) * lenght());
+    return target.unitVector().multiply(unitVector().scalar(target.unitVector()) * length());
   }
 
   public Vector2d orthogonalTo (Vector2d target)

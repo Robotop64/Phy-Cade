@@ -34,7 +34,7 @@ public class ConfusedAI extends GhostAI
 
     escape = pacPos;
 
-    if (pacPos.subtract(ghost.pos).lenght() > distance)
+    if (pacPos.subtract(ghost.pos).length() > distance)
     {
       chase = pacPos;
     }

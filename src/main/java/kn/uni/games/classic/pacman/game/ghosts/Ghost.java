@@ -22,7 +22,9 @@ import java.util.Objects;
 
 public class Ghost extends CollidableObject implements Ticking, Rendered
 {
+  @SuppressWarnings("FieldCanBeLocal")
   private final int    animationFrequency = 8;
+  @SuppressWarnings("FieldCanBeLocal")
   private final String dirPath            = "pacman/textures/ghosts/";
 
   public GhostAI                               ai;
@@ -38,7 +40,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
   private BufferedImage openedOutline;
   private BufferedImage closed;
   private BufferedImage closedOutline;
-  private String        profName;
+  private final String        profName;
 
 
   public Ghost (String profName, Vector2d pos, GhostAI ghostAI, ClassicPacmanGameConstants.ghostNames name)
@@ -54,7 +56,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     this.direction = Direction.up;
 
     loadImages("%s%s/%s-".formatted(dirPath, profName, profName));
-    ai.setMode(ClassicPacmanGameConstants.mode.EXIT, this, null);
+    ai.setMode(ClassicPacmanGameConstants.mode.EXIT, this);
   }
 
   private void loadImages (String path)
@@ -122,8 +124,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
   {
     return switch (gameState.level)
         {
-          case 1 -> .75;
-          case 2, 3, 4 -> .75;
+          case 1, 2, 3, 4 -> .75;
           default -> .85;
         };
   }
@@ -135,7 +136,6 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     double velocity = ClassicPacmanGameConstants.pacmanSpeed * getSpeedScale(gameState) * gameState.map.tileSize * 1. / gameState.tps;
     this.pixSpeed = (int) velocity;
     TotalPosition tp = gameState.map.splitPosition(pos);
-    int           ts = gameState.map.tileSize;
     currentTile = gameState.map.tiles.get(tp.ex());
 
     if (movable)
@@ -144,13 +144,13 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
       if (ai.getBlinkyPos(gameState).size() > 0) ai.setCasePos(gameState, this);
 
       //skip check if current tile mid has not been reached
-      if (currentTile.center.subtract(this.pos).lenght() < 1) ai.nextDirection2(gameState, this, currentMode);
+      if (currentTile.center.subtract(this.pos).length() < 1) ai.nextDirection2(gameState, this, currentMode);
       //move the ghost
       pos = pos.add(direction.toVector().multiply(velocity));
       //change mode if the reached tile identifies as exit
       if (currentTile.type.equals(PacmanMapTile.Type.ghostExit))
       {
-        ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this, gameState);
+        ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this);
         this.canUseDoor = false;
       }
     }
@@ -162,7 +162,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostAI, this, ai.getClass().getSimpleName());
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostState, this, String.valueOf(currentMode));
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostVulnerable, this, String.valueOf(this.vulnerable));
-    // DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostTargetDist, this, "(" + Util.roundTo(this.pos.subtract(ai.activeTarget).lenght(), 0.1) + ")");
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostTargetDist, this, "(" + Util.roundTo(this.pos.subtract(ai.activeTarget).length(), 0.1) + ")");
   }
 
 }

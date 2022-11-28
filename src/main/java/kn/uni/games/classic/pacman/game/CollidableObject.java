@@ -23,7 +23,7 @@ public class CollidableObject extends PlacedObject
 
     List <CollidableObject> colliding = collidables.stream()
                                                    .filter(o -> o != target)
-                                                   .filter(o -> o.pos.subtract(target.pos).lenght() < o.getSize().x / 2 + target.getSize().x / 2)
+                                                   .filter(o -> o.pos.subtract(target.pos).length() < o.getSize().x / 2 + target.getSize().x / 2)
                                                    .toList();
 
     return colliding;
