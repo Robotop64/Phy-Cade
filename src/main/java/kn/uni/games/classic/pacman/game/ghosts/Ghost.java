@@ -68,9 +68,6 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
 
       closedOutline = TextureEditor.getInstance().createOutline(closed, 3, ai.borderColor);
       openedOutline = TextureEditor.getInstance().createOutline(opened, 3, ai.borderColor);
-
-      TextureEditor.getInstance().saveImage(closedOutline, "/ghosts/nowak/" + profName + "-closedOutline", "png");
-      TextureEditor.getInstance().saveImage(openedOutline, "/ghosts/nowak/" + profName + "-openedOutline", "png");
     }
     catch (IOException e)
     {
