@@ -9,7 +9,7 @@ import java.util.Random;
 public class RandomWalkAI extends GhostAI
 {
   private Direction currentDirection = Direction.up;
-  private Random    random           = new Random(System.nanoTime());
+  private final Random    random           = new Random(System.nanoTime());
 
   public RandomWalkAI ()
   {

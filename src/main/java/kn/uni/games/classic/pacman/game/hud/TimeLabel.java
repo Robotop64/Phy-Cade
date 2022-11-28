@@ -10,13 +10,12 @@ import kn.uni.util.Vector2d;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
 
 public class TimeLabel extends PlacedObject implements Rendered
 {
-	Vector2d size;
+	private final Vector2d size;
 
 	public TimeLabel (Vector2d pos, Vector2d size)
 	{
@@ -28,8 +27,6 @@ public class TimeLabel extends PlacedObject implements Rendered
 	public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
 	{
 		//format timeCounter
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss.SSS");
-
 		LocalTime currentTime = LocalTime.now();
 
 		long millisBetween = MILLIS.between(gameState.startTime, currentTime);

@@ -130,18 +130,12 @@ public class DebugDisplay extends PlacedObject implements Rendered
         {
           g.drawString(type.name() + ":", 10, 20 * ( type.ordinal() + subTypeDist[type.ordinal()] ));
           //for each subtype
-          map.forEach((subType, s) ->
-          {
-            g.drawString(s, 20, 20 * ( subType.ordinal() + type.ordinal() + 2 ));
-          });
+          map.forEach((subType, s) -> g.drawString(s, 20, 20 * ( subType.ordinal() + type.ordinal() + 2 )));
         }
         else
         {
           g.drawString(type.name() + "s:   " + ghostNames, 10, 20 * ( type.ordinal() + subTypeDist[type.ordinal()] ));
-          map.forEach((subType, s) ->
-          {
-            g.drawString(s + ghostData.get(subType.ordinal()), 20, 20 * ( subType.ordinal() + type.ordinal() + 1 ));
-          });
+          map.forEach((subType, s) -> g.drawString(s + ghostData.get(subType.ordinal()), 20, 20 * ( subType.ordinal() + type.ordinal() + 1 )));
         }
       });
     }

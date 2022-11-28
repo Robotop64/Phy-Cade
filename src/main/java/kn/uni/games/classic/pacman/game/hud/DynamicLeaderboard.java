@@ -24,6 +24,7 @@ public class DynamicLeaderboard extends PlacedObject implements Rendered
 	private       boolean                       useDatabase     = true;
 	private       boolean                       newHighscore    = false;
 	private       boolean                       fetching        = false;
+	@SuppressWarnings("FieldMayBeFinal")
 	private       int                           entriesPerFetch = 1000;
 
 	public DynamicLeaderboard (Vector2d pos, Vector2d size)

@@ -16,8 +16,7 @@ import static kn.uni.util.Util.sin;
 
 public class LiveLabel extends PlacedObject implements Rendered
 {
-  private Vector2d size;
-  private int      liveCount;
+  private final Vector2d size;
 
   public LiveLabel (Vector2d pos, Vector2d size)
   {
@@ -52,7 +51,7 @@ public class LiveLabel extends PlacedObject implements Rendered
     g.setColor(Color.yellow);
     g.fillArc(r, (int)(size.y / 2 - r), 2 * r, 2 * r, angle, 360 - 2 * angle);
     //live tracker
-    g.drawString("" + String.valueOf(gameState.lives), 4 * r, (int)(18.4 * text.length() / 160. * fontSize));
+    g.drawString(String.valueOf(gameState.lives), 4 * r, (int)(18.4 * text.length() / 160. * fontSize));
     g.setStroke(new BasicStroke(1));
     //    size.use((x, y) -> g.drawRect(0, 0, x, y));
     pos.multiply(-1).use(g::translate);

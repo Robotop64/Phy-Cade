@@ -49,11 +49,6 @@ public class HUD extends PlacedObject implements Rendered
       //          gameState.gameObjects.add(new CollectablesLabel());
       gameState.gameObjects.add(new DynamicLeaderboard(new Vector2d().cartesian(sidePos.x + textBuffer, rowHeight * 8.5), new Vector2d().cartesian(textBounds, gameState.uiSize)));
     }
-    else
-    {
-      //          gameState.gameObjects.add(new ScoreLabel(new Vector2d().cartesian(20, 920), new Vector2d().cartesian(400, 80)));
-      //          gameState.gameObjects.add(new LiveLabel(new Vector2d().cartesian(400, 920), new Vector2d().cartesian(400, 80)));
-    }
   }
 
   //paint boxes

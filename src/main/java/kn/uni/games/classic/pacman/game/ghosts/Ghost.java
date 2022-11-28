@@ -40,13 +40,10 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
   private BufferedImage openedOutline;
   private BufferedImage closed;
   private BufferedImage closedOutline;
-  private final String        profName;
-
 
   public Ghost (String profName, Vector2d pos, GhostAI ghostAI, ClassicPacmanGameConstants.ghostNames name)
   {
     ai = ghostAI;
-    this.profName = profName;
     this.pos = pos;
     this.name = name;
     movable = true;

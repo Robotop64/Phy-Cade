@@ -11,7 +11,7 @@ import java.awt.Graphics2D;
 
 public class GameLabel extends PlacedObject implements Rendered
 {
-	private Vector2d size;
+	private final Vector2d size;
 
 	public GameLabel (Vector2d pos, Vector2d size)
 	{
@@ -32,7 +32,7 @@ public class GameLabel extends PlacedObject implements Rendered
 		g.setStroke(new BasicStroke(1));
 		g.drawString(text, 3, (int)(18.4 * text.length() / 160. * fontSize));
 
-		//dont delete
+		//don't delete
 		//    size.use((x, y) -> g.drawRect(0, 0, x, y));
 
 		pos.multiply(-1).use(g::translate);
