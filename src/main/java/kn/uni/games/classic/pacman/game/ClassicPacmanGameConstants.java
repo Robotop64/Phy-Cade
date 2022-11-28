@@ -51,6 +51,7 @@ public class ClassicPacmanGameConstants
       Collectables.key, Collectables.key };
 
   //variety of fruits
+  @SuppressWarnings("SpellCheckingInspection")
   public enum Collectables
   { coin, powerUp, cherry, strawberry, apple, orange, melon, galaxian, bell, key }
 
@@ -58,6 +59,7 @@ public class ClassicPacmanGameConstants
   public enum mode
   { CHASE, SCATTER, FRIGHTENED, EXIT }
 
+  @SuppressWarnings("SpellCheckingInspection")
   public enum ghostNames
   { BLINKY, PINKY, INKY, CLYDE }
 }

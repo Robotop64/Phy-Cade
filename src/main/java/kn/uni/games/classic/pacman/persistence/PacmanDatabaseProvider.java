@@ -14,10 +14,12 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@SuppressWarnings("SpellCheckingInspection")
 public class PacmanDatabaseProvider {
-    private static String url = "jdbc:mysql://pacphidatabase/leaderboard";
-    private static String username = "pacphi";
-    private static String password = "pacmacbummbumm";
+    private static final String url = "jdbc:mysql://pacphidatabase/leaderboard";
+    private static final String username = "pacphi";
+    private static final String password = "pacmacbummbumm";
 
 
     private static List<LeaderboardMenu.LeaderboardEntry> getQuery(String command) {
@@ -35,7 +37,7 @@ public class PacmanDatabaseProvider {
                 System.out.println();
                 LeaderboardMenu.LeaderboardEntry out = new LeaderboardMenu.LeaderboardEntry(
                         resultSet.getInt("id"),
-                        resultSet.getString("playername"),
+                        resultSet.getString("playerName"),
                         resultSet.getInt("level"),
                         resultSet.getLong("score"),
                         resultSet.getTime("duration").toLocalTime(),
@@ -83,9 +85,7 @@ public class PacmanDatabaseProvider {
 
 
     public static List<LeaderboardMenu.LeaderboardEntry> dynLeaderboard(String game, long score, int end) {
-        List<LeaderboardMenu.LeaderboardEntry> out = new ArrayList<>();
-        out.addAll(getQuery("select * from " + game + " where score >" + score + " Order By  score asc LIMIT " + 0 + "," + end + ";"));
-        return out;
+        return new ArrayList<>(getQuery("select * from " + game + " where score >" + score + " Order By  score asc LIMIT " + 0 + "," + end + ";"));
     }
 
 

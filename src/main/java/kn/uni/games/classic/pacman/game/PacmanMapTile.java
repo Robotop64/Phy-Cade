@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+@SuppressWarnings("NonAsciiCharacters")
 public class PacmanMapTile extends PlacedObject implements Rendered
 {
   public static final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn, Type.door, Type.ghostExit);
@@ -18,7 +19,7 @@ public class PacmanMapTile extends PlacedObject implements Rendered
   public              Type                          type;
   public              Color                         color;
   public Vector2d center;
-  private             int                           size;
+  private final int                           size;
 
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
