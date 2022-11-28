@@ -9,15 +9,12 @@ import kn.uni.util.Fira;
 import kn.uni.util.TextureEditor;
 import kn.uni.util.Util;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class MainMenu extends JPanel
 {
@@ -105,7 +102,7 @@ public class MainMenu extends JPanel
       //      Gui.getInstance().frame.invalidate();
       //      Gui.getInstance().frame.repaint();
 
-      ClassicPacmanGameScreen gameScreen = null;
+      ClassicPacmanGameScreen gameScreen;
       try
       {
         gameScreen = new ClassicPacmanGameScreen(Gui.getInstance().content, Player.playerOne);
@@ -131,10 +128,7 @@ public class MainMenu extends JPanel
     });
 
     soundButton.clearActions();
-    soundButton.addAction(() ->
-    {
-      soundButton.setText(soundButton.getText().contains("AUS") ? "TON - AN" : "TON - AUS");
-    });
+    soundButton.addAction(() -> soundButton.setText(soundButton.getText().contains("AUS") ? "TON - AN" : "TON - AUS"));
 
     JPanel qrPanel = new JPanel();
     qrPanel.setBounds(10, Gui.frameHeight-250, 160, 240);
