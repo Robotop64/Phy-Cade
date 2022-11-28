@@ -5,13 +5,19 @@ import kn.uni.ui.InputListener;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
 import kn.uni.ui.pmButton;
+import kn.uni.util.Fira;
+import kn.uni.util.TextureEditor;
 import kn.uni.util.Util;
 
-import javax.swing.JPanel;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MainMenu extends JPanel
 {
@@ -130,6 +136,24 @@ public class MainMenu extends JPanel
       soundButton.setText(soundButton.getText().contains("AUS") ? "TON - AN" : "TON - AUS");
     });
 
+    JPanel qrPanel = new JPanel();
+    qrPanel.setBounds(10, Gui.frameHeight-250, 160, 240);
+    qrPanel.setBackground(Color.black);
+
+    JLabel qrLabel = new JLabel("<html> <pre>   Vorschläge  <br/>       &       <br/>    Probleme </pre></html>", SwingConstants.CENTER);
+    qrLabel.setForeground(Color.white);
+    qrLabel.setFont(Fira.getInstance().getLigatures(15));
+    qrLabel.setBounds(0, 0, 160, 20);
+    qrPanel.add(qrLabel);
+
+    BufferedImage qrImage = TextureEditor.getInstance().loadResource("pacman/QR_Code_GitLab.png");
+    JLabel qrCode = new JLabel(new ImageIcon(qrImage));
+    qrCode.setBounds(0, 0, 150, 150);
+    qrCode.setBackground(Color.white);
+    qrPanel.add(qrCode);
+
+
+    add(qrPanel);
   }
 
   public static MainMenu getInstance ()

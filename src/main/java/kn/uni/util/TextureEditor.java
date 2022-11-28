@@ -42,6 +42,19 @@ public class TextureEditor
     return null;
   }
 
+  public BufferedImage loadResource(String path){
+    try
+    {
+      return ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(path)));
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+      System.out.println("failed to load texture " + path);
+    }
+    return null;
+  }
+
   public BufferedImage createOutline (BufferedImage imageIn, int thickness, Color c)
   {
     //create outputImage
