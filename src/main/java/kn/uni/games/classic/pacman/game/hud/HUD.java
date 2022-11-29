@@ -55,17 +55,20 @@ public class HUD extends PlacedObject implements Rendered
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
+    sidePos.use(g::translate);
     g.setColor(Color.cyan.darker());
     //    g.setStroke(new BasicStroke(1));
     //    g.drawRect(0, (int) botPos.y, (int) botBounds.x, (int) botBounds.y);
 
+    g.setColor(Color.yellow);
     g.setStroke(new BasicStroke(3));
-    g.drawRect((int) sidePos.x, 0, (int) sideBounds.x, (int) sideBounds.y);
+    g.drawRect(0, -15, (int) sideBounds.x, (int) sideBounds.y);
 
     //        g.drawRect((int) ( sidePos.x + textBuffer ), 0, textBounds, (int) sideBounds.y);
     //        g.drawRect((int) ( sidePos.x + textBuffer ), rowHeight * 5, textBounds, (int) sideBounds.y - rowHeight * 5);
     //        g.drawRect((int) ( sidePos.x + textBuffer ), (int) ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ), textBounds, (int) ( sideBounds.y - ( rowHeight * 5 + ( sideBounds.y - rowHeight * 5 ) / 2 ) ));
 
+    sidePos.multiply(-1).use(g::translate);
   }
 
   //paintingLayer

@@ -35,7 +35,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   public boolean              isPoweredUp;
   public InputListener.Player player;
   long   powerUpStart;
-  long   powerUpDuration   = 20 * 120;
+  long   powerUpDuration   = 10 * 120;
   long   deadAnimStartTick = 0;
   double deadAnimDuration;
 
@@ -77,7 +77,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       g.rotate(Math.toRadians(θ));
 
       int angle = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
-      //
 
       g.setColor(Color.orange.darker());
       g.setStroke(new BasicStroke(Math.round(r / 3.)));
@@ -112,8 +111,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     }
     g.rotate(Math.toRadians(-θ));
 
-    pos.rounded().multiply(-1).rounded().use(g::translate);
-
+    pos.rounded().multiply(-1).use(g::translate);
   }
 
   @SuppressWarnings("unused")
@@ -180,7 +178,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
 
     //eat items
-    if (gameState.score % 10000 == 0)
+    if (gameState.score % 10001 == 0)
     {
       gameState.lives += 1;
     }
