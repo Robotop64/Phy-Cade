@@ -2,6 +2,8 @@ package kn.uni.util;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -87,5 +89,17 @@ public class TextureEditor
       });
     });
     return output;
+  }
+
+  public BufferedImage scale(BufferedImage imageIn, int width, int height){
+    int w = imageIn.getWidth();
+    int h = imageIn.getHeight();
+    BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    AffineTransform at = new AffineTransform();
+    at.scale(width/(w*1.), height/(h*1.));
+    AffineTransformOp scaleOp =
+            new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+    out = scaleOp.filter(imageIn, out);
+    return out;
   }
 }
