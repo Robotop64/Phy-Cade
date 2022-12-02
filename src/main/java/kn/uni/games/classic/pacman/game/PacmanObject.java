@@ -212,13 +212,14 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     {
       //execute action for each collision
       getCollisions(this, gameState.gameObjects)
-
                                                 .forEach(collidable ->
                                                 {
                                                   //collision with item
                                                   if (collidable instanceof ClassicPacmanItemObject item && item.eatable)
                                                   {
+                                                    item.setCollider(this);
                                                     item.collide();
+                                                    item.setCollider(null);
                                                   }
                                                   //collision with ghost
                                                   //TODO implement later (make ghost eatable)
@@ -252,6 +253,15 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                                     }
 
                                                   }
+                                                  //collision with teleporter
+                                                  if(collidable instanceof TeleporterObject teleporter)
+                                                  {
+                                                    System.out.println("teleporting");
+                                                    teleporter.setCollider(this);
+                                                    teleporter.collide();
+                                                    teleporter.setCollider(null);
+                                                  }
+
                                                 });
     }
 
@@ -377,7 +387,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
     gameState.gameObjects.stream()
-                         .filter(gameObject -> gameObject instanceof PacmanObject || gameObject instanceof Ghost || gameObject instanceof ClassicPacmanMap)
+                         .filter(gameObject -> gameObject instanceof PacmanObject || gameObject instanceof Ghost || gameObject instanceof ClassicPacmanMap || gameObject instanceof TeleporterObject)
                          .map(gameObject -> (PlacedObject) gameObject)
                          .forEach(PlacedObject::markExpired);
 

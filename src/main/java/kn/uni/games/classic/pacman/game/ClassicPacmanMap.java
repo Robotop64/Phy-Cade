@@ -7,6 +7,7 @@ import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.games.classic.pacman.game.ghosts.GhostAI;
 import kn.uni.games.classic.pacman.game.ghosts.ShyAI;
 import kn.uni.games.classic.pacman.game.ghosts.SneakyAI;
+import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
 import javax.imageio.ImageIO;
@@ -54,7 +55,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered {
 
         loadMapData();
         addTilesToMap();
-
+        addObjects(gameState);
 
     }
 
@@ -205,6 +206,28 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered {
                 .filter(o -> o.name.equals(ClassicPacmanGameConstants.ghostNames.BLINKY))
                 .forEach(o -> o.canUseDoor = true);
 
+    }
+
+    public void addObjects(ClassicPacmanGameState gameState){
+        tiles.forEach((vec, tile) ->
+        {
+            if (tile.type == Type.portal) {
+                gameState.gameObjects.add(
+                        new TeleporterObject(gameState,this,tile.center, Direction.down));
+            }
+
+        });
+        gameState.gameObjects.stream()
+                .filter(o -> o instanceof TeleporterObject)
+                .map(o -> (TeleporterObject) o)
+                .filter(o -> o.pair == null)
+                .forEach(o -> o.pair(Objects.requireNonNull(gameState.gameObjects.stream()
+                        .filter(o2 -> o2 instanceof TeleporterObject)
+                        .map(o2 -> (TeleporterObject) o2)
+                        .filter(o2 -> o2.pair == null)
+                        .filter(o2 -> !o2.equals(o))
+                        .findFirst()
+                        .orElse(null))));
     }
 
 
