@@ -14,8 +14,10 @@ public class AggressiveAI extends GhostAI
   public AggressiveAI (ClassicPacmanGameState gameState)
   {
     borderColor = Color.red;
-    scatter = new Vector2d().cartesian(gameState.map.width, 0);
-    exitSpawn = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostExit).get(0).pos;
+    scatterPos = new Vector2d().cartesian(gameState.map.width, 0);
+    spawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostSpawn).get(0).pos;
+    exitSpawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostExit).get(0).pos;
+
     name = ClassicPacmanGameConstants.ghostNames.BLINKY;
   }
 
@@ -28,16 +30,18 @@ public class AggressiveAI extends GhostAI
   @Override
   public void setCasePos (ClassicPacmanGameState gameState, Ghost ghost)
   {
-    chase = getPacmanPos(gameState).get(0);
-    escape = chase;
+    chasePos = getPacmanPos(gameState).get(0);
+    escapePos = chasePos;
     if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
     {
-      activeTarget = chase;
+      activeTarget = chasePos;
     }
 
-    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED){
-      activeTarget = escape;
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED)
+    {
+      activeTarget = escapePos;
     }
+
   }
 
 
