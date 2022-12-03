@@ -55,17 +55,23 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
   @Override
   public void tick (ClassicPacmanGameState gameState) { }
 
+  /**
+   * action to be executed when the player collides with this item
+   *
+   * @param gameState the game state
+   */
   private void eat (ClassicPacmanGameState gameState)
   {
     //special effects of item
     if (type == ClassicPacmanGameConstants.Collectables.powerUp)
     {
+      //empower pacman
       gameState.gameObjects.stream()
                            .filter(o -> o instanceof PacmanObject)
                            .map(o -> (PacmanObject) o)
-                           .filter(o -> o.player == gameState.player)
                            .forEach(o -> o.powerUp(gameState));
 
+      //frighten ghosts
       gameState.gameObjects.stream()
                            .filter(o -> o instanceof Ghost)
                            .map(o -> (Ghost) o)
@@ -83,7 +89,5 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
     gameState.gameObjects.add(new Particle(Particle.Type.Number, String.valueOf(collectionPoints.get(this.type)), pos, gameState.currentTick, deSpawnTicks, scoreColor));
     //remove this
     gameState.gameObjects.remove(this);
-
-
   }
 }

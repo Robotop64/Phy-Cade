@@ -54,8 +54,5 @@ public class CollidableObject extends PlacedObject
    *
    * @param collider the object that triggers the collision
    */
-  public void setCollider (CollidableObject collider)
-  {
-    this.collider = collider;
-  }
+  public void setCollider (CollidableObject collider) { this.collider = collider; }
 }

@@ -14,18 +14,21 @@ import java.util.stream.IntStream;
 @SuppressWarnings("NonAsciiCharacters")
 public class PacmanMapTile extends PlacedObject implements Rendered
 {
+  //general
   public static final List <Type>                   walkable  = List.of(Type.coin, Type.powerUp, Type.portal, Type.path, Type.ghostSpawn, Type.playerSpawn, Type.door, Type.ghostExit);
+  private final       int                           size;
   public              Map <Vector2d, PacmanMapTile> neighbors = new HashMap <>();
   public              Type                          type;
   public              Color                         color;
-  public Vector2d center;
-  private final int                           size;
+  public              Vector2d                      center;
 
 
   public PacmanMapTile (Vector2d pos, int size, Type type)
   {
+    //inherited
     this.pos = pos;
-    if (pos != null) this.center = this.pos.add(new Vector2d().cartesian(size/2.,size/2.));
+    //general
+    if (pos != null) this.center = this.pos.add(new Vector2d().cartesian(size / 2., size / 2.));
     this.size = size;
     this.type = type;
     this.color = Color.black;
@@ -50,7 +53,7 @@ public class PacmanMapTile extends PlacedObject implements Rendered
                                                .mapToObj(i -> new Vector2d().polar(1, 90 * i))
                                                .map(v -> neighbors.get(v))
                                                .filter(n -> n == null || n.type == Type.wall).count();
-        //        g.drawString(String.valueOf(neighborWallCount), 0, 0);
+
         if (neighborWallCount == 4)
         {
           IntStream.range(0, 4)
@@ -79,16 +82,9 @@ public class PacmanMapTile extends PlacedObject implements Rendered
                    .map(v -> v.multiply(s2))
                    .forEach(v -> g.drawLine(0, 0, (int) v.x, (int) v.y));
         }
-        //        if (neighborWallCount == 2)
-        //        {
-        //          IntStream.range(0, 4)
-        //                   .mapToObj(i -> new Vector2d().polar(1, 90 * i))
-        //                   .filter(v -> neighbors.get(v) == null)
-        //                   .map(v -> v.multiply(s2))
-        //                   .forEach(v -> g.drawLine(0, 0, (int)v.x, (int)v.y));
-        //        }
         g.translate(-s2, -s2);
       }
+
       case portal ->
       {
         g.setColor(Color.orange);

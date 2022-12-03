@@ -6,7 +6,6 @@ import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.screens.GameOverScreen;
-import kn.uni.ui.InputListener;
 import kn.uni.util.Direction;
 import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
@@ -29,32 +28,42 @@ import static kn.uni.util.Util.sin;
 @SuppressWarnings("NonAsciiCharacters")
 public class PacmanObject extends CollidableObject implements Rendered, Ticking
 {
-  public double               tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
-  public int                  r;
-  public Vector2d             v;
-  public Direction            currentDirection;
-  public boolean              canUseDoor;
-  public boolean              playerDead;
-  public boolean              isVulnerable;
-  public boolean              isPoweredUp;
-  public InputListener.Player player;
+  //general
+  public int       r;
+  public Vector2d  v;
+  //state
+  public Direction currentDirection;
+  public boolean   canUseDoor;
+  public boolean   playerDead;
+  public boolean   isVulnerable;
+  public boolean   isPoweredUp;
+  //animation timings
   long   powerUpStart;
   long   powerUpDuration   = 10 * 120;
   long   deadAnimStartTick = 0;
   double deadAnimDuration;
 
-  public PacmanObject (int r, Vector2d pos, ClassicPacmanGameState gameState, InputListener.Player player)
+  public PacmanObject (int r, Vector2d pos, ClassicPacmanGameState gameState)
   {
+    //inherited
     this.pos = pos;
+    movable = true;
+    //general
     this.r = r;
+    //state
     this.currentDirection = Direction.up;
-    this.player = player;
     this.playerDead = false;
     this.isVulnerable = true;
+    //animation timings
     deadAnimDuration = gameState.tps / .1;
-    movable = true;
   }
 
+  /**
+   * converts a direction to degrees
+   *
+   * @param direction the direction to convert
+   * @return the degrees
+   */
   private static int getΘ (Direction direction)
   {
     return switch (direction)
@@ -72,13 +81,13 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     pos.rounded().use(g::translate);
 
     double animationDuration;
-    int    θ;
+    int    θ = getΘ(currentDirection);
+    ;
 
     if (!playerDead)
     {
       animationDuration = gameState.tps / 2.;
 
-      θ = getΘ(currentDirection);
       g.rotate(Math.toRadians(θ));
 
       int angle = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
@@ -102,7 +111,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
       animationDuration = deadAnimDuration;
 
-      θ = getΘ(Direction.up);
       g.rotate(Math.toRadians(θ));
 
       int angle = (int) Math.round(180 * sin(( ( gameState.currentTick - deadAnimStartTick ) % animationDuration ) / animationDuration * 360.));
@@ -119,17 +127,8 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     pos.rounded().multiply(-1).use(g::translate);
   }
 
-  @SuppressWarnings("unused")
-  private PacmanMapTile getTile (ClassicPacmanGameState gameState)
-  {
-    return gameState.map.tiles.get(gameState.map.splitPosition(pos).ex());
-  }
-
   @Override
-  public int paintLayer ()
-  {
-    return Integer.MAX_VALUE - 100;
-  }
+  public int paintLayer () { return Integer.MAX_VALUE - 100; }
 
   /**
    * Event that happens on every tick, ruling of PacMans interactions with the running game
@@ -140,28 +139,29 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
-    TotalPosition tp          = gameState.map.splitPosition(pos);
-    PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
-    List <PacmanMapTile> possibleTiles = Arrays.stream(Direction.values())
-                                               .map(Direction::toVector)
-                                               .map(vec -> currentTile.neighbors.get(vec))
-                                               .filter(Objects::nonNull)
-                                               .filter(tile -> PacmanMapTile.walkable.contains(tile.type))
-                                               .filter(tile -> !tile.type.equals(PacmanMapTile.Type.door) || canUseDoor)
-                                               .toList();
-
-    //visual feedback of possible tiles
-    if (DebugDisplay.getDebugDisplay(gameState).enabled)
-    {
-      gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
-      possibleTiles.forEach(tile -> tile.color = Color.blue);
-    }
-
     //movement of PacMan
     if (movable)
     {
+      TotalPosition tp          = gameState.map.splitPosition(pos);
+      PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
+      //get allowed tiles
+      List <PacmanMapTile> possibleTiles = Arrays.stream(Direction.values())
+                                                 .map(Direction::toVector)
+                                                 .map(vec -> currentTile.neighbors.get(vec))
+                                                 .filter(Objects::nonNull)
+                                                 .filter(tile -> PacmanMapTile.walkable.contains(tile.type))
+                                                 .filter(tile -> !tile.type.equals(PacmanMapTile.Type.door) || canUseDoor)
+                                                 .toList();
+
+      //visual feedback of possible tiles
+      if (DebugDisplay.getDebugDisplay(gameState).enabled)
+      {
+        gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
+        possibleTiles.forEach(tile -> tile.color = Color.blue);
+      }
+
       //set velocity
-      if (v == null) v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
+      if (v == null) v = new Vector2d().cartesian(ClassicPacmanGameConstants.pacmanSpeed, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
 
       //check if requested direction is possible
       if (possibleTiles.contains(currentTile.neighbors.get(gameState.playerDirection.toVector())) && round(currentDirection.toVector().scalar(tp.in())) == 0)
@@ -172,7 +172,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
         pos = pos.add(currentDirection.toVector().multiply(v.x));
     }
 
-    //eat items
+    //add lives according to score
     if (gameState.score % 10000 == 0 && gameState.score != 0)
     {
       gameState.lives += 1;
@@ -198,11 +198,10 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       gameState.fruitSpawned = true;
     }
 
+    //check level progress
     checkLevelStatus(gameState);
 
-
     //check collision
-    //there are collisions
     if (getCollisions(this, gameState.gameObjects).stream().toList().size() > 0)
     {
       //execute action for each collision
@@ -218,7 +217,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
             }
             //collision with ghost
             //TODO implement later (make ghost eatable)
-            if (collidable instanceof Ghost ghast && !playerDead)
+            if (collidable instanceof Ghost ghast && !playerDead && !ghast.isDead)
             {
               //get all ghosts
               final List <Ghost> ghostList = new ArrayList <>();
@@ -228,6 +227,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                                    .map(ghost -> (Ghost) ghost)
                                    .forEach(ghostList::add);
 
+              //if pacman can die
               if (isVulnerable)
               {
                 death(gameState);
@@ -237,14 +237,16 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                 ghostList.forEach(ghost2 -> ghost2.movable = false);
               }
 
-              if (isPoweredUp && !ghast.isDead)
+              //if pacman is poweredUp
+              if (isPoweredUp && !ghast.isDead && ghast.vulnerable)
               {
+                //add score
                 int ghostScore = ( 4 / ghostList.size() ) * 200;
                 gameState.score += ghostScore;
-
+                //make ghost flee
                 ghast.ai.setMode(ClassicPacmanGameConstants.mode.RETREAT, ghast);
                 ghast.isDead = true;
-
+                //spawn particel
                 gameState.gameObjects.add(new Particle(Particle.Type.Number, String.valueOf(ghostScore), ghast.pos, gameState.currentTick, 200, Color.cyan));
               }
 
@@ -256,7 +258,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
               teleporter.collide();
               teleporter.setCollider(null);
             }
-
           });
     }
 
@@ -267,6 +268,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerVulnerable, "[Vul: " + this.isVulnerable + "]");
     //    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPowered, "[Pow: " + this.isPoweredUp + "]");
 
+    //return pacman to normal after powerup runs out
     if (gameState.currentTick > powerUpStart + powerUpDuration && isPoweredUp)
     {
       isPoweredUp = false;
@@ -294,6 +296,33 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   }
 
   /**
+   * Used to powerup the player if he eats a powerup item
+   *
+   * @param gameState current gamestate
+   */
+  public void powerUp (ClassicPacmanGameState gameState)
+  {
+    isPoweredUp = true;
+    isVulnerable = false;
+    powerUpStart = gameState.currentTick;
+  }
+
+  /**
+   * Event of a player dying to a ghost
+   *
+   * @param gameState the current game state
+   */
+  private void death (ClassicPacmanGameState gameState)
+  {
+    gameState.lives -= 1;
+
+    this.playerDead = true;
+
+    deadAnimStartTick = gameState.currentTick + 1;
+
+  }
+
+  /**
    * Used to determine if a level has been completed
    *
    * @param gameState the current game state
@@ -306,59 +335,9 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       //resets the coins and powerUps
       reloadLevel(gameState);
       gameState.fruitSpawned = false;
+      //spawn new items
       gameState.map.setItems(new ArrayList <>());
-
-
     }
-  }
-
-  private void unlockGhosts (ClassicPacmanGameState gameState)
-  {
-    if (gameState.level < 4)
-    {
-      gameState.gameObjects.stream()
-                           .filter(ghost -> ghost instanceof Ghost)
-                           .map(ghost -> (Ghost) ghost)
-                           .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
-                           .forEach(ghost ->
-                           {
-                             ghost.canUseDoor = true;
-                             ghost.free = true;
-                           });
-    }
-    else
-    {
-      gameState.gameObjects.stream()
-                           .filter(ghost -> ghost instanceof Ghost)
-                           .map(ghost -> (Ghost) ghost)
-                           .forEach(ghost ->
-                           {
-                             ghost.canUseDoor = true;
-                             ghost.free = true;
-                           });
-    }
-  }
-
-  /**
-   * Event of a player dying to a ghost
-   *
-   * @param gameState the current game state
-   */
-  public void death (ClassicPacmanGameState gameState)
-  {
-    gameState.lives -= 1;
-
-    this.playerDead = true;
-
-    deadAnimStartTick = gameState.currentTick + 1;
-
-  }
-
-  public void powerUp (ClassicPacmanGameState gameState)
-  {
-    isPoweredUp = true;
-    isVulnerable = false;
-    powerUpStart = gameState.currentTick;
   }
 
   /**
@@ -387,27 +366,70 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     }
   }
 
+  /**
+   * Reloads the level by reinitializing the map, player, ghosts and teleporters
+   *
+   * @param gameState the current game state
+   */
   private void reloadLevel (ClassicPacmanGameState gameState)
   {
+    //mark objects for removal
     gameState.gameObjects.stream()
                          .filter(gameObject -> gameObject instanceof PacmanObject || gameObject instanceof Ghost || gameObject instanceof ClassicPacmanMap || gameObject instanceof TeleporterObject)
                          .map(gameObject -> (PlacedObject) gameObject)
                          .forEach(PlacedObject::markExpired);
 
     //create new Map
-    {
-      ClassicPacmanMap map = new ClassicPacmanMap(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), 1000, 1000);
-      gameState.gameObjects.add(map);
-      gameState.map = map;
-      gameState.size = new Vector2d().cartesian(map.width, map.height);
-      map.addEntities(gameState);
-    }
+    ClassicPacmanMap map = new ClassicPacmanMap(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), 1000, 1000);
+    gameState.gameObjects.add(map);
+    gameState.map = map;
+    gameState.size = new Vector2d().cartesian(map.width, map.height);
+    map.addEntities(gameState);
+    //allow ghosts to exit
     unlockGhosts(gameState);
   }
 
+  /**
+   * returns the next fruit to be spawned
+   *
+   * @param level the current level
+   * @return the next fruit to be spawned
+   */
   private ClassicPacmanGameConstants.Collectables getFruit (int level)
   {
     level = ( level - 1 ) % levelFruit.length;
     return levelFruit[level];
+  }
+
+  /**
+   * Unlocks the ghosts depending on the current level
+   *
+   * @param gameState the current game state
+   */
+  private void unlockGhosts (ClassicPacmanGameState gameState)
+  {
+    if (gameState.level < 4)
+    {
+      gameState.gameObjects.stream()
+                           .filter(ghost -> ghost instanceof Ghost)
+                           .map(ghost -> (Ghost) ghost)
+                           .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
+                           .forEach(ghost ->
+                           {
+                             ghost.canUseDoor = true;
+                             ghost.free = true;
+                           });
+    }
+    else
+    {
+      gameState.gameObjects.stream()
+                           .filter(ghost -> ghost instanceof Ghost)
+                           .map(ghost -> (Ghost) ghost)
+                           .forEach(ghost ->
+                           {
+                             ghost.canUseDoor = true;
+                             ghost.free = true;
+                           });
+    }
   }
 }

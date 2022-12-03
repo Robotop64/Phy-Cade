@@ -163,7 +163,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       if (tile.type == Type.playerSpawn)
       {
         gameState.gameObjects.add(
-            new PacmanObject((int) ( this.tileSize * 2. / 3. ), tile.center, gameState, gameState.player)
+            new PacmanObject((int) ( this.tileSize * 2. / 3. ), tile.center, gameState)
         );
       }
 
@@ -188,7 +188,6 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
                            o.canUseDoor = true;
                            o.free = true;
                          });
-
   }
 
   /**
