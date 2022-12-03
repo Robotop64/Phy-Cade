@@ -7,6 +7,7 @@ import kn.uni.games.classic.pacman.game.ClassicPacmanMap.TotalPosition;
 import kn.uni.games.classic.pacman.game.CollidableObject;
 import kn.uni.games.classic.pacman.game.PacmanMapTile;
 import kn.uni.games.classic.pacman.game.Rendered;
+import kn.uni.games.classic.pacman.game.TeleporterObject;
 import kn.uni.games.classic.pacman.game.Ticking;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.util.Direction;
@@ -147,6 +148,25 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
         ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this);
         this.canUseDoor = false;
       }
+    }
+
+    //check collision
+    //there are collisions
+    if (getCollisions(this, gameState.gameObjects).stream().toList().size() > 0)
+    {
+      //execute action for each collision
+      getCollisions(this, gameState.gameObjects)
+          .forEach(collidable ->
+          {
+            //collision with teleporter
+            if (collidable instanceof TeleporterObject teleporter && teleporter.enabled)
+            {
+              teleporter.setCollider(this);
+              teleporter.collide();
+              teleporter.setCollider(null);
+            }
+
+          });
     }
 
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostName, this, String.valueOf(name));
