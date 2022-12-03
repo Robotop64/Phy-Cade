@@ -37,7 +37,7 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
   public boolean                               vulnerable;
   public boolean                               isDead;
   public int                                   pixSpeed;
-  public float                                 respawnTick;
+  public long                                  respawnTick;
   public int                                   respawnTime = 5 * 120;
   public ClassicPacmanGameConstants.ghostNames name;
 

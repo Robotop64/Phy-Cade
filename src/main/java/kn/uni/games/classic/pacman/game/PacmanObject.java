@@ -239,13 +239,13 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
               if (isPoweredUp && !ghast.isDead)
               {
+                int ghostScore = ( 4 / ghostList.size() ) * 200;
+                gameState.score += ghostScore;
 
-                gameState.score += ( 4 / ghostList.size() ) * 200;
+                ghast.ai.setMode(ClassicPacmanGameConstants.mode.RETREAT, ghast);
+                ghast.isDead = true;
 
-                Ghost g = (Ghost) collidable;
-
-                g.ai.setMode(ClassicPacmanGameConstants.mode.RETREAT, g);
-                g.isDead = true;
+                gameState.gameObjects.add(new Particle(Particle.Type.Number, String.valueOf(ghostScore), pos, gameState.currentTick, 200, Color.cyan));
               }
 
             }
