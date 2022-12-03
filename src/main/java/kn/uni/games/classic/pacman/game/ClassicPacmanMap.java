@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 public class ClassicPacmanMap extends PlacedObject implements Rendered
 {
+  //constants
   private static final String                        bmpPath       = "pacman/map/PacManClassic Map.bmp";
   private static final Map <Color, Type>             typeFromColor = Map.of(
       Color.black, Type.wall,
@@ -36,6 +37,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       Color.pink, Type.ghostExit,
       new Color(255, 0, 255), Type.door,
       Color.white, Type.none);
+  //general variables
   private final        ClassicPacmanGameState        gameState;
   /**
    * TileSpace -> Tiles
@@ -44,68 +46,27 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   public               int                           tileSize;
   public               int                           width;
   public               int                           height;
-  Vector2d size;
+  public               Vector2d                      size;
 
 
   public ClassicPacmanMap (ClassicPacmanGameState gameState, Vector2d pos, int width, int height)
   {
-    this.gameState = gameState;
+    //inherited
     this.pos = pos;
+    //general variables
+    this.gameState = gameState;
     this.width = width;
     this.height = height;
-
+    //initialisation
     loadMapData();
     addTilesToMap();
     addObjects(gameState);
-
   }
 
-  /**
-   * This methode is used to set the items in
-   */
-  public void setItems (List <ClassicPacmanItemObject> items)
-  {
-
-    if (items.size() == 0)
-    {
-      tiles.forEach((vec, tile) ->
-      {
-        switch (tile.type)
-        {
-          case coin -> gameState.gameObjects.add(
-              new ClassicPacmanItemObject(
-                  tile.pos.add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)),
-                  gameState,
-                  ClassicPacmanGameConstants.Collectables.coin,
-                  true,
-                  ClassicPacmanGameConstants.collectionColor.get(ClassicPacmanGameConstants.Collectables.coin)));
-
-          case powerUp -> gameState.gameObjects.add(
-              new ClassicPacmanItemObject(
-                  tile.pos.add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)),
-                  gameState,
-                  ClassicPacmanGameConstants.Collectables.powerUp,
-                  true,
-                  ClassicPacmanGameConstants.collectionColor.get(ClassicPacmanGameConstants.Collectables.powerUp)));
-
-          default ->
-          {
-          }
-        }
-      });
-    }
-    else
-    {
-      items.forEach(o -> o.expired = false);
-
-      gameState.gameObjects.addAll(items);
-    }
-  }
-
-  //background
   @Override
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
+    //outline of the map
     g.setColor(Color.black);
     g.translate((int) pos.rounded().x, (int) pos.rounded().y);
     g.fillRect(0, 0, width, height);
@@ -115,24 +76,10 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
     g.drawRect(0, 0, width, height);
   }
 
-  //paintLayer
   @Override
   public int paintLayer ()
   {
     return 0;
-  }
-
-  /**
-   * Split given position in external and internal position
-   *
-   * @param pos position to split
-   * @return [external, internal]
-   */
-  public TotalPosition splitPosition (Vector2d pos)
-  {
-    Vector2d ex = pos.divide(tileSize).floor();
-    Vector2d in = pos.subtract(ex.multiply(tileSize)).subtract(new Vector2d().cartesian(1, 1).multiply(tileSize / 2.));
-    return new TotalPosition(ex, in);
   }
 
   /**
@@ -167,33 +114,44 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
   }
 
   /**
-   * Returns a map that maps the tiles of the used on map onto the items that those tiles hold
+   * Add "static" Objects to Map
    *
-   * @return Map <PacmanMapTile, ClassicPacmanGameState.Collectables>
+   * @param gameState GameState
    */
-  public List <ClassicPacmanItemObject> getPlacedItems ()
+  public void addObjects (ClassicPacmanGameState gameState)
   {
-    return gameState.gameObjects.stream()
-                                .filter(o -> o instanceof ClassicPacmanItemObject)
-                                .map(o -> (ClassicPacmanItemObject) o)
-                                .toList();
+    //search each tile
+    tiles.forEach((vec, tile) ->
+    {
+      if (tile.type == Type.portal)
+      {
+        gameState.gameObjects.add(
+            new TeleporterObject(gameState, this, tile.center, Direction.down));
+      }
+
+    });
+    //pair the portals
+    gameState.gameObjects.stream()
+                         .filter(o -> o instanceof TeleporterObject)
+                         .map(o -> (TeleporterObject) o)
+                         .filter(o -> o.pair == null)
+                         .forEach(o -> o.pair(Objects.requireNonNull(gameState.gameObjects.stream()
+                                                                                          .filter(o2 -> o2 instanceof TeleporterObject)
+                                                                                          .map(o2 -> (TeleporterObject) o2)
+                                                                                          .filter(o2 -> o2.pair == null)
+                                                                                          .filter(o2 -> !o2.equals(o))
+                                                                                          .findFirst()
+                                                                                          .orElse(null))));
   }
 
-  public int getPillCount ()
-  {
-    List <ClassicPacmanItemObject> pillCount = gameState.map.getPlacedItems().stream()
-                                                            .filter(o -> o.type == ClassicPacmanGameConstants.Collectables.coin || o.type == ClassicPacmanGameConstants.Collectables.powerUp)
-                                                            .toList();
-    return pillCount.size();
-  }
-
-  public List <PacmanMapTile> getTilesOfType (Type type)
-  {
-    return tiles.values().stream().filter(tile -> tile.type == type).toList();
-  }
-
+  /**
+   * spawn entities
+   *
+   * @param gameState GameState
+   */
   public void addEntities (ClassicPacmanGameState gameState)
   {
+    //a list of the ghost to be spawned
     ConcurrentLinkedDeque <GhostAI> subAIs = new ConcurrentLinkedDeque <>();
     subAIs.add(new AggressiveAI(gameState));
     subAIs.add(new SneakyAI(gameState));
@@ -218,7 +176,6 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
           );
         }
       }
-
     });
 
     //allows the first ghost to exit the spawn box
@@ -234,62 +191,95 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
 
   }
 
-  public void addObjects (ClassicPacmanGameState gameState)
+  /**
+   * This methode is used to set the items in
+   */
+  public void setItems (List <ClassicPacmanItemObject> items)
   {
-    tiles.forEach((vec, tile) ->
+    //spawn new items if there are no leftover items from the last round
+    if (items.size() == 0)
     {
-      if (tile.type == Type.portal)
+      tiles.forEach((vec, tile) ->
       {
-        gameState.gameObjects.add(
-            new TeleporterObject(gameState, this, tile.center, Direction.down));
-      }
+        switch (tile.type)
+        {
+          case coin -> gameState.gameObjects.add(
+              new ClassicPacmanItemObject(
+                  tile.pos.add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)),
+                  gameState,
+                  ClassicPacmanGameConstants.Collectables.coin,
+                  true,
+                  ClassicPacmanGameConstants.collectionColor.get(ClassicPacmanGameConstants.Collectables.coin)));
 
-    });
-    gameState.gameObjects.stream()
-                         .filter(o -> o instanceof TeleporterObject)
-                         .map(o -> (TeleporterObject) o)
-                         .filter(o -> o.pair == null)
-                         .forEach(o -> o.pair(Objects.requireNonNull(gameState.gameObjects.stream()
-                                                                                          .filter(o2 -> o2 instanceof TeleporterObject)
-                                                                                          .map(o2 -> (TeleporterObject) o2)
-                                                                                          .filter(o2 -> o2.pair == null)
-                                                                                          .filter(o2 -> !o2.equals(o))
-                                                                                          .findFirst()
-                                                                                          .orElse(null))));
+          case powerUp -> gameState.gameObjects.add(
+              new ClassicPacmanItemObject(
+                  tile.pos.add(new Vector2d().cartesian(tileSize / 2., tileSize / 2.)),
+                  gameState,
+                  ClassicPacmanGameConstants.Collectables.powerUp,
+                  true,
+                  ClassicPacmanGameConstants.collectionColor.get(ClassicPacmanGameConstants.Collectables.powerUp)));
+
+          default ->
+          {
+          }
+        }
+      });
+    }
+    else
+    {
+      //add the leftover items to the game
+      items.forEach(o -> o.expired = false);
+
+      gameState.gameObjects.addAll(items);
+    }
   }
-
 
   /**
-   * will spawn a collidable entity on a predefined location
+   * Split given position in external and internal position
    *
-   * @param standartLocation a unique location defined by a tileType
-   * @param spawnable        an object containing the infos of the object to be spawned
+   * @param pos position to split
+   * @return [external, internal]
    */
-  @SuppressWarnings("SpellCheckingInspection")
-  public void spawn (Type standartLocation, CollidableObject spawnable)
+  public TotalPosition splitPosition (Vector2d pos)
   {
-    //search all tiles for a matching type
-    tiles.forEach((vec, tile) ->
-    {
-      //if tile is found
-      if (tile.type == standartLocation)
-      {
-        CollidableObject entity = null;
-        //give the entity to be spawned its properties depending on the location type
-        if (standartLocation == Type.ghostSpawn)
-        {
-          Ghost oldGhost = (Ghost) spawnable;
-          Ghost newGhost = new Ghost("nowak", tile.center, oldGhost.ai, oldGhost.ai.name);
-          newGhost.canUseDoor = true;
-          entity = newGhost;
-        }
-        if (entity != null) gameState.gameObjects.add(entity);
-      }
-    });
+    Vector2d ex = pos.divide(tileSize).floor();
+    Vector2d in = pos.subtract(ex.multiply(tileSize)).subtract(new Vector2d().cartesian(1, 1).multiply(tileSize / 2.));
+    return new TotalPosition(ex, in);
   }
 
-  public record TotalPosition(Vector2d ex, Vector2d in)
+  /**
+   * Returns a map that maps the tiles of the used on map onto the items that those tiles hold
+   *
+   * @return Map <PacmanMapTile, ClassicPacmanGameState.Collectables>
+   */
+  public List <ClassicPacmanItemObject> getPlacedItems ()
   {
+    return gameState.gameObjects.stream()
+                                .filter(o -> o instanceof ClassicPacmanItemObject)
+                                .map(o -> (ClassicPacmanItemObject) o)
+                                .toList();
   }
 
+  /**
+   * returns an int representing the remaining items on the current map
+   *
+   * @return int with item count
+   */
+  public int getPillCount ()
+  {
+    List <ClassicPacmanItemObject> pillCount = gameState.map.getPlacedItems().stream()
+                                                            .filter(o -> o.type == ClassicPacmanGameConstants.Collectables.coin || o.type == ClassicPacmanGameConstants.Collectables.powerUp)
+                                                            .toList();
+    return pillCount.size();
+  }
+
+  /**
+   * returns a list containing all tiles of a given type
+   *
+   * @param type the type of the tiles to be returned
+   * @return list of tiles
+   */
+  public List <PacmanMapTile> getTilesOfType (Type type) { return tiles.values().stream().filter(tile -> tile.type == type).toList(); }
+
+  public record TotalPosition(Vector2d ex, Vector2d in) { }
 }
