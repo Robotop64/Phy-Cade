@@ -410,10 +410,4 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     level = ( level - 1 ) % levelFruit.length;
     return levelFruit[level];
   }
-
-  @Override
-  public Vector2d getSize ()
-  {
-    return new Vector2d().cartesian(2 * r, 2 * r);
-  }
 }
