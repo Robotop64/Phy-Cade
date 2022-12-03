@@ -218,7 +218,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
             }
             //collision with ghost
             //TODO implement later (make ghost eatable)
-            if (collidable instanceof Ghost && !playerDead)
+            if (collidable instanceof Ghost ghast && !playerDead)
             {
               //get all ghosts
               final List <Ghost> ghostList = new ArrayList <>();
@@ -237,14 +237,15 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                 ghostList.forEach(ghost2 -> ghost2.movable = false);
               }
 
-              if (isPoweredUp)
+              if (isPoweredUp && !ghast.isDead)
               {
 
                 gameState.score += ( 4 / ghostList.size() ) * 200;
 
-                gameState.map.spawn(PacmanMapTile.Type.ghostSpawn, collidable);
+                Ghost g = (Ghost) collidable;
 
-                collidable.expired = true;
+                g.ai.setMode(ClassicPacmanGameConstants.mode.RETREAT, g);
+                g.isDead = true;
               }
 
             }
@@ -319,14 +320,22 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
                            .filter(ghost -> ghost instanceof Ghost)
                            .map(ghost -> (Ghost) ghost)
                            .filter(ghost -> ghost.name.ordinal() < gameState.level % 4)
-                           .forEach(ghost -> ghost.canUseDoor = true);
+                           .forEach(ghost ->
+                           {
+                             ghost.canUseDoor = true;
+                             ghost.free = true;
+                           });
     }
     else
     {
       gameState.gameObjects.stream()
                            .filter(ghost -> ghost instanceof Ghost)
                            .map(ghost -> (Ghost) ghost)
-                           .forEach(ghost -> ghost.canUseDoor = true);
+                           .forEach(ghost ->
+                           {
+                             ghost.canUseDoor = true;
+                             ghost.free = true;
+                           });
     }
   }
 

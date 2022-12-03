@@ -57,7 +57,7 @@ public class ClassicPacmanGameConstants
 
 
   public enum mode
-  { CHASE, SCATTER, FRIGHTENED, EXIT }
+  { CHASE, SCATTER, FRIGHTENED, EXIT, RETREAT, ENTER }
 
   @SuppressWarnings("SpellCheckingInspection")
   public enum ghostNames

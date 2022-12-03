@@ -226,7 +226,11 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
                          .filter(o -> o instanceof Ghost)
                          .map(o -> (Ghost) o)
                          .filter(o -> o.name.equals(ClassicPacmanGameConstants.ghostNames.BLINKY))
-                         .forEach(o -> o.canUseDoor = true);
+                         .forEach(o ->
+                         {
+                           o.canUseDoor = true;
+                           o.free = true;
+                         });
 
   }
 
