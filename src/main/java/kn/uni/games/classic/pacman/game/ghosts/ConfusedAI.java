@@ -14,6 +14,7 @@ public class ConfusedAI extends GhostAI
   public ConfusedAI (ClassicPacmanGameState gameState)
   {
     borderColor = Color.orange;
+    //assign the important static position
     scatterPos = new Vector2d().cartesian(0, gameState.map.height);
     spawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostSpawn).get(0).pos;
     exitSpawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostExit).get(0).pos;
@@ -33,6 +34,7 @@ public class ConfusedAI extends GhostAI
     Vector2d pacPos   = getPacmanPos(gameState).get(0);
     double   distance = 8 * gameState.map.tileSize;
 
+    //update the target positions
     escapePos = pacPos;
 
     if (pacPos.subtract(ghost.pos).length() > distance)
@@ -43,15 +45,9 @@ public class ConfusedAI extends GhostAI
     {
       chasePos = scatterPos;
     }
-    if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
-    {
-      activeTarget = chasePos;
-    }
-    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED)
-    {
-      activeTarget = escapePos;
-    }
+
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE) activeTarget = chasePos;
+
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED) activeTarget = escapePos;
   }
-
-
 }

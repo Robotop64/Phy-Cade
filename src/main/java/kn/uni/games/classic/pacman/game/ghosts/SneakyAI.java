@@ -14,6 +14,7 @@ public class SneakyAI extends GhostAI
   public SneakyAI (ClassicPacmanGameState gameState)
   {
     borderColor = Color.cyan;
+    //assign the important static position
     scatterPos = new Vector2d().cartesian(gameState.map.width, gameState.map.height);
     spawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostSpawn).get(0).pos;
     exitSpawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostExit).get(0).pos;
@@ -32,20 +33,14 @@ public class SneakyAI extends GhostAI
   {
     Vector2d pacOffset = getPacmanPos(gameState).get(0).add(gameState.playerDirection.toVector().multiply(3 * gameState.map.tileSize));
     Vector2d rad       = pacOffset.subtract(getBlinkyPos(gameState).get(0));
+
+    //update the target positions
     chasePos = pacOffset.add(rad);
 
     escapePos = getPacmanPos(gameState).get(0);
 
-    if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
-    {
-      activeTarget = chasePos;
-    }
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE) activeTarget = chasePos;
 
-    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED)
-    {
-      activeTarget = escapePos;
-    }
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED) activeTarget = escapePos;
   }
-
-
 }

@@ -23,46 +23,50 @@ import java.util.Objects;
 
 public class Ghost extends CollidableObject implements Ticking, Rendered
 {
+  //general & character variables
+  public final  ClassicPacmanGameConstants.ghostNames name;
+  public final  int                                   respawnTime        = 5 * 120;
   @SuppressWarnings("FieldCanBeLocal")
-  private final int    animationFrequency = 8;
+  private final int                                   animationFrequency = 8;
   @SuppressWarnings("FieldCanBeLocal")
-  private final String dirPath            = "pacman/textures/ghosts/";
-
-  public GhostAI                               ai;
-  public Direction                             direction;
-  public PacmanMapTile                         currentTile;
-  public ClassicPacmanGameConstants.mode       currentMode;
-  public boolean                               free;
-  public boolean                               canUseDoor;
-  public boolean                               vulnerable;
-  public boolean                               isDead;
-  public int                                   pixSpeed;
-  public long                                  respawnTick;
-  public int                                   respawnTime = 5 * 120;
-  public ClassicPacmanGameConstants.ghostNames name;
-
-  private BufferedImage opened;
-  private BufferedImage openedOutline;
-  private BufferedImage closed;
-  private BufferedImage closedOutline;
-  private BufferedImage downedA;
-  private BufferedImage downedB;
-  private BufferedImage downedOutline;
+  //path to animation sources
+  private final String                                dirPath            = "pacman/textures/ghosts/";
+  public        GhostAI                               ai;
+  public        long                                  respawnTick;
+  //movement variables
+  public        Direction                             direction;
+  public        PacmanMapTile                         currentTile;
+  //state variables
+  public        ClassicPacmanGameConstants.mode       currentMode;
+  public        boolean                               free;
+  public        boolean                               canUseDoor;
+  public        boolean                               vulnerable;
+  public        boolean                               isDead;
+  //animation images
+  private       BufferedImage                         opened;
+  private       BufferedImage                         openedOutline;
+  private       BufferedImage                         closed;
+  private       BufferedImage                         closedOutline;
+  private       BufferedImage                         downedA;
+  private       BufferedImage                         downedB;
+  private       BufferedImage                         downedOutline;
 
   public Ghost (String profName, Vector2d pos, GhostAI ghostAI, ClassicPacmanGameConstants.ghostNames name)
   {
-    ai = ghostAI;
-    this.pos = pos;
+    //general & character variables
     this.name = name;
+    ai = ghostAI;
+    this.hitbox = new Vector2d().cartesian(ClassicPacmanGameConstants.ghostRadius * 2, ClassicPacmanGameConstants.ghostRadius * 2);
+    loadImages("%s%s/%s-".formatted(dirPath, profName, profName));
+    //movement variables
+    this.pos = pos;
     movable = true;
+    this.direction = Direction.up;
+    //state variables
     free = false;
     canUseDoor = false;
     vulnerable = false;
     isDead = false;
-    this.hitbox = new Vector2d().cartesian(ClassicPacmanGameConstants.ghostRadius * 2, ClassicPacmanGameConstants.ghostRadius * 2);
-    this.direction = Direction.up;
-
-    loadImages("%s%s/%s-".formatted(dirPath, profName, profName));
     ai.setMode(ClassicPacmanGameConstants.mode.EXIT, this);
   }
 
@@ -93,22 +97,28 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     int           duration = gameState.tps / animationFrequency;
     BufferedImage im;
     BufferedImage imOutline;
+
+    //draw normal texture if alive
     if (!isDead)
     {
       im = ( ( gameState.currentTick % duration ) * 1. / duration > .5 ) ? closed : opened;
       imOutline = ( ( gameState.currentTick % duration ) * 1. / duration > .5 ) ? closedOutline : openedOutline;
     }
     else
+    //draw downed texture if dead
     {
       im = ( ( gameState.currentTick % ( duration * 4 ) ) * 1. / ( duration * 4 ) > .5 ) ? downedA : downedB;
       imOutline = downedOutline;
     }
+
+    //draw texture
     Vector2d topLeft = new Vector2d().cartesian(im.getWidth(), im.getHeight()).multiply(-.5).add(pos);
     topLeft.use(g::translate);
     g.drawImage(im, 0, 0, Gui.getInstance().frame);
     g.drawImage(imOutline, 0, 0, Gui.getInstance().frame);
     topLeft.multiply(-1).use(g::translate);
 
+    //debug visualisation
     if (DebugDisplay.getDebugDisplay(gameState).enabled)
     {
       g.translate(pos.x, pos.y);
@@ -148,19 +158,20 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
-    //player      velocity           = tileSpeed * speedScale * tileToPixel * pixelPerTick
-    double velocity = ClassicPacmanGameConstants.pacmanSpeed * getSpeedScale(gameState) * gameState.map.tileSize * 1. / gameState.tps;
-    this.pixSpeed = (int) velocity;
-    TotalPosition tp = gameState.map.splitPosition(pos);
+    //player velocity      = tileSpeed * speedScale * tileToPixel * pixelPerTick
+    double        velocity = ClassicPacmanGameConstants.pacmanSpeed * getSpeedScale(gameState) * gameState.map.tileSize * 1. / gameState.tps;
+    TotalPosition tp       = gameState.map.splitPosition(pos);
     currentTile = gameState.map.tiles.get(tp.ex());
 
+    //ghost movement
     if (movable)
     {
       //retrieve the position of the targets if BLINKYs pos is available
       if (ai.getBlinkyPos(gameState).size() > 0) ai.setCasePos(gameState, this);
 
-      //skip check if current tile mid has not been reached
+      //skip check if current tile center has not been reached
       if (currentTile.center.subtract(this.pos).length() < 1) ai.nextDirection2(gameState, this, currentMode);
+
       //move the ghost
       pos = pos.add(direction.toVector().multiply(velocity));
 
@@ -171,12 +182,14 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
         ai.setMode(ClassicPacmanGameConstants.mode.CHASE, this);
         this.canUseDoor = false;
       }
+
       //target exit of ghostSpawn if eaten
       if (currentTile.type.equals(PacmanMapTile.Type.ghostExit) && currentMode == ClassicPacmanGameConstants.mode.RETREAT)
       {
         ai.setMode(ClassicPacmanGameConstants.mode.ENTER, this);
         this.canUseDoor = true;
       }
+
       //if exit of ghostSpawn after getting eaten has been reached enter ghostSpawn
       if (currentTile.type.equals(PacmanMapTile.Type.ghostSpawn) && currentMode == ClassicPacmanGameConstants.mode.ENTER)
       {
@@ -184,11 +197,9 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
         this.canUseDoor = false;
         respawnTick = gameState.currentTick;
       }
-
     }
 
     //check collision
-    //there are collisions
     if (getCollisions(this, gameState.gameObjects).stream().toList().size() > 0)
     {
       //execute action for each collision
@@ -202,10 +213,10 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
               teleporter.collide();
               teleporter.setCollider(null);
             }
-
           });
     }
 
+    //ghost recovers and exits spawnPen
     if (gameState.currentTick == respawnTick + respawnTime && free)
     {
       this.isDead = false;
@@ -215,11 +226,10 @@ public class Ghost extends CollidableObject implements Ticking, Rendered
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostName, this, String.valueOf(name));
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostPosition, this, "(" + Util.roundTo(pos.x, 0.1) + "," + Util.roundTo(pos.y, 0.1) + ")");
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostDirection, this, String.valueOf(direction));
-    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostSpeed, this, String.valueOf(pixSpeed));
+    DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostSpeed, this, String.valueOf(velocity));
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostAI, this, ai.getClass().getSimpleName());
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostState, this, String.valueOf(currentMode));
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostVulnerable, this, String.valueOf(this.vulnerable));
     DebugDisplay.setGhostData(gameState, DebugDisplay.DebugSubType.GhostTargetDist, this, "(" + Util.roundTo(this.pos.subtract(ai.activeTarget).length(), 0.1) + ")");
   }
-
 }

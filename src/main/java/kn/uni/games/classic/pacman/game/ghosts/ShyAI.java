@@ -14,6 +14,7 @@ public class ShyAI extends GhostAI
   public ShyAI (ClassicPacmanGameState gameState)
   {
     borderColor = Color.pink;
+    //assign the important static position
     scatterPos = new Vector2d().cartesian(0, 0);
     spawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostSpawn).get(0).pos;
     exitSpawnPos = gameState.map.getTilesOfType(PacmanMapTile.Type.ghostExit).get(0).pos;
@@ -30,20 +31,13 @@ public class ShyAI extends GhostAI
   @Override
   public void setCasePos (ClassicPacmanGameState gameState, Ghost ghost)
   {
+    //update the target positions
     chasePos = getPacmanPos(gameState).get(0).add(gameState.playerDirection.toVector().multiply(5 * gameState.map.tileSize));
 
     escapePos = getPacmanPos(gameState).get(0);
 
-    if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE)
-    {
-      activeTarget = chasePos;
-    }
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.CHASE) activeTarget = chasePos;
 
-    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED)
-    {
-      activeTarget = escapePos;
-    }
+    if (ghost.currentMode == ClassicPacmanGameConstants.mode.FRIGHTENED) activeTarget = escapePos;
   }
-
-
 }
