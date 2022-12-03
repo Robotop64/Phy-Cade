@@ -5,12 +5,9 @@ import kn.uni.util.Vector2d;
 
 public class PlacedObject extends GameObject
 {
-
   public Vector2d pos;
-
-  public boolean expired;
-
-  public boolean movable;
+  public boolean  expired;
+  public boolean  movable;
 
   public PlacedObject ()
   {

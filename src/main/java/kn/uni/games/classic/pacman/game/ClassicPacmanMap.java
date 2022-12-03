@@ -126,7 +126,7 @@ public class ClassicPacmanMap extends PlacedObject implements Rendered
       if (tile.type == Type.portal)
       {
         gameState.gameObjects.add(
-            new TeleporterObject(gameState, this, tile.center, Direction.down));
+            new TeleporterObject(this, tile.center, false, Direction.down));
       }
 
     });

@@ -9,21 +9,25 @@ import java.awt.Graphics2D;
 
 public class Particle extends PlacedObject implements Rendered, Ticking
 {
-  public Type     type;
-  public Vector2d pos;
-  public long     creationTick;
-  public long     lifeTime;
-  public Color    color;
-  public String   display;
+  //general variables
+  public Type   type;
+  public String display;
+  public Color  color;
+  //lifetime variables
+  public long   creationTick;
+  public long   lifeTime;
 
   public Particle (Type type, String display, Vector2d pos, long creationTick, long lifeTime, Color color)
   {
+    //inherited variables
+    this.pos = pos;
+    //general variables
     this.type = type;
     this.display = display;
-    this.pos = pos;
-    this.creationTick = creationTick;
-    this.lifeTime = lifeTime;
     this.color = color;
+    //lifetime variables
+    this.lifeTime = lifeTime;
+    this.creationTick = creationTick;
   }
 
   @Override
@@ -32,6 +36,12 @@ public class Particle extends PlacedObject implements Rendered, Ticking
     if (type == Type.Number) paintScore(g, gameState);
   }
 
+  /**
+   * painting method if particle is of type number
+   *
+   * @param g         the graphics object
+   * @param gameState the game state
+   */
   private void paintScore (Graphics2D g, ClassicPacmanGameState gameState)
   {
     //scorePos X&Y are used to determine the offset&progression of the score text from the fruit origin
@@ -66,12 +76,9 @@ public class Particle extends PlacedObject implements Rendered, Ticking
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
-    if (gameState.currentTick == creationTick + lifeTime)
-    {
-      gameState.gameObjects.remove(this);
-    }
+    //remove this if it's lifetime is over
+    if (gameState.currentTick == creationTick + lifeTime) gameState.gameObjects.remove(this);
   }
-
 
   public enum Type
   { Text, Image, Particle, Number }

@@ -3,5 +3,10 @@ package kn.uni.games.classic.pacman.game;
 
 public interface Ticking
 {
-  public void tick (ClassicPacmanGameState gameState);
+  /**
+   * actions to be performed every tick
+   *
+   * @param gameState the game state
+   */
+  void tick (ClassicPacmanGameState gameState);
 }

@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
+import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.util.Direction;
 import kn.uni.util.TextureEditor;
 import kn.uni.util.Vector2d;
@@ -10,24 +11,31 @@ import java.awt.image.BufferedImage;
 
 public class TeleporterObject extends CollidableObject implements Rendered, Ticking
 {
-  public  TeleporterObject pair;
-  public  boolean          enabled;
-  private Direction        outDirection;
-  private BufferedImage    texture;
+  private final Direction        outDirection;
+  //general variables
+  public        TeleporterObject pair;
+  public        boolean          guided;
+  //state variables
+  public        boolean          enabled;
+  //rendering variables
+  private       BufferedImage    texture;
 
-  public TeleporterObject (ClassicPacmanGameState gameState, ClassicPacmanMap map, Vector2d pos, Direction outDirection)
+  public TeleporterObject (ClassicPacmanMap map, Vector2d pos, boolean guided, Direction outDirection)
   {
     super();
+    //inherited variables
     this.pos = pos;
     this.movable = false;
-
+    this.hitbox = new Vector2d().cartesian(3, 3);
+    this.collideAction = this::teleport;
+    //general variables
+    this.guided = guided;
+    //state variables
     this.outDirection = outDirection;
     this.enabled = true;
-
+    //rendering variables
     this.texture = TextureEditor.getInstance().loadTexture("Objects", "Teleporter.png");
     this.texture = TextureEditor.getInstance().scale(this.texture, map.tileSize, map.tileSize);
-    this.hitbox = new Vector2d().cartesian(3, 3);
-    this.collideAction = () -> teleport(gameState);
   }
 
 
@@ -39,7 +47,10 @@ public class TeleporterObject extends CollidableObject implements Rendered, Tick
     topLeft.use(g::translate);
     g.drawImage(texture, 0, 0, Gui.getInstance().frame);
     topLeft.multiply(-1).use(g::translate);
-    g.drawOval((int) ( -hitbox.x / 2 ), (int) ( -hitbox.y / 2 ), (int) hitbox.x, (int) hitbox.y);
+    if (DebugDisplay.getDebugDisplay(gameState).enabled)
+    {
+      g.drawOval((int) ( -hitbox.x / 2 ), (int) ( -hitbox.y / 2 ), (int) hitbox.x, (int) hitbox.y);
+    }
     pos.multiply(-1).use(g::translate);
   }
 
@@ -52,29 +63,36 @@ public class TeleporterObject extends CollidableObject implements Rendered, Tick
   @Override
   public void tick (ClassicPacmanGameState gameState)
   {
-    if (getCollisions(this, gameState.gameObjects).stream().toList().size() == 0)
-    {
-      enabled = true;
-    }
+    //re-enable teleporter if there are no collisions
+    if (getCollisions(this, gameState.gameObjects).stream().toList().size() == 0) enabled = true;
   }
 
-  private void teleport (ClassicPacmanGameState gameState)
+  /**
+   * Teleports the collider to the paired teleporter
+   */
+  private void teleport ()
   {
-    if (enabled)
+    if (enabled && pair != null)
     {
       //disable the immediate teleportation of the player after getting to new location by locking the receiving teleporter
-      enabled = false;
       pair.enabled = false;
-
-      System.out.println("Teleporting " + this.pos + " -> " + pair.pos);
 
       //move trigger to pair location-tile-center
       this.collider.pos = pair.pos;
+
+      //TODO implement guided teleportation
       //change player direction to match the outDirection of the teleporter
-      //      gameState.playerDirection = outDirection;
+      //      if(guided) {
+      //
+      //      }
     }
   }
 
+  /**
+   * Used to assign a pair to the teleporter
+   *
+   * @param a the teleporter to be paired to
+   */
   public void pair (TeleporterObject a)
   {
     a.pair = this;

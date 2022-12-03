@@ -82,7 +82,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
     double animationDuration;
     int    θ = getΘ(currentDirection);
-    ;
 
     if (!playerDead)
     {
@@ -167,7 +166,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
       if (possibleTiles.contains(currentTile.neighbors.get(gameState.playerDirection.toVector())) && round(currentDirection.toVector().scalar(tp.in())) == 0)
         currentDirection = gameState.playerDirection;
 
-      //next tile is valid
+      //next tile is valid or center has not been reached yet
       if (possibleTiles.contains(currentTile.neighbors.get(currentDirection.toVector())) || round(currentDirection.toVector().scalar(tp.in())) < 0)
         pos = pos.add(currentDirection.toVector().multiply(v.x));
     }
@@ -298,7 +297,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   /**
    * Used to powerup the player if he eats a powerup item
    *
-   * @param gameState current gamestate
+   * @param gameState current gameState
    */
   public void powerUp (ClassicPacmanGameState gameState)
   {
