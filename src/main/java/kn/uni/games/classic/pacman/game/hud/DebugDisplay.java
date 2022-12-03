@@ -114,7 +114,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
   {
     if (enabled)
     {
-      int[] subTypeDist = { 1, generals.length + 1, generals.length + levels.length + 2, generals.length + levels.length + players.length + 1, 6 };
+      int[] subTypeDist = { 1, generals.length + 1, generals.length + levels.length + 1, generals.length + levels.length + players.length + 1, 6 };
 
       pos.use(g::translate);
       //panel background
