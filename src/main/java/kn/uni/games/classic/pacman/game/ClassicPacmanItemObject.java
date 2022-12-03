@@ -13,26 +13,29 @@ import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.collec
 
 public class ClassicPacmanItemObject extends CollidableObject implements Rendered, Ticking
 {
+  //general variables
   private final BufferedImage                           icon;
   private final Color                                   scoreColor;
   public        ClassicPacmanGameConstants.Collectables type;
-  public        boolean                                 eatable;
   public        long                                    deSpawnTicks = 125;
+  //state variables
+  public        boolean                                 eatable;
 
   public ClassicPacmanItemObject (Vector2d pos, ClassicPacmanGameState gameState, ClassicPacmanGameConstants.Collectables type, boolean eatable, Color scoreColor)
   {
     super();
+    //inherited
     this.pos = pos;
-    this.type = type;
     this.movable = false;
-    this.eatable = eatable;
-    this.scoreColor = scoreColor;
-
     this.collideAction = () -> eat(gameState);
-
+    //generals
+    this.type = type;
+    this.scoreColor = scoreColor;
     //load icon texture
     icon = TextureEditor.getInstance().loadTexture("items", type.name() + ".png");
     this.hitbox = new Vector2d().cartesian(icon.getWidth() - 10, icon.getHeight() - 10);
+    //state variables
+    this.eatable = eatable;
   }
 
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
@@ -54,11 +57,7 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
 
   private void eat (ClassicPacmanGameState gameState)
   {
-
-    gameState.score += collectionPoints.get(this.type);
-
-    gameState.gameObjects.remove(this);
-
+    //special effects of item
     if (type == ClassicPacmanGameConstants.Collectables.powerUp)
     {
       gameState.gameObjects.stream()
@@ -78,8 +77,13 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
                              o.direction = o.direction.opposite();
                            });
     }
-
+    //add score
+    gameState.score += collectionPoints.get(this.type);
+    //add score particle
     gameState.gameObjects.add(new Particle(Particle.Type.Number, String.valueOf(collectionPoints.get(this.type)), pos, gameState.currentTick, deSpawnTicks, scoreColor));
+    //remove this
+    gameState.gameObjects.remove(this);
+
 
   }
 }
