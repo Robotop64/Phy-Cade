@@ -16,7 +16,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants.levelFruit;
@@ -30,6 +32,8 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   public double               tilesPerSecond = ClassicPacmanGameConstants.pacmanSpeed;
   public int                  r;
   public Vector2d             v;
+  public Direction            currentDirection;
+  public boolean              canUseDoor;
   public boolean              playerDead;
   public boolean              isVulnerable;
   public boolean              isPoweredUp;
@@ -43,6 +47,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   {
     this.pos = pos;
     this.r = r;
+    this.currentDirection = Direction.up;
     this.player = player;
     this.playerDead = false;
     this.isVulnerable = true;
@@ -73,7 +78,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     {
       animationDuration = gameState.tps / 2.;
 
-      θ = getΘ(gameState.playerDirection);
+      θ = getΘ(currentDirection);
       g.rotate(Math.toRadians(θ));
 
       int angle = (int) Math.round(20 + 40 * sin(( gameState.currentTick % animationDuration ) / animationDuration * 360.));
@@ -137,45 +142,35 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
   {
     TotalPosition tp          = gameState.map.splitPosition(pos);
     PacmanMapTile currentTile = gameState.map.tiles.get(tp.ex());
-    PacmanMapTile nextTile    = currentTile.neighbors.get(gameState.playerDirection.toVector());
+    List <PacmanMapTile> possibleTiles = Arrays.stream(Direction.values())
+                                               .map(Direction::toVector)
+                                               .map(vec -> currentTile.neighbors.get(vec))
+                                               .filter(Objects::nonNull)
+                                               .filter(tile -> PacmanMapTile.walkable.contains(tile.type))
+                                               .filter(tile -> !tile.type.equals(PacmanMapTile.Type.door) || canUseDoor)
+                                               .toList();
+
+    //visual feedback of possible tiles
+    if (DebugDisplay.getDebugDisplay(gameState).enabled)
+    {
+      gameState.map.tiles.forEach((vec, tile) -> tile.color = Color.black);
+      possibleTiles.forEach(tile -> tile.color = Color.blue);
+    }
 
     //movement of PacMan
     if (movable)
     {
-      if (v == null)
-      {
-        v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
-      }
+      //set velocity
+      if (v == null) v = new Vector2d().cartesian(tilesPerSecond, 0).multiply(gameState.map.tileSize).divide(gameState.tps);
 
-      //moving towards centre of current tile
-      if (round(gameState.playerDirection.toVector().scalar(tp.in())) < 0)
-      {
-        //walk towards centre of tile
-        if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
-        {
-          pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.length()));
-        }
-        pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
-      }
-      // walking away from centre
-      else
-      {
-        // near center
-        if (tp.in().x + tp.in().y < gameState.map.tileSize / .3)
-        {
-          if (nextTile != null && PacmanMapTile.walkable.contains(nextTile.type))
-          {
-            //next tile is valid
-            if (Math.min(pos.x, pos.y) > gameState.map.tileSize / 20.)
-            {
-              pos = pos.add(tp.in().multiply(-1).orthogonalTo(gameState.playerDirection.toVector()).unitVector().multiply(v.length()));
-            }
-            pos = pos.add(v.rotate(getΘ(gameState.playerDirection)));
-          }
-        }
-      }
+      //check if requested direction is possible
+      if (possibleTiles.contains(currentTile.neighbors.get(gameState.playerDirection.toVector())) && round(currentDirection.toVector().scalar(tp.in())) == 0)
+        currentDirection = gameState.playerDirection;
+
+      //next tile is valid
+      if (possibleTiles.contains(currentTile.neighbors.get(currentDirection.toVector())) || round(currentDirection.toVector().scalar(tp.in())) < 0)
+        pos = pos.add(currentDirection.toVector().multiply(v.x));
     }
-
 
     //eat items
     if (gameState.score % 10000 == 0 && gameState.score != 0)
@@ -254,9 +249,8 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
             }
             //collision with teleporter
-            if (collidable instanceof TeleporterObject teleporter)
+            if (collidable instanceof TeleporterObject teleporter && teleporter.enabled)
             {
-              System.out.println("teleporting");
               teleporter.setCollider(this);
               teleporter.collide();
               teleporter.setCollider(null);
@@ -270,7 +264,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerSpeed, "[Speed: " + Util.roundTo(this.v.x, 0.1) + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerState, "[Alive: " + !this.playerDead + "]");
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerVulnerable, "[Vul: " + this.isVulnerable + "]");
-    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPowered, "[Pow: " + this.isPoweredUp + "]");
+    //    DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPowered, "[Pow: " + this.isPoweredUp + "]");
 
     if (gameState.currentTick > powerUpStart + powerUpDuration && isPoweredUp)
     {
