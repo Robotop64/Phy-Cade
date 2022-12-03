@@ -25,17 +25,17 @@ import java.util.Map;
 public class GameSummaryPanel extends UIScreen
 {
   public static final double               ratio     = 5 / 4.0;
+  private final       List <JLabel>        labels    = new ArrayList <>();
+  private final       int                  totalPlayers;
+  private final       int                  thisScore;
+  private final       LocalTime            thisTime;
+  private final       int                  level;
+  private final       List <pmButton>      buttons   = new ArrayList <>();
+  private final       GameOverScreen       container;
+  private final       InputListener.Player player;
   private             int                  listener_id;
-  private             List <JLabel>        labels    = new ArrayList <>();
-  private             int                  totalPlayers;
-  private             int                  thisScore;
-  private             LocalTime            thisTime;
-  private             int                  level;
   private             int                  width;
   private             int                  activeKey = 0;
-  private             List <pmButton>      buttons   = new ArrayList <>();
-  private             GameOverScreen       container;
-  private             InputListener.Player player;
   private             JLabel               nameLabel;
 
   public GameSummaryPanel (GameOverScreen container, int width, int totalPlayers, InputListener.Player player, int thisScore, LocalTime thisTime, int thisLevel)
@@ -43,7 +43,7 @@ public class GameSummaryPanel extends UIScreen
     super(Gui.getInstance().content);
     setBackground(Color.black);
     setLayout(null);
-    setSize(width, (int)(width / ratio) - 150);
+    setSize(width, (int) ( width / ratio ) - 150);
 
     this.container = container;
     this.player = player;
@@ -81,7 +81,7 @@ public class GameSummaryPanel extends UIScreen
     {
       String           name = "";
       OnScreenKeyboard osk  = new OnScreenKeyboard(this, player, width - 60, this::addEntry);
-      osk.setLocation((this.getWidth() - osk.getWidth()) / 2, this.getHeight() - osk.getHeight() - (this.getWidth() - osk.getWidth()) / 2);
+      osk.setLocation(( this.getWidth() - osk.getWidth() ) / 2, this.getHeight() - osk.getHeight() - ( this.getWidth() - osk.getWidth() ) / 2);
       osk.setTarget(symbol -> nameLabel.setText(symbol));
       add(osk);
     }
@@ -89,7 +89,7 @@ public class GameSummaryPanel extends UIScreen
 
   private void addEntry ()
   {
-    PacmanDatabaseProvider.setEntries(container.gameName, new LeaderboardMenu.LeaderboardEntry(0,nameLabel.toString(),level, thisScore, thisTime, LocalDate.now(), PacPhi.GAME_VERSION,""));
+    PacmanDatabaseProvider.setEntries(container.gameName, new LeaderboardMenu.LeaderboardEntry(0, nameLabel.toString(), level, thisScore, thisTime, LocalDate.now(), PacPhi.GAME_VERSION, ""));
     killSummary();
   }
 
@@ -99,7 +99,7 @@ public class GameSummaryPanel extends UIScreen
     int fontSize   = width / 30;
     int rowDist    = fontSize / 2;
     int xBuffer    = 20;
-    int textWidth  = (int)(width / 3.6);
+    int textWidth  = (int) ( width / 3.6 );
     int textHeight = textWidth / 3;
     int labelPosX  = this.getX() + textWidth / 3;
     int numberPosX = this.getX() + labelPosX + textWidth + 20;
@@ -113,105 +113,105 @@ public class GameSummaryPanel extends UIScreen
     if (player.name().equals("playerFour")) playerNum = 4;
 
     JLabel p = createLabel(
-      " Player " + playerNum + " :",
-      fontSize,
-      Font.BOLD,
-      this.getX() + xBuffer,
-      this.getY() + rowDist,
-      new Dimension(textWidth, textHeight),
-      SwingConstants.LEFT);
+        " Player " + playerNum + " :",
+        fontSize,
+        Font.BOLD,
+        this.getX() + xBuffer,
+        this.getY() + rowDist,
+        new Dimension(textWidth, textHeight),
+        SwingConstants.LEFT);
     //underline the playerLabel
     Map attributes = p.getFont().getAttributes();
     attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
     p.setFont(p.getFont().deriveFont(attributes));
 
     createLabel(
-      " Level : ",
-      fontSize,
-      Font.BOLD,
-      labelPosX,
-      this.getY() + textHeight + 2 * rowDist,
-      new Dimension(textWidth, textHeight),
-      SwingConstants.LEFT);
+        " Level : ",
+        fontSize,
+        Font.BOLD,
+        labelPosX,
+        this.getY() + textHeight + 2 * rowDist,
+        new Dimension(textWidth, textHeight),
+        SwingConstants.LEFT);
 
     createLabel(
-      String.valueOf(level),
-      fontSize + 10,
-      Font.PLAIN,
-      numberPosX,
-      this.getY() + textHeight + 2 * rowDist,
-      new Dimension(textWidth * 2, textHeight),
-      SwingConstants.CENTER);
+        String.valueOf(level),
+        fontSize + 10,
+        Font.PLAIN,
+        numberPosX,
+        this.getY() + textHeight + 2 * rowDist,
+        new Dimension(textWidth * 2, textHeight),
+        SwingConstants.CENTER);
 
     createLabel(
-      " Punktzahl : ",
-      fontSize,
-      Font.BOLD,
-      labelPosX,
-      this.getY() + textHeight * 2 + 3 * rowDist,
-      new Dimension(textWidth, textHeight),
-      SwingConstants.LEFT);
+        " Punktzahl : ",
+        fontSize,
+        Font.BOLD,
+        labelPosX,
+        this.getY() + textHeight * 2 + 3 * rowDist,
+        new Dimension(textWidth, textHeight),
+        SwingConstants.LEFT);
 
     createLabel(
-      String.valueOf(thisScore),
-      fontSize + 10,
-      Font.PLAIN,
-      numberPosX,
-      this.getY() + textHeight * 2 + 3 * rowDist,
-      new Dimension(textWidth * 2, textHeight),
-      SwingConstants.CENTER);
+        String.valueOf(thisScore),
+        fontSize + 10,
+        Font.PLAIN,
+        numberPosX,
+        this.getY() + textHeight * 2 + 3 * rowDist,
+        new Dimension(textWidth * 2, textHeight),
+        SwingConstants.CENTER);
 
     createLabel(
-      " Spielzeit : ",
-      fontSize,
-      Font.BOLD,
-      labelPosX,
-      this.getY() + textHeight * 3 + 4 * rowDist,
-      new Dimension(textWidth, textHeight),
-      SwingConstants.LEFT);
+        " Spielzeit : ",
+        fontSize,
+        Font.BOLD,
+        labelPosX,
+        this.getY() + textHeight * 3 + 4 * rowDist,
+        new Dimension(textWidth, textHeight),
+        SwingConstants.LEFT);
 
     createLabel(
-      String.valueOf(thisTime),
-      fontSize + 10,
-      Font.PLAIN,
-      numberPosX,
-      this.getY() + textHeight * 3 + 4 * rowDist,
-      new Dimension(textWidth * 2, textHeight),
-      SwingConstants.CENTER);
+        String.valueOf(thisTime),
+        fontSize + 10,
+        Font.PLAIN,
+        numberPosX,
+        this.getY() + textHeight * 3 + 4 * rowDist,
+        new Dimension(textWidth * 2, textHeight),
+        SwingConstants.CENTER);
 
     createLabel(
-      " Weiteres : ",
-      fontSize,
-      Font.BOLD,
-      labelPosX,
-      this.getY() + textHeight * 4 + 5 * rowDist,
-      new Dimension(textWidth, textHeight),
-      SwingConstants.LEFT);
+        " Weiteres : ",
+        fontSize,
+        Font.BOLD,
+        labelPosX,
+        this.getY() + textHeight * 4 + 5 * rowDist,
+        new Dimension(textWidth, textHeight),
+        SwingConstants.LEFT);
 
     createLabel(
-      "",
-      fontSize + 10,
-      Font.PLAIN,
-      numberPosX,
-      this.getY() + textHeight * 4 + 5 * rowDist,
-      new Dimension(textWidth * 2, textHeight),
-      SwingConstants.CENTER);
+        "",
+        fontSize + 10,
+        Font.PLAIN,
+        numberPosX,
+        this.getY() + textHeight * 4 + 5 * rowDist,
+        new Dimension(textWidth * 2, textHeight),
+        SwingConstants.CENTER);
 
     createActionButton(
-      "Speichern",
-      () -> addKeyBoard(width),
-      fontSize,
-      this.getX() + 20,
-      this.getY() + this.getHeight() - buttonDim.height - 20,
-      buttonDim);
+        "Speichern",
+        () -> addKeyBoard(width),
+        fontSize,
+        this.getX() + 20,
+        this.getY() + this.getHeight() - buttonDim.height - 20,
+        buttonDim);
 
     createActionButton(
-      "Hauptmenü",
-      this::killSummary,
-      fontSize,
-      this.width - buttonDim.width - 20,
-      this.getY() + this.getHeight() - buttonDim.height - 20,
-      buttonDim);
+        "Hauptmenü",
+        this::killSummary,
+        fontSize,
+        this.width - buttonDim.width - 20,
+        this.getY() + this.getHeight() - buttonDim.height - 20,
+        buttonDim);
 
     nameLabel = new JLabel("");
     nameLabel.setFont(new Font("Fira Code", Font.PLAIN, 24));
@@ -311,16 +311,12 @@ public class GameSummaryPanel extends UIScreen
                  .contains(input.key())) return;
       //joystick inputs
       int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
-      if (input.key().name().equals("horizontal"))
-      {
-        setActiveKey(Util.bounded(activeKey + delta, 0, 1));
-      }
-
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
+      if (input.key().name().equals("horizontal")) setActiveKey(Util.bounded(activeKey + delta, 0, 1));
     });
     setVisible(true);
   }

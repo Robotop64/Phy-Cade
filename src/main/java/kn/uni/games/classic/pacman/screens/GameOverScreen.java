@@ -70,8 +70,7 @@ public class GameOverScreen extends UIScreen
     int    nextY = 10;
     if (labels.size() != 0)
     {
-      nextY = (int)(labels.get(labels.size() - 1).getY() + labels.get(labels.size() - 1).getSize().getHeight()) + distance;
-
+      nextY = (int) ( labels.get(labels.size() - 1).getY() + labels.get(labels.size() - 1).getSize().getHeight() ) + distance;
     }
 
     add(temp);
@@ -79,11 +78,9 @@ public class GameOverScreen extends UIScreen
 
     temp.setBounds(0, nextY, Gui.frameWidth, size + size / 5);
     temp.setFont(new Font(font, Font.PLAIN, size));
-    //    temp.setBorder(BorderFactory.createLineBorder(c, 3, true));
     temp.setForeground(c);
     temp.setHorizontalAlignment(horizontAlign);
     temp.setVerticalAlignment(verticalAlign);
-
   }
 
   private void createHeader (int playerCount)
@@ -107,15 +104,13 @@ public class GameOverScreen extends UIScreen
       localWidth = Gui.frameWidth - 2 * xBuffer - 10;
     }
     //create GameSummaryPanel
-    {
-      GameSummaryPanel gameSummaryPanel = new GameSummaryPanel(this, localWidth, totalPlayers, player, thisScore, thisTime, thisLevel);
-      gameSummaryPanel.setLocation((Gui.frameWidth / 2) * x + xBuffer + 5, (int)(Gui.frameHeight - gameSummaryPanel.getHeight() * ((1.0 + y) / 2) - 10 - yOffset + 5 - y * 5));
-      gameSummaryPanel.setBackground(Color.black);
-      gameSummaryPanel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
-      //    gameSummaryScreen.addKeyBoard(localWidth);
-      Gui.getInstance().content.add(gameSummaryPanel);
-      children.add(gameSummaryPanel);
-    }
+    GameSummaryPanel gameSummaryPanel = new GameSummaryPanel(this, localWidth, totalPlayers, player, thisScore, thisTime, thisLevel);
+    gameSummaryPanel.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryPanel.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
+    gameSummaryPanel.setBackground(Color.black);
+    gameSummaryPanel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));
+    //    gameSummaryScreen.addKeyBoard(localWidth);
+    Gui.getInstance().content.add(gameSummaryPanel);
+    children.add(gameSummaryPanel);
   }
 
   public void removeSummary ()

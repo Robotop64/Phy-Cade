@@ -45,7 +45,6 @@ public class ClassicPacmanGameScreen extends UIScreen
 
       if (input.key().equals(Key.B))
       {
-
         gameState.running = false;
         Gui.getInstance().content.add(MainMenu.getInstance());
         MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
@@ -124,10 +123,7 @@ public class ClassicPacmanGameScreen extends UIScreen
         DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.GameStart, "[Start: " + gameState.startTime + "]");
         DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.GameDuration, "[Dur: " + gameState.gameDuration + "]");
 
-        if (gameState.currentTick % 2 == 0)
-        {
-          Gui.getInstance().frame.repaint();
-        }
+        if (gameState.currentTick % 2 == 0) Gui.getInstance().frame.repaint();
       }
       kill();
     }).start();
