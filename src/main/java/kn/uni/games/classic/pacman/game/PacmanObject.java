@@ -67,7 +67,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     pos.rounded().use(g::translate);
 
     double animationDuration;
-    int θ;
+    int    θ;
 
     if (!playerDead)
     {
@@ -178,7 +178,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
 
 
     //eat items
-    if (gameState.score % 10001 == 0)
+    if (gameState.score % 10000 == 0 && gameState.score != 0)
     {
       gameState.lives += 1;
     }
@@ -212,57 +212,57 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     {
       //execute action for each collision
       getCollisions(this, gameState.gameObjects)
-                                                .forEach(collidable ->
-                                                {
-                                                  //collision with item
-                                                  if (collidable instanceof ClassicPacmanItemObject item && item.eatable)
-                                                  {
-                                                    item.setCollider(this);
-                                                    item.collide();
-                                                    item.setCollider(null);
-                                                  }
-                                                  //collision with ghost
-                                                  //TODO implement later (make ghost eatable)
-                                                  if (collidable instanceof Ghost && !playerDead)
-                                                  {
-                                                    //get all ghosts
-                                                    final List <Ghost> ghostList = new ArrayList <>();
-                                                    gameState.gameObjects.stream()
-                                                                         .filter(ghost -> ghost instanceof PlacedObject)
-                                                                         .filter(ghost -> ghost instanceof Ghost)
-                                                                         .map(ghost -> (Ghost) ghost)
-                                                                         .forEach(ghostList::add);
+          .forEach(collidable ->
+          {
+            //collision with item
+            if (collidable instanceof ClassicPacmanItemObject item && item.eatable)
+            {
+              item.setCollider(this);
+              item.collide();
+              item.setCollider(null);
+            }
+            //collision with ghost
+            //TODO implement later (make ghost eatable)
+            if (collidable instanceof Ghost && !playerDead)
+            {
+              //get all ghosts
+              final List <Ghost> ghostList = new ArrayList <>();
+              gameState.gameObjects.stream()
+                                   .filter(ghost -> ghost instanceof PlacedObject)
+                                   .filter(ghost -> ghost instanceof Ghost)
+                                   .map(ghost -> (Ghost) ghost)
+                                   .forEach(ghostList::add);
 
-                                                    if (isVulnerable)
-                                                    {
-                                                      death(gameState);
+              if (isVulnerable)
+              {
+                death(gameState);
 
-                                                      //freeze pacman and the ghosts
-                                                      movable = false;
-                                                      ghostList.forEach(ghost2 -> ghost2.movable = false);
-                                                    }
+                //freeze pacman and the ghosts
+                movable = false;
+                ghostList.forEach(ghost2 -> ghost2.movable = false);
+              }
 
-                                                    if (isPoweredUp)
-                                                    {
+              if (isPoweredUp)
+              {
 
-                                                      gameState.score += ( 4 / ghostList.size() ) * 200;
+                gameState.score += ( 4 / ghostList.size() ) * 200;
 
-                                                      gameState.map.spawn(PacmanMapTile.Type.ghostSpawn, collidable);
+                gameState.map.spawn(PacmanMapTile.Type.ghostSpawn, collidable);
 
-                                                      collidable.expired = true;
-                                                    }
+                collidable.expired = true;
+              }
 
-                                                  }
-                                                  //collision with teleporter
-                                                  if(collidable instanceof TeleporterObject teleporter)
-                                                  {
-                                                    System.out.println("teleporting");
-                                                    teleporter.setCollider(this);
-                                                    teleporter.collide();
-                                                    teleporter.setCollider(null);
-                                                  }
+            }
+            //collision with teleporter
+            if (collidable instanceof TeleporterObject teleporter)
+            {
+              System.out.println("teleporting");
+              teleporter.setCollider(this);
+              teleporter.collide();
+              teleporter.setCollider(null);
+            }
 
-                                                });
+          });
     }
 
     DebugDisplay.setData(gameState, DebugDisplay.DebugType.Player, DebugDisplay.DebugSubType.PlayerPosition, "[Pos: " + this.pos.toString() + "]");
@@ -365,7 +365,7 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
    */
   private void checkGameOver (ClassicPacmanGameState gameState)
   {
-    if (gameState.lives == 0)
+    if (gameState.lives <= 0)
     {
       //stops the game and removes the GameScreen
       gameState.running = false;
