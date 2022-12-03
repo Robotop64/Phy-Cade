@@ -16,8 +16,10 @@ import java.util.Objects;
 
 public abstract class GhostAI
 {
+  //general
   public    ClassicPacmanGameConstants.ghostNames name;
   protected Color                                 borderColor;
+  //possible targets
   protected Vector2d                              activeTarget = new Vector2d().cartesian(0, 0);
   protected Vector2d                              chasePos;
   protected Vector2d                              scatterPos;
@@ -64,8 +66,6 @@ public abstract class GhostAI
 
   public void nextDirection2 (ClassicPacmanGameState gameState, Ghost ghost, ClassicPacmanGameConstants.mode mode)
   {
-
-
     //find all valid tiles
     List <PacmanMapTile> possibleTiles =
         Arrays.stream(Direction.values())
@@ -84,7 +84,7 @@ public abstract class GhostAI
       possibleTiles.forEach(tile -> tile.color = Color.blue);
     }
 
-    //sort tiles by distance to target, target = indexed at 0
+    //sort tiles by distance to target, chosen target is indexed at 0
     possibleTiles =
         possibleTiles.stream()
                      .sorted((a, b) ->
@@ -97,10 +97,9 @@ public abstract class GhostAI
                      })
                      .toList();
 
-
     //get direction of target tile
     Vector2d goTo;
-    //      if possibleTiles available get best, else return old direction
+    //if possibleTiles available get best, else return old direction
     if (possibleTiles.size() > 0)
     {
       if (mode != ClassicPacmanGameConstants.mode.FRIGHTENED)
@@ -113,10 +112,12 @@ public abstract class GhostAI
         //increase distance to target
         goTo = possibleTiles.get(possibleTiles.size() - 1).center.subtract(ghost.currentTile.center);
       }
+      //set new ghost direction
       ghost.direction = goTo.divide(goTo.length()).toDirection();
     }
     else
     {
+      //turn 180° if no possible tiles available
       ghost.direction = ghost.direction.opposite();
     }
 
