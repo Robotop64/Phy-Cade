@@ -172,9 +172,10 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
     }
 
     //add lives according to score
-    if (gameState.score % 10000 == 0 && gameState.score != 0)
+    if (gameState.score % 10000 == 0 && gameState.score != 0 && gameState.score / 10000 > gameState.livesGained)
     {
       gameState.lives += 1;
+      gameState.livesGained += 1;
     }
 
     //spawn fruit after eating half of the pills
@@ -215,7 +216,6 @@ public class PacmanObject extends CollidableObject implements Rendered, Ticking
               item.setCollider(null);
             }
             //collision with ghost
-            //TODO implement later (make ghost eatable)
             if (collidable instanceof Ghost ghast && !playerDead && !ghast.isDead)
             {
               //get all ghosts

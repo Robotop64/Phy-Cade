@@ -30,6 +30,7 @@ public class ClassicPacmanGameState
   public int       level        = 1;
   public int       uiSize       = 100;
   public int       lives        = 5;
+  public int       livesGained  = 0;
   public LocalTime startTime;
   public LocalTime gameDuration = LocalTime.of(0, 0, 0, 0);
   public boolean   fruitSpawned = false;

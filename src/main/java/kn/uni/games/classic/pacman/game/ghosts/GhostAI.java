@@ -74,7 +74,7 @@ public abstract class GhostAI
               .map(vec -> ghost.currentTile.neighbors.get(vec))
               .filter(Objects::nonNull)
               .filter(tile -> PacmanMapTile.walkable.contains(tile.type))
-              .filter(tile -> !tile.type.equals(PacmanMapTile.Type.door) || ghost.canUseDoor)
+              .filter(tile -> !tile.type.equals(PacmanMapTile.Type.door) || ( ghost.canUseDoor && ghost.free ))
               .toList();
 
     //visual feedback of possible tiles
