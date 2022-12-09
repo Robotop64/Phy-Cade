@@ -1,19 +1,61 @@
 package kn.uni.games.classic.pacman.screens;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import kn.uni.Gui;
+import kn.uni.ui.InputListener;
+import kn.uni.ui.UIScreen;
 
-public class SettingsMenu {
+import javax.swing.JPanel;
+import java.util.Arrays;
 
 
-    public static void setActiveVersion(String version){
-        try{
-            FileWriter fileWriter = new FileWriter("GameBranch.txt");
-            fileWriter.write(version);
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+public class SettingsMenu extends UIScreen
+{
+  private static SettingsMenu instance;
+  private        int          listener_id;
+
+
+  public SettingsMenu (JPanel parent)
+  {
+    super(parent);
+  }
+
+  public static SettingsMenu getInstance (JPanel parent)
+  {
+    if (instance == null) instance = new SettingsMenu(parent);
+    return instance;
+  }
+
+
+  /**
+   * Used to activate the input Listener
+   */
+  public void activate ()
+  {
+    listener_id = InputListener.getInstance().subscribe(input ->
+    {
+      if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
+      {
+        InputListener.getInstance().unsubscribe(listener_id);
+        setVisible(false);
+        getParent().remove(this);
+        Gui.getInstance().content.add(MainMenu.getInstance());
+        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+        MainMenu.getInstance().activate();
+      }
+
+      if (input.player().equals(InputListener.Player.playerTwo)) return;
+      if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
+                 .contains(input.key())) return;
+      int delta = switch (input.state())
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
+
+      if (input.key().name().equals("horizontal")) ;
+      if (input.key().name().equals("vertical")) ;
+    });
+    setVisible(true);
+  }
 }
