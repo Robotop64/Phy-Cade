@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
+import kn.uni.PacPhi;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
@@ -9,7 +10,10 @@ import kn.uni.util.Fira;
 import kn.uni.util.TextureEditor;
 import kn.uni.util.Util;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -25,13 +29,13 @@ public class MainMenu extends JPanel
   pmButton title_label;
 
   int w = 500;
-  int x = (Gui.frameWidth - w) / 2;
+  int x = ( Gui.frameWidth - w ) / 2;
 
   int h         = 120;
   int n_offsets = 32;
   int n_buttons = 5;
-  int buffer    = (Gui.frameHeight - (n_buttons * h)) / n_offsets;
-  int y         = (n_offsets - n_buttons) / 2 * buffer + 100;
+  int buffer    = ( Gui.frameHeight - ( n_buttons * h ) ) / n_offsets;
+  int y         = ( n_offsets - n_buttons ) / 2 * buffer + 100;
 
   int selected_index = 0;
   int listenerId;
@@ -44,6 +48,68 @@ public class MainMenu extends JPanel
     setBackground(Color.black);
     setLayout(null);
 
+    createButtons();
+
+    buttons = Arrays.asList(spButton, mpButton, lbButton, settingsButton, soundButton);
+
+    select(0);
+
+    activate();
+
+    addActions();
+
+    addGraphics();
+
+
+  }
+
+  public static MainMenu getInstance ()
+  {
+    if (instance == null) instance = new MainMenu();
+    return instance;
+  }
+
+  public void activate ()
+  {
+    System.out.println("Main Menu activated");
+    listenerId = InputListener.getInstance().subscribe(input ->
+    {
+      if (input.equals(new Input(InputListener.Key.A, InputListener.State.down, Player.playerOne)))
+      {
+        buttons.get(selected_index).press();
+        return;
+      }
+      //      if (input.equals(new Input(InputListener.Key.B, InputListener.State.down, Player.playerOne)))
+      //      {
+      //        System.exit(0);
+      //      }
+
+      if (input.player().equals(Player.playerTwo)) return;
+      if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
+                 .contains(input.key())) return;
+      int delta = switch (input.state())
+          {
+            case up -> -1;
+            case down -> 1;
+            case none -> 0;
+          };
+      select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
+    });
+    setVisible(true);
+    Gui.getInstance().frame.invalidate();
+    Gui.getInstance().frame.repaint();
+  }
+
+  public void select (int index)
+  {
+    selected_index = index;
+    buttons.forEach(b -> b.isSelected = false);
+    buttons.get(index).isSelected = true;
+    buttons.forEach(pmButton::update);
+  }
+
+  private void createButtons ()
+  {
     title_label = new pmButton("~ PAC - MAN ~");
     title_label.setBounds(x, 100, w, h);
     title_label.setFontSize(54);
@@ -55,27 +121,24 @@ public class MainMenu extends JPanel
     add(spButton);
 
     mpButton = new pmButton("ZWEI SPIELER");
-    mpButton.setBounds(x, y + (h + buffer), w, h);
+    mpButton.setBounds(x, y + ( h + buffer ), w, h);
     add(mpButton);
 
     lbButton = new pmButton("BESTENLISTE");
-    lbButton.setBounds(x, y + 2 * (h + buffer), w, h);
+    lbButton.setBounds(x, y + 2 * ( h + buffer ), w, h);
     add(lbButton);
 
     settingsButton = new pmButton("EINSTELLUNGEN");
-    settingsButton.setBounds(x, y + 3 * (h + buffer), w, h);
+    settingsButton.setBounds(x, y + 3 * ( h + buffer ), w, h);
     add(settingsButton);
 
     soundButton = new pmButton("TON - AN");
-    soundButton.setBounds(x, y + 4 * (h + buffer), w, h);
+    soundButton.setBounds(x, y + 4 * ( h + buffer ), w, h);
     add(soundButton);
+  }
 
-    buttons = Arrays.asList(spButton, mpButton, lbButton, settingsButton, soundButton);
-
-    select(0);
-
-    activate();
-
+  private void addActions ()
+  {
     buttons.forEach(b -> b.addAction(() ->
     {
       InputListener.getInstance().unsubscribe(listenerId);
@@ -127,72 +190,55 @@ public class MainMenu extends JPanel
       LeaderboardMenu.getInstance().activate();
     });
 
+    settingsButton.addAction(() ->
+    {
+      Gui.getInstance().content.add(SettingsMenu.getInstance(this));
+      SettingsMenu.getInstance(this).setBounds(Gui.defaultFrameBounds);
+      SettingsMenu.getInstance(this).activate();
+    });
+
     soundButton.clearActions();
     soundButton.addAction(() -> soundButton.setText(soundButton.getText().contains("AUS") ? "TON - AN" : "TON - AUS"));
+  }
 
+  private void addGraphics ()
+  {
+    //QR Code
     JPanel qrPanel = new JPanel();
-    qrPanel.setBounds(10, Gui.frameHeight-250, 160, 240);
+    qrPanel.setBounds(Gui.frameWidth - 170, Gui.frameHeight - 250, 160, 240);
     qrPanel.setBackground(Color.black);
 
     JLabel qrLabel = new JLabel("<html> <pre>   Vorschläge  <br/>       &       <br/>    Probleme </pre></html>", SwingConstants.CENTER);
-    qrLabel.setForeground(Color.white);
+    qrLabel.setForeground(Color.cyan.darker());
     qrLabel.setFont(Fira.getInstance().getLigatures(15));
     qrLabel.setBounds(0, 0, 160, 20);
     qrPanel.add(qrLabel);
 
     BufferedImage qrImage = TextureEditor.getInstance().loadResource("pacman/QR_Code_GitLab.png");
-    JLabel qrCode = new JLabel(new ImageIcon(qrImage));
+    JLabel        qrCode  = new JLabel(new ImageIcon(qrImage));
     qrCode.setBounds(0, 0, 150, 150);
     qrCode.setBackground(Color.white);
     qrPanel.add(qrCode);
 
-
     add(qrPanel);
-  }
 
-  public static MainMenu getInstance ()
-  {
-    if (instance == null) instance = new MainMenu();
-    return instance;
-  }
+    //GameInfo
+    List <String> content  = Arrays.asList("Ver.:" + PacPhi.GAME_VERSION, "Branch: " + PacPhi.GAME_BRANCH);
+    int           height   = 20 * content.size();
+    JPanel        gameInfo = new JPanel();
+    gameInfo.setLayout(null);
+    gameInfo.setBounds(10, Gui.frameHeight - ( height + 10 ), 300, height);
+    gameInfo.setBackground(Color.black);
 
-  public void activate ()
-  {
-    System.out.println("Main Menu activated");
-    listenerId = InputListener.getInstance().subscribe(input ->
+    content.forEach(s ->
     {
-      if (input.equals(new Input(InputListener.Key.A, InputListener.State.down, Player.playerOne)))
-      {
-        buttons.get(selected_index).press();
-        return;
-      }
-      //      if (input.equals(new Input(InputListener.Key.B, InputListener.State.down, Player.playerOne)))
-      //      {
-      //        System.exit(0);
-      //      }
-
-      if (input.player().equals(Player.playerTwo)) return;
-      if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
-                 .contains(input.key())) return;
-      int delta = switch (input.state())
-        {
-          case up -> -1;
-          case down -> 1;
-          case none -> 0;
-        };
-      select(Util.bounded(selected_index + delta, 0, n_buttons - 1));
+      JLabel label = new JLabel(s, SwingConstants.LEFT);
+      label.setForeground(Color.cyan.darker());
+      label.setFont(Fira.getInstance().getLigatures(15));
+      label.setBounds(0, 20 * content.indexOf(s), 300, 20);
+      gameInfo.add(label);
     });
-    setVisible(true);
-    Gui.getInstance().frame.invalidate();
-    Gui.getInstance().frame.repaint();
-  }
 
-  public void select (int index)
-  {
-    selected_index = index;
-    buttons.forEach(b -> b.isSelected = false);
-    buttons.get(index).isSelected = true;
-    buttons.forEach(pmButton::update);
+    add(gameInfo);
   }
-
 }
