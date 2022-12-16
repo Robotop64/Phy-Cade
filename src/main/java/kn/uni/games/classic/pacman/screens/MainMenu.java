@@ -7,6 +7,7 @@ import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
 import kn.uni.ui.pmButton;
 import kn.uni.util.Fira;
+import kn.uni.util.PacPhiConfig;
 import kn.uni.util.TextureEditor;
 import kn.uni.util.Util;
 
@@ -17,6 +18,7 @@ import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -223,9 +225,16 @@ public class MainMenu extends JPanel
     add(qrPanel);
 
     //GameInfo
-    List <String> content  = Arrays.asList("Ver.:" + PacPhi.GAME_VERSION, "Branch: " + PacPhi.GAME_BRANCH);
-    int           height   = 20 * content.size();
-    JPanel        gameInfo = new JPanel();
+    List <String> content = new ArrayList <>();
+    content.add("Ver.:" + PacPhi.GAME_VERSION);
+    content.add("Latest Feature: " + PacPhi.GAME_UPDATE);
+    content.add("Branch: " + PacPhi.GAME_BRANCH);
+    content.add(PacPhiConfig.getInstance().check(new String[]{ "General", "Branch" }) ? "" : "Restart to: " + PacPhiConfig.getInstance().settings.get("General").get("Branch").setting().current());
+
+    content.removeIf(String::isEmpty);
+
+    int    height   = 20 * content.size();
+    JPanel gameInfo = new JPanel();
     gameInfo.setLayout(null);
     gameInfo.setBounds(10, Gui.frameHeight - ( height + 10 ), 300, height);
     gameInfo.setBackground(Color.black);
