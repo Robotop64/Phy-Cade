@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
+@SuppressWarnings({ "MismatchedReadAndWriteOfArray", "unused" })
 public class DebugDisplay extends PlacedObject implements Rendered
 {
   private final Map <Integer, List <String>>                ghostData            = new HashMap <>();

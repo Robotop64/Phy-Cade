@@ -64,6 +64,7 @@ public class GameOverScreen extends UIScreen
 
   }
 
+  @SuppressWarnings("SameParameterValue")
   private void createCenterLabel (String text, String font, int size, int horizontAlign, int verticalAlign, Color c, int distance)
   {
     JLabel temp  = new JLabel(text);
@@ -104,7 +105,7 @@ public class GameOverScreen extends UIScreen
       localWidth = Gui.frameWidth - 2 * xBuffer - 10;
     }
     //create GameSummaryPanel
-    GameSummaryPanel gameSummaryPanel = new GameSummaryPanel(this, localWidth, totalPlayers, player, thisScore, thisTime, thisLevel);
+    GameSummaryPanel gameSummaryPanel = new GameSummaryPanel(this, localWidth, player, thisScore, thisTime, thisLevel);
     gameSummaryPanel.setLocation(( Gui.frameWidth / 2 ) * x + xBuffer + 5, (int) ( Gui.frameHeight - gameSummaryPanel.getHeight() * ( ( 1.0 + y ) / 2 ) - 10 - yOffset + 5 - y * 5 ));
     gameSummaryPanel.setBackground(Color.black);
     gameSummaryPanel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker(), 3, true));

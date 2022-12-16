@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 
 public class TeleporterObject extends CollidableObject implements Rendered, Ticking
 {
+  @SuppressWarnings({ "FieldCanBeLocal", "unused" })
   private final Direction        outDirection;
   //general variables
   public        TeleporterObject pair;

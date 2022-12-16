@@ -14,22 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class ImageBasicShadow extends JPanel
 {
-  private enum Tile
-  { none, textur, outline }
-
-  private final        Map <Vector2d, Tile> tileMap      = new HashMap <>();
   private static final Map <Tile, Color>    tilesToColor = Map.of(
-    Tile.none, Color.green,
-    Tile.textur, Color.BLUE,
-    Tile.outline, Color.red
+      Tile.none, Color.green,
+      Tile.textur, Color.BLUE,
+      Tile.outline, Color.red
   );
-
-  private       Dimension dim;
+  private final        Map <Vector2d, Tile> tileMap      = new HashMap <>();
   private final Vector2d  origin;
   private final int       tileSize;
-
+  private       Dimension dim;
   public ImageBasicShadow (int width) throws IOException
   {
     setBackground(Color.black);
@@ -49,7 +45,7 @@ public class ImageBasicShadow extends JPanel
       tileSize = width / buffer.width;
     }
 
-    origin = new Vector2d().cartesian((long)(width / 2) - dim.width / 2 * tileSize, (long)(Gui.frameHeight / 2) - dim.height / 2 * tileSize);
+    origin = new Vector2d().cartesian((long) ( width / 2 ) - dim.width / 2. * tileSize, (long) ( Gui.frameHeight / 2 ) - dim.height / 2. * tileSize);
 
 
     drawMap();
@@ -98,7 +94,7 @@ public class ImageBasicShadow extends JPanel
     }
   }
 
-  public void drawMap () throws IOException
+  public void drawMap ()
   {
     for (int w = 0; w < dim.width; w++)
     {
@@ -141,7 +137,7 @@ public class ImageBasicShadow extends JPanel
 
 
     //    temp.setBorder(BorderFactory.createLineBorder(Color.cyan, 2, true));
-    temp.setBounds((int)((int)pixPos.getX() + origin.getX()), (int)((int)pixPos.getY() + origin.getY()), tileSize, tileSize);
+    temp.setBounds((int) ( (int) pixPos.getX() + origin.getX() ), (int) ( (int) pixPos.getY() + origin.getY() ), tileSize, tileSize);
 
 
     //    temp.setBackground(tilesToColor.get(tile));
@@ -149,4 +145,7 @@ public class ImageBasicShadow extends JPanel
 
     add(temp);
   }
+
+  private enum Tile
+  { none, textur, outline }
 }

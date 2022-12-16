@@ -13,6 +13,7 @@ public class pmButton extends JLabel
 
   public boolean isSelected;
 
+  @SuppressWarnings("FieldMayBeFinal")
   private Set <Runnable> actions = new HashSet <>();
 
   public pmButton (String text)
@@ -45,6 +46,7 @@ public class pmButton extends JLabel
     actions.forEach(Runnable::run);
   }
 
+  @SuppressWarnings("unused")
   public void removeAction (Runnable a)
   {
     actions.remove(a);

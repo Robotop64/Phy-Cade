@@ -5,7 +5,6 @@ import kn.uni.ui.InputListener;
 import kn.uni.ui.UIScreen;
 
 import javax.swing.JPanel;
-import java.util.Arrays;
 
 
 public class SettingsMenu extends UIScreen
@@ -43,18 +42,18 @@ public class SettingsMenu extends UIScreen
         MainMenu.getInstance().activate();
       }
 
-      if (input.player().equals(InputListener.Player.playerTwo)) return;
-      if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
-                 .contains(input.key())) return;
-      int delta = switch (input.state())
-          {
-            case up -> -1;
-            case down -> 1;
-            case none -> 0;
-          };
+      //      if (input.player().equals(InputListener.Player.playerTwo)) return;
+      //      if (!Arrays.asList(InputListener.Key.vertical, InputListener.Key.horizontal)
+      //                 .contains(input.key())) return;
+      //      int delta = switch (input.state())
+      //          {
+      //            case up -> -1;
+      //            case down -> 1;
+      //            case none -> 0;
+      //          };
 
-      if (input.key().name().equals("horizontal")) ;
-      if (input.key().name().equals("vertical")) ;
+      //      if (input.key().name().equals("horizontal")) ;
+      //      if (input.key().name().equals("vertical")) ;
     });
     setVisible(true);
   }

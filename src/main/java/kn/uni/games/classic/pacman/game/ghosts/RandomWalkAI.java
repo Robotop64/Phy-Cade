@@ -6,10 +6,11 @@ import kn.uni.util.Direction;
 import java.awt.Color;
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class RandomWalkAI extends GhostAI
 {
-  private Direction currentDirection = Direction.up;
   private final Random    random           = new Random(System.nanoTime());
+  private       Direction currentDirection = Direction.up;
 
   public RandomWalkAI ()
   {

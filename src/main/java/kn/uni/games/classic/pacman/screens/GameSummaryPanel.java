@@ -6,6 +6,7 @@ import kn.uni.games.classic.pacman.persistence.PacmanDatabaseProvider;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.UIScreen;
 import kn.uni.ui.pmButton;
+import kn.uni.util.Fira;
 import kn.uni.util.Util;
 
 import javax.swing.BorderFactory;
@@ -14,31 +15,28 @@ import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.font.TextAttribute;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class GameSummaryPanel extends UIScreen
 {
   public static final double               ratio     = 5 / 4.0;
   private final       List <JLabel>        labels    = new ArrayList <>();
-  private final       int                  totalPlayers;
   private final       int                  thisScore;
   private final       LocalTime            thisTime;
   private final       int                  level;
   private final       List <pmButton>      buttons   = new ArrayList <>();
   private final       GameOverScreen       container;
   private final       InputListener.Player player;
+  private final       int                  width;
   private             int                  listener_id;
-  private             int                  width;
   private             int                  activeKey = 0;
   private             JLabel               nameLabel;
 
-  public GameSummaryPanel (GameOverScreen container, int width, int totalPlayers, InputListener.Player player, int thisScore, LocalTime thisTime, int thisLevel)
+  public GameSummaryPanel (GameOverScreen container, int width, InputListener.Player player, int thisScore, LocalTime thisTime, int thisLevel)
   {
     super(Gui.getInstance().content);
     setBackground(Color.black);
@@ -47,7 +45,6 @@ public class GameSummaryPanel extends UIScreen
 
     this.container = container;
     this.player = player;
-    this.totalPlayers = totalPlayers;
     this.thisScore = thisScore;
     this.thisTime = thisTime;
     this.level = thisLevel;
@@ -79,8 +76,7 @@ public class GameSummaryPanel extends UIScreen
 
     //create Keyboard
     {
-      String           name = "";
-      OnScreenKeyboard osk  = new OnScreenKeyboard(this, player, width - 60, this::addEntry);
+      OnScreenKeyboard osk = new OnScreenKeyboard(this, player, width - 60, this::addEntry);
       osk.setLocation(( this.getWidth() - osk.getWidth() ) / 2, this.getHeight() - osk.getHeight() - ( this.getWidth() - osk.getWidth() ) / 2);
       osk.setTarget(symbol -> nameLabel.setText(symbol));
       add(osk);
@@ -121,9 +117,7 @@ public class GameSummaryPanel extends UIScreen
         new Dimension(textWidth, textHeight),
         SwingConstants.LEFT);
     //underline the playerLabel
-    Map attributes = p.getFont().getAttributes();
-    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-    p.setFont(p.getFont().deriveFont(attributes));
+    p.setFont(Fira.getInstance().getLigaturesUnderlined(p.getFont().getSize()));
 
     createLabel(
         " Level : ",

@@ -20,27 +20,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class LeaderboardMenu extends JPanel
 {
   private static LeaderboardMenu instance;
 
   //container of the 9 display slots
-  private final List <pmButton[]> buttonSlots = new ArrayList <>();
-  private final int      entryHeight   = 60;
-  public List <LeaderboardEntry> entries = new ArrayList <>();
-  public Map <GameTitle, Leaderboard> games = new HashMap <>();
-  private       int      listener_id;
+  private final List <pmButton[]>            buttonSlots   = new ArrayList <>();
+  private final int                          entryHeight   = 60;
+  public        List <LeaderboardEntry>      entries       = new ArrayList <>();
+  public        Map <GameTitle, Leaderboard> games         = new HashMap <>();
+  private       int                          listener_id;
   //  public List <Leaderboard>      games = new ArrayList <>();
-  private       int      tableOffset   = 0;
-  private       pmButton header;
-  private       pmButton ybuffer;
-  private       pmButton xbuffer;
-  private       JLabel   label;
-  private       JLabel   left;
-  private       JLabel   right;
-  private       int      currentActive = -1;
-  private       int      activeGame    = 0;
-  private GameTitle newActiveGame = GameTitle.pacman;
+  private       int                          tableOffset   = 0;
+  private       pmButton                     header;
+  private       pmButton                     ybuffer;
+  private       pmButton                     xbuffer;
+  private       JLabel                       label;
+  private       JLabel                       left;
+  private       JLabel                       right;
+  private       int                          currentActive = -1;
+  @SuppressWarnings("FieldMayBeFinal")
+  private       int                          activeGame    = 0;
+  private       GameTitle                    newActiveGame = GameTitle.pacman;
+
   /**
    * constructor for the leaderboard menu
    */
@@ -165,8 +168,7 @@ public class LeaderboardMenu extends JPanel
       List <GameTitle> titleList = Arrays.stream(GameTitle.values()).toList();
       int              index     = titleList.indexOf(newActiveGame);
       if (change == -1) change = titleList.size() - 1;
-      GameTitle next = titleList.get(( index + change ) % titleList.size());
-      newActiveGame = next;
+      newActiveGame = titleList.get(( index + change ) % titleList.size());
 
       if (currentActive != 0)
       {
@@ -302,6 +304,7 @@ public class LeaderboardMenu extends JPanel
   /**
    * Create the buttons to display a line of an entry
    */
+  @SuppressWarnings("SameParameterValue")
   private pmButton createButton (String name, int x, int y, int w, int h, String theme, int align)
   {
     pmButton temp = new pmButton(name);
@@ -372,9 +375,7 @@ public class LeaderboardMenu extends JPanel
           buttonSlot[0].setText("");
           buttonSlot[1].setText("");
           buttonSlot[2].setText("");
-          DateTimeFormatter newtime = DateTimeFormatter.ofPattern("HH:mm:ss");
           buttonSlot[3].setText("");
-          DateTimeFormatter newdate = DateTimeFormatter.ofPattern("dd.MM.yy");
           buttonSlot[4].setText("");
         }
       }

@@ -39,6 +39,7 @@ public class ClassicPacmanGameState
   // @David Do we need this? and if we need it, do we need it here? ~Max
   //@Max we do, needed for game summary (GameSummaryPanel) ~David
   // how many items were collected
+  @SuppressWarnings("unused")
   public Map <ClassicPacmanGameConstants.Collectables, Integer> collectionCount;
 
   //objects added to game

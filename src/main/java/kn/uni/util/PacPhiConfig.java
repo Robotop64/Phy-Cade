@@ -26,25 +26,25 @@ public class PacPhiConfig
   public void createDefault ()
   {
     //trunk
-    settings = new SettingTree(new HashMap(), new Setting("Settings", "Group", null, null, null));
+    settings = new SettingTree(new HashMap <>(), new Setting <>("Settings", "Group", null, null, null));
 
     //General branch
-    SettingTree general = new SettingTree(new HashMap(), new Setting("General", "Group", null, null, null));
-    SettingTree version = new SettingTree(new HashMap(), new Setting("version", "Value", null, null, null));
-    SettingTree branch  = new SettingTree(new HashMap(), new Setting("branch", "Value", "STABLE", null, null));
+    SettingTree general = new SettingTree(new HashMap <>(), new Setting <>("General", "Group", null, null, null));
+    SettingTree version = new SettingTree(new HashMap <>(), new Setting <>("version", "Value", null, null, null));
+    SettingTree branch  = new SettingTree(new HashMap <>(), new Setting <>("branch", "Value", "STABLE", null, null));
     general.add("Version", version);
     general.add("Branch", branch);
     settings.add("General", general);
 
     //Graphics branch
-    SettingTree graphics = new SettingTree(new HashMap(), new Setting("Graphics", "Group", null, null, null));
+    SettingTree graphics = new SettingTree(new HashMap <>(), new Setting <>("Graphics", "Group", null, null, null));
     settings.add("Graphics", graphics);
 
     //Audio branch
-    SettingTree audio        = new SettingTree(new HashMap(), new Setting("Audio", "Group", null, null, null));
-    SettingTree masterVolume = new SettingTree(new HashMap(), new Setting("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50));
-    SettingTree musicVolume  = new SettingTree(new HashMap(), new Setting("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50));
-    SettingTree soundVolume  = new SettingTree(new HashMap(), new Setting("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50));
+    SettingTree audio        = new SettingTree(new HashMap <>(), new Setting <>("Audio", "Group", null, null, null));
+    SettingTree masterVolume = new SettingTree(new HashMap <>(), new Setting <>("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50));
+    SettingTree musicVolume  = new SettingTree(new HashMap <>(), new Setting <>("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50));
+    SettingTree soundVolume  = new SettingTree(new HashMap <>(), new Setting <>("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50));
     audio.add("Master", masterVolume);
     audio.add("Music", musicVolume);
     audio.add("Sound", soundVolume);
@@ -132,6 +132,7 @@ public class PacPhiConfig
   // tree consisting of setting groups and settings as leaves
   public record SettingTree(HashMap <String, SettingTree> children, Setting <?> setting)
   {
+    @SuppressWarnings("unused")
     public boolean isLeaf () { return children.size() == 0; }
 
     public SettingTree get (String key)
@@ -146,7 +147,7 @@ public class PacPhiConfig
       Setting <?> old = children.get(key).setting;
       children.replace(
           key,
-          new SettingTree(new HashMap(), new Setting(old.name, old.type, value, old.possibleVal, old.defaultVal)));
+          new SettingTree(new HashMap <>(), new Setting <>(old.name, old.type, value, old.possibleVal, old.defaultVal)));
     }
   }
 

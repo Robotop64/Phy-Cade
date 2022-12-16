@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class CollectablesLabel extends PlacedObject implements Rendered
 {
   public Map <ClassicPacmanGameConstants.Collectables, BufferedImage> icons = new HashMap <>();
