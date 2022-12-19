@@ -229,7 +229,10 @@ public class MainMenu extends JPanel
     content.add("Ver.:" + PacPhi.GAME_VERSION);
     content.add("Latest Feature: " + PacPhi.GAME_UPDATE);
     content.add("Branch: " + PacPhi.GAME_BRANCH);
-    content.add(PacPhiConfig.getInstance().check(new String[]{ "General", "Branch" }) ? "" : "Restart to: " + PacPhiConfig.getInstance().settings.get("General").get("Branch").setting().current());
+    String currentVersion = (String) PacPhiConfig.getInstance().settings.get("General").get("Branch").setting().current();
+    content.add(PacPhi.GAME_BRANCH==currentVersion ? "" : "Restart to: " + currentVersion);
+    boolean debug = (boolean) PacPhiConfig.getInstance().settings.get("General").get("Debug").setting().current();
+    content.add(debug ? "Debug Mode" : "");
 
     content.removeIf(String::isEmpty);
 
