@@ -15,6 +15,7 @@ public class PacPhi
     PacPhiConfig.getInstance().load();
     PacPhiConfig.getInstance().settings.get("General").set("Version", GAME_VERSION);
     PacPhiConfig.getInstance().settings.get("General").set("Branch", GAME_BRANCH);
+    PacPhiConfig.getInstance().createDefaultSettings();
     PacPhiConfig.getInstance().save();
 
     Gui.getInstance().initialize();
