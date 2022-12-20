@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static java.nio.file.Files.createDirectories;
 
@@ -16,11 +18,13 @@ public class PacPhiConfig
   private static PacPhiConfig                   instance;
   public         SettingTree                    settings;
   public         HashMap <Setting <?>, Context> descriptions;
+  public static List<SettingTree> nonEditable = new ArrayList<>();;
+  public static List<SettingTree> debugOnly= new ArrayList<>();;
 
   public PacPhiConfig ()
   {
     createDefaultSettings();
-    createDescriptions();
+    //createDescriptions();
   }
 
   public static PacPhiConfig getInstance ()
@@ -35,51 +39,43 @@ public class PacPhiConfig
     settings = new SettingTree(new HashMap <>(), new Setting <>("Settings", "Group", null, null, null), 0);
 
     //General branch
-    SettingTree general = new SettingTree(new HashMap <>(), new Setting <>("General", "Group", null, null, null), 0);
-    SettingTree version = new SettingTree(new HashMap <>(), new Setting <>("Version", "Value", null, null, null), 1);
-    SettingTree branch  = new SettingTree(new HashMap <>(), new Setting <>("Branch", "Value", "UNSTABLE", new String[]{ "STABLE", "UNSTABLE" }, "STABLE"), 2);
-    SettingTree debug   = new SettingTree(new HashMap <>(), new Setting <>("Debug", "Value", false, new boolean[]{ true, false }, false), 3);
-    general.add("Version", version);
-    general.add("Branch", branch);
-    general.add("Debug", debug);
-    settings.add("General", general);
+    settings.addSubGroup("General");
+    settings.get("General").addSetting("Version", "Value", null, null, null, false);
+    settings.get("General").get("Version").makeNonEditable();
+    settings.get("General").addSetting("Branch", "Value", "UNSTABLE", new String[]{ "STABLE", "UNSTABLE" }, "STABLE",true);
+
+    //Debugging branch
+    settings.addSubGroup("Debugging");
+    settings.get("Debugging").addSetting("Enabled", "Boolean", false, null, null,true);
+    settings.get("Debugging").addSetting("Immortal", "Boolean", false, new Boolean[]{ true, false }, false,true);
+    settings.get("Debugging").addSetting("StartLives", "Counter", 5, null, 5,true);
+
+    //Gameplay branch
+    settings.addSubGroup("Gameplay");
+
 
     //Graphics branch
-    SettingTree graphics     = new SettingTree(new HashMap <>(), new Setting <>("Graphics", "Group", null, null, null), 1);
-    SettingTree effects      = new SettingTree(new HashMap <>(), new Setting <>("Effects", "Value", true, new Boolean[]{ true, false }, true), 0);
-    SettingTree advGraphics  = new SettingTree(new HashMap <>(), new Setting <>("Advanced", "SubGroup", null, null, null), 1);
-    SettingTree style        = new SettingTree(new HashMap <>(), new Setting <>("Style", "SubGroup", null, null, null), 2);
-    SettingTree menuSkin     = new SettingTree(new HashMap <>(), new Setting <>("MenuSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic"), 0);
-    SettingTree seasonalSkin = new SettingTree(new HashMap <>(), new Setting <>("SeasonalSkin", "Value", false, new Boolean[]{ true, false }, false), 1);
-    SettingTree pacSkin      = new SettingTree(new HashMap <>(), new Setting <>("PacSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic"), 2);
-    SettingTree ghostSkin    = new SettingTree(new HashMap <>(), new Setting <>("GhostSkin", "Value", "Classic", new String[]{ "Classic", "Profs" }, "Classic"), 3);
-    SettingTree mapSkin      = new SettingTree(new HashMap <>(), new Setting <>("MapSkin", "Value", "Classic", new String[]{ "Classic", "Forest", "Dungeon", "Cave" }, "Classic"), 4);
-    SettingTree wallSkin     = new SettingTree(new HashMap <>(), new Setting <>("WallSkin", "Value", "Classic", new String[]{ "Classic", "Forest", "Dungeon", "Cave" }, "Classic"), 5);
-    SettingTree itemSkin     = new SettingTree(new HashMap <>(), new Setting <>("ItemSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic"), 6);
-    graphics.add("Effects", effects);
-    graphics.add("Advanced", advGraphics);
-    graphics.add("Style", style);
-    style.add("MenuSkin", menuSkin);
-    style.add("SeasonalSkin", seasonalSkin);
-    style.add("PacSkin", pacSkin);
-    style.add("GhostSkin", ghostSkin);
-    style.add("MapSkin", mapSkin);
-    style.add("WallSkin", wallSkin);
-    style.add("ItemSkin", itemSkin);
-    settings.add("Graphics", graphics);
+    settings.addSubGroup("Graphics");
+    settings.get("Graphics").addSubGroup("General");
+    settings.get("Graphics").get("General").addSetting("Effects", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Graphics").addSubGroup("Advanced");
+    settings.get("Graphics").addSubGroup("Style");
+    settings.get("Graphics").get("Style").addSetting("MenuSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("SeasonalSkins", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Graphics").get("Style").addSetting("PlayerSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("GhostSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("ItemSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("MapSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("WallSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
 
     //Audio branch
-    SettingTree audio        = new SettingTree(new HashMap <>(), new Setting <>("Audio", "Group", null, null, null), 2);
-    SettingTree muted        = new SettingTree(new HashMap <>(), new Setting <>("muted", "Value", false, new Boolean[]{ true, false }, false), 1);
-    SettingTree masterVolume = new SettingTree(new HashMap <>(), new Setting <>("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50), 2);
-    SettingTree musicVolume  = new SettingTree(new HashMap <>(), new Setting <>("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50), 3);
-    SettingTree soundVolume  = new SettingTree(new HashMap <>(), new Setting <>("Volume", Range.class.getSimpleName(), 50, new Range(0, 100, 5), 50), 4);
-    audio.add("Muted", muted);
-    audio.add("Master", masterVolume);
-    audio.add("Music", musicVolume);
-    audio.add("Sound", soundVolume);
-    settings.add("Audio", audio);
-
+    settings.addSubGroup("Audio");
+    settings.get("Audio").addSetting("Enabled", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Audio").addSetting("MasterVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
+    settings.get("Audio").addSetting("Music", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Audio").addSetting("MusicVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
+    settings.get("Audio").addSetting("SFX", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
+    settings.get("Audio").addSetting("SFXVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
   }
 
   public void createDescriptions ()
@@ -96,7 +92,7 @@ public class PacPhiConfig
             Anmelden ist nicht möglich.
             """));
     descriptions.put(settings.get("Graphics").setting, new Context("Grafik", "Hier können die allgemeinen Grafikeinstellungen vorgenommen werden"));
-    descriptions.put(settings.get("Graphics").get("Effects").setting, new Context("Effekte", "Aktiviert oder deaktiviert die Effekte"));
+    descriptions.put(settings.get("Graphics").get("General").get("Effects").setting, new Context("Effekte", "Aktiviert oder deaktiviert die Effekte"));
     descriptions.put(settings.get("Graphics").get("Advanced").setting, new Context("Erweiterte Einstellungen", "Hier können die erweiterten Grafikeinstellungen vorgenommen werden"));
     descriptions.put(settings.get("Graphics").get("Style").setting, new Context("Stil", "Hier können die Stile der Grafikelemente vorgenommen werden"));
     descriptions.put(settings.get("Graphics").get("Style").get("PacSkin").setting, new Context("Spieler", "Bestimmt das Aussehen des Spielers"));
@@ -194,6 +190,27 @@ public class PacPhiConfig
       children.replace(
           key,
           new SettingTree(new HashMap <>(), new Setting <>(old.name, old.type, value, old.possibleVal, old.defaultVal), children.get(key).order));
+    }
+
+    public void addSubGroup(String name)
+    {
+      children.put(name, new SettingTree(new HashMap <>(), new Setting<>(name, "SubGroup", null,null,null), children.size()));
+    }
+
+    public void addSetting(String name, Object type, Object current, Object possibleVal, Object defaultVal, boolean editable)
+    {
+      int order = 0;
+      if (editable) order = children.size();
+      else order = -1;
+      children.put(name, new SettingTree(new HashMap <>(), new Setting<>(name, type, current, possibleVal, defaultVal), order));
+    }
+
+    public void makeDebug(){
+      debugOnly.add(this);
+    }
+
+    public void makeNonEditable(){
+      nonEditable.add(this);
     }
   }
 
