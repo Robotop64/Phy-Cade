@@ -12,9 +12,10 @@ public class PacPhi
   {
 
     //    System.setProperty("net.java.games.input.librarypath", new File("target/natives/").getAbsolutePath());
+    PacPhiConfig.getInstance().init();
     PacPhiConfig.getInstance().load();
-    PacPhiConfig.getInstance().settings.get("General").set("Version", GAME_VERSION);
-    PacPhiConfig.getInstance().settings.get("General").set("Branch", GAME_BRANCH);
+    PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
+    PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
     PacPhiConfig.getInstance().createDefaultSettings();
     PacPhiConfig.getInstance().save();
 

@@ -7,8 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.file.Files.createDirectories;
 
@@ -16,15 +20,13 @@ public class PacPhiConfig
 {
   //make singleton
   private static PacPhiConfig                   instance;
+  public         List <SettingTree>             nonEditable = new ArrayList <>();
+  public         List <SettingTree>             debugOnly   = new ArrayList <>();
   public         SettingTree                    settings;
   public         HashMap <Setting <?>, Context> descriptions;
-  public static List<SettingTree> nonEditable = new ArrayList<>();;
-  public static List<SettingTree> debugOnly= new ArrayList<>();;
 
   public PacPhiConfig ()
   {
-    createDefaultSettings();
-    //createDescriptions();
   }
 
   public static PacPhiConfig getInstance ()
@@ -33,25 +35,40 @@ public class PacPhiConfig
     return instance;
   }
 
+  public void init ()
+  {
+    createDefaultSettings();
+    //createDescriptions();
+  }
+
   public void createDefaultSettings ()
   {
     //trunk
-    settings = new SettingTree(new HashMap <>(), new Setting <>("Settings", "Group", null, null, null), 0);
+    settings = new SettingTree(new TreeMap <>(), new Setting <>("Settings", "Group", null, null, null), 0);
 
     //General branch
     settings.addSubGroup("General");
-    settings.get("General").addSetting("Version", "Value", null, null, null, false);
-    settings.get("General").get("Version").makeNonEditable();
-    settings.get("General").addSetting("Branch", "Value", "UNSTABLE", new String[]{ "STABLE", "UNSTABLE" }, "STABLE",true);
+    settings.get("General").addSubGroup("-");
+    settings.get("General").get("-").addSetting("Version", "Value", null, null, null, false);
+    settings.get("General").get("-").get("Version").makeNonEditable();
+    settings.get("General").get("-").addSetting("Branch", "Value", "UNSTABLE", new String[]{ "STABLE", "UNSTABLE" }, "STABLE", true);
 
     //Debugging branch
     settings.addSubGroup("Debugging");
-    settings.get("Debugging").addSetting("Enabled", "Boolean", false, null, null,true);
-    settings.get("Debugging").addSetting("Immortal", "Boolean", false, new Boolean[]{ true, false }, false,true);
-    settings.get("Debugging").addSetting("StartLives", "Counter", 5, null, 5,true);
+    settings.get("Debugging").addSubGroup("-");
+    settings.get("Debugging").get("-").addSetting("Enabled", "Boolean", false, null, null, true);
+    settings.get("Debugging").addSubGroup("Graphics");
+    settings.get("Debugging").addSubGroup("Gameplay");
+    settings.get("Debugging").get("Gameplay").addSetting("Immortal", "Boolean", false, new Boolean[]{ true, false }, false, true);
+    settings.get("Debugging").get("Gameplay").get("Immortal").makeDebug();
+    settings.get("Debugging").get("Gameplay").addSetting("StartLives", "Level", 5, null, 5, true);
+    settings.get("Debugging").get("Gameplay").get("StartLives").makeDebug();
+    settings.get("Debugging").get("Gameplay").addSetting("StartSpeed", "Level", 1, null, 1, true);
+    settings.get("Debugging").get("Gameplay").get("StartSpeed").makeDebug();
 
     //Gameplay branch
     settings.addSubGroup("Gameplay");
+    settings.get("Gameplay").addSubGroup("-");
 
 
     //Graphics branch
@@ -62,20 +79,21 @@ public class PacPhiConfig
     settings.get("Graphics").addSubGroup("Style");
     settings.get("Graphics").get("Style").addSetting("MenuSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
     settings.get("Graphics").get("Style").addSetting("SeasonalSkins", "Boolean", true, new Boolean[]{ true, false }, true, true);
-    settings.get("Graphics").get("Style").addSetting("PlayerSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("GhostSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("ItemSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("MapSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("WallSkin",  "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("PlayerSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("GhostSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("ItemSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("MapSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("WallSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
 
     //Audio branch
     settings.addSubGroup("Audio");
-    settings.get("Audio").addSetting("Enabled", "Boolean", true, new Boolean[]{ true, false }, true, true);
-    settings.get("Audio").addSetting("MasterVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
-    settings.get("Audio").addSetting("Music", "Boolean", true, new Boolean[]{ true, false }, true, true);
-    settings.get("Audio").addSetting("MusicVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
-    settings.get("Audio").addSetting("SFX", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
-    settings.get("Audio").addSetting("SFXVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
+    settings.get("Audio").addSubGroup("General");
+    settings.get("Audio").get("General").addSetting("Enabled", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Audio").get("General").addSetting("MasterVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
+    settings.get("Audio").get("General").addSetting("Music", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Audio").get("General").addSetting("MusicVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
+    settings.get("Audio").get("General").addSetting("SFX", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Audio").get("General").addSetting("SFXVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
   }
 
   public void createDescriptions ()
@@ -172,10 +190,27 @@ public class PacPhiConfig
   public record Setting <T>(String name, T type, T current, T possibleVal, T defaultVal) { }
 
   // tree consisting of setting groups and settings as leaves
-  public record SettingTree(HashMap <String, SettingTree> children, Setting <?> setting, int order)
+  public record SettingTree(TreeMap <String, SettingTree> children, Setting <?> setting, int order)
   {
     @SuppressWarnings("unused")
     public boolean isLeaf () { return children.size() == 0; }
+
+    public boolean hasSubGroups ()
+    {
+
+      AtomicBoolean hasSubGroups = new AtomicBoolean(false);
+      children.forEach((s, settingTree) ->
+      {
+        if (settingTree.setting.type == "SubGroup") hasSubGroups.set(true);
+      });
+
+      return hasSubGroups.get();
+    }
+
+    public boolean isGroup ()
+    {
+      return setting.type == "SubGroup" || setting.type == "Group";
+    }
 
     public SettingTree get (String key)
     {
@@ -189,28 +224,37 @@ public class PacPhiConfig
       Setting <?> old = children.get(key).setting;
       children.replace(
           key,
-          new SettingTree(new HashMap <>(), new Setting <>(old.name, old.type, value, old.possibleVal, old.defaultVal), children.get(key).order));
+          new SettingTree(new TreeMap <>(), new Setting <>(old.name, old.type, value, old.possibleVal, old.defaultVal), children.get(key).order));
     }
 
-    public void addSubGroup(String name)
+    public void addSubGroup (String name)
     {
-      children.put(name, new SettingTree(new HashMap <>(), new Setting<>(name, "SubGroup", null,null,null), children.size()));
+      children.put(name, new SettingTree(new TreeMap <>(), new Setting <>(name, "SubGroup", null, null, null), children.size()));
     }
 
-    public void addSetting(String name, Object type, Object current, Object possibleVal, Object defaultVal, boolean editable)
+    public void addSetting (String name, Object type, Object current, Object possibleVal, Object defaultVal, boolean editable)
     {
-      int order = 0;
-      if (editable) order = children.size();
-      else order = -1;
-      children.put(name, new SettingTree(new HashMap <>(), new Setting<>(name, type, current, possibleVal, defaultVal), order));
+      AtomicInteger order = new AtomicInteger();
+
+      if (children.size() == 0) order.set(0);
+      else children.values().stream()
+                   .filter(settingTree -> settingTree.order != -1)
+                   .max(Comparator.comparingInt(settingTree -> settingTree.order))
+                   .ifPresent(settingTree -> order.set(settingTree.order + 1));
+
+      if (!editable) order.set(-1);
+
+      children.put(name, new SettingTree(new TreeMap <>(), new Setting <>(name, type, current, possibleVal, defaultVal), order.get()));
     }
 
-    public void makeDebug(){
-      debugOnly.add(this);
+    public void makeDebug ()
+    {
+      PacPhiConfig.getInstance().debugOnly.add(this);
     }
 
-    public void makeNonEditable(){
-      nonEditable.add(this);
+    public void makeNonEditable ()
+    {
+      PacPhiConfig.getInstance().nonEditable.add(this);
     }
   }
 
