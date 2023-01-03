@@ -11,7 +11,7 @@ import static kn.uni.util.Util.cos;
 import static kn.uni.util.Util.round;
 import static kn.uni.util.Util.sin;
 
-@SuppressWarnings({"unused", "NonAsciiCharacters"})
+@SuppressWarnings({ "unused", "NonAsciiCharacters" })
 public class Vector2d
 {
   public final double x;
@@ -29,7 +29,7 @@ public class Vector2d
     this.y = y;
   }
 
-  public Vector2d copy () {return new Vector2d(x, y);}
+  public Vector2d copy () { return new Vector2d(x, y); }
 
   public double magnitude ()
   {
@@ -46,15 +46,11 @@ public class Vector2d
     return new Vector2d(ρ * cos(φ), ρ * sin(φ));
   }
 
-  public Vector2d add (Vector2d v)
-  {
-    return new Vector2d(x + v.x, y + v.y);
-  }
+  public Vector2d add (Vector2d v) { return new Vector2d(x + v.x, y + v.y); }
 
-  public Vector2d multiply (double s)
-  {
-    return new Vector2d(x * s, y * s);
-  }
+  public Vector2d multiply (double s) { return new Vector2d(x * s, y * s); }
+
+  public Vector2d invert () { return this.multiply(-1); }
 
   public Vector2d divide (double d)
   {
@@ -71,7 +67,7 @@ public class Vector2d
     return new Vector2d(cos(φ) * x - sin(φ) * y, sin(φ) * x + cos(φ) * y);
   }
 
-  public double length()
+  public double length ()
   {
     return sqrt(x * x + y * y);
   }
@@ -103,8 +99,8 @@ public class Vector2d
    */
   public Stream <Vector2d> stream ()
   {
-    return IntStream.range(0, (int)x)
-                    .mapToObj(i -> IntStream.range(0, (int)y)
+    return IntStream.range(0, (int) x)
+                    .mapToObj(i -> IntStream.range(0, (int) y)
                                             .mapToObj(j -> new Vector2d().cartesian(i, j)))
                     .flatMap(Function.identity());
   }
@@ -122,6 +118,16 @@ public class Vector2d
   public String toString ()
   {
     return "(%f, %f)".formatted(x, y);
+  }
+
+  public boolean isHorizontal ()
+  {
+    return x != 0 && y == 0;
+  }
+
+  public boolean isVertical ()
+  {
+    return x == 0 && y != 0;
   }
 
   /**
@@ -143,7 +149,7 @@ public class Vector2d
   //ToDo get better name
   public void use (BiConsumer <Integer, Integer> consumer)
   {
-    consumer.accept((int)rounded().x, (int)rounded().y);
+    consumer.accept((int) rounded().x, (int) rounded().y);
   }
 
   public Vector2d floor ()
@@ -161,7 +167,7 @@ public class Vector2d
   {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Vector2d vector2D = (Vector2d)o;
+    Vector2d vector2D = (Vector2d) o;
     return rounded().x == vector2D.rounded().x && rounded().y == vector2D.rounded().y;
   }
 

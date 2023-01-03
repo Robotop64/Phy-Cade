@@ -2,6 +2,8 @@ package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
 import kn.uni.PacPhi;
+import kn.uni.menus.MenuTest;
+import kn.uni.menus.Projector;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
@@ -27,22 +29,22 @@ public class MainMenu extends JPanel
 
   private static MainMenu instance;
 
-  pmButton spButton, mpButton, settingsButton, lbButton, soundButton;
-  pmButton title_label;
+  pmButton spButton, mpButton, settingsButton, lbButton, soundButton, testButton;
+  pmButton        title_label;
+  List <pmButton> buttons;
 
   int w = 500;
   int x = ( Gui.frameWidth - w ) / 2;
 
   int h         = 120;
   int n_offsets = 32;
-  int n_buttons = 5;
+  int n_buttons = 6;
   int buffer    = ( Gui.frameHeight - ( n_buttons * h ) ) / n_offsets;
   int y         = ( n_offsets - n_buttons ) / 2 * buffer + 100;
 
   int selected_index = 0;
   int listenerId;
 
-  List <pmButton> buttons;
 
   private MainMenu ()
   {
@@ -52,7 +54,7 @@ public class MainMenu extends JPanel
 
     createButtons();
 
-    buttons = Arrays.asList(spButton, mpButton, lbButton, settingsButton, soundButton);
+    buttons = Arrays.asList(spButton, mpButton, lbButton, settingsButton, soundButton, testButton);
 
     select(0);
 
@@ -137,6 +139,10 @@ public class MainMenu extends JPanel
     soundButton = new pmButton("TON - AN");
     soundButton.setBounds(x, y + 4 * ( h + buffer ), w, h);
     add(soundButton);
+
+    testButton = new pmButton("TEST");
+    testButton.setBounds(x, y + 5 * ( h + buffer ), w, h);
+    add(testButton);
   }
 
   private void addActions ()
@@ -201,6 +207,15 @@ public class MainMenu extends JPanel
 
     soundButton.clearActions();
     soundButton.addAction(() -> soundButton.setText(soundButton.getText().contains("AUS") ? "TON - AN" : "TON - AUS"));
+
+    testButton.addAction(() ->
+    {
+
+
+      Projector projector = new Projector(Gui.getInstance().content);
+      projector.setBounds(Gui.defaultFrameBounds);
+      projector.setSelectedMenu(new MenuTest(projector));
+    });
   }
 
   private void addGraphics ()
