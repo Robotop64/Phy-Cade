@@ -1,6 +1,6 @@
 package kn.uni.menus;
 
-import kn.uni.ui.InputListener;
+import kn.uni.Gui;
 import kn.uni.ui.UIScreen;
 
 import javax.swing.JPanel;
@@ -21,16 +21,33 @@ public class Projector extends UIScreen
 
     state = new ProjectorState();
 
-    bindPlayer(InputListener.Player.playerOne, input ->
-    {
-
-    });
-
+    startScreen();
   }
 
   private void startScreen ()
   {
+    new Thread(() ->
+    {
+      state.running = true;
+      state.currentTick = 0;
+      state.lastTickTime = System.nanoTime();
+      while (state.running)
+      {
+        long t = System.nanoTime();
+        if (t - state.lastTickTime < state.tickDuration) continue;
+        state.currentTick++;
+        state.lastTickTime = t;
 
+        //update UIObject
+        selectedMenu.elements.stream()
+                             .filter(UIObject -> UIObject instanceof Updating)
+                             .forEach(UIObject -> ( (Updating) UIObject ).update());
+
+        //        if (state.currentTick % 2 == 0)
+        Gui.getInstance().frame.repaint();
+      }
+      kill();
+    }).start();
   }
 
   @Override
@@ -38,11 +55,16 @@ public class Projector extends UIScreen
   {
     super.paintComponent(g);
     Graphics2D gg = (Graphics2D) g;
-    selectedMenu.elements.stream()
-                         .filter(UIObject -> UIObject instanceof Displayed)
-                         .map(UIObject -> (Displayed) UIObject)
-                         .sorted(Comparator.comparingInt(Displayed::paintLayer))
-                         .forEach(UIObject -> ( UIObject ).paintComponent(gg));
+    if (selectedMenu != null && selectedMenu.elements.size() > 0) selectedMenu.elements.stream()
+                                                                                       .filter(UIObject -> UIObject instanceof Displayed)
+                                                                                       .map(UIObject -> (Displayed) UIObject)
+                                                                                       .sorted(Comparator.comparingInt(Displayed::paintLayer))
+                                                                                       .forEach(UIObject -> ( UIObject ).paintComponent(gg));
+  }
+
+  public void setSelectedMenu (Menu menu)
+  {
+    selectedMenu = menu;
   }
 }
 
