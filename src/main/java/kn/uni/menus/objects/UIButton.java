@@ -1,5 +1,7 @@
-package kn.uni.menus;
+package kn.uni.menus.objects;
 
+import kn.uni.menus.interfaces.Displayed;
+import kn.uni.menus.interfaces.Updating;
 import kn.uni.util.Vector2d;
 
 import java.awt.Color;

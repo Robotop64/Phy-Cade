@@ -1,6 +1,9 @@
-package kn.uni.menus;
+package kn.uni.menus.engine;
 
 import kn.uni.Gui;
+import kn.uni.menus.Menu;
+import kn.uni.menus.interfaces.Displayed;
+import kn.uni.menus.interfaces.Updating;
 import kn.uni.ui.UIScreen;
 
 import javax.swing.JPanel;
@@ -11,8 +14,9 @@ import java.util.Comparator;
 
 public class Projector extends UIScreen
 {
-  public ProjectorState state;
-  public Menu           selectedMenu;
+  public static Graphics2D     scene;
+  public        ProjectorState state;
+  public        Menu           selectedMenu;
 
   public Projector (JPanel parent)
   {
@@ -20,11 +24,10 @@ public class Projector extends UIScreen
     setBackground(Color.black.darker().darker().darker().darker());
 
     state = new ProjectorState();
-
-    startScreen();
+    scene = (Graphics2D) getGraphics();
   }
 
-  private void startScreen ()
+  public void startScreen ()
   {
     new Thread(() ->
     {

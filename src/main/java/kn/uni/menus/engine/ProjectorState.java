@@ -1,4 +1,4 @@
-package kn.uni.menus;
+package kn.uni.menus.engine;
 
 public class ProjectorState
 {
