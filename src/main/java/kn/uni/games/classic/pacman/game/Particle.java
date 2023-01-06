@@ -47,18 +47,18 @@ public class Particle extends PlacedObject implements Rendered, Ticking
     //scorePos X&Y are used to determine the offset&progression of the score text from the fruit origin
     int scorePosY = gameState.map.tileSize / 4;
     int scorePosX = -gameState.map.tileSize / 4;
-    scorePosY += (int) ( Util.progression(creationTick, lifeTime, gameState) * -10 );
-    scorePosX += (int) ( Util.progression(creationTick, lifeTime, gameState) * -5 );
+    scorePosY += (int) ( Util.progression(creationTick, lifeTime, gameState.currentTick) * -10 );
+    scorePosX += (int) ( Util.progression(creationTick, lifeTime, gameState.currentTick) * -5 );
     //score color fade out
     Color scoreColor = this.color;
     //ramp the alpha value of the score text (visible between progression > 0.15 with fade out)
-    if (Util.progression(creationTick, lifeTime, gameState) < 0.15)
+    if (Util.progression(creationTick, lifeTime, gameState.currentTick) < 0.15)
     {
       g.setColor(new Color(scoreColor.getRed(), scoreColor.getGreen(), scoreColor.getBlue(), 0));
     }
     else
     {
-      g.setColor(new Color(scoreColor.getRed(), scoreColor.getGreen(), scoreColor.getBlue(), (int) ( 255 * ( 1. - Util.progression(creationTick, lifeTime, gameState) ) )));
+      g.setColor(new Color(scoreColor.getRed(), scoreColor.getGreen(), scoreColor.getBlue(), (int) ( 255 * ( 1. - Util.progression(creationTick, lifeTime, gameState.currentTick) ) )));
     }
     g.setFont(Gui.getInstance().content.getFont().deriveFont(20f));
     //translate to tile center

@@ -1,7 +1,5 @@
 package kn.uni.util;
 
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
-
 public class Util
 {
   public static final double precision = 1e9;
@@ -64,14 +62,14 @@ public class Util
   /**
    * gives a value between 0 and 1 for a given starttick and a waiting duration
    *
-   * @param start     the start tick
-   * @param duration  the duration
-   * @param gameState the gamestate
+   * @param start    the start tick
+   * @param duration the duration
+   * @param current  the current tick
    * @return a value between 0 and 1
    */
-  public static double progression (long start, long duration, ClassicPacmanGameState gameState)
+  public static double progression (long start, long duration, long current)
   {
-    return Math.min(Math.max(( gameState.currentTick - start ) * 1.0 / ( duration ), 0), 1);
+    return Math.min(Math.max(( current - start ) * 1.0 / ( duration ), 0), 1);
   }
 
 

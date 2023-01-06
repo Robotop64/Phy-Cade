@@ -1,5 +1,6 @@
 package kn.uni.menus;
 
+import kn.uni.menus.objects.UIObject;
 import kn.uni.ui.UIScreen;
 
 import javax.swing.JPanel;
