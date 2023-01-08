@@ -13,7 +13,6 @@ public class Menu extends UIScreen
   public Menu (JPanel parent)
   {
     super(parent);
-    setVisible(false);
 
     elements = new ConcurrentLinkedDeque <>();
   }

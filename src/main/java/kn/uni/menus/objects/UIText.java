@@ -51,9 +51,9 @@ public class UIText
       this(Arrays.stream(text.split("\n")).toList(), lineDist);
     }
 
-    public static String getBiggest (List <String> lines)
+    public String getBiggest ()
     {
-      return lines.stream().max(Comparator.comparingInt(String::length)).orElse("");
+      return this.lines.stream().max(Comparator.comparingInt(String::length)).orElse("");
     }
 
     public Dimension getLineDimension (int fontSize)
@@ -61,7 +61,7 @@ public class UIText
       FontRenderContext frc = Projector.scene.getFontRenderContext();
 
       // Create a TextLayout object, which represents the text and its formatting
-      TextLayout textLayout = new TextLayout(UIText.Text.getBiggest(this.lines), Fira.getInstance().getLigatures(fontSize), frc);
+      TextLayout textLayout = new TextLayout(getBiggest(), Fira.getInstance().getLigatures(fontSize), frc);
 
       // Determine the dimensions of the text
       int textWidth  = (int) textLayout.getBounds().getWidth() + (int) ( 0.2 * fontSize );

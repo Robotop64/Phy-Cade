@@ -31,6 +31,7 @@ public class UIButton extends UILabel implements Displayed, Updating
   @Override
   public void update ()
   {
+    super.update();
     Color color = isSelected ? Color.yellow : Color.cyan.darker();
     borderColor = color;
     textColor = color;

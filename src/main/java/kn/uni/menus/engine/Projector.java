@@ -4,7 +4,6 @@ import kn.uni.Gui;
 import kn.uni.menus.Menu;
 import kn.uni.menus.interfaces.Displayed;
 import kn.uni.menus.interfaces.Updating;
-import kn.uni.ui.UIScreen;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -12,19 +11,26 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Comparator;
 
-public class Projector extends UIScreen
+public class Projector extends JPanel
 {
-  public static Graphics2D     scene;
-  public        ProjectorState state;
-  public        Menu           selectedMenu;
+  public static  Graphics2D     scene;
+  private static Projector      instance;
+  public         ProjectorState state;
+  public         Menu           selectedMenu;
 
-  public Projector (JPanel parent)
+  private Projector (JPanel parent)
   {
-    super(parent);
+    parent.add(this);
     setBackground(Color.black.darker().darker().darker().darker());
 
     state = new ProjectorState();
     scene = (Graphics2D) getGraphics();
+  }
+
+  public static Projector getInstance (JPanel parent)
+  {
+    if (instance == null) instance = new Projector(parent);
+    return instance;
   }
 
   public void startScreen ()
@@ -49,7 +55,8 @@ public class Projector extends UIScreen
         //        if (state.currentTick % 2 == 0)
         Gui.getInstance().frame.repaint();
       }
-      kill();
+      setVisible(false);
+      getParent().remove(this);
     }).start();
   }
 

@@ -210,7 +210,7 @@ public class MainMenu extends JPanel
 
     testButton.addAction(() ->
     {
-      Projector projector = new Projector(Gui.getInstance().content);
+      Projector projector = Projector.getInstance(Gui.getInstance().content);
       projector.setBounds(Gui.defaultFrameBounds);
       projector.setSelectedMenu(new MenuTest(projector));
       projector.startScreen();

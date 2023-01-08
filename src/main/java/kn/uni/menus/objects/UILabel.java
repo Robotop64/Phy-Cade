@@ -28,6 +28,7 @@ public class UILabel extends UIObject implements Displayed, Updating
   public              int       textThickness;
   public              int       textLineSpacing;
   public              UIText    text;
+  public              Dimension padding;
   private             Alignment alignment        = Alignment.MIDDLE_CENTER;
   private             Font      font;
   private             Vector2d  startpos;
@@ -54,6 +55,7 @@ public class UILabel extends UIObject implements Displayed, Updating
     borderWidth = 3;
     textThickness = 3;
     textLineSpacing = 5;
+    padding = new Dimension(10, 10);
     //
 
     // initialise variables
@@ -72,8 +74,6 @@ public class UILabel extends UIObject implements Displayed, Updating
     fitText(); // needs to be called after dimensions are set, before alignment is set
 
     //set alignment and text position
-    if (textBounds.width > size.x)
-      alignment = Alignment.MIDDLE_LEFT;
     setAlignment(alignment);
     //setBackupTextpos(); //needed for rolling text, if editRolling is not called but looping is enabled; called in fitText, reenable if fitText is removed from constructor
     //
@@ -105,7 +105,7 @@ public class UILabel extends UIObject implements Displayed, Updating
     text.getText().drawString(g, (int) textpos.x, (int) textpos.y);
 
     //draw backup text
-    if (loopText)
+    if (loopText && rollingText)
     {
       //      text.getText().drawString(g, (int) textpos.x, (int) textpos.y);
       text.getText().drawString(g, (int) backupTextpos.x, (int) backupTextpos.y);
@@ -122,7 +122,7 @@ public class UILabel extends UIObject implements Displayed, Updating
     {
       g.draw(new Rectangle((int) position.x, (int) position.y, buttonBounds.width, buttonBounds.height));
       g.draw(new Rectangle((int) ( position.x + textpos.x ), (int) ( position.y + textpos.y - textLineDim.height ), textBounds.width, textBounds.height));
-      if (loopText)
+      if (loopText && rollingText)
       {
         g.setColor(Color.red);
         g.draw(new Rectangle((int) ( position.x + backupTextpos.x ), (int) ( position.y + backupTextpos.y - textLineDim.height ), textBounds.width, textBounds.height));
@@ -138,11 +138,11 @@ public class UILabel extends UIObject implements Displayed, Updating
   public void update ()
   {
     //prevent null exception
-    if (textDim != null)
+    if (textDim != null && rollingText)
     {
       //text rolling
       Vector2d rollDir = rollingDirection.toVector();
-      if (rollingText && ( ( textDim.width > size.x && rollDir.isHorizontal() ) || ( textDim.height > size.y && rollDir.isVertical() ) ))
+      if (( textDim.width > size.x && rollDir.isHorizontal() ) || ( textDim.height > size.y && rollDir.isVertical() ))
       {
         //roll text
         textpos = textpos.add(rollingDirection.toVector().multiply(rollingSpeed));
@@ -178,9 +178,26 @@ public class UILabel extends UIObject implements Displayed, Updating
     setAlignment(alignment);
   }
 
-  public void fitText ()
+  public void fillText ()
   {
     setFontSize((float) buttonBounds.height / text.lines - ( text.lines - 1 ) * textLineSpacing);
+  }
+
+  public void fitText ()
+  {
+    int targetWidth  = buttonBounds.width - 2 * padding.width;
+    int targetHeight = buttonBounds.height - 2 * padding.height;
+    int startSize    = 1;
+
+    Dimension textDim = text.getText().getTextDimension(startSize);
+
+    while (textDim.width < targetWidth && textDim.height < targetHeight)
+    {
+      startSize++;
+      textDim = text.getText().getTextDimension(startSize);
+    }
+
+    setFontSize((float) startSize - 1);
   }
 
   public void editTextRolling (Direction direction, double speed)
@@ -190,7 +207,16 @@ public class UILabel extends UIObject implements Displayed, Updating
     double rollStep = rollingDirection.toVector().multiply(rollingSpeed).length();
     rollingTime = new Dimension((int) ( size.x / rollStep ), (int) ( size.y / rollStep ));
 
+    switch (direction)
+    {
+      case up -> setAlignment(Alignment.MIDDLE_TOP_SHIFTED);
+      case down -> setAlignment(Alignment.MIDDLE_BOTTOM_SHIFTED);
+      case left -> setAlignment(Alignment.MIDDLE_LEFT_SHIFTED);
+      case right -> setAlignment(Alignment.MIDDLE_RIGHT_SHIFTED);
+    }
+
     setBackupTextpos();
+    fillText();
   }
 
   public void setFontSize (float size)
@@ -237,6 +263,17 @@ public class UILabel extends UIObject implements Displayed, Updating
     setBackupTextpos();
   }
 
+  public void enableRolling ()
+  {
+    rollingText = true;
+  }
+
+  public void enableLoopedRolling ()
+  {
+    rollingText = true;
+    loopText = true;
+  }
+
 
   private void setDimensions ()
   {
@@ -258,12 +295,16 @@ public class UILabel extends UIObject implements Displayed, Updating
           case TOP_CENTER -> new Vector2d().cartesian(center.x, textLineDim.height);
           case TOP_RIGHT -> new Vector2d().cartesian(size.x - textDim.width, textLineDim.height);
           case MIDDLE_LEFT -> new Vector2d().cartesian(0, center.y);
-          case MIDDLE_LEFT_SHIFTED -> new Vector2d().cartesian(middle.x, center.y);
           case MIDDLE_CENTER -> center;
           case MIDDLE_RIGHT -> new Vector2d().cartesian(size.x - textDim.width, center.y);
           case BOTTOM_LEFT -> new Vector2d().cartesian(0, size.y + textLineDim.height - textDim.height);
           case BOTTOM_CENTER -> new Vector2d().cartesian(center.x, size.y + textLineDim.height - textDim.height);
           case BOTTOM_RIGHT -> new Vector2d().cartesian(size.x - textDim.width, size.y + textLineDim.height - textDim.height);
+
+          case MIDDLE_LEFT_SHIFTED -> new Vector2d().cartesian(middle.x, center.y);
+          case MIDDLE_RIGHT_SHIFTED -> new Vector2d().cartesian(middle.x - textDim.width, center.y);
+          case MIDDLE_TOP_SHIFTED -> new Vector2d().cartesian(center.x, middle.y);
+          case MIDDLE_BOTTOM_SHIFTED -> new Vector2d().cartesian(center.x, middle.y - textDim.height);
         };
   }
 
@@ -287,7 +328,10 @@ public class UILabel extends UIObject implements Displayed, Updating
     BOTTOM_CENTER,
     BOTTOM_RIGHT,
 
-    MIDDLE_LEFT_SHIFTED
+    MIDDLE_LEFT_SHIFTED,
+    MIDDLE_RIGHT_SHIFTED,
+    MIDDLE_TOP_SHIFTED,
+    MIDDLE_BOTTOM_SHIFTED
   }
 
   public record ColorSet(Color textColor, Color borderColor, Color backgroundColor) { }
