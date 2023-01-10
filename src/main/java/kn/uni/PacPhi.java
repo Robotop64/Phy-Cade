@@ -16,7 +16,7 @@ public class PacPhi
     PacPhiConfig.getInstance().load();
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
-    PacPhiConfig.getInstance().createDefaultSettings();
+    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", true);
     PacPhiConfig.getInstance().save();
 
     Gui.getInstance().initialize();

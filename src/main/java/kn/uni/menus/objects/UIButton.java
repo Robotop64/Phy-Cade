@@ -4,7 +4,7 @@ import kn.uni.menus.interfaces.Displayed;
 import kn.uni.menus.interfaces.Updating;
 import kn.uni.util.Vector2d;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +18,7 @@ public class UIButton extends UILabel implements Displayed, Updating
   @SuppressWarnings("FieldMayBeFinal")
   private Set <Runnable> actions = new HashSet <>();
 
-  public UIButton (Vector2d position, Vector2d size, String text, int paintLayer)
+  public UIButton (Vector2d position, Dimension size, String text, int paintLayer)
   {
     super(position, size, text, paintLayer);
     this.isSelected = false;

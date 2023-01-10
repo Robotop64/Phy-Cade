@@ -17,7 +17,6 @@ import java.awt.Rectangle;
 
 public class UILabel extends UIObject implements Displayed, Updating
 {
-  public static final ColorSet  normal           = new ColorSet(Color.CYAN.darker(), Color.CYAN.darker(), Color.black);
   private final       Dimension buttonBounds;
   public              boolean   rollingText;
   public              boolean   loopText;
@@ -43,7 +42,7 @@ public class UILabel extends UIObject implements Displayed, Updating
 
 
   //TODO add text rotation
-  public UILabel (Vector2d position, Vector2d size, String text, int paintLayer)
+  public UILabel (Vector2d position, Dimension size, String text, int paintLayer)
   {
     super();
 
@@ -68,7 +67,7 @@ public class UILabel extends UIObject implements Displayed, Updating
 
     //define dimensions & bounds
     //    setDimensions(); //currently not needed, was before, currently not since called in fitText, reenable if fitText is removed from constructor
-    buttonBounds = new Dimension((int) size.x, (int) size.y);
+    buttonBounds = new Dimension(size.width, size.height);
     //
 
     fitText(); // needs to be called after dimensions are set, before alignment is set
@@ -88,15 +87,15 @@ public class UILabel extends UIObject implements Displayed, Updating
     //draw the contents
     //button background
     g.setColor(backgroundColor);
-    g.fillRect((int) position.x, (int) position.y, (int) size.x, (int) size.y);
+    g.fillRect((int) position.x, (int) position.y, size.width, size.height);
 
     //button border
     g.setColor(borderColor);
     g.setStroke(new BasicStroke(borderWidth));
-    g.drawRect(0, 0, (int) size.x, (int) size.y);
+    g.drawRect(0, 0,  size.width, size.height);
 
     //define clipping area
-    g.setClip(new Rectangle(0, 0, (int) size.x, (int) size.y));
+    g.setClip(new Rectangle(0, 0, size.width, size.height));
 
     //button text
     g.setFont(font);
@@ -142,7 +141,7 @@ public class UILabel extends UIObject implements Displayed, Updating
     {
       //text rolling
       Vector2d rollDir = rollingDirection.toVector();
-      if (( textDim.width > size.x && rollDir.isHorizontal() ) || ( textDim.height > size.y && rollDir.isVertical() ))
+      if (( textDim.width > size.width && rollDir.isHorizontal() ) || ( textDim.height > size.height && rollDir.isVertical() ))
       {
         //roll text
         textpos = textpos.add(rollingDirection.toVector().multiply(rollingSpeed));
@@ -205,7 +204,7 @@ public class UILabel extends UIObject implements Displayed, Updating
     rollingDirection = direction;
     rollingSpeed = speed;
     double rollStep = rollingDirection.toVector().multiply(rollingSpeed).length();
-    rollingTime = new Dimension((int) ( size.x / rollStep ), (int) ( size.y / rollStep ));
+    rollingTime = new Dimension((int) ( size.width / rollStep ), (int) ( size.height / rollStep ));
 
     switch (direction)
     {
@@ -250,9 +249,9 @@ public class UILabel extends UIObject implements Displayed, Updating
 
   public void useColorSet (ColorSet set)
   {
-    this.textColor = set.textColor;
-    this.backgroundColor = set.backgroundColor;
-    this.borderColor = set.borderColor;
+    this.textColor = set.textColor();
+    this.backgroundColor = set.backgroundColor();
+    this.borderColor = set.borderColor();
   }
 
   public void setAlignment (Alignment alignment)
@@ -286,20 +285,20 @@ public class UILabel extends UIObject implements Displayed, Updating
   private Vector2d getAlignmentPosition (Alignment alignment)
   {
     Vector2d topLeft = new Vector2d().cartesian(0, textLineDim.height);
-    Vector2d middle  = topLeft.add(new Vector2d().cartesian(size.x / 2, size.y / 2));
+    Vector2d middle  = topLeft.add(new Vector2d().cartesian(size.width / 2., size.height / 2.));
     Vector2d center  = middle.subtract(new Vector2d().cartesian(textDim.width / 2., textDim.height / 2.));
 
     return switch (alignment)
         {
           case TOP_LEFT -> topLeft;
           case TOP_CENTER -> new Vector2d().cartesian(center.x, textLineDim.height);
-          case TOP_RIGHT -> new Vector2d().cartesian(size.x - textDim.width, textLineDim.height);
+          case TOP_RIGHT -> new Vector2d().cartesian(size.width - textDim.width, textLineDim.height);
           case MIDDLE_LEFT -> new Vector2d().cartesian(0, center.y);
           case MIDDLE_CENTER -> center;
-          case MIDDLE_RIGHT -> new Vector2d().cartesian(size.x - textDim.width, center.y);
-          case BOTTOM_LEFT -> new Vector2d().cartesian(0, size.y + textLineDim.height - textDim.height);
-          case BOTTOM_CENTER -> new Vector2d().cartesian(center.x, size.y + textLineDim.height - textDim.height);
-          case BOTTOM_RIGHT -> new Vector2d().cartesian(size.x - textDim.width, size.y + textLineDim.height - textDim.height);
+          case MIDDLE_RIGHT -> new Vector2d().cartesian(size.width - textDim.width, center.y);
+          case BOTTOM_LEFT -> new Vector2d().cartesian(0, size.height + textLineDim.height - textDim.height);
+          case BOTTOM_CENTER -> new Vector2d().cartesian(center.x, size.height + textLineDim.height - textDim.height);
+          case BOTTOM_RIGHT -> new Vector2d().cartesian(size.width - textDim.width, size.width + textLineDim.height - textDim.height);
 
           case MIDDLE_LEFT_SHIFTED -> new Vector2d().cartesian(middle.x, center.y);
           case MIDDLE_RIGHT_SHIFTED -> new Vector2d().cartesian(middle.x - textDim.width, center.y);
@@ -334,5 +333,5 @@ public class UILabel extends UIObject implements Displayed, Updating
     MIDDLE_BOTTOM_SHIFTED
   }
 
-  public record ColorSet(Color textColor, Color borderColor, Color backgroundColor) { }
+
 }
