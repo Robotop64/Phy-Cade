@@ -69,6 +69,8 @@ public class PacPhiConfig
     //Gameplay branch
     settings.addSubGroup("Gameplay");
     settings.get("Gameplay").addSubGroup("-");
+    settings.get("Gameplay").addSubGroup("GameSpecific");
+    settings.get("Gameplay").get("GameSpecific").addSubGroup("PacMan");
 
 
     //Graphics branch

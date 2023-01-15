@@ -17,28 +17,28 @@ import java.awt.Rectangle;
 
 public class UILabel extends UIObject implements Displayed, Updating
 {
-  private final       Dimension buttonBounds;
-  public              boolean   rollingText;
-  public              boolean   loopText;
-  public              Color     textColor;
-  public              Color     backgroundColor;
-  public              Color     borderColor;
-  public              int       borderWidth;
-  public              int       textThickness;
-  public              int       textLineSpacing;
-  public              UIText    text;
-  public              Dimension padding;
-  private             Alignment alignment        = Alignment.MIDDLE_CENTER;
-  private             Font      font;
-  private             Vector2d  startpos;
-  private             Vector2d  textpos;
-  private             Vector2d  backupTextpos;
-  private             Dimension textDim;
-  private             Dimension textLineDim;
-  private             Direction rollingDirection = Direction.right;
-  private             double    rollingSpeed     = 1;
-  private             Dimension rollingTime;
-  private             Dimension textBounds;
+  public  boolean   rollingText;
+  public  boolean   loopText;
+  public  Color     textColor;
+  public  Color     backgroundColor;
+  public  Color     borderColor;
+  public  int       borderWidth;
+  public  int       textThickness;
+  public  int       textLineSpacing;
+  public  UIText    text;
+  public  Dimension padding;
+  private Dimension buttonBounds;
+  private Alignment alignment        = Alignment.MIDDLE_CENTER;
+  private Font      font;
+  private Vector2d  startpos;
+  private Vector2d  textpos;
+  private Vector2d  backupTextpos;
+  private Dimension textDim;
+  private Dimension textLineDim;
+  private Direction rollingDirection = Direction.right;
+  private double    rollingSpeed     = 1;
+  private Dimension rollingTime;
+  private Dimension textBounds;
 
 
   //TODO add text rotation
@@ -66,8 +66,7 @@ public class UILabel extends UIObject implements Displayed, Updating
 
 
     //define dimensions & bounds
-    //    setDimensions(); //currently not needed, was before, currently not since called in fitText, reenable if fitText is removed from constructor
-    buttonBounds = new Dimension(size.width, size.height);
+    setDimensions();
     //
 
     fitText(); // needs to be called after dimensions are set, before alignment is set
@@ -92,7 +91,7 @@ public class UILabel extends UIObject implements Displayed, Updating
     //button border
     g.setColor(borderColor);
     g.setStroke(new BasicStroke(borderWidth));
-    g.drawRect(0, 0,  size.width, size.height);
+    g.drawRect(0, 0, size.width, size.height);
 
     //define clipping area
     g.setClip(new Rectangle(0, 0, size.width, size.height));
@@ -273,13 +272,20 @@ public class UILabel extends UIObject implements Displayed, Updating
     loopText = true;
   }
 
+  public void setSize (Dimension size)
+  {
+    this.size = size;
+    setDimensions();
+    setAlignment(alignment);
+  }
+
 
   private void setDimensions ()
   {
     textDim = text.getText().getTextDimension(font.getSize());
     textLineDim = text.getText().getLineDimension(font.getSize());
+    buttonBounds = new Dimension(size.width, size.height);
     textBounds = new Dimension(textDim.width, textDim.height);
-    System.out.println("DIM");
   }
 
   private Vector2d getAlignmentPosition (Alignment alignment)
