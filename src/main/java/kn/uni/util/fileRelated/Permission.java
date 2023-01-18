@@ -2,11 +2,13 @@ package kn.uni.util.fileRelated;
 
 public class Permission
 {
-  public Level current = Level.User;
-  Level[] possible = Level.values();
+  public Level   current  = Level.User;
+  public Level[] possible = Level.values();
 
-  enum Level
+  public enum Level
   {
     User, Developer
   }
 }
+
+

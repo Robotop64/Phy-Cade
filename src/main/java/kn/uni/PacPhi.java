@@ -12,7 +12,7 @@ public class PacPhi
 {
   public static final String     GAME_VERSION = "BETA-1.0.3";
   public static final String     GAME_BRANCH  = "UNSTABLE";
-  public static final String     GAME_UPDATE  = "Settings!!!";
+  public static final String     GAME_UPDATE  = " ";
   public static       Permission permissions;
   public static       Database   database;
 
@@ -25,7 +25,7 @@ public class PacPhi
     PacPhiConfig.getInstance().load();
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
-    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", false);
+    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", true);
     PacPhiConfig.getInstance().save();
 
     permissions = (Permission) JsonEditor.load(new Permission(), "Permission");

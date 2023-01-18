@@ -8,6 +8,7 @@ import kn.uni.games.classic.pacman.game.ghosts.Ghost;
 import kn.uni.ui.InputListener;
 import kn.uni.util.Fira;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.PacPhiConfig;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -41,7 +42,8 @@ public class DebugDisplay extends PlacedObject implements Rendered
 
   public DebugDisplay (Vector2d pos, InputListener.Player player)
   {
-    //enabled = true;
+    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+      enabled = true;
     this.pos = pos;
     this.player = player;
 

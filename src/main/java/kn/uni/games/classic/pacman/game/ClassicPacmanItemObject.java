@@ -76,6 +76,7 @@ public class ClassicPacmanItemObject extends CollidableObject implements Rendere
                            .filter(o -> o instanceof Ghost)
                            .map(o -> (Ghost) o)
                            .filter(o -> o.currentMode != ClassicPacmanGameConstants.mode.EXIT)
+                           .filter(o -> o.currentMode != ClassicPacmanGameConstants.mode.RETREAT)
                            .forEach(o ->
                            {
                              o.ai.setMode(ClassicPacmanGameConstants.mode.FRIGHTENED, o);

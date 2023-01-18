@@ -11,6 +11,7 @@ import kn.uni.ui.pmButton;
 import kn.uni.util.Fira;
 import kn.uni.util.Util;
 import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Permission;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import javax.swing.ImageIcon;
@@ -64,7 +65,12 @@ public class MainMenu extends JPanel
 
     addGraphics();
 
-
+    if (PacPhi.permissions.current.equals(Permission.Level.User))
+    {
+      testButton.clearActions();
+      settingsButton.clearActions();
+      mpButton.clearActions();
+    }
   }
 
   public static MainMenu getInstance ()

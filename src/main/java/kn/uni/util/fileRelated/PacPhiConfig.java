@@ -44,6 +44,8 @@ public class PacPhiConfig
     settings.get("General").get("-").addSetting("Version", "Value", null, null, null, false);
     settings.get("General").get("-").get("Version").makeNonEditable();
     settings.get("General").get("-").addSetting("Branch", "Value", "UNSTABLE", new String[]{ "STABLE", "UNSTABLE" }, "STABLE", true);
+    settings.get("General").get("-").addSetting("AccessLevel", "Value", "User", new String[]{ "User", "Developer" }, "User", false);
+    settings.get("General").get("-").get("AccessLevel").makeNonEditable();
 
     //Debugging branch
     settings.addSubGroup("Debugging");
@@ -208,3 +210,6 @@ public class PacPhiConfig
 
   record Range(int min, int max, int stepSize) { }
 }
+
+//example for reading the configs
+//if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))

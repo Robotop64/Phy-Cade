@@ -3,6 +3,7 @@ package kn.uni;
 import kn.uni.games.classic.pacman.screens.MainMenu;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.pmButton;
+import kn.uni.util.fileRelated.PacPhiConfig;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -22,7 +23,7 @@ public class Gui
   public JPanel content;
   pmButton debug;
 
-  private Gui () {}
+  private Gui () { }
 
   public static Gui getInstance ()
   {
@@ -67,7 +68,8 @@ public class Gui
     content.setBounds(defaultFrameBounds);
     content.setLayout(null);
     // todo remove for release
-    content.setBackground(Color.orange);
+    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+      content.setBackground(Color.orange);
     //    content.setBackground(Color.black);
 
     frame.getContentPane().add(debug);
