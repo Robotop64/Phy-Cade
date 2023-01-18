@@ -2,7 +2,6 @@ package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
 import kn.uni.PacPhi;
-import kn.uni.menus.MenuTest;
 import kn.uni.menus.engine.Projector;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.InputListener.Input;
@@ -218,7 +217,8 @@ public class MainMenu extends JPanel
     {
       Projector projector = Projector.getInstance(Gui.getInstance().content);
       projector.setBounds(Gui.defaultFrameBounds);
-      projector.setSelectedMenu(new MenuTest(projector));
+      projector.setSelectedMenu(new kn.uni.menus.MainMenu(projector));
+      projector.state.running = true;
       projector.startScreen();
     });
   }

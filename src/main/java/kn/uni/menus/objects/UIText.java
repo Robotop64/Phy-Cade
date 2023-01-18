@@ -5,6 +5,7 @@ import kn.uni.util.Fira;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import java.util.stream.IntStream;
 public class UIText
 {
   public  int    lines;
+  public  int    lineDist;
   private String initialText;
   private Text   formatted;
 
@@ -30,10 +32,10 @@ public class UIText
     return formatted;
   }
 
-  public void setText (String text)
+  public void setText (String text, int lineSpacing)
   {
     this.initialText = text;
-    formatted = new Text(Arrays.stream(text.split("\n")).toList(), formatted.lineDist);
+    formatted = new Text(Arrays.stream(text.split("\n")).toList(), lineSpacing);
   }
 
   public Graphics2D render (Graphics2D g)
@@ -82,8 +84,16 @@ public class UIText
       IntStream.range(0, lines.size()).forEach(i ->
       {
         String line = lines.get(i);
+        g.setRenderingHint(
+            RenderingHints.KEY_TEXT_ANTIALIASING,
+            RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         g.drawString(line, x, y + i * ( getLineDimension(g.getFont().getSize()).height + lineDist ));
       });
+    }
+
+    public boolean equals (String other)
+    {
+      return lines.stream().allMatch(line -> line.equals(other));
     }
   }
 }

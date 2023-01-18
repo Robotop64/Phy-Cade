@@ -171,7 +171,7 @@ public class UILabel extends UIObject implements Displayed, Updating
 
   public void setText (String text)
   {
-    this.text.setText(text);
+    this.text.setText(text, textLineSpacing);
     setDimensions();
     setAlignment(alignment);
   }

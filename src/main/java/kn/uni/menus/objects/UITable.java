@@ -17,20 +17,20 @@ import java.util.stream.IntStream;
 
 public class UITable extends UIObject implements Displayed, Updating
 {
-  public  int                hSpacing;
-  public  int                vSpacing;
-  public  Dimension          dim;
-  public  Color              backgroundColor;
-  public  Color              borderColor;
-  public  Color              textColor;
-  public  int                borderWidth;
-  public  Dimension          size;
-  public  Dimension          innerSize;
-  public  boolean            showGrid;
-  public  boolean            showBorder;
-  public  boolean            controllable;
-  public  List <List <Cell>> table;
-  private Cell               selected = null;
+  public int                hSpacing;
+  public int                vSpacing;
+  public Dimension          dim;
+  public Color              backgroundColor;
+  public Color              borderColor;
+  public Color              textColor;
+  public int                borderWidth;
+  public Dimension          size;
+  public Dimension          innerSize;
+  public boolean            showGrid;
+  public boolean            showBorder;
+  public boolean            controllable;
+  public List <List <Cell>> table;
+  public Cell               selected = null;
 
   public UITable (Vector2d pos, Dimension size, int paintLayer, Dimension dim)
   {
@@ -170,12 +170,14 @@ public class UITable extends UIObject implements Displayed, Updating
   {
     Cell next = table.get(pos[0]).get(pos[1]);
     Cell old  = selected;
+    if (next.content == null) return;
 
     if (old != null)
     {
       old.selected = false;
       old.content.asButton().isSelected = false;
     }
+
 
     next.selected = true;
     next.content.asButton().isSelected = true;
@@ -190,6 +192,8 @@ public class UITable extends UIObject implements Displayed, Updating
     {
       return;
     }
+
+    if (dir == null) return;
 
     switch (dir)
     {
@@ -225,6 +229,12 @@ public class UITable extends UIObject implements Displayed, Updating
   //  {
   //    table.forEach(column -> column.get(row).size = new Dimension(column.get(row).size.width, height));
   //  }
+
+  public void pressSelected ()
+  {
+    if (selected == null) return;
+    selected.content.asButton().press();
+  }
 
   private int getColumnWidth (int column)
   {
