@@ -4,7 +4,7 @@ import kn.uni.Gui;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.UIScreen;
 import kn.uni.ui.pmButton;
-import kn.uni.util.PacPhiConfig;
+import kn.uni.util.fileRelated.PacPhiConfig;
 
 import javax.swing.JPanel;
 import java.awt.Color;

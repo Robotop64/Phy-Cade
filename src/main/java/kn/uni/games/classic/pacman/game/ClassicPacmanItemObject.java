@@ -2,8 +2,8 @@ package kn.uni.games.classic.pacman.game;
 
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.ghosts.Ghost;
-import kn.uni.util.TextureEditor;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

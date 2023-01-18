@@ -11,9 +11,9 @@ import kn.uni.games.classic.pacman.game.TeleporterObject;
 import kn.uni.games.classic.pacman.game.Ticking;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.util.Direction;
-import kn.uni.util.TextureEditor;
 import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.TextureEditor;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;

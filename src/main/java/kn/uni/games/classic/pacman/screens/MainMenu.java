@@ -9,9 +9,9 @@ import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
 import kn.uni.ui.pmButton;
 import kn.uni.util.Fira;
-import kn.uni.util.PacPhiConfig;
-import kn.uni.util.TextureEditor;
 import kn.uni.util.Util;
+import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.TextureEditor;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;

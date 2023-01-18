@@ -4,8 +4,8 @@ import kn.uni.menus.interfaces.Displayed;
 import kn.uni.menus.interfaces.Updating;
 import kn.uni.util.Direction;
 import kn.uni.util.Fira;
-import kn.uni.util.PacPhiConfig;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.PacPhiConfig;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

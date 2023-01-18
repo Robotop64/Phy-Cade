@@ -1,4 +1,7 @@
-package kn.uni.util;
+package kn.uni.util.fileRelated;
+
+import kn.uni.util.Util;
+import kn.uni.util.Vector2d;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -44,7 +47,8 @@ public class TextureEditor
     return null;
   }
 
-  public BufferedImage loadResource(String path){
+  public BufferedImage loadResource (String path)
+  {
     try
     {
       return ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(path)));
@@ -91,14 +95,15 @@ public class TextureEditor
     return output;
   }
 
-  public BufferedImage scale(BufferedImage imageIn, int width, int height){
-    int w = imageIn.getWidth();
-    int h = imageIn.getHeight();
-    BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-    AffineTransform at = new AffineTransform();
-    at.scale(width/(w*1.), height/(h*1.));
+  public BufferedImage scale (BufferedImage imageIn, int width, int height)
+  {
+    int             w   = imageIn.getWidth();
+    int             h   = imageIn.getHeight();
+    BufferedImage   out = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    AffineTransform at  = new AffineTransform();
+    at.scale(width / ( w * 1. ), height / ( h * 1. ));
     AffineTransformOp scaleOp =
-            new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
     out = scaleOp.filter(imageIn, out);
     return out;
   }

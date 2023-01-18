@@ -1,11 +1,5 @@
-package kn.uni.util;
+package kn.uni.util.fileRelated;
 
-import com.google.gson.Gson;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,8 +7,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.nio.file.Files.createDirectories;
 
 public class PacPhiConfig
 {
@@ -124,68 +116,20 @@ public class PacPhiConfig
     descriptions.put(settings.get("Audio").get("Master").setting, new Context("Gesamtlautstärke", "Steuert die Lautstärke des gesamten Spiels"));
     descriptions.put(settings.get("Audio").get("Music").setting, new Context("Musiklautstärke", "Steuert die Lautstärke der Musik"));
     descriptions.put(settings.get("Audio").get("Sound").setting, new Context("Soundlautstärke", "Steuert die Lautstärke der Soundeffekte"));
-
   }
 
   public void load ()
   {
-    Gson gson = new Gson();
-
-    File f = new File(getPath() + "settings.json");
-
-    if (!f.exists())
-    {
-      createDefaultSettings();
-      save();
-      System.out.println("Created default settings");
-    }
-    else
-    {
-      //load json to config
-      try
-      {
-        settings = gson.fromJson(new FileReader(getPath() + "settings.json"), SettingTree.class);
-        System.out.println("Loaded settings");
-      }
-      catch (FileNotFoundException e)
-      {
-        e.printStackTrace();
-      }
-    }
+    //create defaults
+    init();
+    //load settings
+    settings = (SettingTree) JsonEditor.load(settings, "settings");
 
   }
 
   public void save ()
   {
-    Gson   gson = new Gson();
-    String json = gson.toJson(settings, SettingTree.class);
-    //save json to file
-    try
-    {
-      File f = new File(getPath() + "settings.json");
-      System.out.println(getPath() + "settings.json");
-      createDirectories(f.toPath().getParent());
-      f.createNewFile();
-      FileWriter writer = new FileWriter(getPath() + "settings.json");
-      writer.write(json);
-      writer.close();
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-  }
-
-  private String getPath ()
-  {
-    String os            = System.getProperty("os.name");
-    String locationWin   = System.getProperty("user.home") + "\\Appdata\\Roaming\\Pacphi\\";
-    String locationLinux = System.getProperty("user.home") + "/local/share/Pacphi/";
-    String path          = "";
-
-    if (os.contains("Windows")) path = locationWin;
-    else if (os.contains("Linux")) path = locationLinux;
-    return path;
+    JsonEditor.save(settings, "settings");
   }
 
   // record for setting

@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.persistence;
 
 
+import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.screens.LeaderboardMenu;
 
 import java.sql.Connection;
@@ -27,7 +28,7 @@ public class PacmanDatabaseProvider
 
     System.out.println("Connecting database...");
 
-    try (Connection connection = DriverManager.getConnection(url, username, password))
+    try (Connection connection = DriverManager.getConnection(PacPhi.database.url, PacPhi.database.username, PacPhi.database.password))
     {
 
       System.out.println("Database connected!");
@@ -62,7 +63,7 @@ public class PacmanDatabaseProvider
 
     System.out.println("Connecting database...");
 
-    try (Connection connection = DriverManager.getConnection(url, username, password))
+    try (Connection connection = DriverManager.getConnection(PacPhi.database.url, PacPhi.database.username, PacPhi.database.password))
     {
 
       System.out.println("Database connected!");
@@ -109,3 +110,4 @@ public class PacmanDatabaseProvider
     setQuery("insert into " + game + " (matrikelnummer,playername,score,duration,datum) values ( ?, ?, ?, ?, ?);", in);
   }
 }
+
