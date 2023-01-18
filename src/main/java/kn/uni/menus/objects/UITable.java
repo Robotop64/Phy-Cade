@@ -2,6 +2,7 @@ package kn.uni.menus.objects;
 
 import kn.uni.menus.interfaces.Displayed;
 import kn.uni.menus.interfaces.Updating;
+import kn.uni.util.Direction;
 import kn.uni.util.PacPhiConfig;
 import kn.uni.util.Vector2d;
 
@@ -27,7 +28,9 @@ public class UITable extends UIObject implements Displayed, Updating
   public Dimension          innerSize;
   public boolean            showGrid;
   public boolean            showBorder;
+  public boolean            controllable;
   public List <List <Cell>> table;
+  private Cell selected = null;
 
   public UITable (Vector2d pos, Dimension size, int paintLayer, Dimension dim)
   {
@@ -36,7 +39,7 @@ public class UITable extends UIObject implements Displayed, Updating
     this.dim = dim;
     table = new ArrayList <>();
 
-    setStyle(normal);
+    setStyle(unselected);
 
     this.position = pos;
     this.size = size;
@@ -127,34 +130,27 @@ public class UITable extends UIObject implements Displayed, Updating
                  }));
   }
 
-  public void updateCellContent (int[] pos, UIObject content)
-  {
-    table.get(pos[0]).get(pos[1]).content = content;
-  }
-
   public UIObject getCellContent (int[] pos)
   {
     return table.get(pos[0]).get(pos[1]).content;
   }
 
-
-  public void makeCellLable (int[] pos, String text)
+  public void cellToLabel (int[] pos, String text)
   {
     setCell(pos, new UILabel(getCellPosition(pos), getCellSize(pos), text, paintLayer));
   }
 
-  public void cellToLabel (int[] pos, String text)
+  public void cellToButton (int[] pos, String text)
   {
-    updateCellContent(pos, new UILabel(getCellPosition(pos), getCellSize(pos), text, paintLayer));
+    setCell(pos, new UIButton(getCellPosition(pos),getCellSize(pos),text,paintLayer));
   }
 
-  private void setCell (int[] pos, kn.uni.menus.objects.UIObject obj)
+  public void setCell (int[] pos, kn.uni.menus.objects.UIObject obj)
   {
     Cell cell = new Cell(pos, obj);
     cell.size = obj.size;
     table.get(pos[0]).set(pos[1], cell);
   }
-
 
   public Vector2d getCellPosition (int[] pos)
   {
@@ -168,6 +164,48 @@ public class UITable extends UIObject implements Displayed, Updating
     int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
     int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
     return new Dimension(cellWidth, cellHeight);
+  }
+
+  public void selectCell (int[] pos)
+  {
+    Cell next = table.get(pos[0]).get(pos[1]);
+    Cell old = selected;
+
+    if (old != null)
+    {
+      old.selected = false;
+      old.content.asButton().isSelected = false;
+    }
+
+    next.selected = true;
+    next.content.asButton().isSelected = true;
+
+    selected = next;
+  }
+
+  public void moveSelection (Direction dir)
+  {
+    int[] pos = selected.pos;
+    if (pos == null) {return;}
+
+    switch (dir) {
+      case up -> {
+        if (pos[1] > 0)
+          selectCell(new int[]{pos[0], pos[1] - 1});
+      }
+      case down -> {
+        if (pos[1] < dim.height - 1)
+          selectCell(new int[]{pos[0], pos[1] + 1});
+      }
+      case left -> {
+        if (pos[0] > 0)
+          selectCell(new int[]{pos[0] - 1, pos[1]});
+      }
+      case right -> {
+        if (pos[0] < dim.width - 1)
+          selectCell(new int[]{pos[0] + 1, pos[1]});
+      }
+    }
   }
 
   //  public void setColumnWidth (int column, int width)
@@ -218,6 +256,7 @@ class Cell
   public int[]     pos;
   public UIObject  content;
   public Dimension size;
+  public boolean selected = false;
 
   public Cell (int[] pos, UIObject content)
   {

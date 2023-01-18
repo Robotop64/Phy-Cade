@@ -48,7 +48,7 @@ public class UILabel extends UIObject implements Displayed, Updating
 
     //create a default label
     font = Fira.getInstance().getLigatures(32f);
-    useColorSet(normal);
+    useColorSet(unselected);
     rollingText = false;
     loopText = false;
     borderWidth = 3;

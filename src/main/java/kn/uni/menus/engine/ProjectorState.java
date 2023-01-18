@@ -2,11 +2,11 @@ package kn.uni.menus.engine;
 
 public class ProjectorState
 {
-  int     tps;
-  int     tickDuration;
-  boolean running;
-  long    currentTick;
-  long    lastTickTime;
+  public int     tps;
+  public int     tickDuration;
+  public boolean running;
+  public long    currentTick;
+  public long    lastTickTime;
 
   public ProjectorState ()
   {

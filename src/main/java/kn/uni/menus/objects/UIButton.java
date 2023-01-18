@@ -10,9 +10,7 @@ import java.util.Set;
 
 public class UIButton extends UILabel implements Displayed, Updating
 {
-  public static final ColorSet unselected = new ColorSet(Color.CYAN.darker(), Color.CYAN.darker(), Color.black);
-  public static final ColorSet selected   = new ColorSet(Color.YELLOW, Color.YELLOW, Color.black);
-  public static final ColorSet hover      = new ColorSet(Color.CYAN, Color.CYAN, Color.black);
+
 
   public  boolean        isSelected;
   @SuppressWarnings("FieldMayBeFinal")
@@ -22,6 +20,7 @@ public class UIButton extends UILabel implements Displayed, Updating
   {
     super(position, size, text, paintLayer);
     this.isSelected = false;
+    this.selectable = true;
   }
 
 
@@ -32,9 +31,7 @@ public class UIButton extends UILabel implements Displayed, Updating
   public void update ()
   {
     super.update();
-    Color color = isSelected ? Color.yellow : Color.cyan.darker();
-    borderColor = color;
-    textColor = color;
+    useColorSet(isSelected ? selected : unselected);
   }
 
   public void press ()
