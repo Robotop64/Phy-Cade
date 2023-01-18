@@ -85,7 +85,7 @@ public class GameSummaryPanel extends UIScreen
 
   private void addEntry ()
   {
-    PacmanDatabaseProvider.setEntries(container.gameName, new LeaderboardMenu.LeaderboardEntry(0, nameLabel.toString(), level, thisScore, thisTime, LocalDate.now(), PacPhi.GAME_VERSION, ""));
+    PacmanDatabaseProvider.setEntries(container.gameName, new LeaderboardMenu.LeaderboardEntry(0, nameLabel.getText(), level, thisScore, thisTime, LocalDate.now(), PacPhi.GAME_VERSION, ""));
     killSummary();
   }
 

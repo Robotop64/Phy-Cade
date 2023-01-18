@@ -38,14 +38,13 @@ public class PacmanDatabaseProvider
 
       while (resultSet.next())
       {
-        System.out.println();
         LeaderboardMenu.LeaderboardEntry out = new LeaderboardMenu.LeaderboardEntry(
             resultSet.getInt("id"),
             resultSet.getString("playerName"),
             resultSet.getInt("level"),
             resultSet.getLong("score"),
             resultSet.getTime("duration").toLocalTime(),
-            resultSet.getDate("datum").toLocalDate(),
+            resultSet.getDate("date").toLocalDate(),
             resultSet.getString("version"),
             resultSet.getString("comment"));
         listOut.add(out);
@@ -107,7 +106,7 @@ public class PacmanDatabaseProvider
 
   public static void setEntries (String game, LeaderboardMenu.LeaderboardEntry in)
   {
-    setQuery("insert into " + game + " (matrikelnummer,playername,score,duration,datum) values ( ?, ?, ?, ?, ?);", in);
+    setQuery("insert into " + game + " (id,playername,level,score,duration,date,version,comment) values ( ?, ?, ?, ?, ?, ?, ?, ?);", in);
   }
 }
 

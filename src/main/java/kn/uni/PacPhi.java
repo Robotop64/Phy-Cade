@@ -6,8 +6,6 @@ import kn.uni.util.fileRelated.JsonEditor;
 import kn.uni.util.fileRelated.PacPhiConfig;
 import kn.uni.util.fileRelated.Permission;
 
-import java.util.Objects;
-
 public class PacPhi
 {
   public static final String     GAME_VERSION = "BETA-1.0.3";
@@ -25,11 +23,20 @@ public class PacPhi
     PacPhiConfig.getInstance().load();
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
-    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", true);
+    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", false);
     PacPhiConfig.getInstance().save();
 
     permissions = (Permission) JsonEditor.load(new Permission(), "Permission");
-    database = ( (DatabaseAccess) Objects.requireNonNull(JsonEditor.load(new DatabaseAccess(), "DatabaseAccess")) ).getMatchingPermissionDatabase(permissions.current);
+    assert permissions != null;
+    System.out.println(permissions.current);
+
+
+    DatabaseAccess dba = (DatabaseAccess) JsonEditor.load(new DatabaseAccess(), "DatabaseAccess");
+    assert dba != null;
+    database = dba.getMatchingPermissionDatabase(permissions.current);
+
+    System.out.println(database.url);
+
     if (database != null)
       System.out.println("Database access found");
     else System.out.println("No database for current permissions found");
