@@ -59,7 +59,7 @@ public class OnScreenKeyboard extends UIScreen
   private final        int                      buttonBaseSize;
   private final        int                      buttonBuffer;
   private final        InputListener.Player     player;
-  private final Runnable confirmAction;
+  private final        Runnable                 confirmAction;
   public               Consumer <String>        target;
   public               GameSummaryPanel         parent;
   private              List <LayoutBody>        specialLayers;
@@ -69,7 +69,7 @@ public class OnScreenKeyboard extends UIScreen
   private              Point                    activeKey           = new Point(3, 5);
   private              int                      listenerId;
   private              boolean                  shifted             = false;
-  private String output = "";
+  private              String                   output              = "";
 
   public OnScreenKeyboard (GameSummaryPanel parent, InputListener.Player player, int width, Runnable confirmAction)
   {
@@ -196,6 +196,13 @@ public class OnScreenKeyboard extends UIScreen
     buttons[4][4] = createActionButton("@", this::cycleLanguage, 1, 8, 4);
     //button enter
     buttons[4][5] = createActionButton("↲", this.confirmAction, 2, 9, 4);
+    buttons[4][5].addAction(() ->
+    {
+      InputListener.getInstance().unsubscribe(listenerId);
+      setVisible(false);
+      getParent().remove(this);
+      this.parent.unmuteSummary();
+    });
     buttons[4][5].setFont(buttons[4][5].getFont().deriveFont(Font.BOLD, 50f));
     //add buttons to frame
     for (int j = 0; j < 5; j++)
