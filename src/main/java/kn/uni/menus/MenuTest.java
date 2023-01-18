@@ -3,11 +3,9 @@ package kn.uni.menus;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.screens.MainMenu;
 import kn.uni.menus.engine.Projector;
-import kn.uni.menus.objects.UIButton;
-import kn.uni.menus.objects.UIObject;
+import kn.uni.menus.objects.UIImage;
 import kn.uni.menus.objects.UITable;
 import kn.uni.ui.InputListener;
-import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
 import javax.swing.JPanel;
@@ -23,29 +21,35 @@ public class MenuTest extends Menu
 
     createUIComponents();
 
+    bindPlayer(InputListener.Player.playerOne, input ->
+    {
+      if (input.key().equals(InputListener.Key.B))
+      {
+        Projector.getInstance(parent).state.running = false;
+        Gui.getInstance().content.add(MainMenu.getInstance());
+        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+        MainMenu.getInstance().activate();
+        kill();
+      }
+
+      //      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
+      //      {
+      //        selected.pressSelected();
+      //        return;
+      //      }
+      //
+      //      selected.moveSelection(input.toDirection());
+
+
+    });
+
   }
 
   private void createUIComponents ()
   {
-    UITable a = new UITable(new Vector2d().cartesian(300, 100), new Dimension(800, 600), 0, new Dimension(3, 5));
-    a.showBorder = true;
-    a.showGrid = true;
-    a.controllable = true;
-
-    a.cellToButton(new int[]{ 0, 0 }, "Singleplayer");
-    a.getCellContent(new int[]{ 0, 0 }).asLabel().setFontSize(30);
-    a.getCellContent(new int[]{ 0, 0 }).asLabel().useColorSet(UIButton.selected);
-    a.cellToButton(new int[]{ 0, 1 }, "Multiplayer");
-    a.getCellContent(new int[]{ 0, 1 }).asLabel().setFontSize(30);
-    a.cellToButton(new int[]{ 0, 2 }, "Settings");
-    a.getCellContent(new int[]{ 0, 2 }).asLabel().setFontSize(30);
-    a.cellToButton(new int[]{ 0, 3 }, "Credits");
-    a.getCellContent(new int[]{ 0, 3 }).asLabel().setFontSize(30);
-    a.cellToButton(new int[]{ 0, 4 }, "Exit");
-    a.getCellContent(new int[]{ 0, 4 }).asLabel().setFontSize(30);
-
-    a.selectCell(new int[]{0,0});
-    a.moveSelection(Direction.down);
+    UIImage a = new UIImage(new Vector2d().cartesian(0, 0), new Dimension(100, 100), 0, new Dimension(50, 50), "src/main/resources/images/ghosts/ghost1.png");
     elements.add(a);
   }
+
+
 }
