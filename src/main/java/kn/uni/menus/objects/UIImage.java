@@ -3,7 +3,9 @@ package kn.uni.menus.objects;
 import kn.uni.menus.interfaces.Displayed;
 import kn.uni.menus.interfaces.Updating;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.TextureEditor;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -12,53 +14,71 @@ import java.awt.image.BufferedImage;
 
 public class UIImage extends UIObject implements Displayed, Updating
 {
-  UIText.Text label;
+  public  UILabel       label;
+  public  int           borderWidth;
   private String        path;
   private Dimension     imageDim;
   private Dimension     contentDim;
-  private Dimension     propedImgDim;
+  private Dimension     propedContentDim;
   private Dimension     propedLabelDim;
   private BufferedImage image;
   private int           lineDist;
   private int           borderBuffer;
+  private int           innerBuffer;
+  private int           contentBuffer;
   private Alignment     alignment;
   private double        proportion;
   private Vector2d      labelPos;
+  private Vector2d      imageBoundsPos;
   private Vector2d      imagePos;
 
-  public UIImage (Vector2d pos, Dimension size, int paintLayer, Dimension imageDimension, String path)
+  public UIImage (Vector2d pos, Dimension size, int paintLayer, String path)
   {
     this.position = pos;
     this.size = size;
-    this.imageDim = imageDimension;
     this.paintLayer = paintLayer;
     this.path = path;
 
+    borderWidth = 3;
     lineDist = 5;
-    borderBuffer = 5;
+    borderBuffer = 10;
+    contentBuffer = 10;
     proportion = 2 / 3.;
     label = null;
-    alignment = Alignment.CENTER;
+    alignment = Alignment.RIGHT;
 
-    //    image = TextureEditor.getInstance().loadTexture("Icon", path);
+    image = TextureEditor.getInstance().loadResource(path);
     setDimensions();
+    scaleImage();
+    setPositions();
   }
 
   @Override
   public void paintComponent (Graphics2D g)
   {
+    if (label != null)
+    {
+      label.paintComponent(g);
+    }
+
     position.use(g::translate);
+
+    g.setStroke(new BasicStroke(borderWidth));
+
     g.setColor(Color.red);
     g.draw(new Rectangle(0, 0, size.width, size.height));
     g.setColor(Color.blue);
     g.draw(new Rectangle(borderBuffer, borderBuffer, contentDim.width, contentDim.height));
     g.setColor(Color.yellow);
-    g.draw(new Rectangle((int) imagePos.x, (int) imagePos.y, propedImgDim.width, propedImgDim.height));
+    g.draw(new Rectangle((int) imageBoundsPos.x, (int) imageBoundsPos.y, propedContentDim.width, propedContentDim.height));
     g.setColor(Color.green);
     g.draw(new Rectangle((int) labelPos.x, (int) labelPos.y, propedLabelDim.width, propedLabelDim.height));
+    g.drawImage(image, (int) imagePos.x, (int) imagePos.y, imageDim.width, imageDim.height, null);
 
 
     position.invert().use(g::translate);
+
+
   }
 
   @Override
@@ -70,9 +90,51 @@ public class UIImage extends UIObject implements Displayed, Updating
 
   }
 
-  public void setLabel (String text)
+  public void setText (String text)
   {
-    this.label = new UIText.Text(text, lineDist);
+    if (label == null)
+    {
+      label = new UILabel(labelPos, propedLabelDim, text, paintLayer);
+    }
+    else
+    {
+      label.setText(text);
+    }
+  }
+
+  public void setAlignment (Alignment alignment)
+  {
+    this.alignment = alignment;
+    setDimensions();
+    scaleImage();
+    setPositions();
+    updateLabel();
+  }
+
+  public void setImageDim (Dimension imageDim)
+  {
+    this.imageDim = imageDim;
+    setDimensions();
+    setPositions();
+  }
+
+  public void setProportion (double proportion)
+  {
+    this.proportion = proportion;
+    setDimensions();
+    scaleImage();
+    setPositions();
+    updateLabel();
+  }
+
+  private void updateLabel ()
+  {
+    if (label != null)
+    {
+      label.setSize(propedLabelDim);
+      label.position = labelPos;
+      label.fitText();
+    }
   }
 
   private void setDimensions ()
@@ -81,22 +143,41 @@ public class UIImage extends UIObject implements Displayed, Updating
 
     if (alignment == Alignment.LEFT || alignment == Alignment.RIGHT)
     {
-      propedImgDim = new Dimension((int) ( contentDim.width * proportion ), contentDim.height);
-      propedLabelDim = new Dimension((int) ( contentDim.width * ( 1 - proportion ) ), contentDim.height);
-
+      propedContentDim = new Dimension((int) ( ( contentDim.width * proportion ) - contentBuffer / 2. ), contentDim.height);
+      propedLabelDim = new Dimension((int) ( ( contentDim.width * ( 1 - proportion ) ) - contentBuffer / 2. ), contentDim.height);
     }
     if (alignment == Alignment.TOP || alignment == Alignment.BOTTOM)
     {
-      propedImgDim = new Dimension(contentDim.width, (int) ( contentDim.height * proportion ));
-      propedLabelDim = new Dimension(contentDim.width, (int) ( contentDim.height * ( 1 - proportion ) ));
+      propedContentDim = new Dimension(contentDim.width, (int) ( ( contentDim.height * proportion ) - contentBuffer / 2. ));
+      propedLabelDim = new Dimension(contentDim.width, (int) ( ( contentDim.height * ( 1 - proportion ) ) - contentBuffer / 2. ));
     }
     if (alignment == Alignment.CENTER)
     {
-      propedImgDim = new Dimension(contentDim.width, contentDim.height);
+      propedContentDim = new Dimension(contentDim.width, contentDim.height);
       propedLabelDim = new Dimension(contentDim.width, contentDim.height);
     }
-    imagePos = getImgAlignmentPosition(alignment);
+
+
+  }
+
+  private void setPositions ()
+  {
+    imageBoundsPos = getImgAlignmentPosition(alignment);
     labelPos = getLabelAlignmentPosition(alignment);
+    imagePos = imageBoundsPos.add(new Vector2d().cartesian(propedContentDim.width / 2., propedContentDim.height / 2.))
+                             .add(new Vector2d().cartesian(-imageDim.width / 2., -imageDim.height / 2.));
+  }
+
+  private void scaleImage ()
+  {
+    if (propedContentDim.width > propedContentDim.height)
+    {
+      imageDim = new Dimension(propedContentDim.height, propedContentDim.height);
+    }
+    else
+    {
+      imageDim = new Dimension(propedContentDim.width, propedContentDim.width);
+    }
   }
 
   private Vector2d getImgAlignmentPosition (Alignment alignment)
@@ -107,11 +188,11 @@ public class UIImage extends UIObject implements Displayed, Updating
 
     return switch (alignment)
         {
-          case TOP -> center.add(new Vector2d().cartesian(-propedImgDim.width / 2., -contentDim.height / 2.));
-          case BOTTOM -> center.add(new Vector2d().cartesian(-propedImgDim.width / 2., contentDim.height / 2. - propedImgDim.height));
-          case LEFT -> center.add(new Vector2d().cartesian(-contentDim.width / 2., -propedImgDim.height / 2.));
-          case RIGHT -> center.add(new Vector2d().cartesian(contentDim.width / 2. - propedImgDim.width, -propedImgDim.height / 2.));
-          case CENTER -> middle.subtract(new Vector2d().cartesian(propedImgDim.width / 2., propedImgDim.height / 2.));
+          case TOP -> center.add(new Vector2d().cartesian(-propedContentDim.width / 2., -contentDim.height / 2.));
+          case BOTTOM -> center.add(new Vector2d().cartesian(-propedContentDim.width / 2., contentDim.height / 2. - propedContentDim.height));
+          case LEFT -> center.add(new Vector2d().cartesian(-contentDim.width / 2., -propedContentDim.height / 2.));
+          case RIGHT -> center.add(new Vector2d().cartesian(contentDim.width / 2. - propedContentDim.width, -propedContentDim.height / 2.));
+          case CENTER -> middle.subtract(new Vector2d().cartesian(propedContentDim.width / 2., propedContentDim.height / 2.));
         };
   }
 
