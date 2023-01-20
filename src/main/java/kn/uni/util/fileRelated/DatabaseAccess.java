@@ -40,4 +40,13 @@ public class DatabaseAccess
     }
     return null;
   }
+
+  public String getDatabaseName (Database database)
+  {
+    for (String name : databases.keySet())
+    {
+      if (databases.get(name) == database) return name;
+    }
+    return null;
+  }
 }

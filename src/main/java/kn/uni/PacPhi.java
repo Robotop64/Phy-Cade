@@ -28,18 +28,20 @@ public class PacPhi
 
     permissions = (Permission) JsonEditor.load(new Permission(), "Permission");
     assert permissions != null;
-    System.out.println(permissions.current);
+    System.out.println("Permission-Level: " + permissions.current);
 
 
     DatabaseAccess dba = (DatabaseAccess) JsonEditor.load(new DatabaseAccess(), "DatabaseAccess");
     assert dba != null;
     database = dba.getMatchingPermissionDatabase(permissions.current);
 
-    System.out.println(database.url);
-
     if (database != null)
+    {
       System.out.println("Database access found");
+      System.out.println("Database: " + dba.getDatabaseName(database));
+    }
     else System.out.println("No database for current permissions found");
+
 
     Gui.getInstance().initialize();
   }
