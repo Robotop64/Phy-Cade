@@ -10,6 +10,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,20 +18,24 @@ import java.util.stream.IntStream;
 
 public class UITable extends UIObject implements Displayed, Updating
 {
-  public int                hSpacing;
-  public int                vSpacing;
-  public Dimension          dim;
-  public Color              backgroundColor;
-  public Color              borderColor;
-  public Color              textColor;
-  public int                borderWidth;
-  public Dimension          size;
-  public Dimension          innerSize;
-  public boolean            showGrid;
-  public boolean            showBorder;
-  public boolean            controllable;
-  public List <List <Cell>> table;
-  public Cell               selected = null;
+  public  int                hSpacing;
+  public  int                vSpacing;
+  public  Dimension          dim;
+  public  Color              backgroundColor;
+  public  Color              borderColor;
+  public  Color              textColor;
+  public  int                borderWidth;
+  public  Dimension          size;
+  public  Dimension          innerSize;
+  public  boolean            showGrid;
+  public  boolean            showBorder;
+  public  boolean            showBackground;
+  public  boolean            showCellBounds;
+  public  boolean            controllable;
+  public  List <List <Cell>> table;
+  public  Cell               selected = null;
+  private Dimension          cellSize;
+  private Vector2d           offset;
 
   public UITable (Vector2d pos, Dimension size, int paintLayer, Dimension dim)
   {
@@ -38,6 +43,7 @@ public class UITable extends UIObject implements Displayed, Updating
     vSpacing = 5;
     this.dim = dim;
     table = new ArrayList <>();
+    offset = new Vector2d().cartesian(0, 0);
 
     setStyle(unselected);
 
@@ -46,9 +52,12 @@ public class UITable extends UIObject implements Displayed, Updating
     this.innerSize = new Dimension(size.width - 2 * borderWidth, size.height - 2 * borderWidth);
     this.paintLayer = paintLayer;
 
+    int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
+    int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
+
+    cellSize = new Dimension(cellWidth, cellHeight);
 
     addColumn(dim.width);
-    addRow(dim.height);
 
     System.out.println(table);
   }
@@ -57,26 +66,51 @@ public class UITable extends UIObject implements Displayed, Updating
   public void paintComponent (Graphics2D g)
   {
     position.use(g::translate);
-    g.setStroke(new BasicStroke(borderWidth));
+    g.setClip(new Rectangle(size));
 
-    g.setColor(backgroundColor);
-    g.fillRect(0, 0, size.width, size.height);
-
-    g.setColor(borderColor);
-    if (showBorder)
-      g.drawRect(0, 0, size.width, size.height);
-
+    if (showBackground)
+    {
+      g.setColor(backgroundColor);
+      g.fillRect(0, 0, size.width, size.height);
+    }
+    
     if (showGrid)
+    {
+      g.setStroke(new BasicStroke(borderWidth));
+      g.setColor(borderColor);
       showBuffers(g);
+    }
 
+    offset.use(g::translate);
     table.forEach(row -> row.stream()
                             .map(cell -> cell.content)
                             .filter(Objects::nonNull)
                             .filter(o -> o.visible)
                             .filter(cell -> cell instanceof Displayed)
+                            .filter(cell ->
+                            {
+                              Rectangle bounds     = new Rectangle((int) 0, (int) 0, size.width, size.height);
+                              Rectangle cellBounds = new Rectangle((int) cell.position.x, (int) cell.position.y, cell.size.width, cell.size.height);
+                              return bounds.intersects(cellBounds);
+                            })
                             .map(cell -> (Displayed) cell)
                             .forEach(cell -> cell.paintComponent(g)));
 
+    if (showCellBounds)
+    {
+      g.setColor(Color.RED);
+      table.forEach(row -> row.forEach(cell -> g.draw(new Rectangle((int) getCellPosition(cell.pos).x, (int) getCellPosition(cell.pos).y, cell.size.width, cell.size.height))));
+    }
+    offset.invert().use(g::translate);
+
+    g.setClip(null);
+
+    if (showBorder)
+    {
+      g.setStroke(new BasicStroke(borderWidth));
+      g.setColor(borderColor);
+      g.drawRect(0, 0, size.width, size.height);
+    }
     position.invert().use(g::translate);
   }
 
@@ -101,6 +135,7 @@ public class UITable extends UIObject implements Displayed, Updating
     {
       showBorder = true;
       showGrid = true;
+      showCellBounds = true;
     }
   }
 
@@ -113,21 +148,34 @@ public class UITable extends UIObject implements Displayed, Updating
 
   public void addColumn (int columns)
   {
-    IntStream.range(0, columns).forEach(i -> table.add(new ArrayList <>()));
+    this.dim.width += columns;
+    IntStream.range(0, columns).forEach(i ->
+    {
+      table.add(new ArrayList <>());
+      IntStream.range(0, dim.height).forEach(j ->
+      {
+        Cell cell = new Cell(new int[]{ table.size() - 1, j }, null);
+        cell.size = new Dimension(cellSize.width, cellSize.height);
+
+        table.get(table.size() - 1).add(cell);
+      });
+    });
   }
 
   public void addRow (int rows)
   {
-    int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
-    int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
-    table.forEach(row ->
-        IntStream.range(0, rows)
-                 .forEach(i ->
-                 {
-                   Cell cell = new Cell(new int[]{ table.indexOf(row), i }, null);
-                   cell.size = new Dimension(cellWidth, cellHeight);
-                   row.add(cell);
-                 }));
+    this.dim.height += rows;
+
+    IntStream.range(0, rows).forEach(i ->
+    {
+      IntStream.range(0, table.size()).forEach(j ->
+      {
+        Cell cell = new Cell(new int[]{ j, table.get(j).size() }, null);
+        cell.size = new Dimension(cellSize.width, cellSize.height);
+
+        table.get(j).add(cell);
+      });
+    });
   }
 
   public UIObject getCellContent (int[] pos)
@@ -154,16 +202,22 @@ public class UITable extends UIObject implements Displayed, Updating
 
   public Vector2d getCellPosition (int[] pos)
   {
-    int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
-    int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
-    return new Vector2d().cartesian(pos[0] * ( cellWidth + hSpacing ), pos[1] * ( cellHeight + vSpacing ));
+    return new Vector2d().cartesian(pos[0] * ( cellSize.width + hSpacing ), pos[1] * ( cellSize.height + vSpacing ));
+  }
+
+  public int getCurrentCellWidth ()
+  {
+    return cellSize.width;
+  }
+
+  public int getCurrentCellHeight ()
+  {
+    return cellSize.height;
   }
 
   public Dimension getCellSize (int[] pos)
   {
-    int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
-    int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
-    return new Dimension(cellWidth, cellHeight);
+    return new Dimension(cellSize.width, cellSize.height);
   }
 
   public void selectCell (int[] pos)
@@ -220,6 +274,31 @@ public class UITable extends UIObject implements Displayed, Updating
     }
   }
 
+  public void moveContent (Direction dir, int distance)
+  {
+    if (dir == null) return;
+    if (distance < 1) return;
+
+    if (dir.toVector().isHorizontal())
+      offset = offset.add(dir.toVector().multiply(distance * ( cellSize.width + hSpacing )));
+    else
+      offset = offset.add(dir.toVector().multiply(distance * ( cellSize.height + vSpacing )));
+  }
+
+  public void setCellSize (Dimension size)
+  {
+    cellSize = size;
+    table.forEach(row -> row.forEach(cell ->
+    {
+      cell.size = size;
+      if (cell.content != null)
+      {
+        cell.content.asLabel().setSize(size);
+        cell.content.position = getCellPosition(cell.pos);
+      }
+    }));
+  }
+
   //  public void setColumnWidth (int column, int width)
   //  {
   //    table.get(column).forEach(cell -> cell.size = new Dimension(width, cell.size.height));
@@ -236,35 +315,21 @@ public class UITable extends UIObject implements Displayed, Updating
     selected.content.asButton().press();
   }
 
-  private int getColumnWidth (int column)
-  {
-    return table.get(column).stream()
-                .mapToInt(cell -> cell.size.width)
-                .max()
-                .orElse(0);
-  }
-
-  private int getRowHeight (int row)
-  {
-    return table.stream()
-                .mapToInt(column -> column.get(row).size.height)
-                .max()
-                .orElse(0);
-  }
-
   private void showBuffers (Graphics2D g)
   {
-    for (int i = 1; i < dim.width; i++)
+    int width  = getCurrentCellWidth();
+    int height = getCurrentCellHeight();
+    int x      = size.width / ( width + hSpacing ) + 1;
+    int y      = size.height / ( height + vSpacing ) + 1;
+    for (int i = 1; i < x; i++)
     {
-      int width = getColumnWidth(i - 1);
-      g.drawLine(i * width + ( i - 1 ) * hSpacing, 0, i * width + ( i - 1 ) * hSpacing, size.height);
-      g.drawLine(i * width + i * hSpacing, 0, i * width + i * hSpacing, size.height);
+      g.drawLine(( i * width + ( i - 1 ) * hSpacing ), 0, ( i * width + ( i - 1 ) * hSpacing ), size.height);
+      g.drawLine(( i * width + i * hSpacing ), 0, ( i * width + i * hSpacing ), size.height);
     }
-    for (int i = 1; i < dim.height; i++)
+    for (int i = 1; i < y; i++)
     {
-      int height = getRowHeight(i - 1);
-      g.drawLine(0, i * height + ( i - 1 ) * vSpacing, size.width, i * height + ( i - 1 ) * vSpacing);
-      g.drawLine(0, i * height + i * vSpacing, size.width, i * height + i * vSpacing);
+      g.drawLine(0, ( i * height + ( i - 1 ) * vSpacing ), size.width, ( i * height + ( i - 1 ) * vSpacing ));
+      g.drawLine(0, ( i * height + i * vSpacing ), size.width, ( i * height + i * vSpacing ));
     }
   }
 }

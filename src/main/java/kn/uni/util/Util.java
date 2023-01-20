@@ -1,5 +1,7 @@
 package kn.uni.util;
 
+import java.awt.Rectangle;
+
 public class Util
 {
   public static final double precision = 1e9;
@@ -72,5 +74,8 @@ public class Util
     return Math.min(Math.max(( current - start ) * 1.0 / ( duration ), 0), 1);
   }
 
-
+  public static boolean pointInRect (Vector2d point, Rectangle rect)
+  {
+    return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+  }
 }
