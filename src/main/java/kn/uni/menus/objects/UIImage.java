@@ -3,6 +3,7 @@ package kn.uni.menus.objects;
 import kn.uni.menus.interfaces.Displayed;
 import kn.uni.menus.interfaces.Updating;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.PacPhiConfig;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.BasicStroke;
@@ -16,6 +17,7 @@ public class UIImage extends UIObject implements Displayed, Updating
 {
   public  UILabel       label;
   public  int           borderWidth;
+  public  Vector2d      labelPos;
   private String        path;
   private Dimension     imageDim;
   private Dimension     contentDim;
@@ -28,7 +30,6 @@ public class UIImage extends UIObject implements Displayed, Updating
   private int           contentBuffer;
   private Alignment     alignment;
   private double        proportion;
-  private Vector2d      labelPos;
   private Vector2d      imageBoundsPos;
   private Vector2d      imagePos;
 
@@ -65,14 +66,17 @@ public class UIImage extends UIObject implements Displayed, Updating
 
     g.setStroke(new BasicStroke(borderWidth));
 
-    g.setColor(Color.red);
-    g.draw(new Rectangle(0, 0, size.width, size.height));
-    g.setColor(Color.blue);
-    g.draw(new Rectangle(borderBuffer, borderBuffer, contentDim.width, contentDim.height));
-    g.setColor(Color.yellow);
-    g.draw(new Rectangle((int) imageBoundsPos.x, (int) imageBoundsPos.y, propedContentDim.width, propedContentDim.height));
-    g.setColor(Color.green);
-    g.draw(new Rectangle((int) labelPos.x, (int) labelPos.y, propedLabelDim.width, propedLabelDim.height));
+    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    {
+      g.setColor(Color.red);
+      g.draw(new Rectangle(0, 0, size.width, size.height));
+      g.setColor(Color.blue);
+      g.draw(new Rectangle(borderBuffer, borderBuffer, contentDim.width, contentDim.height));
+      g.setColor(Color.yellow);
+      g.draw(new Rectangle((int) imageBoundsPos.x, (int) imageBoundsPos.y, propedContentDim.width, propedContentDim.height));
+      g.setColor(Color.green);
+      g.draw(new Rectangle((int) labelPos.x, (int) labelPos.y, propedLabelDim.width, propedLabelDim.height));
+    }
     g.drawImage(image, (int) imagePos.x, (int) imagePos.y, imageDim.width, imageDim.height, null);
 
 
@@ -87,7 +91,6 @@ public class UIImage extends UIObject implements Displayed, Updating
   @Override
   public void update ()
   {
-
   }
 
   public void setText (String text)
@@ -100,6 +103,7 @@ public class UIImage extends UIObject implements Displayed, Updating
     {
       label.setText(text);
     }
+    updateLabel();
   }
 
   public void setAlignment (Alignment alignment)
@@ -156,8 +160,6 @@ public class UIImage extends UIObject implements Displayed, Updating
       propedContentDim = new Dimension(contentDim.width, contentDim.height);
       propedLabelDim = new Dimension(contentDim.width, contentDim.height);
     }
-
-
   }
 
   private void setPositions ()
@@ -198,15 +200,16 @@ public class UIImage extends UIObject implements Displayed, Updating
 
   private Vector2d getLabelAlignmentPosition (Alignment alignment)
   {
-    Vector2d topLeft = new Vector2d().cartesian(borderBuffer, borderBuffer);
-    Vector2d center  = new Vector2d().cartesian(borderBuffer + contentDim.width / 2., borderBuffer + contentDim.height / 2.);
+    Vector2d topLeft = position.add(new Vector2d().cartesian(borderBuffer, borderBuffer));
+    Vector2d center  = position.add(new Vector2d().cartesian(borderBuffer + contentDim.width / 2., borderBuffer + contentDim.height / 2.));
     Vector2d middle  = topLeft.add(new Vector2d().cartesian(contentDim.width / 2., contentDim.height / 2.));
+
 
     return switch (alignment)
         {
           case BOTTOM -> center.add(new Vector2d().cartesian(-propedLabelDim.width / 2., -contentDim.height / 2.));
           case TOP -> center.add(new Vector2d().cartesian(-propedLabelDim.width / 2., contentDim.height / 2. - propedLabelDim.height));
-          case RIGHT -> center.add(new Vector2d().cartesian(-contentDim.width / 2., -propedLabelDim.height / 2.));
+          case RIGHT -> topLeft;//.add(new Vector2d().cartesian(-contentDim.width / 2., -propedLabelDim.height / 2.));
           case LEFT -> center.add(new Vector2d().cartesian(contentDim.width / 2. - propedLabelDim.width, -propedLabelDim.height / 2.));
           case CENTER -> middle.add(new Vector2d().cartesian(-propedLabelDim.width / 2., -propedLabelDim.height / 2.));
         };

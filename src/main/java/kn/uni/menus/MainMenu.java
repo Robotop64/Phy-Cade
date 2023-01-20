@@ -2,6 +2,7 @@ package kn.uni.menus;
 
 import kn.uni.Gui;
 import kn.uni.PacPhi;
+import kn.uni.menus.objects.UIImage;
 import kn.uni.menus.objects.UILabel;
 import kn.uni.menus.objects.UITable;
 import kn.uni.ui.InputListener;
@@ -52,7 +53,7 @@ public class MainMenu extends Menu
         new Vector2d().cartesian(390, 217),
         new Dimension(500, 120 * 5 + 4 * 9), 0,
         new Dimension(1, 5));
-    main.vSpacing = 9;
+    main.setSpacing(main.hSpacing, 9);
     main.borderWidth = 1;
 
     main.cellToButton(new int[]{ 0, 0 }, "EIN SPIELER");
@@ -111,7 +112,16 @@ public class MainMenu extends Menu
     //
 
     //QR-Code
-
+    UIImage a = new UIImage(new Vector2d().cartesian(Gui.frameWidth - 180, Gui.frameHeight - 260), new Dimension(170, 250), 0, "pacman/QR_Code_GitLab.png");
+    //    a.setText("Vorschläge\n    & \n  Fehler ");
+    a.setText("Vorschläge\n    &     \n Probleme ");
+    a.label.fitText();
+    a.label.setAlignment(UILabel.Alignment.MIDDLE_CENTER);
+    a.label.borderColor = null;
+    a.setImageDim(new Dimension(150, 150));
+    a.setAlignment(UIImage.Alignment.BOTTOM);
+    a.setProportion(3 / 5.);
+    elements.add(a);
 
   }
 }

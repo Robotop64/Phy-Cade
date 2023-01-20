@@ -51,15 +51,15 @@ public class UITable extends UIObject implements Displayed, Updating
     this.size = size;
     this.innerSize = new Dimension(size.width - 2 * borderWidth, size.height - 2 * borderWidth);
     this.paintLayer = paintLayer;
-
     int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
     int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
 
     cellSize = new Dimension(cellWidth, cellHeight);
 
     addColumn(dim.width);
+    this.dim = new Dimension(dim.width / 2, dim.height);
 
-    System.out.println(table);
+    setDefCellSize();
   }
 
   @Override
@@ -205,6 +205,14 @@ public class UITable extends UIObject implements Displayed, Updating
     return new Vector2d().cartesian(pos[0] * ( cellSize.width + hSpacing ), pos[1] * ( cellSize.height + vSpacing ));
   }
 
+  public void setDefCellSize ()
+  {
+    int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
+    int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
+    //    System.out.println(dim.width + " " + dim.height);
+    setCellSize(new Dimension(cellWidth, cellHeight));
+  }
+
   public int getCurrentCellWidth ()
   {
     return cellSize.width;
@@ -213,6 +221,13 @@ public class UITable extends UIObject implements Displayed, Updating
   public int getCurrentCellHeight ()
   {
     return cellSize.height;
+  }
+
+  public void setSpacing (int hSpacing, int vSpacing)
+  {
+    this.hSpacing = hSpacing;
+    this.vSpacing = vSpacing;
+    setDefCellSize();
   }
 
   public Dimension getCellSize (int[] pos)
