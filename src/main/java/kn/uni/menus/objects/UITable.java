@@ -73,7 +73,7 @@ public class UITable extends UIObject implements Displayed, Updating
       g.setColor(backgroundColor);
       g.fillRect(0, 0, size.width, size.height);
     }
-    
+
     if (showGrid)
     {
       g.setStroke(new BasicStroke(borderWidth));
@@ -90,7 +90,7 @@ public class UITable extends UIObject implements Displayed, Updating
                             .filter(cell ->
                             {
                               Rectangle bounds     = new Rectangle((int) 0, (int) 0, size.width, size.height);
-                              Rectangle cellBounds = new Rectangle((int) cell.position.x, (int) cell.position.y, cell.size.width, cell.size.height);
+                              Rectangle cellBounds = new Rectangle((int) cell.position.add(offset).x, (int) cell.position.add(offset).y, cell.size.width, cell.size.height);
                               return bounds.intersects(cellBounds);
                             })
                             .map(cell -> (Displayed) cell)
