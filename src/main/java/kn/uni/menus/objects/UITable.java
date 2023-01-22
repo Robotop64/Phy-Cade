@@ -314,6 +314,20 @@ public class UITable extends UIObject implements Displayed, Updating
     }));
   }
 
+  public boolean selectedIsEdgeOfVisibleArea ()
+  {
+    if (selected == null) return false;
+    int[] pos = selected.pos;
+    if (pos == null) return false;
+
+    int width  = getCurrentCellWidth();
+    int height = getCurrentCellHeight();
+    int x      = size.width / ( width + hSpacing ) + 1;
+    int y      = size.height / ( height + vSpacing ) + 1;
+
+    return pos[0] < offset.x || pos[0] > offset.x + x || pos[1] < offset.y || pos[1] > offset.y + y;
+  }
+
   //  public void setColumnWidth (int column, int width)
   //  {
   //    table.get(column).forEach(cell -> cell.size = new Dimension(width, cell.size.height));

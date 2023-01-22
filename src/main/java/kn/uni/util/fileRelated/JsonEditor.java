@@ -54,6 +54,7 @@ public class JsonEditor
       FileWriter writer = new FileWriter(getPath() + name + ".json");
       writer.write(json);
       writer.close();
+      System.out.println("Saved " + name);
     }
     catch (Exception e)
     {
