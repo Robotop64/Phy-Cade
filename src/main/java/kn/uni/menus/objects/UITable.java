@@ -11,9 +11,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.awt.geom.Area;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class UITable extends UIObject implements Displayed, Updating
@@ -209,7 +208,6 @@ public class UITable extends UIObject implements Displayed, Updating
   {
     int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
     int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
-    //    System.out.println(dim.width + " " + dim.height);
     setCellSize(new Dimension(cellWidth, cellHeight));
   }
 
@@ -246,7 +244,6 @@ public class UITable extends UIObject implements Displayed, Updating
       old.selected = false;
       old.content.asButton().isSelected = false;
     }
-
 
     next.selected = true;
     next.content.asButton().isSelected = true;
@@ -314,18 +311,38 @@ public class UITable extends UIObject implements Displayed, Updating
     }));
   }
 
-  public boolean selectedIsEdgeOfVisibleArea ()
+  public boolean cellIsEdgeOfVisibleArea(int[] pos)
   {
-    if (selected == null) return false;
-    int[] pos = selected.pos;
-    if (pos == null) return false;
+    Vector2d cellPos = getCellPosition(pos).add(position);
+    Vector2d transCellPos = cellPos.add(offset);
 
-    int width  = getCurrentCellWidth();
-    int height = getCurrentCellHeight();
-    int x      = size.width / ( width + hSpacing ) + 1;
-    int y      = size.height / ( height + vSpacing ) + 1;
+    Area visibleArea = new Area(new Rectangle((int) position.x, (int) position.y, size.width, size.height));
+    return Arrays.stream(Direction.values()).anyMatch(dir -> {
+      Vector2d nextCellPos = new Vector2d().cartesian(0, 0);
 
-    return pos[0] < offset.x || pos[0] > offset.x + x || pos[1] < offset.y || pos[1] > offset.y + y;
+      if (dir.equals(Direction.right))
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.width+hSpacing));
+
+      if (dir.equals(Direction.left))
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.width+hSpacing));
+
+      if (dir.equals(Direction.up))
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.height+vSpacing));
+
+      if (dir.equals(Direction.down))
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.height+vSpacing));
+
+      return !visibleArea.contains(nextCellPos.x, nextCellPos.y);
+    });
+  }
+
+  public boolean cellIsInVisibleArea (int[] pos)
+  {
+    Vector2d cellPos = getCellPosition(pos).add(position);
+    Vector2d transCellPos = cellPos.add(offset);
+
+    Area visibleArea = new Area(new Rectangle((int) position.x, (int) position.y, size.width, size.height));
+    return visibleArea.contains(transCellPos.x, transCellPos.y);
   }
 
   //  public void setColumnWidth (int column, int width)
