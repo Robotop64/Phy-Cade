@@ -6,7 +6,7 @@ import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.TextureEditor;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class TeleporterObject extends CollidableObject implements Rendered, Ticking
@@ -44,10 +44,40 @@ public class TeleporterObject extends CollidableObject implements Rendered, Tick
   public void paintComponent (Graphics2D g, ClassicPacmanGameState gameState)
   {
     pos.use(g::translate);
-    Vector2d topLeft = new Vector2d().cartesian(texture.getWidth(), texture.getHeight()).multiply(-.5);
-    topLeft.use(g::translate);
-    g.drawImage(texture, 0, 0, Gui.getInstance().frame);
-    topLeft.multiply(-1).use(g::translate);
+    if (pair != null)
+    {
+      Vector2d other = pair.pos;
+      Direction orientation = pos.subtract(other).unitVector().toDirection();
+      Vector2d portPos = new Vector2d().cartesian(0,0).add(orientation.toVector().multiply(gameState.map.tileSize/2.));
+
+      //TODO add color table in case of multiple teleporters
+      if(orientation.equals(Direction.left))
+      {
+        g.setColor(new Color(255, 165, 0, 40));
+        g.fillOval((int) (portPos.x-5), (int) (portPos.y-gameState.map.tileSize/2.-gameState.map.tileSize/6), 60, gameState.map.tileSize+gameState.map.tileSize/3);
+        g.setColor(new Color(255, 165, 0, 50).brighter());
+        g.fillOval((int) (portPos.x-5), (int) (portPos.y-gameState.map.tileSize/2.), 40, gameState.map.tileSize);
+        g.setColor(new Color(255, 165, 0, 60).brighter().brighter());
+        g.fillOval((int) (portPos.x-5), (int) (portPos.y-gameState.map.tileSize/4.), 30, gameState.map.tileSize/2);
+        g.setColor(Color.black);
+        g.fillOval((int) (portPos.x-5), (int) (portPos.y-gameState.map.tileSize/2.-gameState.map.tileSize/6), 10, gameState.map.tileSize+gameState.map.tileSize/3);
+        g.setColor(Color.ORANGE.darker());
+        g.drawOval((int) (portPos.x-5), (int) (portPos.y-gameState.map.tileSize/2.-gameState.map.tileSize/6), 10, gameState.map.tileSize+gameState.map.tileSize/3);
+      }
+      else
+      {
+        g.setColor(new Color(0x00, 0xFF, 0xFF, 40));
+        g.fillOval((int) (portPos.x-60), (int) (portPos.y-gameState.map.tileSize/2.-gameState.map.tileSize/6), 60, gameState.map.tileSize+gameState.map.tileSize/3);
+        g.setColor(new Color(0x00, 0xFF, 0xFF, 50).brighter());
+        g.fillOval((int) (portPos.x-40), (int) (portPos.y-gameState.map.tileSize/2.), 40, gameState.map.tileSize);
+        g.setColor(new Color(0x00, 0xFF, 0xFF, 60).brighter().brighter());
+        g.fillOval((int) (portPos.x-30), (int) (portPos.y-gameState.map.tileSize/4.), 30, gameState.map.tileSize/2);
+        g.setColor(Color.black);
+        g.fillOval((int) (portPos.x-5), (int) (portPos.y-gameState.map.tileSize/2.-gameState.map.tileSize/6), 10, gameState.map.tileSize+gameState.map.tileSize/3);
+        g.setColor(Color.CYAN.darker());
+        g.drawOval((int) (portPos.x-5), (int) (portPos.y-gameState.map.tileSize/2.-gameState.map.tileSize/6), 10, gameState.map.tileSize+gameState.map.tileSize/3);
+      }
+    }
     if (DebugDisplay.getDebugDisplay(gameState).enabled)
     {
       g.drawOval((int) ( -hitbox.x / 2 ), (int) ( -hitbox.y / 2 ), (int) hitbox.x, (int) hitbox.y);

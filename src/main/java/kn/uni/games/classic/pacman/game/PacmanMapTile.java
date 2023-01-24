@@ -84,12 +84,6 @@ public class PacmanMapTile extends PlacedObject implements Rendered
         }
         g.translate(-s2, -s2);
       }
-
-      case portal ->
-      {
-        g.setColor(Color.orange);
-        g.fillRect(0, 0, size, size);
-      }
     }
 
     g.translate(-(int) pos.rounded().x, -(int) pos.rounded().y);
