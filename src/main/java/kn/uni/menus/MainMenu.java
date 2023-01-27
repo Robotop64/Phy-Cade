@@ -2,6 +2,7 @@ package kn.uni.menus;
 
 import kn.uni.Gui;
 import kn.uni.PacPhi;
+import kn.uni.menus.engine.Projector;
 import kn.uni.menus.objects.UIImage;
 import kn.uni.menus.objects.UILabel;
 import kn.uni.menus.objects.UITable;
@@ -67,6 +68,12 @@ public class MainMenu extends Menu
 
     main.cellToButton(new int[]{ 0, 3 }, "EINSTELLUNGEN");
     main.getCellContent(new int[]{ 0, 3 }).asLabel().setFontSize(32);
+    main.getCellContent(new int[]{ 0, 3 }).asButton().addAction(() ->
+    {
+      kill();
+     Projector projector = Projector.getInstance(Gui.getInstance().content);
+     projector.setSelectedMenu(new SettingsMenu(Gui.getInstance().content));
+    });
 
     main.cellToButton(new int[]{ 0, 4 }, "TON - AN");
     main.getCellContent(new int[]{ 0, 4 }).asLabel().setFontSize(32);

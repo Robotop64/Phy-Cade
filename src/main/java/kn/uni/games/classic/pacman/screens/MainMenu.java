@@ -217,7 +217,7 @@ public class MainMenu extends JPanel
     {
       Projector projector = Projector.getInstance(Gui.getInstance().content);
       projector.setBounds(Gui.defaultFrameBounds);
-      projector.setSelectedMenu(new kn.uni.menus.MenuTest(projector));
+      projector.setSelectedMenu(new kn.uni.menus.MainMenu(projector));
       projector.state.running = true;
       projector.startScreen();
     });

@@ -6,6 +6,9 @@ import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.PacPhiConfig;
 
+import javax.management.openmbean.ArrayType;
+import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.OpenType;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -57,8 +60,7 @@ public class UITable extends UIObject implements Displayed, Updating
 
     addColumn(dim.width);
     this.dim = new Dimension(dim.width / 2, dim.height);
-
-    setDefCellSize();
+    alignCells();
   }
 
   @Override
@@ -155,7 +157,7 @@ public class UITable extends UIObject implements Displayed, Updating
       {
         Cell cell = new Cell(new int[]{ table.size() - 1, j }, null);
         cell.size = new Dimension(cellSize.width, cellSize.height);
-
+        cell.absPos = new Vector2d().cartesian(cell.pos[0] * ( cellSize.width + hSpacing ), cell.pos[1] * ( cellSize.height + vSpacing ));
         table.get(table.size() - 1).add(cell);
       });
     });
@@ -171,7 +173,7 @@ public class UITable extends UIObject implements Displayed, Updating
       {
         Cell cell = new Cell(new int[]{ j, table.get(j).size() }, null);
         cell.size = new Dimension(cellSize.width, cellSize.height);
-
+        cell.absPos = new Vector2d().cartesian(cell.pos[0] * ( cellSize.width + hSpacing ), cell.pos[1] * ( cellSize.height + vSpacing ));
         table.get(j).add(cell);
       });
     });
@@ -201,7 +203,8 @@ public class UITable extends UIObject implements Displayed, Updating
 
   public Vector2d getCellPosition (int[] pos)
   {
-    return new Vector2d().cartesian(pos[0] * ( cellSize.width + hSpacing ), pos[1] * ( cellSize.height + vSpacing ));
+    return table.get(pos[0]).get(pos[1]).absPos;
+    //new Vector2d().cartesian(pos[0] * ( cellSize.width + hSpacing ), pos[1] * ( cellSize.height + vSpacing ));
   }
 
   public void setDefCellSize ()
@@ -225,7 +228,7 @@ public class UITable extends UIObject implements Displayed, Updating
   {
     this.hSpacing = hSpacing;
     this.vSpacing = vSpacing;
-    setDefCellSize();
+    alignCells();
   }
 
   public Dimension getCellSize (int[] pos)
@@ -345,15 +348,44 @@ public class UITable extends UIObject implements Displayed, Updating
     return visibleArea.contains(transCellPos.x, transCellPos.y);
   }
 
-  //  public void setColumnWidth (int column, int width)
-  //  {
-  //    table.get(column).forEach(cell -> cell.size = new Dimension(width, cell.size.height));
-  //  }
-  //
-  //  public void setRowHeight (int row, int height)
-  //  {
-  //    table.forEach(column -> column.get(row).size = new Dimension(column.get(row).size.width, height));
-  //  }
+  public void setColumnWidth (int column, int width)
+  {
+    table.get(column).forEach(cell -> cell.size = new Dimension(width, cell.size.height));
+    alignCells();
+  }
+
+  public void setRowHeight (int row, int height)
+  {
+    table.forEach(column -> column.get(row).size = new Dimension(column.get(row).size.width, height));
+    alignCells();
+  }
+
+  public void fitCellContent()
+  {
+    table.forEach(col -> col.forEach(cell -> {
+      cell.content.asLabel().setSize(cellSize);
+    }));
+  }
+
+  public void alignCells()
+  {
+    table.forEach(col ->
+            col.forEach(cell ->
+            {
+              int colIndex = table.indexOf(col);
+              int cellIndex = col.indexOf(cell);
+
+              if(colIndex == 0 && cellIndex == 0)
+                cell.absPos = new Vector2d().cartesian(0, 0);
+              else if (colIndex != 0 && cellIndex == 0)
+                cell.absPos = new Vector2d().cartesian( table.get(colIndex-1).get(0).absPos.x+table.get(colIndex-1).get(0).size.width+hSpacing, 0);
+              else
+                cell.absPos = new Vector2d().cartesian(col.get(cellIndex-1).absPos.x, col.get(cellIndex-1).absPos.y+col.get(cellIndex-1).size.height+vSpacing);
+
+              if (cell.content != null)
+                cell.content.position = cell.absPos;
+            }));
+  }
 
   public void pressSelected ()
   {
@@ -383,6 +415,7 @@ public class UITable extends UIObject implements Displayed, Updating
 class Cell
 {
   public int[]     pos;
+  public Vector2d absPos;
   public UIObject  content;
   public Dimension size;
   public boolean   selected = false;
@@ -393,4 +426,3 @@ class Cell
     this.content = content;
   }
 }
-
