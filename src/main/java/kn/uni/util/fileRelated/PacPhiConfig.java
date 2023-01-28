@@ -64,7 +64,7 @@ public class PacPhiConfig
     settings.addSubGroup("Gameplay");
     settings.get("Gameplay").addSubGroup("-");
     settings.get("Gameplay").addSubGroup("GameSpecific");
-    settings.get("Gameplay").get("GameSpecific").addSubGroup("PacMan");
+    //    settings.get("Gameplay").get("GameSpecific").addSubGroup("PacMan");
 
 
     //Graphics branch
@@ -96,15 +96,10 @@ public class PacPhiConfig
   {
     descriptions = new HashMap <>();
 
-    descriptions.put("General", new Context("Allgemein", " "));
     descriptions.put("-", new Context("Allgemein", " "));
+    descriptions.put("Advanced", new Context("Erweiterte Einstellungen", "Hier können erweiterte Einstellungen vorgenommen werden"));
 
-    descriptions.put("Debugging", new Context("Debugging", " "));
-    descriptions.put("Gameplay", new Context("Gameplay", " "));
-    descriptions.put("Graphics", new Context("Grafik", " "));
-    descriptions.put("Audio", new Context("Audio", " "));
-    descriptions.put("GameSpecific", new Context("Spiele", " "));
-
+    descriptions.put("General", new Context("Allgemein", " "));
     descriptions.put("Version", new Context("Spiel Version", "Die aktuelle Version des Spiels"));
     descriptions.put("Branch", new Context("Branch", "The branch of the game"));
     descriptions.put("Debug", new Context("Debug Modus",
@@ -115,20 +110,36 @@ public class PacPhiConfig
             Ein beitragen von Spielständen ist nicht möglich.
             Anmelden ist nicht möglich.
             """));
-    descriptions.put("AccessLevel", new Context("Zugriffslevel", "Bestimmt das Zugriffslevel des Spielers"));
+    descriptions.put("AccessLevel", new Context("Zugriffslevel", "Gibt den Modus des Spielautomaten an"));
 
+    descriptions.put("Debugging", new Context("Debugging", " "));
+    descriptions.put("Enabled", new Context("Aktiv", "Aktiviert oder deaktiviert dieser Einstellungsgruppe"));
+    descriptions.put("Immortal", new Context("Unverwundbarkeit", "Aktiviert oder deaktiviert die Unverwundbarkeit"));
+    descriptions.put("StartLives", new Context("Startleben", "Bestimmt die Anzahl der Leben am Anfang eines Spiels"));
+    descriptions.put("StartSpeed", new Context("Startgeschwindigkeit", "Bestimmt die Geschwindigkeit am Anfang eines Spiels"));
+
+    descriptions.put("Gameplay", new Context("Gameplay", " "));
+    descriptions.put("GameSpecific", new Context("Spiele", " "));
+    descriptions.put("PacMan", new Context("PacMan", " "));
+
+    descriptions.put("Graphics", new Context("Grafik", " "));
     descriptions.put("Effects", new Context("Effekte", "Aktiviert oder deaktiviert die Effekte"));
-    descriptions.put("Advanced", new Context("Erweiterte Einstellungen", "Hier können die erweiterten Grafikeinstellungen vorgenommen werden"));
     descriptions.put("Style", new Context("Stil", "Hier können die Stile der Grafikelemente vorgenommen werden"));
-    descriptions.put("PacSkin", new Context("Spieler", "Bestimmt das Aussehen des Spielers"));
+    descriptions.put("MenuSkin", new Context("Menü", "Bestimmt das Aussehen des Menüs"));
+    descriptions.put("SeasonalSkins", new Context("Saisonal", "Aktiviert oder deaktiviert die saisonalen Skins"));
+    descriptions.put("PlayerSkin", new Context("Spieler", "Bestimmt das Aussehen des Spielers"));
     descriptions.put("GhostSkin", new Context("Geister", "Bestimmt das Aussehen der Geister"));
+    descriptions.put("ItemSkin", new Context("Gegenstände", "Bestimmt das Aussehen der Items"));
     descriptions.put("MapSkin", new Context("Karte", "Bestimmt das Aussehen der Karte"));
     descriptions.put("WallSkin", new Context("Wände", "Bestimmt das Aussehen der Wände"));
-    descriptions.put("ItemSkin", new Context("Gegenstände", "Bestimmt das Aussehen der Items"));
 
-    descriptions.put("Master", new Context("Gesamtlautstärke", "Steuert die Lautstärke des gesamten Spiels"));
-    descriptions.put("Musik", new Context("Musiklautstärke", "Steuert die Lautstärke der Musik"));
-    descriptions.put("Sound", new Context("Soundlautstärke", "Steuert die Lautstärke der Soundeffekte"));
+    descriptions.put("Audio", new Context("Audio", " "));
+    descriptions.put("MasterVolume", new Context("Gesamtlautstärke", "Steuert die Lautstärke des gesamten Spiels"));
+    descriptions.put("Music", new Context("Musik", "Aktiviert oder deaktiviert die Musik"));
+    descriptions.put("MusicVolume", new Context("Musiklautstärke", "Steuert die Lautstärke der Musik"));
+    descriptions.put("SFX", new Context("Soundeffekte", "Aktiviert oder deaktiviert die Soundeffekte"));
+    descriptions.put("SFXVolume", new Context("Soundlautstärke", "Steuert die Lautstärke der Soundeffekte"));
+
   }
 
   public void load ()

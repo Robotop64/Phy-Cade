@@ -224,6 +224,7 @@ public class UITable extends UIObject implements Displayed, Updating
     {
       Cell cell = table.get(i).get(row);
       cell.content = new UIButton(cell.absPos, cell.size, texts[i], paintLayer);
+      cell.content.asButton().useColorSet(UIButton.unselected);
     });
   }
 
@@ -233,6 +234,7 @@ public class UITable extends UIObject implements Displayed, Updating
     {
       Cell cell = table.get(column).get(i);
       cell.content = new UIButton(cell.absPos, cell.size, texts[i], paintLayer);
+      cell.content.asButton().useColorSet(UIButton.unselected);
     });
   }
 
@@ -242,6 +244,7 @@ public class UITable extends UIObject implements Displayed, Updating
     {
       Cell cell = table.get(i).get(row);
       cell.content = new UILabel(cell.absPos, cell.size, texts[i], paintLayer);
+      cell.content.asLabel().useColorSet(UIObject.unselected);
     });
   }
 
@@ -251,6 +254,7 @@ public class UITable extends UIObject implements Displayed, Updating
     {
       Cell cell = table.get(column).get(i);
       cell.content = new UILabel(cell.absPos, cell.size, texts[i], paintLayer);
+      cell.content.asLabel().useColorSet(UIObject.unselected);
     });
   }
 
@@ -314,7 +318,7 @@ public class UITable extends UIObject implements Displayed, Updating
   {
     Cell next = table.get(pos[0]).get(pos[1]);
     Cell old  = selected;
-    if (next.content == null) return;
+    if (next.content == null || !next.content.selectable) return;
 
     if (old != null)
     {

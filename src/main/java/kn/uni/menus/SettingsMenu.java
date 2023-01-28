@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SettingsMenu extends Menu
@@ -67,6 +66,7 @@ public class SettingsMenu extends Menu
         {
           mainSectionIndex = Util.bounded((int) ( mainSectionIndex + input.toDirection().toVector().x ), 0, PacPhiConfig.getInstance().settings.children().size() - 1);
           showCurrentSubSection();
+          showCurrentSettings();
         }
         else if (selected.equals(getElement(2).asTable()))
         {
@@ -83,7 +83,14 @@ public class SettingsMenu extends Menu
       }
 
     });
-    assignActions();
+
+    getElement(1).asTable().getRow(0).forEach(button -> button.asButton().addAction(() ->
+    {
+      getElement(2).asTable().selectCell(new int[]{ 0, 0 });
+      selected = getElement(2).asTable();
+      showCurrentSettings();
+    }));
+
     showCurrentSubSection();
     showCurrentSettings();
   }
@@ -108,8 +115,8 @@ public class SettingsMenu extends Menu
     int mainSectionCount = PacPhiConfig.getInstance().settings.children().size();
 
     UITable mainSections = new UITable(new Vector2d().cartesian(50, 80), new Dimension(Gui.frameWidth - 2 * 50, 50), 0, new Dimension(mainSectionCount, 1));
-    mainSections.showBorder = true;
-    mainSections.showCellBounds = true;
+    //    mainSections.showBorder = true;
+    //    mainSections.showCellBounds = true;
     mainSections.setSpacing(15, 0);
     mainSections.setDefCellSize();
 
@@ -128,8 +135,8 @@ public class SettingsMenu extends Menu
 
     //Sub Sections
     UITable subSections = new UITable(new Vector2d().cartesian(50, 200), new Dimension(175, Gui.frameHeight - 15 - 200 - 100), 0, new Dimension(1, 1));
-    subSections.showBorder = true;
-    subSections.showCellBounds = true;
+    //    subSections.showBorder = true;
+    //    subSections.showCellBounds = true;
     subSections.setSpacing(0, 15);
     subSections.setDefCellSize();
     subSections.setCellSize(new Dimension(subSections.getCurrentCellWidth(), mainSections.getCurrentCellHeight()));
@@ -142,13 +149,13 @@ public class SettingsMenu extends Menu
 
     //Settings
     UITable settings = new UITable(new Vector2d().cartesian(250, 200), new Dimension(Gui.frameWidth - 200 - 100, Gui.frameHeight - 15 - 200 - 100), 0, new Dimension(2, 1));
-    settings.showBorder = true;
-    settings.showCellBounds = true;
-    settings.setSpacing(5, 15);
+    //    settings.showBorder = true;
+    //    settings.showCellBounds = true;
+    settings.setSpacing(10, 15);
     settings.setDefCellSize();
     settings.setCellSize(new Dimension(settings.getCurrentCellWidth(), mainSections.getCurrentCellHeight()));
-    settings.setColumnWidth(0, (int) ( ( settings.size.width - 5 ) * 2 / 3. ));
-    settings.setColumnWidth(1, (int) ( ( settings.size.width - 5 ) / 3. ));
+    settings.setColumnWidth(0, (int) ( ( settings.size.width - 10 ) * 2 / 3. ));
+    settings.setColumnWidth(1, (int) ( ( settings.size.width - 10 ) / 3. ));
     settings.alignCells();
 
     settings.selectCell(new int[]{ 0, 0 });
@@ -168,7 +175,15 @@ public class SettingsMenu extends Menu
       getElement(2).asTable().loadLength(subKeys.size());
       getElement(2).asTable().alignCells();
       getElement(2).asTable().convertColumnToButtons(0, subLabels.toArray(new String[0]));
+
+      getElement(2).asTable().getColumn(0).forEach(button -> button.asButton().addAction(() ->
+      {
+        getElement(3).asTable().selectCell(new int[]{ 1, 0 });
+        selected = getElement(3).asTable();
+      }));
     }
+
+
   }
 
   private void showCurrentSettings ()
@@ -176,7 +191,7 @@ public class SettingsMenu extends Menu
     List <String> mainKeys    = PacPhiConfig.getInstance().settings.getKeyList();
     List <String> subKeys     = PacPhiConfig.getInstance().settings.children().get(mainKeys.get(mainSectionIndex)).getKeyList();
     List <String> settingKeys = PacPhiConfig.getInstance().settings.children().get(mainKeys.get(mainSectionIndex)).children().get(subKeys.get(subSectionIndex)).getKeyList();
-    Collections.reverse(settingKeys);
+    //    Collections.reverse(settingKeys);
     List <String> settingLabels = new ArrayList <>();
     settingKeys.forEach(key -> settingLabels.add(PacPhiConfig.getInstance().descriptions.get(key).displayName()));
 
@@ -190,15 +205,12 @@ public class SettingsMenu extends Menu
       getElement(3).asTable().convertColumnToLabels(0, settingLabels.toArray(new String[0]));
       getElement(3).asTable().convertColumnToButtons(1, settingValues.toArray(new String[0]));
     }
-  }
-
-  private void assignActions ()
-  {
-    getElement(1).asTable().getRow(0).forEach(button -> button.asButton().addAction(() ->
+    else
     {
-      getElement(2).asTable().selectCell(new int[]{ 0, 0 });
-      selected = getElement(2).asTable();
-    }));
+      getElement(3).asTable().loadLength(1);
+      getElement(3).asTable().alignCells();
+      getElement(3).asTable().convertColumnToLabels(0, new String[]{ "No Settings" });
+    }
   }
 }
 
