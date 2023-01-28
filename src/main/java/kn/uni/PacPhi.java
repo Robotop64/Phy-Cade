@@ -25,6 +25,7 @@ public class PacPhi
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
     PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", false);
     PacPhiConfig.getInstance().save();
+    PacPhiConfig.getInstance().createDescriptions();
 
     permissions = (Permission) JsonEditor.load(new Permission(), "Permission");
     assert permissions != null;

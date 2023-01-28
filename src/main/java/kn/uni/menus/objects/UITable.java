@@ -6,16 +6,16 @@ import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.PacPhiConfig;
 
-import javax.management.openmbean.ArrayType;
-import javax.management.openmbean.OpenDataException;
-import javax.management.openmbean.OpenType;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class UITable extends UIObject implements Displayed, Updating
@@ -33,7 +33,6 @@ public class UITable extends UIObject implements Displayed, Updating
   public  boolean            showBorder;
   public  boolean            showBackground;
   public  boolean            showCellBounds;
-  public  boolean            controllable;
   public  List <List <Cell>> table;
   public  Cell               selected = null;
   private Dimension          cellSize;
@@ -147,6 +146,7 @@ public class UITable extends UIObject implements Displayed, Updating
     borderColor = colorSet.borderColor();
   }
 
+  //Table Stuff
   public void addColumn (int columns)
   {
     this.dim.width += columns;
@@ -179,39 +179,79 @@ public class UITable extends UIObject implements Displayed, Updating
     });
   }
 
-  public UIObject getCellContent (int[] pos)
+  public void alignCells ()
   {
-    return table.get(pos[0]).get(pos[1]).content;
+    table.forEach(col ->
+        col.forEach(cell ->
+        {
+          int colIndex  = table.indexOf(col);
+          int cellIndex = col.indexOf(cell);
+
+          if (colIndex == 0 && cellIndex == 0)
+            cell.absPos = new Vector2d().cartesian(0, 0);
+          else if (colIndex != 0 && cellIndex == 0)
+            cell.absPos = new Vector2d().cartesian(table.get(colIndex - 1).get(0).absPos.x + table.get(colIndex - 1).get(0).size.width + hSpacing, 0);
+          else
+            cell.absPos = new Vector2d().cartesian(col.get(cellIndex - 1).absPos.x, col.get(cellIndex - 1).absPos.y + col.get(cellIndex - 1).size.height + vSpacing);
+
+          if (cell.content != null)
+            cell.content.position = cell.absPos;
+        }));
   }
 
-  public void cellToLabel (int[] pos, String text)
+  public void setSpacing (int hSpacing, int vSpacing)
   {
-    setCell(pos, new UILabel(getCellPosition(pos), getCellSize(pos), text, paintLayer));
+    this.hSpacing = hSpacing;
+    this.vSpacing = vSpacing;
+    alignCells();
   }
 
-  public void cellToButton (int[] pos, String text)
+  public void setColumnWidth (int column, int width)
   {
-    setCell(pos, new UIButton(getCellPosition(pos), getCellSize(pos), text, paintLayer));
+    table.get(column).forEach(cell -> cell.size = new Dimension(width, cell.size.height));
+    alignCells();
   }
 
-  public void setCell (int[] pos, kn.uni.menus.objects.UIObject obj)
+  public void setRowHeight (int row, int height)
   {
-    Cell cell = new Cell(pos, obj);
-    cell.size = obj.size;
-    table.get(pos[0]).set(pos[1], cell);
+    table.forEach(column -> column.get(row).size = new Dimension(column.get(row).size.width, height));
+    alignCells();
   }
 
-  public Vector2d getCellPosition (int[] pos)
+  public void convertRowToButtons (int row, String[] texts)
   {
-    return table.get(pos[0]).get(pos[1]).absPos;
-    //new Vector2d().cartesian(pos[0] * ( cellSize.width + hSpacing ), pos[1] * ( cellSize.height + vSpacing ));
+    IntStream.range(0, table.size()).forEach(i ->
+    {
+      Cell cell = table.get(i).get(row);
+      cell.content = new UIButton(cell.absPos, cell.size, texts[i], paintLayer);
+    });
   }
 
-  public void setDefCellSize ()
+  public void convertColumnToButtons (int column, String[] texts)
   {
-    int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
-    int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
-    setCellSize(new Dimension(cellWidth, cellHeight));
+    IntStream.range(0, table.get(column).size()).forEach(i ->
+    {
+      Cell cell = table.get(column).get(i);
+      cell.content = new UIButton(cell.absPos, cell.size, texts[i], paintLayer);
+    });
+  }
+
+  public void convertRowToLabels (int row, String[] texts)
+  {
+    IntStream.range(0, table.size()).forEach(i ->
+    {
+      Cell cell = table.get(i).get(row);
+      cell.content = new UILabel(cell.absPos, cell.size, texts[i], paintLayer);
+    });
+  }
+
+  public void convertColumnToLabels (int column, String[] texts)
+  {
+    IntStream.range(0, table.get(column).size()).forEach(i ->
+    {
+      Cell cell = table.get(column).get(i);
+      cell.content = new UILabel(cell.absPos, cell.size, texts[i], paintLayer);
+    });
   }
 
   public int getCurrentCellWidth ()
@@ -224,18 +264,52 @@ public class UITable extends UIObject implements Displayed, Updating
     return cellSize.height;
   }
 
-  public void setSpacing (int hSpacing, int vSpacing)
+  public void fillColumn (int column, int size)
   {
-    this.hSpacing = hSpacing;
-    this.vSpacing = vSpacing;
-    alignCells();
+    Cell first = table.get(column).get(0);
+    table.get(column).clear();
+    IntStream.range(0, size).forEach(i ->
+    {
+      Cell cell = new Cell(new int[]{ column, i }, null);
+      cell.size = new Dimension(first.size.width, first.size.height);
+      cell.absPos = new Vector2d().cartesian(cell.pos[0] * ( cellSize.width + hSpacing ), cell.pos[1] * ( cellSize.height + vSpacing ));
+      table.get(column).add(cell);
+    });
+
   }
 
-  public Dimension getCellSize (int[] pos)
+  public void loadLength (int length)
   {
-    return new Dimension(cellSize.width, cellSize.height);
+    table.forEach(col ->
+    {
+      fillColumn(table.indexOf(col), length);
+    });
+
+    this.dim.height = length;
   }
 
+  public List <UIObject> getRow (int row)
+  {
+    List <UIObject> rowList = new ArrayList <>();
+    table.forEach(col ->
+    {
+      rowList.add(col.get(row).content);
+    });
+    return rowList;
+  }
+
+  public List <UIObject> getColumn (int column)
+  {
+    List <UIObject> colList = new ArrayList <>();
+    table.get(column).forEach(cell ->
+    {
+      colList.add(cell.content);
+    });
+    return colList;
+  }
+  //
+
+  //Selection
   public void selectCell (int[] pos)
   {
     Cell next = table.get(pos[0]).get(pos[1]);
@@ -252,6 +326,14 @@ public class UITable extends UIObject implements Displayed, Updating
     next.content.asButton().isSelected = true;
 
     selected = next;
+  }
+
+  public void deselectCell ()
+  {
+    if (selected == null) return;
+    selected.selected = false;
+    selected.content.asButton().isSelected = false;
+    selected = null;
   }
 
   public void moveSelection (Direction dir)
@@ -289,17 +371,14 @@ public class UITable extends UIObject implements Displayed, Updating
     }
   }
 
-  public void moveContent (Direction dir, int distance)
+  public void pressSelected ()
   {
-    if (dir == null) return;
-    if (distance < 1) return;
-
-    if (dir.toVector().isHorizontal())
-      offset = offset.add(dir.toVector().multiply(distance * ( cellSize.width + hSpacing )));
-    else
-      offset = offset.add(dir.toVector().multiply(distance * ( cellSize.height + vSpacing )));
+    if (selected == null) return;
+    selected.content.asButton().press();
   }
+  //
 
+  //Cell Stuff
   public void setCellSize (Dimension size)
   {
     cellSize = size;
@@ -314,26 +393,55 @@ public class UITable extends UIObject implements Displayed, Updating
     }));
   }
 
-  public boolean cellIsEdgeOfVisibleArea(int[] pos)
+  public Dimension getCellSize (int[] pos)
   {
-    Vector2d cellPos = getCellPosition(pos).add(position);
+    return table.get(pos[0]).get(pos[1]).size;
+  }
+
+  public void setDefCellSize ()
+  {
+    int cellWidth  = ( size.width - ( dim.width - 1 ) * hSpacing ) / dim.width;
+    int cellHeight = ( size.height - ( dim.height - 1 ) * vSpacing ) / dim.height;
+    setCellSize(new Dimension(cellWidth, cellHeight));
+    alignCells();
+  }
+
+  public void cellToLabel (int[] pos, String text)
+  {
+    setCellContent(pos, new UILabel(getCellPosition(pos), getCellSize(pos), text, paintLayer));
+  }
+
+  public void cellToButton (int[] pos, String text)
+  {
+    setCellContent(pos, new UIButton(getCellPosition(pos), getCellSize(pos), text, paintLayer));
+  }
+
+  public Vector2d getCellPosition (int[] pos)
+  {
+    return table.get(pos[0]).get(pos[1]).absPos;
+  }
+
+  public boolean cellIsEdgeOfVisibleArea (int[] pos)
+  {
+    Vector2d cellPos      = getCellPosition(pos).add(position);
     Vector2d transCellPos = cellPos.add(offset);
 
     Area visibleArea = new Area(new Rectangle((int) position.x, (int) position.y, size.width, size.height));
-    return Arrays.stream(Direction.values()).anyMatch(dir -> {
+    return Arrays.stream(Direction.values()).anyMatch(dir ->
+    {
       Vector2d nextCellPos = new Vector2d().cartesian(0, 0);
 
       if (dir.equals(Direction.right))
-        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.width+hSpacing));
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.width + hSpacing));
 
       if (dir.equals(Direction.left))
-        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.width+hSpacing));
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.width + hSpacing));
 
       if (dir.equals(Direction.up))
-        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.height+vSpacing));
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.height + vSpacing));
 
       if (dir.equals(Direction.down))
-        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.height+vSpacing));
+        nextCellPos = transCellPos.add(dir.toVector().multiply(cellSize.height + vSpacing));
 
       return !visibleArea.contains(nextCellPos.x, nextCellPos.y);
     });
@@ -341,58 +449,59 @@ public class UITable extends UIObject implements Displayed, Updating
 
   public boolean cellIsInVisibleArea (int[] pos)
   {
-    Vector2d cellPos = getCellPosition(pos).add(position);
+    Vector2d cellPos      = getCellPosition(pos).add(position);
     Vector2d transCellPos = cellPos.add(offset);
 
     Area visibleArea = new Area(new Rectangle((int) position.x, (int) position.y, size.width, size.height));
     return visibleArea.contains(transCellPos.x, transCellPos.y);
   }
 
-  public void setColumnWidth (int column, int width)
+  public void setFontSize (int size)
   {
-    table.get(column).forEach(cell -> cell.size = new Dimension(width, cell.size.height));
-    alignCells();
+    table.forEach(row -> row.forEach(cell ->
+    {
+      if (cell.content != null)
+      {
+        cell.content.asLabel().setFontSize(size);
+      }
+    }));
+  }
+  //
+
+  //CellContent
+  public UIObject getCellContent (int[] pos)
+  {
+    return table.get(pos[0]).get(pos[1]).content;
   }
 
-  public void setRowHeight (int row, int height)
+  public void setCellContent (int[] pos, kn.uni.menus.objects.UIObject obj)
   {
-    table.forEach(column -> column.get(row).size = new Dimension(column.get(row).size.width, height));
-    alignCells();
+    Cell cell = new Cell(pos, obj);
+    cell.size = obj.size;
+    table.get(pos[0]).set(pos[1], cell);
   }
 
-  public void fitCellContent()
+  public void moveContent (Direction dir, int distance)
   {
-    table.forEach(col -> col.forEach(cell -> {
+    if (dir == null) return;
+    if (distance < 1) return;
+
+    if (dir.toVector().isHorizontal())
+      offset = offset.add(dir.toVector().multiply(distance * ( cellSize.width + hSpacing )));
+    else
+      offset = offset.add(dir.toVector().multiply(distance * ( cellSize.height + vSpacing )));
+  }
+
+  public void fitCellContent ()
+  {
+    table.forEach(col -> col.forEach(cell ->
+    {
       cell.content.asLabel().setSize(cellSize);
     }));
   }
+  //
 
-  public void alignCells()
-  {
-    table.forEach(col ->
-            col.forEach(cell ->
-            {
-              int colIndex = table.indexOf(col);
-              int cellIndex = col.indexOf(cell);
-
-              if(colIndex == 0 && cellIndex == 0)
-                cell.absPos = new Vector2d().cartesian(0, 0);
-              else if (colIndex != 0 && cellIndex == 0)
-                cell.absPos = new Vector2d().cartesian( table.get(colIndex-1).get(0).absPos.x+table.get(colIndex-1).get(0).size.width+hSpacing, 0);
-              else
-                cell.absPos = new Vector2d().cartesian(col.get(cellIndex-1).absPos.x, col.get(cellIndex-1).absPos.y+col.get(cellIndex-1).size.height+vSpacing);
-
-              if (cell.content != null)
-                cell.content.position = cell.absPos;
-            }));
-  }
-
-  public void pressSelected ()
-  {
-    if (selected == null) return;
-    selected.content.asButton().press();
-  }
-
+  //Painting
   private void showBuffers (Graphics2D g)
   {
     int width  = getCurrentCellWidth();
@@ -410,12 +519,14 @@ public class UITable extends UIObject implements Displayed, Updating
       g.drawLine(0, ( i * height + i * vSpacing ), size.width, ( i * height + i * vSpacing ));
     }
   }
+  //
 }
 
+//TODO make this a separate class
 class Cell
 {
   public int[]     pos;
-  public Vector2d absPos;
+  public Vector2d  absPos;
   public UIObject  content;
   public Dimension size;
   public boolean   selected = false;

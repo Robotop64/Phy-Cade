@@ -17,4 +17,8 @@ public class Menu extends UIScreen
     elements = new ConcurrentLinkedDeque <>();
   }
 
+  public UIObject getElement (int index)
+  {
+    return elements.stream().toList().get(index);
+  }
 }

@@ -11,11 +11,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PacPhiConfig
 {
   //make singleton
-  private static PacPhiConfig                   instance;
-  public         List <SettingTree>             nonEditable = new ArrayList <>();
-  public         List <SettingTree>             debugOnly   = new ArrayList <>();
-  public         SettingTree                    settings;
-  public         HashMap <Setting <?>, Context> descriptions;
+  private static PacPhiConfig              instance;
+  public         List <SettingTree>        nonEditable = new ArrayList <>();
+  public         List <SettingTree>        debugOnly   = new ArrayList <>();
+  public         SettingTree               settings;
+  public         HashMap <String, Context> descriptions;
 
   public PacPhiConfig ()
   {
@@ -95,9 +95,19 @@ public class PacPhiConfig
   public void createDescriptions ()
   {
     descriptions = new HashMap <>();
-    descriptions.put(settings.get("General").get("Version").setting, new Context("Spiel Version", "Die aktuelle Version des Spiels"));
-    descriptions.put(settings.get("General").get("Branch").setting, new Context("Branch", "The branch of the game"));
-    descriptions.put(settings.get("General").get("Debug").setting, new Context("Debug Modus",
+
+    descriptions.put("General", new Context("Allgemein", " "));
+    descriptions.put("-", new Context("Allgemein", " "));
+
+    descriptions.put("Debugging", new Context("Debugging", " "));
+    descriptions.put("Gameplay", new Context("Gameplay", " "));
+    descriptions.put("Graphics", new Context("Grafik", " "));
+    descriptions.put("Audio", new Context("Audio", " "));
+    descriptions.put("GameSpecific", new Context("Spiele", " "));
+
+    descriptions.put("Version", new Context("Spiel Version", "Die aktuelle Version des Spiels"));
+    descriptions.put("Branch", new Context("Branch", "The branch of the game"));
+    descriptions.put("Debug", new Context("Debug Modus",
         """
             Diese Einstellung ist nur für Entwicklungszwecke.
             Erweitert die Anzeige um zusätzliche Informationen.
@@ -105,19 +115,20 @@ public class PacPhiConfig
             Ein beitragen von Spielständen ist nicht möglich.
             Anmelden ist nicht möglich.
             """));
-    descriptions.put(settings.get("Graphics").setting, new Context("Grafik", "Hier können die allgemeinen Grafikeinstellungen vorgenommen werden"));
-    descriptions.put(settings.get("Graphics").get("General").get("Effects").setting, new Context("Effekte", "Aktiviert oder deaktiviert die Effekte"));
-    descriptions.put(settings.get("Graphics").get("Advanced").setting, new Context("Erweiterte Einstellungen", "Hier können die erweiterten Grafikeinstellungen vorgenommen werden"));
-    descriptions.put(settings.get("Graphics").get("Style").setting, new Context("Stil", "Hier können die Stile der Grafikelemente vorgenommen werden"));
-    descriptions.put(settings.get("Graphics").get("Style").get("PacSkin").setting, new Context("Spieler", "Bestimmt das Aussehen des Spielers"));
-    descriptions.put(settings.get("Graphics").get("Style").get("GhostSkin").setting, new Context("Geister", "Bestimmt das Aussehen der Geister"));
-    descriptions.put(settings.get("Graphics").get("Style").get("MapSkin").setting, new Context("Karte", "Bestimmt das Aussehen der Karte"));
-    descriptions.put(settings.get("Graphics").get("Style").get("WallSkin").setting, new Context("Wände", "Bestimmt das Aussehen der Wände"));
-    descriptions.put(settings.get("Graphics").get("Style").get("ItemSkin").setting, new Context("Gegenstände", "Bestimmt das Aussehen der Items"));
-    descriptions.put(settings.get("Audio").setting, new Context("Audio", "Hier können die allgemeinen Audioeinstellungen vorgenommen werden"));
-    descriptions.put(settings.get("Audio").get("Master").setting, new Context("Gesamtlautstärke", "Steuert die Lautstärke des gesamten Spiels"));
-    descriptions.put(settings.get("Audio").get("Music").setting, new Context("Musiklautstärke", "Steuert die Lautstärke der Musik"));
-    descriptions.put(settings.get("Audio").get("Sound").setting, new Context("Soundlautstärke", "Steuert die Lautstärke der Soundeffekte"));
+    descriptions.put("AccessLevel", new Context("Zugriffslevel", "Bestimmt das Zugriffslevel des Spielers"));
+
+    descriptions.put("Effects", new Context("Effekte", "Aktiviert oder deaktiviert die Effekte"));
+    descriptions.put("Advanced", new Context("Erweiterte Einstellungen", "Hier können die erweiterten Grafikeinstellungen vorgenommen werden"));
+    descriptions.put("Style", new Context("Stil", "Hier können die Stile der Grafikelemente vorgenommen werden"));
+    descriptions.put("PacSkin", new Context("Spieler", "Bestimmt das Aussehen des Spielers"));
+    descriptions.put("GhostSkin", new Context("Geister", "Bestimmt das Aussehen der Geister"));
+    descriptions.put("MapSkin", new Context("Karte", "Bestimmt das Aussehen der Karte"));
+    descriptions.put("WallSkin", new Context("Wände", "Bestimmt das Aussehen der Wände"));
+    descriptions.put("ItemSkin", new Context("Gegenstände", "Bestimmt das Aussehen der Items"));
+
+    descriptions.put("Master", new Context("Gesamtlautstärke", "Steuert die Lautstärke des gesamten Spiels"));
+    descriptions.put("Musik", new Context("Musiklautstärke", "Steuert die Lautstärke der Musik"));
+    descriptions.put("Sound", new Context("Soundlautstärke", "Steuert die Lautstärke der Soundeffekte"));
   }
 
   public void load ()
@@ -203,6 +214,13 @@ public class PacPhiConfig
     public void makeNonEditable ()
     {
       PacPhiConfig.getInstance().nonEditable.add(this);
+    }
+
+    public List <String> getKeyList ()
+    {
+      List <String> keyList = new ArrayList <>(children.keySet());
+      keyList.sort(Comparator.comparingInt(s -> children.get(s).order));
+      return keyList;
     }
   }
 

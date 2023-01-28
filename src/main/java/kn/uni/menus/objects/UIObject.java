@@ -11,8 +11,8 @@ public class UIObject
   public static final ColorSet selected   = new ColorSet(Color.YELLOW, Color.YELLOW, Color.black);
   public static final ColorSet hover      = new ColorSet(Color.CYAN, Color.CYAN, Color.black);
 
-  public              boolean  visible = true;
-  public boolean selectable = false;
+  public boolean   visible    = true;
+  public boolean   selectable = false;
   public Vector2d  position;
   public Dimension size;
   public int       paintLayer;
@@ -30,6 +30,11 @@ public class UIObject
   public UIButton asButton ()
   {
     return (UIButton) this;
+  }
+
+  public UITable asTable ()
+  {
+    return (UITable) this;
   }
 
   public record ColorSet(Color textColor, Color borderColor, Color backgroundColor) { }

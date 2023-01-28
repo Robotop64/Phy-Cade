@@ -103,7 +103,7 @@ public class MainMenu extends Menu
     content.add("Latest Feature: " + PacPhi.GAME_UPDATE);
     content.add("Branch: " + PacPhi.GAME_BRANCH);
     String currentVersion = (String) PacPhiConfig.getInstance().settings.get("General").get("-").get("Branch").setting().current();
-    content.add(PacPhi.GAME_BRANCH == currentVersion ? "" : "Restart to: " + currentVersion);
+    content.add(PacPhi.GAME_BRANCH.equals(currentVersion) ? "" : "Restart to: " + currentVersion);
     boolean debug = (boolean) PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current();
     content.add(debug ? "Debug Mode" : "");
 
