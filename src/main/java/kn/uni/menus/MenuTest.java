@@ -47,8 +47,6 @@ public class MenuTest extends Menu
 
   private void createUIComponents ()
   {
-    UIImage a = new UIImage(new Vector2d().cartesian(0, 0), new Dimension(100, 100), 0, new Dimension(50, 50), "src/main/resources/images/ghosts/ghost1.png");
-    elements.add(a);
   }
 
 

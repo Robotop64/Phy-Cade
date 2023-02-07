@@ -1,5 +1,7 @@
 package kn.uni;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import kn.uni.ui.Swing.TestScreen;
 import kn.uni.util.fileRelated.Database;
 import kn.uni.util.fileRelated.DatabaseAccess;
 import kn.uni.util.fileRelated.JsonEditor;
@@ -17,21 +19,34 @@ public class PacPhi
   public static void main (String[] args)
   {
 
-    //    System.setProperty("net.java.games.input.librarypath", new File("target/natives/").getAbsolutePath());
+    getSettings();
 
-    //load Config and set branch specific settings
+    getPermission();
+
+    getDatabase();
+
+    Gui.getInstance().initialize();
+  }
+
+  public static void getSettings()
+  {
     PacPhiConfig.getInstance().load();
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
     PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", false);
     PacPhiConfig.getInstance().save();
     PacPhiConfig.getInstance().createDescriptions();
+  }
 
+  public static void getPermission()
+  {
     permissions = (Permission) JsonEditor.load(new Permission(), "Permission");
     assert permissions != null;
     System.out.println("Permission-Level: " + permissions.current);
+  }
 
-
+  public static void getDatabase()
+  {
     DatabaseAccess dba = (DatabaseAccess) JsonEditor.load(new DatabaseAccess(), "DatabaseAccess");
     assert dba != null;
     database = dba.getMatchingPermissionDatabase(permissions.current);
@@ -42,10 +57,6 @@ public class PacPhi
       System.out.println("Database: " + dba.getDatabaseName(database));
     }
     else System.out.println("No database for current permissions found");
-
-
-    Gui.getInstance().initialize();
   }
-
 }
 
