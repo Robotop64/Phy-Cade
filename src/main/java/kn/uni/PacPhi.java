@@ -1,7 +1,5 @@
 package kn.uni;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import kn.uni.ui.Swing.TestScreen;
 import kn.uni.util.fileRelated.Database;
 import kn.uni.util.fileRelated.DatabaseAccess;
 import kn.uni.util.fileRelated.JsonEditor;
@@ -25,6 +23,7 @@ public class PacPhi
 
     getDatabase();
 
+    //FlatDarculaLaf.setup();
     Gui.getInstance().initialize();
   }
 
