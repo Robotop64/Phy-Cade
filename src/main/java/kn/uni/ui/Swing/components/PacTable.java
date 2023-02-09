@@ -6,12 +6,11 @@ import com.formdev.flatlaf.extras.components.FlatTableHeader;
 import kn.uni.ui.Swing.Style;
 import kn.uni.util.Vector2d;
 
-import javax.swing.BorderFactory;
+import javax.swing.*;
 import javax.swing.border.Border;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 
-public class PacTable extends FlatTable
+public class PacTable extends JPanel
 {
   public boolean displayGrid   = true;
   public boolean displayHeader = true;
@@ -19,35 +18,31 @@ public class PacTable extends FlatTable
 
   Object[][]      data;
   String[]        columnNames;
-  FlatTableHeader header;
+  public FlatTableHeader header;
+  public FlatTable body;
   Style.ColorSet  currentColorSet;
+  JScrollPane bodyContainer;
 
   public PacTable (Vector2d position, Dimension size)
   {
-    super();
     setBounds((int) position.x, (int) position.y, size.width, size.height);
 
+    setLayout(null);
+    setBackground(Style.normal.background());
+
+    body = new FlatTable();
+    body.setBounds(0, 0, getWidth(), getHeight());
+    body.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     header = new FlatTableHeader();
-    header.setColumnModel(getColumnModel());
+    header.setBounds(0, 0, getWidth(), 30);
+    header.setColumnModel(body.getColumnModel());
+
+    add(bodyContainer = new JScrollPane(body, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 
     useColorSet(Style.normal);
-  }
 
-  //  public PacTable (Vector2d position, Dimension size, Object[][] data, String[] columnNames)
-  //  {
-  //    super();
-  //    setContent(data, columnNames);
-  //    setBounds((int) position.x, (int) position.y, size.width, size.height);
-  //
-  //    this.data = data;
-  //    this.columnNames = columnNames;
-  //
-  //    header = new FlatTableHeader();
-  //    header.setColumnModel(getColumnModel());
-  //    System.out.println("header = " + header);
-  //
-  //    useColorSet(Style.normal);
-  //  }
+    useHeader(displayHeader);
+  }
 
   public void useColorSet (Style.ColorSet colorSet)
   {
@@ -55,8 +50,8 @@ public class PacTable extends FlatTable
 
     getTableHeader().setForeground(colorSet.foreground());
     getTableHeader().setBackground(colorSet.background());
-    this.setBackground(colorSet.background());
-    this.setForeground(colorSet.foreground());
+    body.setBackground(colorSet.background());
+    body.setForeground(colorSet.foreground());
 
     showBorder(displayBorder);
 
@@ -67,13 +62,13 @@ public class PacTable extends FlatTable
   {
     this.data = data;
     this.columnNames = columnNames;
-    setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+    body.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
   }
 
   public void setCellContent (int row, int column, Object value)
   {
     data[row][column] = value;
-    setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+    body.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
   }
 
   public Object getCellContent (int row, int column)
@@ -84,31 +79,34 @@ public class PacTable extends FlatTable
   public void setHeader (String[] columnNames)
   {
     this.columnNames = columnNames;
-    setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+    body.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
   }
 
   public void setColumnHeader (int column, String name)
   {
     columnNames[column] = name;
-    setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+    body.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
   }
 
   public void useHeader (boolean use)
   {
-    setTableHeader(use ? new javax.swing.table.JTableHeader() : null);
-
-    if (use)
-    {
-      getTableHeader().setBounds(getX(), getY(), getWidth(), 30);
-      getTableHeader().setColumnModel(getColumnModel());
-      setBounds(getX(), getY() + 30, getWidth(), getHeight() - 30);
-    }
+    displayHeader = use;
+    remove(bodyContainer);
+    body.setTableHeader(use ? header : null);
+    bodyContainer = new JScrollPane(body, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    bodyContainer.setBounds(0, 0, getWidth(), getHeight());
+    bodyContainer.setBorder(BorderFactory.createLineBorder(Style.normal.background()));
+    add(bodyContainer);
   }
 
-  public void setHeaderHeight (int height)
+  public void setColumnWidth (int column, int width)
   {
-    getTableHeader().setBounds(getX(), getY(), getWidth(), height);
-    setBounds(getX(), getY() + height, getWidth(), getHeight() - height);
+    body.getColumnModel().getColumn(column).setPreferredWidth(width);
+  }
+
+  public void fitColumns ()
+  {
+    body.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
   }
 
   public FlatTableHeader getTableHeader ()
@@ -118,12 +116,12 @@ public class PacTable extends FlatTable
 
   public void showGrid (boolean show)
   {
-    setShowGrid(show);
+    body.setShowGrid(show);
     displayGrid = show;
 
     Color gridColor = displayGrid ? currentColorSet.border() : currentColorSet.background();
 
-    setGridColor(gridColor);
+    body.setGridColor(gridColor);
     getTableHeader().putClientProperty(FlatClientProperties.STYLE,
         "separatorColor:" + String.format("#%02x%02x%02x", gridColor.getRed(), gridColor.getGreen(), gridColor.getBlue()) + ";"
             + "bottomSeparatorColor:" + String.format("#%02x%02x%02x", gridColor.getRed(), gridColor.getGreen(), gridColor.getBlue()));
@@ -134,7 +132,8 @@ public class PacTable extends FlatTable
     displayBorder = show;
     Border border = displayBorder ? BorderFactory.createLineBorder(currentColorSet.border()) : null;
 
-    setBorder(border);
+    body.setBorder(border);
     getTableHeader().setBorder(border);
+    bodyContainer.setBorder(BorderFactory.createLineBorder(currentColorSet.border()));
   }
 }
