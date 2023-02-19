@@ -1,5 +1,8 @@
 package kn.uni.util;
 
+import javax.swing.JLabel;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Rectangle;
 
 public class Util
@@ -77,5 +80,19 @@ public class Util
   public static boolean pointInRect (Vector2d point, Rectangle rect)
   {
     return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
+  }
+
+  public static float getMaxFontSize (String text, Dimension dim, Font font)
+  {
+    JLabel label = new JLabel(text);
+    label.setFont(font);
+    label.setBounds(0, 0, dim.width, dim.height);
+
+    int    stringWidth = label.getFontMetrics(label.getFont()).stringWidth(text);
+    double widthRatio  = (double) dim.width / (double) stringWidth;
+
+    int newFontSize = (int) ( label.getFont().getSize() * widthRatio );
+
+    return Math.min(newFontSize - 1, dim.height) * 1.0f;
   }
 }
