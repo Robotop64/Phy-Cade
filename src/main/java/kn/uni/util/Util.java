@@ -1,6 +1,7 @@
 package kn.uni.util;
 
 import javax.swing.JLabel;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -94,5 +95,10 @@ public class Util
     int newFontSize = (int) ( label.getFont().getSize() * widthRatio );
 
     return Math.min(newFontSize - 1, dim.height) * 1.0f;
+  }
+
+  public static String colorToHex (Color color)
+  {
+    return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
   }
 }

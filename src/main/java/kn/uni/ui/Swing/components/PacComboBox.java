@@ -1,14 +1,15 @@
 package kn.uni.ui.Swing.components;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.components.FlatComboBox;
 import kn.uni.ui.Swing.Style;
+import kn.uni.ui.Swing.renderer.ColoredListCellRenderer;
+import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
 
-import javax.swing.DefaultListCellRenderer;
+import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicComboPopup;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class PacComboBox extends FlatComboBox <String>
 {
@@ -32,15 +33,13 @@ public class PacComboBox extends FlatComboBox <String>
     this.setOutline(colorSet.border());
     this.setBackground(colorSet.background());
     this.setForeground(colorSet.foreground());
-    this.setRenderer(new DefaultListCellRenderer()
-    {
-      public void paint (Graphics g)
-      {
-        setBackground(colorSet.background());
-        setForeground(colorSet.foreground());
-        super.paint(g);
-      }
-    });
+
+    Object          child = this.getAccessibleContext().getAccessibleChild(0);
+    BasicComboPopup popup = (BasicComboPopup) child;
+    popup.setBorder(new LineBorder(colorSet.foreground()));
+
+    this.setRenderer(new ColoredListCellRenderer(colorSet.background(), colorSet.foreground().darker().darker().darker(), colorSet.foreground()));
+    putClientProperty(FlatClientProperties.STYLE, "buttonBackground:" + Util.colorToHex(colorSet.background()) + ";" + "buttonArrowColor:" + Util.colorToHex(colorSet.foreground()));
   }
 
   public void setSelected (boolean selected)
@@ -48,6 +47,12 @@ public class PacComboBox extends FlatComboBox <String>
     isSelected = selected;
     Style.ColorSet set = isSelected ? Style.selected : Style.normal;
     useColorSet(set);
+  }
+
+  public void selectOption (int index)
+  {
+    this.setSelectedIndex(index);
+
   }
 
   public void setFocused (boolean focused)
@@ -61,22 +66,22 @@ public class PacComboBox extends FlatComboBox <String>
 
   private void addListeners ()
   {
-    PacComboBox self = this;
-    addFocusListener(new FocusAdapter()
-    {
-      @Override
-      public void focusGained (FocusEvent e)
-      {
-        useColorSet(Style.focused);
-        self.showPopup();
-      }
-
-      @Override
-      public void focusLost (FocusEvent e)
-      {
-        useColorSet(Style.normal);
-      }
-    });
+    //    PacComboBox self = this;
+    //    addFocusListener(new FocusAdapter()
+    //    {
+    //      @Override
+    //      public void focusGained (FocusEvent e)
+    //      {
+    //        useColorSet(Style.focused);
+    //        self.showPopup();
+    //      }
+    //
+    //      @Override
+    //      public void focusLost (FocusEvent e)
+    //      {
+    //        useColorSet(Style.normal);
+    //      }
+    //    });
 
     addActionListener(e ->
     {
