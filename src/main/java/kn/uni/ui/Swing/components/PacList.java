@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PacList extends JPanel
 {
@@ -26,6 +27,8 @@ public class PacList extends JPanel
   public JPanel                viewPane;
 
   public Style.ColorSet currentColorSet;
+
+  public Component selected;
 
   public PacList (Vector2d position, Dimension size)
   {
@@ -63,8 +66,6 @@ public class PacList extends JPanel
     });
 
     setAlignment(alignment);
-
-    System.out.println(getComponentSize());
   }
 
   public void removeObject (Component object)
@@ -77,20 +78,6 @@ public class PacList extends JPanel
   {
     collection.clear();
     scrollPane.removeAll();
-  }
-
-  public void setAlignment (Alignment alignment)
-  {
-    this.alignment = alignment;
-
-    if (alignment == Alignment.HORIZONTAL)
-    {
-      viewPane.setPreferredSize(new Dimension(getComponentSize().width * collection.size() + ( collection.size() - 1 ) * hBuffer, getHeight()));
-    }
-    else if (alignment == Alignment.VERTICAL)
-    {
-      viewPane.setPreferredSize(new Dimension(getWidth(), getComponentSize().height * collection.size() + ( collection.size() - 1 ) * vBuffer));
-    }
   }
 
   public void showBorder (boolean show)
@@ -106,6 +93,60 @@ public class PacList extends JPanel
     viewPane.setBorder(showBorder ? BorderFactory.createLineBorder(currentColorSet.border(), borderSize) : null);
   }
 
+  public void unifyFontSize (float size)
+  {
+    collection.forEach((component) ->
+    {
+      component.setFont(component.getFont().deriveFont(size));
+    });
+  }
+
+  public List <Component> getAllItems ()
+  {
+    return collection;
+  }
+
+  public void setItem (int index, Component component)
+  {
+    collection.set(index, component);
+  }
+
+  public Component getItem (int index)
+  {
+    return collection.get(index);
+  }
+
+  public int getIndexOf (Component component)
+  {
+    return collection.indexOf(component);
+  }
+
+  public void selectItem (int index)
+  {
+    if (selected != null)
+    {
+      ( (PacButton) selected ).setFocused(false);
+    }
+
+    selected = collection.get(index);
+
+    ( (PacButton) selected ).setFocused(true);
+  }
+
+
+  private void setAlignment (Alignment alignment)
+  {
+    this.alignment = alignment;
+
+    if (alignment == Alignment.HORIZONTAL)
+    {
+      viewPane.setPreferredSize(new Dimension(getComponentSize().width * collection.size() + ( collection.size() - 1 ) * hBuffer, getHeight()));
+    }
+    else if (alignment == Alignment.VERTICAL)
+    {
+      viewPane.setPreferredSize(new Dimension(getWidth(), getComponentSize().height * collection.size() + ( collection.size() - 1 ) * vBuffer));
+    }
+  }
 
   private Dimension getComponentSize ()
   {
@@ -115,7 +156,7 @@ public class PacList extends JPanel
     if (alignment == Alignment.HORIZONTAL)
     {
       width = ( getWidth() - 2 * edgeBuffer - ( collection.size() - 1 ) * hBuffer ) / collection.size();
-      height = getHeight();
+      height = getHeight() - 2 * edgeBuffer;
     }
     else if (alignment == Alignment.VERTICAL)
     {

@@ -26,7 +26,7 @@ public class PacLabel extends FlatLabel
     setOpaque(true);
     setForeground(colorSet.foreground());
     setBackground(colorSet.background());
-    setBorder(BorderFactory.createLineBorder(colorSet.border(), borderWidth));
+    setBorder(getBorder() == null ? null : BorderFactory.createLineBorder(colorSet.border(), borderWidth));
   }
 
   public void setHeader (String header)

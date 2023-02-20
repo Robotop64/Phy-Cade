@@ -5,8 +5,8 @@ import kn.uni.ui.Swing.Style;
 import kn.uni.util.Vector2d;
 
 import java.awt.Dimension;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +28,14 @@ public class PacButton extends FlatButton
     addListeners();
   }
 
+  public PacButton (String text)
+  {
+    this.setText(text);
+    useColorSet(Style.normal);
+
+    addListeners();
+  }
+
   public void useColorSet (Style.ColorSet colorSet)
   {
     this.setOutline(colorSet.border());
@@ -40,6 +48,7 @@ public class PacButton extends FlatButton
     isSelected = selected;
     Style.ColorSet set = isSelected ? Style.selected : Style.normal;
     useColorSet(set);
+    press();
   }
 
   public void setFocused (boolean focused)
@@ -47,8 +56,6 @@ public class PacButton extends FlatButton
     isFocused = focused;
     Style.ColorSet set = isFocused ? Style.focused : Style.normal;
     useColorSet(set);
-    if (isFocused)
-      this.grabFocus();
   }
 
   public void press ()
@@ -74,23 +81,28 @@ public class PacButton extends FlatButton
 
   private void addListeners ()
   {
-    PacButton self = this;
-    addFocusListener(new FocusAdapter()
-    {
-      @Override
-      public void focusGained (FocusEvent e)
-      {
-        setFocused(true);
-      }
-
-      @Override
-      public void focusLost (FocusEvent e)
-      {
-        setFocused(false);
-      }
-    });
-
     addActionListener(e -> press());
+
+    addMouseListener(new MouseAdapter()
+                     {
+                       @Override
+                       public void mouseEntered (MouseEvent e)
+                       {
+                         if (getParent().getParent().getParent().getParent() instanceof PacList list)
+                         {
+                           list.selectItem(list.getIndexOf(PacButton.this));
+                         }
+                         setFocused(true);
+                       }
+
+                       @Override
+                       public void mouseExited (MouseEvent e)
+                       {
+                         setFocused(false);
+                       }
+                     }
+    );
+
   }
 
 }
