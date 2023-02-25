@@ -157,7 +157,7 @@ public class PacmanEntity extends Entity implements Rendered, Ticking
       TotalPosition tp          = gameState.map.splitPosition(pos);
       PacManMapTile currentTile = gameState.map.tiles.get(tp.ex());
       //get allowed tiles
-      List <PacManMapTile> possibleTiles = Arrays.stream(Direction.values())
+      List <PacManMapTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
                                                  .map(Direction::toVector)
                                                  .map(vec -> currentTile.neighbors.get(vec))
                                                  .filter(Objects::nonNull)

@@ -11,6 +11,21 @@ public enum Direction
   bottomLeft,
   bottomRight;
 
+  public static Direction[] valuesCardinal ()
+  {
+    return new Direction[]{ up, down, left, right };
+  }
+
+  public static Direction[] valuesDiagonal ()
+  {
+    return new Direction[]{ topLeft, topRight, bottomLeft, bottomRight };
+  }
+
+  public static Direction[] valuesAll ()
+  {
+    return new Direction[]{ up, down, left, right, topLeft, topRight, bottomLeft, bottomRight };
+  }
+
   public Vector2d toVector ()
   {
     return switch (this)

@@ -70,7 +70,7 @@ public class AdvPacManMap extends JPanel
   public void calculateNeighbours ()
   {
     tilesPixel.forEach((k, v) ->
-        Arrays.stream(Direction.values()).toList().forEach(d ->
+        Arrays.stream(Direction.valuesAll()).toList().forEach(d ->
         {
           Vector2d neighbourPos = k.add(d.toVector());
           if (tilesPixel.containsKey(neighbourPos))

@@ -23,7 +23,7 @@ public class RandomWalkAI extends GhostAI
   {
     if (random.nextFloat() < .25)
     {
-      currentDirection = Direction.values()[random.nextInt(4)];
+      currentDirection = Direction.valuesCardinal()[random.nextInt(4)];
     }
     return currentDirection;
   }

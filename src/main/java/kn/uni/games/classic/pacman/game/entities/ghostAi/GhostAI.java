@@ -69,7 +69,7 @@ public abstract class GhostAI
   {
     //find all valid tiles
     List <PacManMapTile> possibleTiles =
-        Arrays.stream(Direction.values())
+        Arrays.stream(Direction.valuesCardinal())
               .filter(d -> d != ghost.direction.opposite())
               .map(Direction::toVector)
               .map(vec -> ghost.currentTile.neighbors.get(vec))

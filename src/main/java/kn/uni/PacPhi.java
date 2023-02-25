@@ -1,15 +1,11 @@
 package kn.uni;
 
-import kn.uni.games.classic.pacman.screens.AdvGameScreen;
+import com.formdev.flatlaf.FlatDarculaLaf;
 import kn.uni.util.fileRelated.Database;
 import kn.uni.util.fileRelated.DatabaseAccess;
 import kn.uni.util.fileRelated.JsonEditor;
 import kn.uni.util.fileRelated.PacPhiConfig;
 import kn.uni.util.fileRelated.Permission;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 public class PacPhi
 {
@@ -28,38 +24,9 @@ public class PacPhi
 
     getDatabase();
 
-    //    FlatDarculaLaf.setup();
-    //
-    //    Gui.getInstance().initialize();
+    FlatDarculaLaf.setup();
 
-
-    //    AdvPacManMap map = new AdvPacManMap();
-    //    map.calculateAbsolutes(new Dimension(400, 400));
-
-
-    class MyFrame extends JFrame
-    {
-      public MyFrame ()
-      {
-        super();
-        setSize(Gui.defaultFrameBounds.getSize());
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setVisible(true);
-        JPanel panel = new JPanel();
-        panel.setSize(Gui.defaultFrameBounds.getSize());
-        add(panel);
-
-        panel.add(new AdvGameScreen(panel));
-      }
-
-      //      public void paint (Graphics g)
-      //      {
-      //        map.paintComponent(g);
-      //      }
-    }
-
-    new MyFrame();
-
+    Gui.getInstance().initialize();
   }
 
   public static void getSettings ()

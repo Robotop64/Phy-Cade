@@ -431,7 +431,7 @@ public class UITable extends UIObject implements Displayed, Updating
     Vector2d transCellPos = cellPos.add(offset);
 
     Area visibleArea = new Area(new Rectangle((int) position.x, (int) position.y, size.width, size.height));
-    return Arrays.stream(Direction.values()).anyMatch(dir ->
+    return Arrays.stream(Direction.valuesCardinal()).anyMatch(dir ->
     {
       Vector2d nextCellPos = new Vector2d().cartesian(0, 0);
 
