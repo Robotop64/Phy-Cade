@@ -1,9 +1,9 @@
 package kn.uni.games.classic.pacman.game.hud;
 
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameConstants;
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
-import kn.uni.games.classic.pacman.game.PlacedObject;
-import kn.uni.games.classic.pacman.game.Rendered;
+import kn.uni.games.classic.pacman.game.graphics.Rendered;
+import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameConstants;
+import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.objects.PlacedObject;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;

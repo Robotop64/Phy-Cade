@@ -23,6 +23,7 @@ public class PacButton extends FlatButton
     super();
     this.setBounds((int) position.x, (int) position.y, size.width, size.height);
     this.setText(text);
+    this.setFocusable(false);
     useColorSet(Style.normal);
 
     addListeners();
@@ -31,6 +32,7 @@ public class PacButton extends FlatButton
   public PacButton (String text)
   {
     this.setText(text);
+    this.setFocusable(false);
     useColorSet(Style.normal);
 
     addListeners();
@@ -48,7 +50,6 @@ public class PacButton extends FlatButton
     isSelected = selected;
     Style.ColorSet set = isSelected ? Style.selected : Style.normal;
     useColorSet(set);
-    press();
   }
 
   public void setFocused (boolean focused)

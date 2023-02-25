@@ -9,7 +9,7 @@ import java.awt.Dimension;
 
 public class PacLabel extends FlatLabel
 {
-  public int    borderWidth = 1;
+  public int    borderWidth = 2;
   public String header      = "";
 
   public PacLabel (Vector2d position, Dimension size, String text)

@@ -1,14 +1,14 @@
 package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
-import kn.uni.games.classic.pacman.game.ClassicPacmanMap;
-import kn.uni.games.classic.pacman.game.LoggerObject;
-import kn.uni.games.classic.pacman.game.PlacedObject;
-import kn.uni.games.classic.pacman.game.Rendered;
-import kn.uni.games.classic.pacman.game.Ticking;
+import kn.uni.games.classic.pacman.game.graphics.Rendered;
+import kn.uni.games.classic.pacman.game.graphics.Ticking;
 import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
 import kn.uni.games.classic.pacman.game.hud.HUD;
+import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.internal.LoggerObject;
+import kn.uni.games.classic.pacman.game.objects.PacManMap;
+import kn.uni.games.classic.pacman.game.objects.PlacedObject;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Key;
 import kn.uni.ui.InputListener.Player;
@@ -70,7 +70,7 @@ public class ClassicPacmanGameScreen extends UIScreen
     gameState.gameObjects.add(new LoggerObject());
     //create Map
     {
-      ClassicPacmanMap map = new ClassicPacmanMap(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), 1000, 1000);
+      PacManMap map = new PacManMap(gameState, new Vector2d().cartesian(gameState.mapOffset, gameState.mapOffset), 1000, 1000);
       gameState.gameObjects.add(map);
       gameState.map = map;
       gameState.size = new Vector2d().cartesian(map.width, map.height);

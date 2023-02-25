@@ -2,10 +2,10 @@ package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
 import kn.uni.PacPhi;
-import kn.uni.menus.engine.Projector;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
+import kn.uni.ui.Swing.menus.FLTestMenu;
 import kn.uni.ui.pmButton;
 import kn.uni.util.Fira;
 import kn.uni.util.Util;
@@ -215,11 +215,14 @@ public class MainMenu extends JPanel
 
     testButton.addAction(() ->
     {
-      Projector projector = Projector.getInstance(Gui.getInstance().content);
-      projector.setBounds(Gui.defaultFrameBounds);
-      projector.setSelectedMenu(new kn.uni.menus.MainMenu(projector));
-      projector.state.running = true;
-      projector.startScreen();
+      FLTestMenu flTestMenu = new FLTestMenu(this);
+      Gui.getInstance().content.add(flTestMenu);
+      //      LeaderboardMenu.getInstance().activate();
+      //      Projector projector = Projector.getInstance(Gui.getInstance().content);
+      //      projector.setBounds(Gui.defaultFrameBounds);
+      //      projector.setSelectedMenu(new kn.uni.menus.G2D.MainMenu(projector));
+      //      projector.state.running = true;
+      //      projector.startScreen();
     });
   }
 

@@ -1,8 +1,8 @@
 package kn.uni.games.classic.pacman.game.hud;
 
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
-import kn.uni.games.classic.pacman.game.PlacedObject;
-import kn.uni.games.classic.pacman.game.Rendered;
+import kn.uni.games.classic.pacman.game.graphics.Rendered;
+import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.objects.PlacedObject;
 import kn.uni.util.Fira;
 import kn.uni.util.Vector2d;
 

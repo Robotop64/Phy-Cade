@@ -1,10 +1,10 @@
 package kn.uni.games.classic.pacman.game.hud;
 
 import kn.uni.Gui;
-import kn.uni.games.classic.pacman.game.ClassicPacmanGameState;
-import kn.uni.games.classic.pacman.game.PlacedObject;
-import kn.uni.games.classic.pacman.game.Rendered;
-import kn.uni.games.classic.pacman.game.ghosts.Ghost;
+import kn.uni.games.classic.pacman.game.entities.GhostEntity;
+import kn.uni.games.classic.pacman.game.graphics.Rendered;
+import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameState;
+import kn.uni.games.classic.pacman.game.objects.PlacedObject;
 import kn.uni.ui.InputListener;
 import kn.uni.util.Fira;
 import kn.uni.util.Vector2d;
@@ -100,7 +100,7 @@ public class DebugDisplay extends PlacedObject implements Rendered
                                                 .orElse(null)).diagnostics2.get(type).put(subType, data);
   }
 
-  public static void setGhostData (ClassicPacmanGameState gameState, DebugSubType SubType, Ghost ghost, String data)
+  public static void setGhostData (ClassicPacmanGameState gameState, DebugSubType SubType, GhostEntity ghost, String data)
   {
     Objects.requireNonNull(gameState.gameObjects.stream()
                                                 .filter(o -> o instanceof DebugDisplay)
