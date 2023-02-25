@@ -11,6 +11,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.IntStream;
 
 public class PacList extends JPanel
 {
@@ -21,14 +23,14 @@ public class PacList extends JPanel
   public int       edgeBuffer = 5;
   public int       borderSize = 1;
   public boolean   showBorder = false;
+  public boolean   autoFit    = true;
 
-  public ArrayList <Component> collection;
-  public JScrollPane           scrollPane;
-  public JPanel                viewPane;
-
-  public Style.ColorSet currentColorSet;
-
-  public Component selected;
+  public  ArrayList <Component> collection;
+  public  JScrollPane           scrollPane;
+  public  JPanel                viewPane;
+  public  Style.ColorSet        currentColorSet;
+  public  Component             selected;
+  private ArrayList <Component> buffers;
 
   public PacList (Vector2d position, Dimension size)
   {
@@ -38,6 +40,7 @@ public class PacList extends JPanel
     setBackground(Color.BLACK);
 
     collection = new ArrayList <>();
+    buffers = new ArrayList <>();
     viewPane = new JPanel();
     viewPane.setLayout(null);
     viewPane.setBounds(0, 0, getWidth(), getHeight());
@@ -51,19 +54,40 @@ public class PacList extends JPanel
     useColorSet(Style.normal);
   }
 
+  //region add/remove/clear
   public void addObject (Component object)
   {
     collection.add(object);
     viewPane.add(object);
 
-    collection.forEach((component) ->
+    if (autoFit)
     {
-      component.setBounds(
-          (int) getComponentPosition(collection.indexOf(component)).x,
-          (int) getComponentPosition(collection.indexOf(component)).y,
-          (int) getComponentSize().width,
-          (int) getComponentSize().height);
-    });
+      collection.forEach((component) ->
+      {
+        Vector2d position = getComponentPosition(collection.indexOf(component));
+        component.setBounds(
+            (int) position.x,
+            (int) position.y,
+            (int) getComponentSize().width,
+            (int) getComponentSize().height);
+      });
+    }
+    else
+    {
+      collection.forEach((component) ->
+      {
+        Vector2d position = getComponentPosition(collection.indexOf(object));
+        object.setLocation((int) position.x, (int) position.y);
+      });
+
+      Vector2d position = getComponentPosition(collection.indexOf(object));
+
+      if (alignment == Alignment.VERTICAL)
+        viewPane.setPreferredSize(new Dimension(viewPane.getWidth(), (int) ( position.y + object.getHeight() )));
+      else
+        viewPane.setPreferredSize(new Dimension((int) ( position.x + object.getWidth() ), viewPane.getHeight()));
+    }
+
 
     setAlignment(alignment);
   }
@@ -80,10 +104,38 @@ public class PacList extends JPanel
     scrollPane.removeAll();
   }
 
+  public void addBuffer (int hBuffer, int vBuffer)
+  {
+    JPanel buffer = new JPanel();
+    buffer.setBackground(Color.RED);
+    buffer.setBorder(null);
+    buffer.setBounds(0, 0, hBuffer, vBuffer);
+    addObject(buffer);
+    buffers.add(buffer);
+  }
+
+  public void addSeparator (JPanel separator)
+  {
+    addObject(separator);
+    buffers.add(separator);
+
+    separator.setSize(getWidth() - 2 * edgeBuffer, separator.getHeight());
+  }
+
+  //endregion
+
+  //region optics
   public void showBorder (boolean show)
   {
     showBorder = show;
     viewPane.setBorder(showBorder ? BorderFactory.createLineBorder(currentColorSet.border(), borderSize) : null);
+  }
+
+  public void setAutoFit (boolean autoFit)
+  {
+    this.autoFit = autoFit;
+    //    scrollPane.setHorizontalScrollBarPolicy(autoFit ? JScrollPane.HORIZONTAL_SCROLLBAR_NEVER : JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    //    scrollPane.setVerticalScrollBarPolicy(autoFit ? JScrollPane.VERTICAL_SCROLLBAR_NEVER : JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
   }
 
   public void useColorSet (Style.ColorSet colorSet)
@@ -100,6 +152,23 @@ public class PacList extends JPanel
       component.setFont(component.getFont().deriveFont(size));
     });
   }
+
+  public void fitComponents ()
+  {
+    List <Component> components = new ArrayList <>(collection);
+    components.removeAll(buffers);
+
+    components.forEach((object) ->
+    {
+      object.setBounds(0, 0, getComponentSize().width, getComponentSize().height);
+    });
+
+    updateLocations();
+
+  }
+  //endregion
+
+  //region getters/setters
 
   public List <Component> getAllItems ()
   {
@@ -121,6 +190,9 @@ public class PacList extends JPanel
     return collection.indexOf(component);
   }
 
+  //endregion
+
+  //region selection
   public void selectItem (int index)
   {
     if (selected != null)
@@ -132,8 +204,10 @@ public class PacList extends JPanel
 
     ( (PacButton) selected ).setFocused(true);
   }
+  //endregion
 
 
+  //region privates
   private void setAlignment (Alignment alignment)
   {
     this.alignment = alignment;
@@ -153,15 +227,17 @@ public class PacList extends JPanel
     int width  = 0;
     int height = 0;
 
+    int itemSize = collection.size() - buffers.size();
+
     if (alignment == Alignment.HORIZONTAL)
     {
-      width = ( getWidth() - 2 * edgeBuffer - ( collection.size() - 1 ) * hBuffer ) / collection.size();
+      width = ( getWidth() - 2 * edgeBuffer - ( itemSize - 1 ) * hBuffer ) / itemSize;
       height = getHeight() - 2 * edgeBuffer;
     }
     else if (alignment == Alignment.VERTICAL)
     {
       width = getWidth() - 2 * edgeBuffer;
-      height = ( getHeight() - 2 * edgeBuffer - ( collection.size() - 1 ) * vBuffer ) / collection.size();
+      height = ( getHeight() - 2 * edgeBuffer - ( itemSize - 1 ) * vBuffer ) / itemSize;
     }
 
     return new Dimension(width, height);
@@ -169,20 +245,40 @@ public class PacList extends JPanel
 
   private Vector2d getComponentPosition (int index)
   {
-    int x = edgeBuffer;
-    int y = edgeBuffer;
+    AtomicReference <Vector2d> start = new AtomicReference <>(new Vector2d().cartesian(edgeBuffer, edgeBuffer));
+
+    IntStream.range(0, index).forEach((i) ->
+    {
+      if (alignment == Alignment.HORIZONTAL)
+      {
+        start.set(start.get().add(new Vector2d().cartesian(collection.get(i).getBounds().width, 0)));
+      }
+      else if (alignment == Alignment.VERTICAL)
+      {
+        start.set(start.get().add(new Vector2d().cartesian(0, collection.get(i).getBounds().height)));
+      }
+    });
 
     if (alignment == Alignment.HORIZONTAL)
     {
-      x = edgeBuffer + index * ( getComponentSize().width ) + ( index ) * hBuffer;
+      start.set(start.get().add(new Vector2d().cartesian(index * hBuffer, 0)));
     }
     else if (alignment == Alignment.VERTICAL)
     {
-      y = edgeBuffer + index * ( getComponentSize().height ) + ( index ) * vBuffer;
+      start.set(start.get().add(new Vector2d().cartesian(0, index * vBuffer)));
     }
-
-    return new Vector2d().cartesian(x, y);
+    return start.get();
   }
+
+  public void updateLocations ()
+  {
+    collection.forEach((object) ->
+    {
+      Vector2d position = getComponentPosition(collection.indexOf(object));
+      object.setLocation((int) position.x, (int) position.y);
+    });
+  }
+  //endregion
 
   public enum Alignment
   { HORIZONTAL, VERTICAL }

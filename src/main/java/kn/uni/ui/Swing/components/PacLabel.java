@@ -21,6 +21,14 @@ public class PacLabel extends FlatLabel
     useColorSet(Style.normal);
   }
 
+  public PacLabel (String text)
+  {
+    super();
+    setText(text);
+    setOpaque(true);
+    useColorSet(Style.normal);
+  }
+
   public void useColorSet (Style.ColorSet colorSet)
   {
     setOpaque(true);
@@ -32,6 +40,7 @@ public class PacLabel extends FlatLabel
   public void setHeader (String header)
   {
     this.header = header;
+    setText(getText());
   }
 
   public void setText (String text)

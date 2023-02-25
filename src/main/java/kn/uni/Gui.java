@@ -1,5 +1,6 @@
 package kn.uni;
 
+import kn.uni.games.classic.pacman.screens.AdvGameScreen;
 import kn.uni.games.classic.pacman.screens.MainMenu;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.pmButton;
@@ -77,8 +78,22 @@ public class Gui
     frame.getContentPane().setComponentZOrder(debug, 0);
     frame.getContentPane().setComponentZOrder(content, 1);
 
-    content.add(MainMenu.getInstance());
-    MainMenu.getInstance().setBounds(defaultFrameBounds);
+    //use alternative Content
+    if (false)
+    {
+      AdvGameScreen advGameScreen = new AdvGameScreen(content);
+      advGameScreen.setBounds(defaultFrameBounds);
+      content.add(advGameScreen);
+      //
+      //      FLTestMenu flTestMenu = new FLTestMenu(content);
+      //      flTestMenu.setBounds(defaultFrameBounds);
+      //      content.add(flTestMenu);
+    }
+    else
+    {
+      content.add(MainMenu.getInstance());
+      MainMenu.getInstance().setBounds(defaultFrameBounds);
+    }
 
     //    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
 
