@@ -1,5 +1,6 @@
 package kn.uni.games.classic.pacman.screens;
 
+import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
@@ -10,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.plaf.basic.BasicProgressBarUI;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -33,20 +36,35 @@ public class AdvGameScreen extends UIScreen
     createFrames();
     createHud();
 
-    setScore(69420);
-    setLevel(5);
+    createInfo();
+
+    createReadyPrompt();
+
+    enableReadyPrompt(false);
 
     Thread t = new Thread(
         () ->
         {
-          for (int i = 0; i < 1000000; i++)
+          for (int i = 0; i < 150; i++)
           {
-            setTime(i * 100L);
-            setScore(i * 100);
-            setLevel(i);
+            if (i < 100)
+            {
+              setLoadingProgress(false, i, "progress");
+            }
+            else if (i == 100)
+            {
+              setLoadingProgress(true, 100, "progress");
+              enableReadyPrompt(true);
+            }
+
+            if (i == 149)
+            {
+              enableReadyPrompt(false);
+            }
+
             try
             {
-              Thread.sleep(1);
+              Thread.sleep(30);
             }
             catch (InterruptedException e)
             {
@@ -56,8 +74,6 @@ public class AdvGameScreen extends UIScreen
         }
     );
     t.start();
-
-    setTime(100005);
   }
 
   private void createFrames ()
@@ -233,6 +249,75 @@ public class AdvGameScreen extends UIScreen
     //endregion
   }
 
+  private void createInfo ()
+  {
+    int       buffer   = 20;
+    Vector2d  gamePos  = new Vector2d().cartesian(uiComponents.get(0).getLocation().x, uiComponents.get(0).getLocation().y);
+    Dimension gameSize = uiComponents.get(0).getSize();
+    Vector2d  infoPos  = gamePos.add(new Vector2d().cartesian(buffer, gameSize.height - 100));
+
+    //create Panel
+    JPanel info = new JPanel();
+    info.setLayout(null);
+    info.setBounds((int) infoPos.x, (int) infoPos.y, gameSize.width - 2 * buffer, 100 - buffer);
+    uiComponents.add(info);
+    add(info);
+
+    //create List for formatting
+    PacList loading = new PacList(new Vector2d().cartesian(0, 0), new Dimension(info.getWidth(), info.getHeight()));
+    loading.showBorder(true);
+    loading.alignment = PacList.Alignment.VERTICAL;
+    loading.edgeBuffer = 10;
+    loading.vBuffer = 10;
+    loading.setAutoFit(true);
+    loading.setBackGround(Color.BLACK);
+    info.add(loading);
+
+    //region add components
+    PacLabel text = new PacLabel("Progress : ");
+    text.setFont(text.getFont().deriveFont(20f));
+    text.setHorizontalAlignment(PacLabel.CENTER);
+    loading.addObject(text);
+
+    FlatProgressBar loadingBar = new FlatProgressBar();
+    loadingBar.setIndeterminate(false);
+    loadingBar.setBackground(Color.CYAN.darker().darker().darker().darker().darker());
+    loadingBar.setForeground(Color.CYAN.darker().darker());
+    loadingBar.setUI(new BasicProgressBarUI()
+    {
+      protected Color getSelectionBackground () { return Color.CYAN; }
+
+      protected Color getSelectionForeground () { return Color.CYAN; }
+    });
+    loadingBar.setValue(0);
+    loadingBar.setStringPainted(true);
+    loadingBar.setString("0%");
+    loading.addObject(loadingBar);
+    //endregion
+
+    loading.fitComponents();
+
+    loading.unifyFontSize(18f);
+  }
+
+  private void createReadyPrompt ()
+  {
+    Vector2d  gamePos  = new Vector2d().cartesian(uiComponents.get(0).getLocation().x, uiComponents.get(0).getLocation().y);
+    Dimension gameSize = uiComponents.get(0).getSize();
+
+    Dimension readySize = new Dimension(400, 400);
+    Vector2d  readyPos  = gamePos.add(new Vector2d().cartesian(gameSize.width / 2. - readySize.width / 2., gameSize.height / 2. - readySize.height / 2.));
+
+    PacLabel readyPrompt = new PacLabel(new Vector2d().cartesian((int) readyPos.x, (int) readyPos.y), new Dimension(readySize.width, readySize.height), "<html> <body> <p align=\"center\"> Ready ?<br/>Press a Button! </p> </body> </html>");
+    readyPrompt.setFont(readyPrompt.getFont().deriveFont(35f));
+    readyPrompt.setHorizontalAlignment(SwingConstants.CENTER);
+    readyPrompt.setForeground(Color.CYAN);
+    readyPrompt.setBackground(Color.BLACK);
+    readyPrompt.setOpaque(true);
+    uiComponents.add(readyPrompt);
+    add(readyPrompt);
+  }
+
 
   private void setLevel (int level)
   {
@@ -258,4 +343,36 @@ public class AdvGameScreen extends UIScreen
   {
     ( (PacLabel) leaderboard.getItem(2) ).setText("❰" + String.format("%09d", score) + "❱");
   }
+
+  private void setLoadingProgress (boolean done, int progress, String text)
+  {
+    JPanel          panel      = (JPanel) uiComponents.get(2);
+    Component[]     components = panel.getComponents();
+    PacList         list       = (PacList) components[0];
+    PacLabel        label      = (PacLabel) list.getItem(0);
+    FlatProgressBar bar        = (FlatProgressBar) list.getItem(1);
+
+
+    if (done)
+    {
+      panel.setVisible(false);
+      bar.setValue(100);
+      bar.setString("Done");
+      //      uiComponents.remove(panel);
+      //      remove(panel);
+      return;
+    }
+
+    label.setText(text);
+    bar.setValue(progress);
+    bar.setString(progress + "%");
+  }
+
+  private void enableReadyPrompt (boolean enable)
+  {
+    PacLabel readyPrompt = (PacLabel) uiComponents.get(3);
+    readyPrompt.setVisible(enable);
+
+  }
+
 }

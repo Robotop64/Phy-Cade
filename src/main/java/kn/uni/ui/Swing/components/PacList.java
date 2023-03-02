@@ -166,6 +166,12 @@ public class PacList extends JPanel
     updateLocations();
 
   }
+
+  public void setBackGround (Color color)
+  {
+    viewPane.setBackground(color);
+  }
+
   //endregion
 
   //region getters/setters
