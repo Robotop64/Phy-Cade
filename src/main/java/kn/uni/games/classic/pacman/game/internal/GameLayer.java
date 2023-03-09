@@ -2,43 +2,43 @@ package kn.uni.games.classic.pacman.game.internal;
 
 import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
 
-import javax.swing.JPanel;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
 
-public class GamePanel extends JPanel
+public class GameLayer implements AdvRendered
 {
   public int          index;
+  public Dimension    dim;
   public AdvGameState gameState;
 
   public BufferedImage cachedImg;
 
-  public GamePanel (Dimension dim, int index)
+  public GameLayer (Dimension dim, int index)
   {
-    setBounds(0, 0, dim.width, dim.height);
-    setOpaque(false);
-    setLayout(null);
-    setBackground(null);
+    this.dim = dim;
     this.index = index;
   }
 
   @Override
-  public void paintComponent (Graphics g)
+  public void paintComponent (Graphics2D g)
   {
-    super.paintComponent(g);
-
     if (cachedImg == null)
       render();
 
     g.drawImage(cachedImg, 0, 0, null);
   }
 
+  @Override
+  public int paintLayer ()
+  {
+    return 0;
+  }
+
   public void render ()
   {
-    cachedImg = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+    cachedImg = new BufferedImage(dim.width, dim.height, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = cachedImg.createGraphics();
 
     gameState.layers.get(index).stream()

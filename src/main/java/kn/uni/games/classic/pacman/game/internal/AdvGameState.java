@@ -11,7 +11,8 @@ public class AdvGameState
 {
 
   //region game environment
-  public int                                   tps     = 30;
+  public GameEnvironment                       env;
+  public int                                   tps     = 120;
   public int                                   fps     = 60;
   public boolean                               paused  = false;
   public boolean                               running = false;
@@ -29,8 +30,9 @@ public class AdvGameState
   public int  livesGained = 0;
   //endregion
 
-  public AdvGameState ()
+  public AdvGameState (GameEnvironment env)
   {
+    this.env = env;
     IntStream.range(0, 6).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
   }
 

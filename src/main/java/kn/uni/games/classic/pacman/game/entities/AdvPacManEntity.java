@@ -8,7 +8,6 @@ import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManTile;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -36,6 +35,16 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
   {
     if (cachedImg == null)
       render();
+
+
+    //    AdvPacManMap map            = (AdvPacManMap) gameState.layers.get(1).getFirst();
+    //    Vector2d     currentTilePos = map.getTileMapPos(this.absPos).multiply(map.tileSize);
+    //
+    //    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    //    {
+    //      g.setColor(Color.GREEN);
+    //      g.fillRect((int) currentTilePos.x, (int) currentTilePos.y, iconSize, iconSize);
+    //    }
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, iconSize, iconSize, null);
   }
@@ -80,21 +89,20 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
                                                  .toList();
 
       //visual feedback of possible tiles
-      if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
-      {
-        map.tilesPixel.forEach((pos, tile) -> tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor);
-        possibleTiles.forEach(tile -> tile.debugColor = Color.GREEN);
-      }
+      //      if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+      //      {
+      //        map.tilesPixel.forEach((pos, tile) -> tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor);
+      //        possibleTiles.forEach(tile -> tile.debugColor = Color.GREEN);
+      //        currentTile.debugColor = Color.RED;
+      //      }
 
       //set velocity
       if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeed, 0).multiply(map.tileSize).divide(gameState.tps);
 
       //next tile is valid or center has not been reached yet
-      if (possibleTiles.contains(currentTile.neighbors.get(this.facing.toVector())) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) < 0)
+      if (possibleTiles.contains(currentTile.neighbors.get(this.facing.toVector())) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) <= 0)
       {
-        absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
       }
-
       absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
 
 

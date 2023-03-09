@@ -2,7 +2,6 @@ package kn.uni.games.classic.pacman.screens;
 
 import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
-import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.ui.InputListener;
@@ -366,13 +365,13 @@ public class AdvGameScreen extends UIScreen
 
           setLoadingProgress(false, 20, "Loading map...");
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
-
-          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(50, 50));
-          env.gameState.players.add(player1);
-          map.addToPool(player1);
-
           map.calculateAbsolutes(uiComponents.get(0).getSize());
-          map.render();
+
+          //          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(1, 1).multiply(map.tileSize));
+          //          env.gameState.players.add(player1);
+          //          map.addToPool(player1);
+
+          //          map.render();
           env.getGameState().layers.get(1).add(map);
 
 
@@ -389,7 +388,7 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress(false, 95, "Finished initializing!");
-          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplayStack(), 0);
+          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplay(), 0);
 
 
           setLoadingProgress(true, 100, "Starting game!");
@@ -404,9 +403,6 @@ public class AdvGameScreen extends UIScreen
   {
     bindPlayer(InputListener.Player.playerOne, input ->
     {
-
-      System.out.println(input.key());
-
       if (input.toDirection() == null)
       {
         joystick.remove(input.key());
@@ -416,7 +412,6 @@ public class AdvGameScreen extends UIScreen
       {
         joystick.put(input.key(), input);
         env.controlPlayer(1, input.toDirection());
-        //          gameState.playerDirection = input.toDirection();
       }
     });
   }

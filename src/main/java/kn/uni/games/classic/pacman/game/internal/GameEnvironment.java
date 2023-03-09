@@ -8,14 +8,13 @@ import kn.uni.games.classic.pacman.game.objects.AdvPacManTile;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -24,45 +23,49 @@ import static kn.uni.util.Util.round;
 
 public class GameEnvironment
 {
-  public JLayeredPane displayStack;
-  public AdvGameState gameState;
+  public GameDisplay   display;
+  public BufferedImage finalImg;
+  public AdvGameState  gameState;
 
   //background[0], map[1], objects[2], items[3], entities[4], vfx[5], frame[6]
-  public List <JPanel> panels = new ArrayList <>();
+  public List <GameLayer> layer       = new ArrayList <>();
+  public List <Boolean>   updateLayer = new ArrayList <>();
 
   public GameEnvironment (Dimension dim)
   {
-    displayStack = new JLayeredPane();
-    displayStack.setBounds(0, 0, dim.width, dim.height);
-    displayStack.setLayout(null);
+    display = new GameDisplay(dim);
 
-    gameState = new AdvGameState();
+    gameState = new AdvGameState(this);
 
     //region fill displayStack with panels
     IntStream.range(0, 6).forEach(i ->
     {
-      GamePanel panel = new GamePanel(dim, i);
+      GameLayer panel = new GameLayer(dim, i);
       panel.gameState = gameState;
-      panels.add(panel);
-      displayStack.add(panel);
-      displayStack.setLayer(panel, i);
+      layer.add(panel);
+      updateLayer.add(true);
     });
-
-    //Frame
-    JPanel panel = new JPanel();
-    panel.setBounds(0, 0, dim.width, dim.height);
-    panel.setOpaque(false);
-    panel.setBackground(null);
-    panel.setBorder(BorderFactory.createLineBorder(Color.cyan.darker().darker(), 2));
-    panels.add(panel);
-    displayStack.add(panel);
-    displayStack.setLayer(panel, 6);
     //endregion
   }
 
-  public JLayeredPane getDisplayStack ()
+  public void render ()
   {
-    return displayStack;
+    finalImg = new BufferedImage(display.getWidth(), display.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2 = finalImg.createGraphics();
+
+    IntStream.range(0, 6).forEach(i ->
+    {
+      GameLayer panel = layer.get(i);
+      if (panel.cachedImg == null)
+        panel.render();
+      g2.drawImage(panel.cachedImg, 0, 0, null);
+    });
+  }
+
+
+  public JPanel getDisplay ()
+  {
+    return display;
   }
 
   public AdvGameState getGameState ()
@@ -72,13 +75,14 @@ public class GameEnvironment
 
   public void updateAll ()
   {
-    panels.stream().filter(o -> o instanceof GamePanel).map(panel -> (GamePanel) panel).forEach(GamePanel::render);
+    layer.forEach(GameLayer::render);
   }
 
   public void update (int index)
   {
-    ( (GamePanel) panels.get(index) ).render();
+    ( layer.get(index) ).render();
   }
+
 
   public void start ()
   {
@@ -86,9 +90,10 @@ public class GameEnvironment
     gameState.paused = false;
     gameState.currentTick = 0;
     gameState.lastTickTime = System.nanoTime();
-    double tickDuration = 1_000_000_000.0 / gameState.tps;
+    double            tickDuration = 1_000_000_000.0 / gameState.tps;
+    LinkedList <Long> times        = new LinkedList <>();
 
-    Thread ticker = new Thread(() ->
+    Thread clock = new Thread(() ->
     {
       while (gameState.running)
       {
@@ -99,14 +104,33 @@ public class GameEnvironment
           gameState.currentTick++;
           gameState.lastTickTime = t;
 
+          times.push(gameState.lastTickTime);
+          List <Long> l = times.stream().limit(gameState.tps + 1).toList();
+          times.clear();
+          times.addAll(l);
+          double d = times.getFirst() - times.getLast();
+
           gameState.layers.forEach(layer ->
               layer.stream()
                    .filter(gameObject -> gameObject instanceof AdvTicking)
                    .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
 
-          update(4);
+          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
+          {
+            update(i);
+            updateLayer.set(i, false);
+          });
 
-          panels.forEach(Component::repaint);
+
+          if (gameState.currentTick % 2 == 0)
+          {
+            render();
+            display.setFinalImg(finalImg);
+            display.repaint();
+          }
+
+
+          System.out.println(d / 1_000_000_000.0);
         }
 
         //        try
@@ -121,26 +145,7 @@ public class GameEnvironment
 
     });
 
-    Thread renderer = new Thread(() ->
-    {
-      while (gameState.running)
-      {
-        update(4);
-
-        panels.forEach(Component::repaint);
-        try
-        {
-          Thread.sleep(50);
-        }
-        catch (InterruptedException e)
-        {
-          throw new RuntimeException(e);
-        }
-      }
-    });
-
-    ticker.start();
-    //    renderer.start();
+    clock.start();
   }
 
   public void stop ()
