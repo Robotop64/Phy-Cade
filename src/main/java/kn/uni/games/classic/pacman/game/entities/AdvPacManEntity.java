@@ -105,6 +105,11 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
       }
       absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
 
+      gameState.env.updateLayer.set(1, true);
+      gameState.env.updateLayer.set(3, true);
+      gameState.env.updateLayer.set(4, true);
+      gameState.env.updateLayer.set(5, true);
+
 
     }
 

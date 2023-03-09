@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.screens;
 
 import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
+import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.ui.InputListener;
@@ -367,11 +368,10 @@ public class AdvGameScreen extends UIScreen
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           map.calculateAbsolutes(uiComponents.get(0).getSize());
 
-          //          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(1, 1).multiply(map.tileSize));
-          //          env.gameState.players.add(player1);
-          //          map.addToPool(player1);
+          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(1, 1).multiply(map.tileSize));
+          env.gameState.players.add(player1);
+          map.addToPool(player1);
 
-          //          map.render();
           env.getGameState().layers.get(1).add(map);
 
 

@@ -7,9 +7,11 @@ import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class PPelletItem extends Item implements AdvRendered
 {
+  public static BufferedImage classIcon;
 
   public PPelletItem (AdvGameState gameState, Vector2d mapPos)
   {
@@ -23,10 +25,10 @@ public class PPelletItem extends Item implements AdvRendered
   @Override
   public void paintComponent (Graphics2D g)
   {
-    if (cachedImg == null)
+    if (classIcon == null)
       render();
 
-    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, iconSize, iconSize, null);
+    g.drawImage((Image) classIcon, (int) absPos.x, (int) absPos.y, iconSize, iconSize, null);
   }
 
   @Override
@@ -38,7 +40,7 @@ public class PPelletItem extends Item implements AdvRendered
   @Override
   public void render ()
   {
-    cachedImg = TextureEditor.getInstance().loadTexture("items", type.name() + ".png");
+    classIcon = TextureEditor.getInstance().loadTexture("items", type.name() + ".png");
   }
 
   @Override

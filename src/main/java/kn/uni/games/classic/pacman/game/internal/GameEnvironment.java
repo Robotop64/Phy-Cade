@@ -88,12 +88,14 @@ public class GameEnvironment
   {
     gameState.running = true;
     gameState.paused = false;
+
     gameState.currentTick = 0;
     gameState.lastTickTime = System.nanoTime();
+    //optimal tickduration in nanoseconds
     double            tickDuration = 1_000_000_000.0 / gameState.tps;
     LinkedList <Long> times        = new LinkedList <>();
 
-    Thread clock = new Thread(() ->
+    Thread oldClock = new Thread(() ->
     {
       while (gameState.running)
       {
@@ -102,6 +104,9 @@ public class GameEnvironment
           long t = System.nanoTime();
           if (t - gameState.lastTickTime < tickDuration) continue;
           gameState.currentTick++;
+
+          double buffer = round(( t - gameState.lastTickTime ) / 1_000_000.0);
+
           gameState.lastTickTime = t;
 
           times.push(gameState.lastTickTime);
@@ -110,18 +115,65 @@ public class GameEnvironment
           times.addAll(l);
           double d = times.getFirst() - times.getLast();
 
+          //          gameState.layers.forEach(layer ->
+          //              layer.stream()
+          //                   .filter(gameObject -> gameObject instanceof AdvTicking)
+          //                   .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
+          //
+          //          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
+          //          {
+          //            update(i);
+          //            updateLayer.set(i, false);
+          //          });
+          //
+          //
+          //          if (gameState.currentTick % 2 == 0)
+          //          {
+          //            render();
+          //            display.setFinalImg(finalImg);
+          //            display.repaint();
+          //          }
+
+          System.out.println("Time/Tps " + d / 1_000_000_000.0 + " | " + "Time per Tick " + buffer + "ms");
+        }
+      }
+
+    });
+
+    Thread newClock = new Thread(() ->
+    {
+      while (gameState.running)
+      {
+        if (!gameState.paused)
+        {
+          long t = System.nanoTime();
+          if (t - gameState.lastTickTime < tickDuration) continue;
+          gameState.currentTick++;
+
+          double buffer = round(( t - gameState.lastTickTime ) / 1_000_000.0);
+
+          gameState.lastTickTime = t;
+
+          times.push(gameState.lastTickTime);
+          List <Long> l = times.stream().limit(gameState.tps + 1).toList();
+          times.clear();
+          times.addAll(l);
+          double d = times.getFirst() - times.getLast();
+
+          //tick all objects
           gameState.layers.forEach(layer ->
               layer.stream()
                    .filter(gameObject -> gameObject instanceof AdvTicking)
                    .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
 
+          //reRender layers if needed
           IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
           {
             update(i);
             updateLayer.set(i, false);
           });
 
-
+          //render final image
           if (gameState.currentTick % 2 == 0)
           {
             render();
@@ -129,23 +181,22 @@ public class GameEnvironment
             display.repaint();
           }
 
-
-          System.out.println(d / 1_000_000_000.0);
+          System.out.println("Time/Tps " + d / 1_000_000_000.0 + " | " + "Time per Tick " + buffer + "ms");
         }
 
-        //        try
-        //        {
-        //          Thread.sleep(20);
-        //        }
-        //        catch (InterruptedException e)
-        //        {
-        //          throw new RuntimeException(e);
-        //        }
+        try
+        {
+          Thread.sleep(5);
+        }
+        catch (InterruptedException e)
+        {
+          throw new RuntimeException(e);
+        }
       }
 
     });
 
-    clock.start();
+    newClock.start();
   }
 
   public void stop ()
@@ -155,12 +206,7 @@ public class GameEnvironment
 
   public void pause ()
   {
-    gameState.running = false;
-  }
-
-  public void resume ()
-  {
-    gameState.running = true;
+    gameState.paused = false;
   }
 
   public void controlPlayer (int player, Direction nextDir)
