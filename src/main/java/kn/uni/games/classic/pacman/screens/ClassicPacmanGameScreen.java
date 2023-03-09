@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import static kn.uni.util.Util.round;
+
 public class ClassicPacmanGameScreen extends UIScreen
 {
   public ClassicPacmanGameState gameState;
@@ -99,6 +101,7 @@ public class ClassicPacmanGameScreen extends UIScreen
         long t = System.nanoTime();
         if (t - gameState.lastTickTime < tickDuration) continue;
         gameState.currentTick++;
+        double buffer = round(( t - gameState.lastTickTime ) / 1_000_000.0);
         gameState.lastTickTime = t;
 
         //remove marked objects
@@ -124,6 +127,18 @@ public class ClassicPacmanGameScreen extends UIScreen
         DebugDisplay.setData(gameState, DebugDisplay.DebugType.Level, DebugDisplay.DebugSubType.GameDuration, "[Dur: " + gameState.gameDuration + "]");
 
         if (gameState.currentTick % 2 == 0) Gui.getInstance().frame.repaint();
+
+        //        System.out.println("Time per Tick " + buffer + "ms");
+
+
+        try
+        {
+          Thread.sleep(7);
+        }
+        catch (InterruptedException e)
+        {
+          throw new RuntimeException(e);
+        }
       }
       kill();
     }).start();
