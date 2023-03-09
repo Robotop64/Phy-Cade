@@ -1,46 +1,57 @@
 package kn.uni.games.classic.pacman.game.objects;
 
 import kn.uni.games.classic.pacman.game.entities.Entity;
+import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class AdvPacManTile
+public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
 {
-  //position of the tile on the canvas
-  private Vector2d                       absolutePos;
-  //position of the tile on the map
-  private Vector2d                       mapPos;
-  private Map <Direction, AdvPacManTile> neighbours;
-  private BufferedImage                  tileImage;
-
+  public  Map <Direction, Boolean>       connections;
+  public  ConnectionType                 connectionType;
+  public  int[]                          neighboursCount = new int[2];
+  public  Map <Direction, AdvPacManTile> neighbors;
+  public  Color                          debugColor      = Color.BLACK;
+  public  Color                          primitiveColor  = Color.BLACK;
   //type of the tile
-  private TileType                 type;
-  private ConnectionType           connectionType;
-  private Map <Direction, Boolean> connections;
-
+  private TileType                       type;
   //objects that should be spawned on this tile
-  private List <Item>    items;
-  private List <Entity>  entities;
-  private List <Objects> objects;
+  private List <Item>                    items;
+  private List <Entity>                  entities;
+  private List <AdvPlacedObject>         objects;
 
 
-  public AdvPacManTile (Vector2d mapPos, TileType type)
+  public AdvPacManTile (AdvGameState gameState, Vector2d mapPos, TileType type)
   {
     this.mapPos = mapPos;
     this.type = type;
 
+    neighbors = new HashMap <>();
+    connections = new HashMap <>();
+
     items = new ArrayList <>();
     entities = new ArrayList <>();
     objects = new ArrayList <>();
+
+    if (type == TileType.WALL)
+      primitiveColor = Color.BLACK;
+    else if (type == TileType.FLOOR)
+      primitiveColor = Color.BLUE;
   }
 
   //region getters and setters
@@ -48,12 +59,28 @@ public class AdvPacManTile
   //region absolutes
   public Vector2d getAbsolutePos ()
   {
-    return absolutePos;
+    return absPos;
   }
 
   public void setAbsolutePos (Vector2d pos)
   {
-    absolutePos = pos;
+    absPos = pos;
+
+    items.forEach(item ->
+    {
+      item.absPos = pos;
+      item.iconSize = iconSize;
+    });
+    entities.forEach(entity ->
+    {
+      entity.absPos = pos;
+      entity.iconSize = iconSize;
+    });
+    objects.forEach(object ->
+    {
+      object.absPos = pos;
+      object.iconSize = iconSize;
+    });
   }
   //endregion
 
@@ -70,24 +97,24 @@ public class AdvPacManTile
   //endregion
 
   //region neighbours
-  public Map <Direction, AdvPacManTile> getNeighbours ()
+  public Map <Direction, AdvPacManTile> getNeighbors ()
   {
-    return neighbours;
+    return neighbors;
   }
 
-  public void setNeighbours (Map <Direction, AdvPacManTile> neighbours)
+  public void setNeighbors (Map <Direction, AdvPacManTile> neighbors)
   {
-    this.neighbours = neighbours;
+    this.neighbors = neighbors;
   }
 
   public void addNeighbour (Direction dir, AdvPacManTile tile)
   {
-    neighbours.put(dir, tile);
+    neighbors.put(dir, tile);
   }
 
   public AdvPacManTile getNeighbour (Direction dir)
   {
-    return neighbours.get(dir);
+    return neighbors.get(dir);
   }
   //endregion
 
@@ -104,7 +131,7 @@ public class AdvPacManTile
   //endregion
 
   //region items
-  public List <Item> getItems ()
+  public Collection <Item> getItems ()
   {
     return items;
   }
@@ -138,17 +165,17 @@ public class AdvPacManTile
   //endregion
 
   //region objects
-  public List <Objects> getObjects ()
+  public Collection <AdvPlacedObject> getObjects ()
   {
     return objects;
   }
 
-  public void setObjects (List <Objects> objects)
+  public void setObjects (List <AdvPlacedObject> objects)
   {
     this.objects = objects;
   }
 
-  public void addObject (Objects object)
+  public void addObject (AdvPlacedObject object)
   {
     objects.add(object);
   }
@@ -158,46 +185,86 @@ public class AdvPacManTile
 
   public void setConnections ()
   {
-    List <Direction> dirs = List.of(Direction.up, Direction.down, Direction.left, Direction.right);
-    dirs.forEach(dir ->
+    Arrays.stream(Direction.valuesAll()).forEach(dir ->
     {
-      if (neighbours.get(dir).getType() == this.type)
-      {
+      if (neighbors.containsKey(dir) && neighbors.get(dir).getType() == this.type)
         connections.put(dir, true);
-      }
       else
-      {
         connections.put(dir, false);
-      }
     });
-
   }
 
-  public void setTileImage ()
+  public void setConnectionType ()
   {
-    String        path = "map/classic/" + type.toString().toLowerCase();
-    BufferedImage img  = null;
-    try
+    AtomicInteger cCount = new AtomicInteger();
+    Arrays.stream(Direction.valuesCardinal()).forEach(dir ->
     {
-      img = TextureEditor.getInstance().loadTexture(path, "X.png");
+      if (connections.get(dir))
+        cCount.getAndIncrement();
+    });
+    neighboursCount[0] = cCount.get();
+
+    AtomicInteger fCount = new AtomicInteger();
+    Arrays.stream(Direction.valuesDiagonal()).forEach(dir ->
+    {
+      if (neighbors.containsKey(dir) && neighbors.get(dir).getType() == this.type)
+        fCount.getAndIncrement();
+    });
+    neighboursCount[1] = fCount.get();
+
+    if (cCount.get() == 4)
+      connectionType = ConnectionType.X;
+    else if (cCount.get() == 3)
+      connectionType = ConnectionType.T;
+    else if (cCount.get() == 2)
+      connectionType = ConnectionType.S;
+    else if (cCount.get() == 1)
+      connectionType = ConnectionType.E;
+    else
+      connectionType = ConnectionType.N;
+  }
+
+  //region graphics
+  @Override
+  public void paintComponent (Graphics2D g)
+  {
+    if (cachedImg == null)
+      render();
+
+    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, iconSize, iconSize, null);
+  }
+
+  @Override
+  public int paintLayer ()
+  {
+    return 0;
+  }
+
+  public void render ()
+  {
+    cachedImg = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = cachedImg.createGraphics();
+
+    if (primitiveColor != debugColor)
+    {
+      g.setColor(debugColor);
+      g.fillRect(0, 0, iconSize, iconSize);
     }
-    catch (Exception e)
+    else
     {
-      Color c = this.type == TileType.FLOOR ? Color.BLUE : Color.BLACK;
-      img = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
-      Vector2d      dim      = new Vector2d().cartesian(64, 64);
-      BufferedImage finalImg = img;
-      dim.stream().forEach(pos ->
+      String path = "map/classic/" + type.toString().toLowerCase();
+      try
       {
-        finalImg.setRGB((int) pos.x, (int) pos.y, c.getRGB());
-      });
+        cachedImg = TextureEditor.getInstance().loadTexture(path, "X.png");
+      }
+      catch (Exception e)
+      {
+        g.setColor(primitiveColor);
+        g.fillRect(0, 0, iconSize, iconSize);
+      }
     }
   }
-
-  public BufferedImage getTileImage ()
-  {
-    return tileImage;
-  }
+  //endregion
 
   //region enums
   public enum TileType
@@ -221,7 +288,8 @@ public class AdvPacManTile
    */
   public enum ConnectionType
   {
-    H, V, TT, TB, TL, TR, CLT, CLB, CRT, CRB, X
+    //    H, V, TT, TB, TL, TR, CLT, CLB, CRT, CRB, X
+    X, T, S, E, N
   }
   //endregion
 

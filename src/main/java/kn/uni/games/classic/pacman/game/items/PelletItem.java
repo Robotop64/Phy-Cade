@@ -1,18 +1,51 @@
 package kn.uni.games.classic.pacman.game.items;
 
+import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.TextureEditor;
 
-public class PelletItem extends Item
+import java.awt.Graphics2D;
+import java.awt.Image;
+
+public class PelletItem extends Item implements AdvRendered
 {
-  //position on the canvas
-  public Vector2d absPos;
-  //position on the map
-  public Vector2d mapPos;
 
-
-  public PelletItem (Vector2d mapPos)
+  public PelletItem (AdvGameState gameState, Vector2d mapPos)
   {
+    super();
+    this.gameState = gameState;
+
     this.mapPos = mapPos;
     this.type = ItemType.PELLET;
+  }
+
+  @Override
+  public void paintComponent (Graphics2D g)
+  {
+    if (cachedImg == null)
+      render();
+
+    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, iconSize, iconSize, null);
+  }
+
+  @Override
+  public int paintLayer ()
+  {
+    return 0;
+  }
+
+  @Override
+  public void render ()
+  {
+    cachedImg = TextureEditor.getInstance().loadTexture("items", type.name() + ".png");
+  }
+
+  @Override
+  public void consumeAction ()
+  {
+    gameState.addScore(100);
+    gameState.layers.get(3).remove(this);
+    //TODO: Spawn score number
   }
 }

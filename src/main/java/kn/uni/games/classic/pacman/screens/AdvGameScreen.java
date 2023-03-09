@@ -2,6 +2,10 @@ package kn.uni.games.classic.pacman.screens;
 
 import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
+import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
+import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
+import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
+import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
 import kn.uni.ui.UIScreen;
@@ -17,14 +21,21 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdvGameScreen extends UIScreen
 {
+  //components
   public List <Component> uiComponents = new ArrayList <>();
-
+  //controls
+  Map <InputListener.Key, InputListener.Input> joystick = new HashMap <>();
+  //hud data lists
   private PacList data;
   private PacList leaderboard;
+
+  private GameEnvironment env;
 
 
   public AdvGameScreen (JPanel parent)
@@ -33,49 +44,23 @@ public class AdvGameScreen extends UIScreen
     setBackground(Color.BLACK);
     setLayout(null);
 
+
     createFrames();
     createHud();
 
-    createInfo();
+    createLoadingPopup();
 
-    createReadyPrompt();
+    createReadyPopup();
 
     enableReadyPrompt(false);
 
-    Thread t = new Thread(
-        () ->
-        {
-          for (int i = 0; i < 150; i++)
-          {
-            if (i < 100)
-            {
-              setLoadingProgress(false, i, "progress");
-            }
-            else if (i == 100)
-            {
-              setLoadingProgress(true, 100, "progress");
-              enableReadyPrompt(true);
-            }
 
-            if (i == 149)
-            {
-              enableReadyPrompt(false);
-            }
+    loadGame();
 
-            try
-            {
-              Thread.sleep(30);
-            }
-            catch (InterruptedException e)
-            {
-              e.printStackTrace();
-            }
-          }
-        }
-    );
-    t.start();
+    enableControls();
   }
 
+  //region create UI
   private void createFrames ()
   {
     int edgeBuffer = 15;
@@ -113,31 +98,24 @@ public class AdvGameScreen extends UIScreen
     data.edgeBuffer = 10;
     data.setAutoFit(false);
 
-
     PacLabel title = new PacLabel("~ Pac-Man ~");
     title.setHorizontalAlignment(PacLabel.CENTER);
     data.addObject(title);
 
-
     data.addBuffer(0, 5);
-
 
     PacLabel level = new PacLabel("%7d".formatted(1));
     level.setHeader("Level:");
     level.setHorizontalAlignment(PacLabel.LEFT);
     data.addObject(level);
 
-
     data.addBuffer(0, 5);
-
 
     PacLabel score1 = new PacLabel("Score:");
     score1.setHorizontalAlignment(PacLabel.LEFT);
     data.addObject(score1);
 
-
     data.addBuffer(0, -15);
-
 
     PacLabel score2 = new PacLabel("❰" + String.format("%09d", 0) + "❱");
     score2.setBackground(null);
@@ -145,17 +123,13 @@ public class AdvGameScreen extends UIScreen
     score2.setHorizontalAlignment(PacLabel.CENTER);
     data.addObject(score2);
 
-
     data.addBuffer(0, 5);
-
 
     PacLabel time1 = new PacLabel("Time:");
     time1.setHorizontalAlignment(PacLabel.LEFT);
     data.addObject(time1);
 
-
     data.addBuffer(0, -15);
-
 
     PacLabel time2 = new PacLabel("00:00:00.000");
     time2.setBackground(null);
@@ -163,9 +137,7 @@ public class AdvGameScreen extends UIScreen
     time2.setHorizontalAlignment(PacLabel.CENTER);
     data.addObject(time2);
 
-
     data.addBuffer(0, 5);
-
 
     PacLabel lives = new PacLabel("5");
     lives.setHeader("Lives: x");
@@ -244,34 +216,33 @@ public class AdvGameScreen extends UIScreen
     leaderboard.fitComponents();
 
     ( (JPanel) uiComponents.get(1) ).add(leaderboard);
-
-
     //endregion
   }
 
-  private void createInfo ()
+  private void createLoadingPopup ()
   {
     int       buffer   = 20;
-    Vector2d  gamePos  = new Vector2d().cartesian(uiComponents.get(0).getLocation().x, uiComponents.get(0).getLocation().y);
     Dimension gameSize = uiComponents.get(0).getSize();
-    Vector2d  infoPos  = gamePos.add(new Vector2d().cartesian(buffer, gameSize.height - 100));
+    Vector2d  infoPos  = new Vector2d().cartesian(buffer, gameSize.height - 100);
 
-    //create Panel
-    JPanel info = new JPanel();
-    info.setLayout(null);
-    info.setBounds((int) infoPos.x, (int) infoPos.y, gameSize.width - 2 * buffer, 100 - buffer);
-    uiComponents.add(info);
-    add(info);
+    //create container
+    JPanel loadInfo = new JPanel();
+    loadInfo.setLayout(null);
+    loadInfo.setBounds((int) infoPos.x, (int) infoPos.y, gameSize.width - 2 * buffer, 100 - buffer);
+    //add to list
+    uiComponents.add(loadInfo);
+    //add to Layered Frame
+    ( (JLayeredPane) uiComponents.get(0) ).add(loadInfo, Integer.MAX_VALUE);
 
     //create List for formatting
-    PacList loading = new PacList(new Vector2d().cartesian(0, 0), new Dimension(info.getWidth(), info.getHeight()));
+    PacList loading = new PacList(new Vector2d().cartesian(0, 0), new Dimension(loadInfo.getWidth(), loadInfo.getHeight()));
     loading.showBorder(true);
     loading.alignment = PacList.Alignment.VERTICAL;
     loading.edgeBuffer = 10;
     loading.vBuffer = 10;
     loading.setAutoFit(true);
     loading.setBackGround(Color.BLACK);
-    info.add(loading);
+    loadInfo.add(loading);
 
     //region add components
     PacLabel text = new PacLabel("Progress : ");
@@ -300,13 +271,12 @@ public class AdvGameScreen extends UIScreen
     loading.unifyFontSize(18f);
   }
 
-  private void createReadyPrompt ()
+  private void createReadyPopup ()
   {
-    Vector2d  gamePos  = new Vector2d().cartesian(uiComponents.get(0).getLocation().x, uiComponents.get(0).getLocation().y);
     Dimension gameSize = uiComponents.get(0).getSize();
 
     Dimension readySize = new Dimension(400, 400);
-    Vector2d  readyPos  = gamePos.add(new Vector2d().cartesian(gameSize.width / 2. - readySize.width / 2., gameSize.height / 2. - readySize.height / 2.));
+    Vector2d  readyPos  = new Vector2d().cartesian(gameSize.width / 2. - readySize.width / 2., gameSize.height / 2. - readySize.height / 2.);
 
     PacLabel readyPrompt = new PacLabel(new Vector2d().cartesian((int) readyPos.x, (int) readyPos.y), new Dimension(readySize.width, readySize.height), "<html> <body> <p align=\"center\"> Ready ?<br/>Press a Button! </p> </body> </html>");
     readyPrompt.setFont(readyPrompt.getFont().deriveFont(35f));
@@ -315,10 +285,11 @@ public class AdvGameScreen extends UIScreen
     readyPrompt.setBackground(Color.BLACK);
     readyPrompt.setOpaque(true);
     uiComponents.add(readyPrompt);
-    add(readyPrompt);
+    ( (JLayeredPane) uiComponents.get(0) ).add(readyPrompt, Integer.MAX_VALUE - 10);
   }
+  //endregion
 
-
+  //region update methods
   private void setLevel (int level)
   {
     ( (PacLabel) data.getItem(2) ).setText(StringUtils.leftPad(String.valueOf(level), 6));
@@ -339,9 +310,19 @@ public class AdvGameScreen extends UIScreen
     ( (PacLabel) data.getItem(14) ).setText("%7d".formatted(lives));
   }
 
-  private void updateLeaderboard (int score)
+  private void updateLeaderboard (LeaderboardMenu.LeaderboardEntry[] entries)
   {
-    ( (PacLabel) leaderboard.getItem(2) ).setText("❰" + String.format("%09d", score) + "❱");
+    PacList leaderboard = (PacList) uiComponents.get(1);
+
+    for (int i = 0; i < entries.length; i++)
+    {
+      PacLabel score = (PacLabel) leaderboard.getItem(2 * i + 1);
+      PacLabel name  = (PacLabel) leaderboard.getItem(2 * i + 2);
+
+      score.setText("❰" + String.format("%09d", entries[i].highScore()) + "❱");
+      name.setText(entries[i].name());
+    }
+    //    ( (PacLabel) leaderboard.getItem(2) ).setText("❰" + String.format("%09d", score) + "❱");
   }
 
   private void setLoadingProgress (boolean done, int progress, String text)
@@ -358,8 +339,6 @@ public class AdvGameScreen extends UIScreen
       panel.setVisible(false);
       bar.setValue(100);
       bar.setString("Done");
-      //      uiComponents.remove(panel);
-      //      remove(panel);
       return;
     }
 
@@ -372,7 +351,74 @@ public class AdvGameScreen extends UIScreen
   {
     PacLabel readyPrompt = (PacLabel) uiComponents.get(3);
     readyPrompt.setVisible(enable);
+  }
+  //endregion
 
+  //region game methods
+  private void loadGame ()
+  {
+    Thread t = new Thread(
+        () ->
+        {
+          setLoadingProgress(false, 10, "Creating game environment...");
+          env = new GameEnvironment(uiComponents.get(0).getSize());
+
+
+          setLoadingProgress(false, 20, "Loading map...");
+          AdvPacManMap map = new AdvPacManMap(env.getGameState());
+
+          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(50, 50));
+          env.gameState.players.add(player1);
+          map.addToPool(player1);
+
+          map.calculateAbsolutes(uiComponents.get(0).getSize());
+          map.render();
+          env.getGameState().layers.get(1).add(map);
+
+
+          setLoadingProgress(false, 30, "Loading objects...");
+          env.getGameState().layers.get(2).addAll(map.generateObjects());
+
+
+          setLoadingProgress(false, 40, "Loading items...");
+          env.getGameState().layers.get(3).addAll(map.generateItems());
+
+
+          setLoadingProgress(false, 50, "Loading entities...");
+          env.getGameState().layers.get(4).addAll(map.generateEntities());
+
+
+          setLoadingProgress(false, 95, "Finished initializing!");
+          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplayStack(), 0);
+
+
+          setLoadingProgress(true, 100, "Starting game!");
+          env.start();
+        }
+    );
+
+    t.start();
   }
 
+  private void enableControls ()
+  {
+    bindPlayer(InputListener.Player.playerOne, input ->
+    {
+
+      System.out.println(input.key());
+
+      if (input.toDirection() == null)
+      {
+        joystick.remove(input.key());
+        joystick.forEach((key, in) -> env.controlPlayer(1, in.toDirection()));
+      }
+      else
+      {
+        joystick.put(input.key(), input);
+        env.controlPlayer(1, input.toDirection());
+        //          gameState.playerDirection = input.toDirection();
+      }
+    });
+  }
+  //endregion
 }

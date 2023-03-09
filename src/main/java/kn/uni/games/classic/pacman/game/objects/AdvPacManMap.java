@@ -1,58 +1,145 @@
 package kn.uni.games.classic.pacman.game.objects;
 
 import kn.uni.games.classic.pacman.game.entities.Entity;
+import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.PacPhiConfig;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class AdvPacManMap extends JPanel
+public class AdvPacManMap extends AdvGameObject implements AdvRendered
 {
   //dimension of the map in pixels
-  public  Dimension                     size;
+  public Dimension                     size;
   //dimension of the map in tiles
-  public  Vector2d                      mapSize;
+  public Vector2d                      mapSize;
   //size of a tile in pixels
-  public  int                           tileSize;
+  public int                           tileSize;
   //map of tiles with canvas coordinates
-  private Map <Vector2d, AdvPacManTile> tilesAbs;
+  public Map <Vector2d, AdvPacManTile> tilesAbs;
   //map of tiles with map coordinates
-  private Map <Vector2d, AdvPacManTile> tilesPixel;
+  public Map <Vector2d, AdvPacManTile> tilesPixel;
 
-  public AdvPacManMap ()
+  public List <AdvGameObject> spawnables;
+
+  public AdvPacManMap (AdvGameState gameState)
   {
+    this.gameState = gameState;
+
     tilesPixel = new HashMap <>();
     tilesAbs = new HashMap <>();
+    spawnables = new ArrayList <>();
 
     loadBasicMapTiles("pacman/map/PacManClassicMap - Tiles.bmp");
     loadBasicMapItems("pacman/map/PacManClassicMap - Spawnables.bmp");
+
+    calculateNeighbours();
   }
 
-  public void paintComponent (Graphics g)
+  //region graphics
+  @Override
+  public void paintComponent (Graphics2D g)
   {
-    super.paintComponent(g);
-    Graphics2D g2d = (Graphics2D) g;
+    if (cachedImg == null)
+      render();
 
+    g.drawImage(cachedImg, 0, 0, size.width, size.height, null);
+  }
+
+  @Override
+  public int paintLayer ()
+  {
+    return 0;
+  }
+
+  public void render ()
+  {
+    cachedImg = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g2d = cachedImg.createGraphics();
     tilesAbs.forEach((k, v) ->
     {
-      //      g2d.drawImage(v.getTileImage(), (int) k.x, (int) k.y, tileSize, tileSize, null);
-      Color c = v.getType() == AdvPacManTile.TileType.FLOOR ? Color.BLUE : Color.BLACK;
-      g2d.setColor(c);
-      g2d.fillRect((int) k.x, (int) k.y, tileSize, tileSize);
+      if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+      {
+        Color c = v.getType() == AdvPacManTile.TileType.FLOOR ? Color.BLUE : Color.BLACK;
+        g2d.setColor(c);
+        g2d.fillRect((int) k.x, (int) k.y, tileSize, tileSize);
+      }
+
+      v.paintComponent(g2d);
+
+      Arrays.stream(Direction.valuesCardinal()).toList()
+            .stream()
+            .filter(d -> v.getType() == AdvPacManTile.TileType.WALL)
+            .filter(d -> v.connections.containsKey(d) && v.connections.get(d).equals(true))
+            .filter(d -> !( v.connectionType.equals(AdvPacManTile.ConnectionType.T)
+                && v.neighbors.containsKey(d.opposite())
+                && v.neighbors.get(d.opposite()).getType() == AdvPacManTile.TileType.FLOOR ))
+            .filter(d -> !( v.neighboursCount[1] == 1
+                && v.connectionType.equals(AdvPacManTile.ConnectionType.T)
+                && v.neighbors.containsKey(d.opposite())
+                && v.neighbors.get(d.opposite()).connectionType.equals(AdvPacManTile.ConnectionType.S) ))
+            .filter(d -> !( v.connectionType.equals(AdvPacManTile.ConnectionType.X) ))
+            .forEach(d ->
+                {
+                  Vector2d center = new Vector2d().cartesian(k.x + tileSize / 2., k.y + tileSize / 2.);
+                  Vector2d end    = center.add(d.toVector().multiply(tileSize / 2.));
+
+                  g2d.setStroke(new BasicStroke(3));
+                  g2d.setColor(Color.CYAN.darker());
+                  g2d.drawLine((int) center.x, (int) center.y, (int) end.x, (int) end.y);
+
+                  if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+                  {
+                    g2d.setColor(Color.RED);
+                    g2d.drawString(v.connectionType.name(), (int) center.x, (int) center.y);
+                  }
+                }
+            );
+
+      Arrays.stream(Direction.valuesDiagonal()).toList()
+            .stream()
+            .filter(d -> v.getType() == AdvPacManTile.TileType.WALL)
+            .filter(d -> v.connectionType.equals(AdvPacManTile.ConnectionType.X))
+            .filter(d -> v.neighbors.containsKey(d))
+            .filter(d -> v.neighbors.get(d).getType() == AdvPacManTile.TileType.FLOOR)
+            .forEach(
+                d ->
+                {
+                  Vector2d center = new Vector2d().cartesian(k.x + tileSize / 2., k.y + tileSize / 2.);
+                  assert d.getCardinalsOfDiagonal() != null;
+                  Vector2d endA = center.add(d.getCardinalsOfDiagonal()[0].toVector().multiply(tileSize / 2.));
+                  Vector2d endB = center.add(d.getCardinalsOfDiagonal()[1].toVector().multiply(tileSize / 2.));
+
+                  g2d.setStroke(new BasicStroke(3));
+                  g2d.setColor(Color.CYAN.darker());
+                  g2d.drawLine((int) center.x, (int) center.y, (int) endA.x, (int) endA.y);
+                  g2d.drawLine((int) center.x, (int) center.y, (int) endB.x, (int) endB.y);
+
+                  if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+                  {
+                    g2d.setColor(Color.RED);
+                    g2d.drawString(v.connectionType.name(), (int) center.x, (int) center.y);
+                  }
+                }
+            );
     });
   }
+  //endregion
 
   //the following methods are used to calculate the tile and map values
   //region calculations
@@ -60,6 +147,7 @@ public class AdvPacManMap extends JPanel
   {
     this.size = size;
     tileSize = (int) Math.round(Math.min(size.width / mapSize.x, size.height / mapSize.y));
+    AdvPlacedObject.iconSize = tileSize;
     tilesPixel.forEach((k, v) ->
     {
       v.setAbsolutePos(new Vector2d().cartesian(k.x * tileSize, k.y * tileSize));
@@ -78,13 +166,30 @@ public class AdvPacManMap extends JPanel
             v.addNeighbour(d, tilesPixel.get(neighbourPos));
           }
         }));
+    tilesPixel.forEach((k, v) ->
+        {
+          v.setConnections();
+          v.setConnectionType();
+        }
+    );
+  }
+
+  public Vector2d getTileMapPos (Vector2d pos)
+  {
+    return pos.divide(tileSize).floor();
+  }
+
+  public Vector2d getTileInnerPos (Vector2d pos)
+  {
+    return pos.subtract(getTileMapPos(pos).multiply(tileSize)).subtract(new Vector2d().cartesian(1, 1).multiply(tileSize / 2.));
   }
   //endregion
 
   // the following methods are used to generate the game objects
   //region spawning
-  public void generateObjects (List <Object> objects)
+  public List <AdvGameObject> generateObjects ()
   {
+    ConcurrentLinkedDeque <AdvGameObject> objects = new ConcurrentLinkedDeque <>();
     tilesPixel.forEach((k, v) ->
     {
       if (v.getObjects().size() > 0)
@@ -92,10 +197,17 @@ public class AdvPacManMap extends JPanel
         objects.addAll(v.getObjects());
       }
     });
+
+    spawnables.stream()
+              .filter(o -> o instanceof AdvPlacedObject)
+              .forEach(objects::add);
+
+    return List.copyOf(objects);
   }
 
-  public void generateItems (List <Item> items)
+  public List <Item> generateItems ()
   {
+    ConcurrentLinkedDeque <Item> items = new ConcurrentLinkedDeque <>();
     tilesPixel.forEach((k, v) ->
     {
       if (v.getItems().size() > 0)
@@ -103,10 +215,18 @@ public class AdvPacManMap extends JPanel
         items.addAll(v.getItems());
       }
     });
+
+    spawnables.stream()
+              .filter(o -> o instanceof Item)
+              .map(o -> (Item) o)
+              .forEach(items::add);
+
+    return List.copyOf(items);
   }
 
-  public void generateEntities (List <Entity> entities)
+  public List <Entity> generateEntities ()
   {
+    ConcurrentLinkedDeque <Entity> entities = new ConcurrentLinkedDeque <>();
     tilesPixel.forEach((k, v) ->
     {
       if (v.getEntities().size() > 0)
@@ -114,6 +234,18 @@ public class AdvPacManMap extends JPanel
         entities.addAll(v.getEntities());
       }
     });
+
+    spawnables.stream()
+              .filter(o -> o instanceof Entity)
+              .map(o -> (Entity) o)
+              .forEach(entities::add);
+
+    return List.copyOf(entities);
+  }
+
+  public void addToPool (AdvGameObject object)
+  {
+    spawnables.add(object);
   }
   //endregion
 
@@ -129,10 +261,9 @@ public class AdvPacManMap extends JPanel
              .forEach(v ->
              {
                Color         c    = new Color(image.getRGB((int) v.x, (int) v.y));
-               AdvPacManTile tile = new AdvPacManTile(v, convertColorToTileType(c));
-               tile.setTileImage();
+               AdvPacManTile tile = new AdvPacManTile(gameState, v, convertColorToTileType(c));
+               //               tile.render();
                tilesPixel.put(v, tile);
-
              });
     }
     catch (Exception e)
@@ -153,7 +284,7 @@ public class AdvPacManMap extends JPanel
                Color c = new Color(image.getRGB((int) v.x, (int) v.y));
                if (convertColorToItemType(c) != null)
                {
-                 tilesPixel.get(v).addItem(Item.createItem(Objects.requireNonNull(convertColorToItemType(c)), v));
+                 tilesPixel.get(v).addItem(Item.createItem(gameState, Objects.requireNonNull(convertColorToItemType(c)), v));
                }
              });
     }
@@ -180,8 +311,8 @@ public class AdvPacManMap extends JPanel
   {
     if (color.equals(Color.YELLOW))
       return Item.ItemType.PELLET;
-    else if (color.equals(Color.ORANGE))
-      return Item.ItemType.POWER_PELLET;
+    else if (color.equals(new Color(255, 88, 0)))
+      return Item.ItemType.PPELLET;
     return null;
   }
   //endregion

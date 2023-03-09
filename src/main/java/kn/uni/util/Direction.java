@@ -26,6 +26,30 @@ public enum Direction
     return new Direction[]{ up, down, left, right, topLeft, topRight, bottomLeft, bottomRight };
   }
 
+  public Direction[] getCardinalsOfDiagonal ()
+  {
+    switch (this)
+    {
+      case topLeft ->
+      {
+        return new Direction[]{ up, left };
+      }
+      case topRight ->
+      {
+        return new Direction[]{ up, right };
+      }
+      case bottomLeft ->
+      {
+        return new Direction[]{ down, left };
+      }
+      case bottomRight ->
+      {
+        return new Direction[]{ down, right };
+      }
+    }
+    return null;
+  }
+
   public Vector2d toVector ()
   {
     return switch (this)

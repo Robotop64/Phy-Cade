@@ -1,7 +1,6 @@
 package kn.uni;
 
 import kn.uni.games.classic.pacman.screens.AdvGameScreen;
-import kn.uni.games.classic.pacman.screens.MainMenu;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.pmButton;
 import kn.uni.util.fileRelated.PacPhiConfig;
@@ -79,7 +78,7 @@ public class Gui
     frame.getContentPane().setComponentZOrder(content, 1);
 
     //use alternative Content
-    if (false)
+    if (true)
     {
       AdvGameScreen advGameScreen = new AdvGameScreen(content);
       advGameScreen.setBounds(defaultFrameBounds);
@@ -91,8 +90,8 @@ public class Gui
     }
     else
     {
-      content.add(MainMenu.getInstance());
-      MainMenu.getInstance().setBounds(defaultFrameBounds);
+      //      content.add(MainMenu.getInstance());
+      //      MainMenu.getInstance().setBounds(defaultFrameBounds);
     }
 
     //    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);

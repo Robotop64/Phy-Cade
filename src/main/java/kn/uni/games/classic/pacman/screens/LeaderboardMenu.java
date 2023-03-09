@@ -421,12 +421,12 @@ public class LeaderboardMenu extends JPanel
     {
       if (input.equals(new InputListener.Input(InputListener.Key.B, InputListener.State.down, InputListener.Player.playerOne)))
       {
-        InputListener.getInstance().unsubscribe(listener_id);
-        setVisible(false);
-        getParent().remove(this);
-        Gui.getInstance().content.add(MainMenu.getInstance());
-        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
-        MainMenu.getInstance().activate();
+        //        InputListener.getInstance().unsubscribe(listener_id);
+        //        setVisible(false);
+        //        getParent().remove(this);
+        //        Gui.getInstance().content.add(MainMenu.getInstance());
+        //        MainMenu.getInstance().setBounds(Gui.defaultFrameBounds);
+        //        MainMenu.getInstance().activate();
       }
 
       if (input.player().equals(InputListener.Player.playerTwo)) return;
