@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static kn.uni.util.Util.round;
@@ -55,11 +56,9 @@ public class GameEnvironment
 
     IntStream.range(0, 6).forEach(i ->
     {
-      GameLayer panel = layer.get(i);
-      if (panel.cachedImg == null)
-        panel.render();
-      g2.drawImage(panel.cachedImg, 0, 0, null);
+      layer.get(i).paintComponent(g2);
     });
+    g2.dispose();
   }
 
 
@@ -92,8 +91,8 @@ public class GameEnvironment
     gameState.currentTick = 0;
     gameState.lastTickTime = System.nanoTime();
     //optimal tickduration in nanoseconds
-    double            tickDuration = 1_000_000_000.0 / gameState.tps;
-    LinkedList <Long> times        = new LinkedList <>();
+    double            prefTickDuration = 1_000_000_000.0 / gameState.tps;
+    LinkedList <Long> times            = new LinkedList <>();
 
     Thread oldClock = new Thread(() ->
     {
@@ -102,7 +101,7 @@ public class GameEnvironment
         if (!gameState.paused)
         {
           long t = System.nanoTime();
-          if (t - gameState.lastTickTime < tickDuration) continue;
+          if (t - gameState.lastTickTime < prefTickDuration) continue;
           gameState.currentTick++;
 
           double buffer = round(( t - gameState.lastTickTime ) / 1_000_000.0);
@@ -147,7 +146,7 @@ public class GameEnvironment
         if (!gameState.paused)
         {
           long t = System.nanoTime();
-          if (t - gameState.lastTickTime < tickDuration) continue;
+          if (t - gameState.lastTickTime < prefTickDuration) continue;
           gameState.currentTick++;
 
           double buffer = round(( t - gameState.lastTickTime ) / 1_000_000.0);
@@ -186,7 +185,7 @@ public class GameEnvironment
 
         try
         {
-          Thread.sleep(5);
+          Thread.sleep(1);
         }
         catch (InterruptedException e)
         {
@@ -196,7 +195,156 @@ public class GameEnvironment
 
     });
 
-    newClock.start();
+    //    //a the start of rendering process
+    //    long startRendering=System.nanoTime();
+    //
+    //... rendering here...
+    //
+    //    //duration of the frame rendering in ms :
+    //    long durationMs=TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-startRendering);
+    //
+    //    // now waits
+    //    if (durationMs < fps)
+    //    {
+    //      renderingThread.sleep(fps - durationMs);
+    //    }
+
+    Thread test = new Thread(() ->
+    {
+      while (gameState.running)
+      {
+        if (!gameState.paused)
+        {
+          //time of current tick
+          long currentTickTime = System.nanoTime();
+          //duration since last successful tick
+          long timeSinceLastTick = currentTickTime - gameState.lastTickTime;
+          //if last tick was finished before the optimal tick duration, sleep for the remaining time
+          long sleepTime = TimeUnit.NANOSECONDS.toMillis((long) ( prefTickDuration - timeSinceLastTick ));
+          //          System.out.println("Sleeping for " + sleepTime + "ms");
+
+          //          if (timeSinceLastTick < prefTickDuration)
+          //          {
+          //            try
+          //            {
+          //              Thread.sleep(sleepTimeMs, sleepTimeNs);
+          //            }
+          //            catch (InterruptedException e)
+          //            {
+          //              throw new RuntimeException(e);
+          //            }
+          //          }
+
+          gameState.currentTick++;
+
+
+          gameState.lastTickTime = currentTickTime;
+
+          times.push(gameState.lastTickTime);
+          List <Long> l = times.stream().limit(gameState.tps + 1).toList();
+          times.clear();
+          times.addAll(l);
+          double d = times.getFirst() - times.getLast();
+
+
+          //          //region render
+          //          //tick all objects
+          //          gameState.layers.forEach(layer ->
+          //              layer.stream()
+          //                   .filter(gameObject -> gameObject instanceof AdvTicking)
+          //                   .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
+          //
+          //          //reRender layers if needed
+          //          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
+          //          {
+          //            update(i);
+          //            updateLayer.set(i, false);
+          //          });
+          //
+          //          //render final image
+          //          if (gameState.currentTick % 2 == 0)
+          //          {
+          //            render();
+          //            display.setFinalImg(finalImg);
+          //            display.repaint();
+          //          }
+          //          //endregion
+
+          System.out.println("Time/Tps " + d / 1_000_000_000.0 + " | " + "Time per Tick " + round(timeSinceLastTick / 1_000_000.0) + "ms");
+        }
+      }
+    });
+
+    Thread ticker = new Thread(() ->
+    {
+      boolean running = true;
+      boolean paused  = false;
+
+      long tick              = 0;
+      long lastTickTime      = System.nanoTime();
+      long prefTickDuration2 = 1_000_000_000 / gameState.tps; //in ns, at 120 tps: 8_333_333ns
+
+      while (running)
+      {
+        if (!paused)
+        {
+          //region calculate stats and wait for next tick
+          //time of current tick
+          long currentTickTime = System.nanoTime();
+          //duration since last successful tick
+          long timeSinceLastTick = currentTickTime - lastTickTime;
+
+          if (timeSinceLastTick < prefTickDuration)
+          {
+            double buffer = round(( prefTickDuration - timeSinceLastTick ) / 1_000_000.0);
+            int    ms     = (int) buffer;
+            int    ns     = (int) ( ( buffer - ms ) * 1_000_000 );
+            System.out.println("last Tick took: " + timeSinceLastTick + "ns | " + "Sleeping for " + ms + "ms" + " " + ns + "ns");
+            try
+            {
+              Thread.sleep(ms, ns);
+            }
+            catch (InterruptedException e)
+            {
+              throw new RuntimeException(e);
+            }
+          }
+          //endregion
+
+          //region tick
+
+          //          //tick all objects
+          //          gameState.layers.forEach(layer ->
+          //              layer.stream()
+          //                   .filter(gameObject -> gameObject instanceof AdvTicking)
+          //                   .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
+          //
+          //          //reRender layers if needed
+          //          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
+          //          {
+          //            update(i);
+          //            updateLayer.set(i, false);
+          //          });
+          //
+          //          //render final image
+          //          if (gameState.currentTick % 2 == 0)
+          //          {
+          //            render();
+          //            display.setFinalImg(finalImg);
+          //            display.repaint();
+          //          }
+
+          //endregion
+
+
+          tick += 1;
+          lastTickTime = currentTickTime;
+        }
+      }
+
+    });
+
+    ticker.start();
   }
 
   public void stop ()
