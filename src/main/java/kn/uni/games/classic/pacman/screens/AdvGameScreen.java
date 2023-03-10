@@ -5,6 +5,8 @@ import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
+import kn.uni.games.classic.pacman.game.items.FruitItem;
+import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
@@ -369,12 +371,8 @@ public class AdvGameScreen extends UIScreen
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           map.calculateAbsolutes(uiComponents.get(0).getSize());
 
-          map.addToPool(new Spawner("PlayerSpawn", env.getGameState(), new Vector2d().cartesian(1, 1), new AdvPacManEntity(env.gameState, new Vector2d().cartesian(10, 10))));
-
-          //          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(1, 1).multiply(map.tileSize));
-          //          env.gameState.players.add(player1);
-          //          env.gameState.requestedDirections.add(Direction.down);
-          //          map.addToPool(player1);
+          map.addToPool(new Spawner("PlayerSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new AdvPacManEntity(env.gameState, new Vector2d().cartesian(14, 23.5))));
+          map.addToPool(new Spawner("FruitSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new FruitItem(env.gameState, new Vector2d().cartesian(14, 23.5))));
 
 
           env.getGameState().layers.get(1).add(map);
@@ -386,12 +384,13 @@ public class AdvGameScreen extends UIScreen
 
           setLoadingProgress(false, 40, "Loading items...");
           env.getGameState().layers.get(3).addAll(map.generateItems());
+          env.gameState.pelletCount = (int) env.gameState.layers.get(3).stream()
+                                                                .filter(item -> item instanceof PelletItem)
+                                                                .count();
 
 
           setLoadingProgress(false, 50, "Loading entities...");
           env.getGameState().layers.get(4).addAll(map.generateEntities());
-
-          map.spawnables.stream().map(obj -> (Spawner) obj).filter(spawner -> spawner.name.equals("PlayerSpawn")).forEach(Spawner::spawn);
 
 
           setLoadingProgress(false, 95, "Finished initializing!");

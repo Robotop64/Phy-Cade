@@ -25,7 +25,10 @@ public class GameLayer implements AdvRendered
   public void paintComponent (Graphics2D g)
   {
     if (cachedImg == null)
+    {
       render();
+      System.out.println("Rendered Layer " + index);
+    }
 
     g.drawImage(cachedImg, 0, 0, null);
   }

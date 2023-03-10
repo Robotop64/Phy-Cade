@@ -1,6 +1,8 @@
 package kn.uni.games.classic.pacman.game.internal;
 
+import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
+import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.util.Direction;
 
 import javax.swing.JPanel;
@@ -248,6 +250,16 @@ public class GameEnvironment
             render();
             display.setFinalImg(finalImg);
             display.repaint();
+          }
+
+          if (tick == 250)
+          {
+            AdvPacManMap map = (AdvPacManMap) gameState.layers.get(1).getFirst();
+            map.spawnables.stream()
+                          .filter(obj -> obj instanceof Spawner)
+                          .map(obj -> (Spawner) obj)
+                          .filter(spawner -> spawner.name.equals("PlayerSpawn"))
+                          .forEach(Spawner::spawn);
           }
 
           //endregion

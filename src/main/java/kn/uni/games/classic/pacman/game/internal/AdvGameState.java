@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.game.internal;
 
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
+import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
 import kn.uni.util.Direction;
@@ -34,6 +35,12 @@ public class AdvGameState
   public int  livesGained = 0;
   //endregion
 
+  //region trackers
+  public boolean fruitSpawned = false;
+  public int     pelletCount  = 0;
+  public int     pelletsEaten = 0;
+  //endregion
+
   public AdvGameState (GameEnvironment env)
   {
     this.env = env;
@@ -58,5 +65,21 @@ public class AdvGameState
   public void spawn (int type, AdvPlacedObject obj)
   {
     layers.get(type).add(obj);
+  }
+
+  public void checkFruit ()
+  {
+    if (fruitSpawned)
+      return;
+
+    if (layers.get(3).size() == pelletCount / 2)
+    {
+      fruitSpawned = true;
+      layers.get(3).stream()
+            .filter(obj -> obj instanceof Spawner)
+            .map(obj -> (Spawner) obj)
+            .filter(spawner -> spawner.name.equals("FruitSpawn"))
+            .forEach(Spawner::spawn);
+    }
   }
 }

@@ -200,6 +200,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
 
     spawnables.stream()
               .filter(o -> o instanceof AdvPlacedObject)
+              .filter(o -> !( o instanceof Item ) && !( o instanceof Entity ))
               .forEach(objects::add);
 
     return List.copyOf(objects);

@@ -20,6 +20,7 @@ public class PPelletItem extends Item implements AdvRendered
 
     this.mapPos = mapPos;
     this.type = ItemType.PPELLET;
+    this.worth = 100;
   }
 
   @Override
@@ -46,7 +47,8 @@ public class PPelletItem extends Item implements AdvRendered
   @Override
   public void consumeAction ()
   {
-    gameState.addScore(100);
+    super.consumeAction();
+    gameState.addScore(worth);
     gameState.layers.get(3).remove(this);
     //TODO: Add power pellet effect
     //TODO: Spawn score number
