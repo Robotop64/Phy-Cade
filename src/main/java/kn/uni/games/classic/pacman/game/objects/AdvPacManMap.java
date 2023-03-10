@@ -34,8 +34,8 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
   public Map <Vector2d, AdvPacManTile> tilesAbs;
   //map of tiles with map coordinates
   public Map <Vector2d, AdvPacManTile> tilesPixel;
-
-  public List <AdvGameObject> spawnables;
+  //objects not assigned to a tile
+  public List <AdvGameObject>          spawnables;
 
   public AdvPacManMap (AdvGameState gameState)
   {

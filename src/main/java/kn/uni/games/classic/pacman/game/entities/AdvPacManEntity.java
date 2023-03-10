@@ -8,6 +8,7 @@ import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManTile;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.PacPhiConfig;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -21,11 +22,11 @@ import static kn.uni.util.Util.round;
 public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
 {
 
-  public AdvPacManEntity (AdvGameState gameState, Vector2d pos)
+  public AdvPacManEntity (AdvGameState gameState, Vector2d mapPos)
   {
     super();
     this.gameState = gameState;
-    this.absPos = pos;
+    this.mapPos = mapPos;
     this.stunned = false;
   }
 
@@ -37,14 +38,48 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
       render();
 
 
-    //    AdvPacManMap map            = (AdvPacManMap) gameState.layers.get(1).getFirst();
-    //    Vector2d     currentTilePos = map.getTileMapPos(this.absPos).multiply(map.tileSize);
-    //
-    //    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
-    //    {
-    //      g.setColor(Color.GREEN);
-    //      g.fillRect((int) currentTilePos.x, (int) currentTilePos.y, iconSize, iconSize);
-    //    }
+    AdvPacManMap  map               = (AdvPacManMap) gameState.layers.get(1).getFirst();
+    Vector2d      currentTilePosMap = map.getTileMapPos(this.absPos);
+    Vector2d      currentTilePosAbs = currentTilePosMap.multiply(map.tileSize);
+    AdvPacManTile currentTile       = map.tilesPixel.get(currentTilePosMap);
+
+    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    {
+      //      g.setColor(Color.GREEN);
+      //      g.fillRect((int) currentTilePosAbs.x, (int) currentTilePosAbs.y, iconSize, iconSize);
+      List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
+                                                 .map(dir -> currentTile.neighbors.get(dir))
+                                                 .filter(Objects::nonNull)
+                                                 .filter(tile -> Arrays.stream(validTiles.values()).toList().contains(tile.getType()))
+                                                 .toList();
+
+      //        map.tilesPixel.forEach((pos, tile) -> tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor);
+      //      map.tilesPixel.forEach((pos, tile) ->
+      //      {
+      //        tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor;
+      //        tile.render();
+      //      });
+      currentTile.neighbors.forEach((dir, tile) ->
+      {
+        tile.debugColor = Color.GREEN;
+        tile.primitiveColor = Color.GREEN;
+        tile.render();
+      });
+      currentTile.debugColor = Color.RED;
+      currentTile.primitiveColor = Color.RED;
+      currentTile.render();
+
+      AdvPacManTile next = currentTile.neighbors.get(this.facing);
+      if (next != null)
+      {
+        next.debugColor = Color.BLUE;
+        next.primitiveColor = Color.BLUE;
+        next.render();
+      }
+
+      map.render();
+      gameState.env.updateLayer.set(1, true);
+    }
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, iconSize, iconSize, null);
   }
@@ -84,35 +119,23 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
       List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
                                                  .map(dir -> currentTile.neighbors.get(dir))
                                                  .filter(Objects::nonNull)
-                                                 .filter(tile -> Arrays.stream(validTiles.values()).toList().contains(tile.getType()))
-                                                 //                                                 .filter(tile -> !tile.type.equals(AdvPacManTile.Type.door) || canUseDoor)
+                                                 .filter(tile -> Arrays.stream(validTiles.values()).map(Enum::name).toList().contains(tile.getType().name()))
                                                  .toList();
-
-      //visual feedback of possible tiles
-      //      if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
-      //      {
-      //        map.tilesPixel.forEach((pos, tile) -> tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor);
-      //        possibleTiles.forEach(tile -> tile.debugColor = Color.GREEN);
-      //        currentTile.debugColor = Color.RED;
-      //      }
 
       //set velocity
       if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeed, 0).multiply(map.tileSize).divide(gameState.tps);
 
+      //check if requested direction is valid or turn as soon as it is & turn if center has been reached
+      Direction nextDir = gameState.requestedDirections.get(gameState.players.indexOf(this));
+      if (possibleTiles.contains(currentTile.neighbors.get(nextDir)) && round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) == 0)
+        this.facing = nextDir;
+
       //next tile is valid or center has not been reached yet
-      if (possibleTiles.contains(currentTile.neighbors.get(this.facing.toVector())) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) <= 0)
-      {
-      }
-      absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
+      if (possibleTiles.contains(currentTile.neighbors.get(this.facing)) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) < 0)
+        absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
 
-      gameState.env.updateLayer.set(1, true);
-      gameState.env.updateLayer.set(3, true);
       gameState.env.updateLayer.set(4, true);
-      gameState.env.updateLayer.set(5, true);
-
-
     }
-
   }
 
 

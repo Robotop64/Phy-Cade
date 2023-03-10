@@ -3,6 +3,7 @@ package kn.uni.games.classic.pacman.screens;
 import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
+import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.ui.InputListener;
@@ -368,9 +369,13 @@ public class AdvGameScreen extends UIScreen
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           map.calculateAbsolutes(uiComponents.get(0).getSize());
 
-          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(1, 1).multiply(map.tileSize));
-          env.gameState.players.add(player1);
-          map.addToPool(player1);
+          map.addToPool(new Spawner("PlayerSpawn", env.getGameState(), new Vector2d().cartesian(1, 1), new AdvPacManEntity(env.gameState, new Vector2d().cartesian(10, 10))));
+
+          //          AdvPacManEntity player1 = new AdvPacManEntity(env.gameState, new Vector2d().cartesian(1, 1).multiply(map.tileSize));
+          //          env.gameState.players.add(player1);
+          //          env.gameState.requestedDirections.add(Direction.down);
+          //          map.addToPool(player1);
+
 
           env.getGameState().layers.get(1).add(map);
 
@@ -385,6 +390,8 @@ public class AdvGameScreen extends UIScreen
 
           setLoadingProgress(false, 50, "Loading entities...");
           env.getGameState().layers.get(4).addAll(map.generateEntities());
+
+          map.spawnables.stream().map(obj -> (Spawner) obj).filter(spawner -> spawner.name.equals("PlayerSpawn")).forEach(Spawner::spawn);
 
 
           setLoadingProgress(false, 95, "Finished initializing!");

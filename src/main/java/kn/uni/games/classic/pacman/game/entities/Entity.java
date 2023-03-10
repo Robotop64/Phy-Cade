@@ -75,6 +75,6 @@ public class Entity extends AdvPlacedObject
 
   public enum validTiles
   {
-    WALL
+    FLOOR
   }
 }

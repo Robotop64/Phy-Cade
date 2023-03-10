@@ -1,6 +1,9 @@
 package kn.uni.games.classic.pacman.game.internal;
 
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
+import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
+import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
+import kn.uni.util.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +15,16 @@ public class AdvGameState
 
   //region game environment
   public GameEnvironment                       env;
-  public int                                   tps     = 120;
-  public int                                   fps     = 60;
-  public boolean                               paused  = false;
-  public boolean                               running = false;
+  public int                                   tps                 = 120;
+  public int                                   fps                 = 60;
+  public boolean                               paused              = false;
+  public boolean                               running             = false;
   public long                                  currentTick;
   public long                                  lastTickTime;
   //background[0], map[1], objects[2], items[3], entities[4], vfx[5]
-  public List <ConcurrentLinkedDeque <Object>> layers  = new ArrayList <>();
-  public List <AdvPacManEntity>                players = new ArrayList <>();
+  public List <ConcurrentLinkedDeque <Object>> layers              = new ArrayList <>();
+  public List <AdvPacManEntity>                players             = new ArrayList <>();
+  public List <Direction>                      requestedDirections = new ArrayList <>();
   //endregion
 
   //region game stats
@@ -43,5 +47,16 @@ public class AdvGameState
     //add a live if the score passed a multiple of 10000
     if (newScore / 10000 > oldScore / 10000)
       livesGained++;
+  }
+
+  public void spawnScaled (int type, AdvPlacedObject obj)
+  {
+    obj.absPos = obj.mapPos.multiply(( (AdvPacManMap) layers.get(1).getFirst() ).tileSize);
+    layers.get(type).add(obj);
+  }
+
+  public void spawn (int type, AdvPlacedObject obj)
+  {
+    layers.get(type).add(obj);
   }
 }

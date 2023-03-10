@@ -1,23 +1,15 @@
 package kn.uni.games.classic.pacman.game.internal;
 
-import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
-import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
-import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
-import kn.uni.games.classic.pacman.game.objects.AdvPacManTile;
 import kn.uni.util.Direction;
-import kn.uni.util.Vector2d;
 
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static kn.uni.util.Util.round;
@@ -139,142 +131,6 @@ public class GameEnvironment
 
     });
 
-    Thread newClock = new Thread(() ->
-    {
-      while (gameState.running)
-      {
-        if (!gameState.paused)
-        {
-          long t = System.nanoTime();
-          if (t - gameState.lastTickTime < prefTickDuration) continue;
-          gameState.currentTick++;
-
-          double buffer = round(( t - gameState.lastTickTime ) / 1_000_000.0);
-
-          gameState.lastTickTime = t;
-
-          times.push(gameState.lastTickTime);
-          List <Long> l = times.stream().limit(gameState.tps + 1).toList();
-          times.clear();
-          times.addAll(l);
-          double d = times.getFirst() - times.getLast();
-
-          //tick all objects
-          gameState.layers.forEach(layer ->
-              layer.stream()
-                   .filter(gameObject -> gameObject instanceof AdvTicking)
-                   .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
-
-          //reRender layers if needed
-          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
-          {
-            update(i);
-            updateLayer.set(i, false);
-          });
-
-          //render final image
-          if (gameState.currentTick % 2 == 0)
-          {
-            render();
-            display.setFinalImg(finalImg);
-            display.repaint();
-          }
-
-          System.out.println("Time/Tps " + d / 1_000_000_000.0 + " | " + "Time per Tick " + buffer + "ms");
-        }
-
-        try
-        {
-          Thread.sleep(1);
-        }
-        catch (InterruptedException e)
-        {
-          throw new RuntimeException(e);
-        }
-      }
-
-    });
-
-    //    //a the start of rendering process
-    //    long startRendering=System.nanoTime();
-    //
-    //... rendering here...
-    //
-    //    //duration of the frame rendering in ms :
-    //    long durationMs=TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-startRendering);
-    //
-    //    // now waits
-    //    if (durationMs < fps)
-    //    {
-    //      renderingThread.sleep(fps - durationMs);
-    //    }
-
-    Thread test = new Thread(() ->
-    {
-      while (gameState.running)
-      {
-        if (!gameState.paused)
-        {
-          //time of current tick
-          long currentTickTime = System.nanoTime();
-          //duration since last successful tick
-          long timeSinceLastTick = currentTickTime - gameState.lastTickTime;
-          //if last tick was finished before the optimal tick duration, sleep for the remaining time
-          long sleepTime = TimeUnit.NANOSECONDS.toMillis((long) ( prefTickDuration - timeSinceLastTick ));
-          //          System.out.println("Sleeping for " + sleepTime + "ms");
-
-          //          if (timeSinceLastTick < prefTickDuration)
-          //          {
-          //            try
-          //            {
-          //              Thread.sleep(sleepTimeMs, sleepTimeNs);
-          //            }
-          //            catch (InterruptedException e)
-          //            {
-          //              throw new RuntimeException(e);
-          //            }
-          //          }
-
-          gameState.currentTick++;
-
-
-          gameState.lastTickTime = currentTickTime;
-
-          times.push(gameState.lastTickTime);
-          List <Long> l = times.stream().limit(gameState.tps + 1).toList();
-          times.clear();
-          times.addAll(l);
-          double d = times.getFirst() - times.getLast();
-
-
-          //          //region render
-          //          //tick all objects
-          //          gameState.layers.forEach(layer ->
-          //              layer.stream()
-          //                   .filter(gameObject -> gameObject instanceof AdvTicking)
-          //                   .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
-          //
-          //          //reRender layers if needed
-          //          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
-          //          {
-          //            update(i);
-          //            updateLayer.set(i, false);
-          //          });
-          //
-          //          //render final image
-          //          if (gameState.currentTick % 2 == 0)
-          //          {
-          //            render();
-          //            display.setFinalImg(finalImg);
-          //            display.repaint();
-          //          }
-          //          //endregion
-
-          System.out.println("Time/Tps " + d / 1_000_000_000.0 + " | " + "Time per Tick " + round(timeSinceLastTick / 1_000_000.0) + "ms");
-        }
-      }
-    });
-
     Thread ticker = new Thread(() ->
     {
       boolean running = true;
@@ -344,7 +200,133 @@ public class GameEnvironment
 
     });
 
-    ticker.start();
+    Thread tickerRestructure = new Thread(() ->
+    {
+      boolean running           = true;
+      boolean paused            = false;
+      double  prefTickDuration2 = ( 1_000_000_000.0 / gameState.tps ) / 1_000_000.0; //in ms, at 120 tps: 8_333_333ns
+
+      long tick = 0;
+
+      long   tickStart    = System.nanoTime();
+      long   tickEnd      = System.nanoTime();
+      double tickDuration = 0;
+
+      long   workStart    = System.nanoTime();
+      long   workEnd      = System.nanoTime();
+      double workDuration = 0;
+
+      double sleepDuration = 0;
+
+      while (running)
+      {
+        if (!paused)
+        {
+          tickDuration = round(( tickEnd - tickStart ) / 1_000_000.0); //duration of last tick in ms
+          //          System.out.println("Tick " + tick + ": last tick took: " + tickDuration + "ms | " + "Work took: " + workDuration + "ms" + " | " + "Sleeping: " + sleepDuration + "ms");
+          tickStart = System.nanoTime();
+
+          workStart = System.nanoTime();
+          //region tick
+
+          //tick all objects
+          gameState.layers.forEach(layer ->
+              layer.stream()
+                   .filter(gameObject -> gameObject instanceof AdvTicking)
+                   .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
+
+          //reRender layers if needed
+          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
+          {
+            update(i);
+            updateLayer.set(i, false);
+          });
+
+          //render final image
+          if (gameState.currentTick % 2 == 0)
+          {
+            render();
+            display.setFinalImg(finalImg);
+            display.repaint();
+          }
+
+          //endregion
+          workEnd = System.nanoTime();
+
+          workDuration = round(( workEnd - workStart ) / 1_000_000.0);
+          sleepDuration = round(( prefTickDuration2 - workDuration ));
+
+          if (workDuration < prefTickDuration2)
+          {
+            int ms = (int) sleepDuration;
+            int ns = (int) ( ( sleepDuration - ms ) * 1_000_000 );
+            try
+            {
+              Thread.sleep(ms, ns);
+            }
+            catch (InterruptedException e)
+            {
+              throw new RuntimeException(e);
+            }
+          }
+
+          tick += 1;
+
+          tickEnd = System.nanoTime();
+        }
+      }
+
+    });
+
+    Thread online = new Thread(() ->
+    {
+      int     TPS     = 120, FPS = 60;
+      boolean running = true;
+      boolean paused  = false;
+
+      long         initialTime = System.nanoTime();
+      final double timeU       = 1000000000. / TPS;
+      final double timeF       = 1000000000. / FPS;
+      double       deltaU      = 0, deltaF = 0;
+      int          frames      = 0, ticks = 0;
+      long         timer       = System.currentTimeMillis();
+
+      while (running)
+      {
+
+        long currentTime = System.nanoTime();
+        deltaU += ( currentTime - initialTime ) / timeU;
+        deltaF += ( currentTime - initialTime ) / timeF;
+        initialTime = currentTime;
+
+        if (deltaU >= 1)
+        {
+          //        getInput();
+          //        update();
+          ticks++;
+          deltaU--;
+        }
+
+        if (deltaF >= 1)
+        {
+          render();
+          frames++;
+          deltaF--;
+        }
+
+        if (System.currentTimeMillis() - timer > 1000)
+        {
+
+          System.out.println(String.format("UPS: %s, FPS: %s", ticks, frames));
+
+          frames = 0;
+          ticks = 0;
+          timer += 1000;
+        }
+      }
+    });
+
+    tickerRestructure.start();
   }
 
   public void stop ()
@@ -359,22 +341,7 @@ public class GameEnvironment
 
   public void controlPlayer (int player, Direction nextDir)
   {
-    AdvPacManEntity playerEntity   = gameState.players.get(player - 1);
-    Vector2d        currentTilePos = playerEntity.getMapPos();
-    AdvPacManMap    map            = (AdvPacManMap) gameState.layers.get(1).getFirst();
-    AdvPacManTile   currentTile    = map.tilesPixel.get(currentTilePos);
-
-    List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
-                                               .map(dir -> currentTile.neighbors.get(dir))
-                                               .filter(Objects::nonNull)
-                                               .filter(tile -> Arrays.stream(Entity.validTiles.values()).toList().contains(tile.getType()))
-                                               //                                                 .filter(tile -> !tile.type.equals(AdvPacManTile.Type.door) || canUseDoor)
-                                               .toList();
-
-    //check if requested direction is possible
-    if (possibleTiles.contains(currentTile.neighbors.get(nextDir.toVector())) && round(playerEntity.facing.toVector().scalar(map.getTileInnerPos(playerEntity.absPos))) == 0)
-      playerEntity.facing = nextDir;
-
-    playerEntity.facing = nextDir;
+    if (player > 0 && gameState.players.size() >= player)
+      gameState.requestedDirections.set(player - 1, nextDir);
   }
 }
