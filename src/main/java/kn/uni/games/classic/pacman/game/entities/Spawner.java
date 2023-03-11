@@ -27,16 +27,16 @@ public class Spawner extends Entity
   public void spawn ()
   {
     if (spawnable instanceof PelletItem)
-      gameState.spawnScaled(3, spawnable);
+      gameState.spawnScaled(AdvGameState.Layer.ITEMS, spawnable);
     else if (spawnable instanceof PPelletItem)
-      gameState.spawnScaled(3, spawnable);
+      gameState.spawnScaled(AdvGameState.Layer.ITEMS, spawnable);
     else if (spawnable instanceof FruitItem)
-      gameState.spawnScaled(3, spawnable);
+      gameState.spawnScaled(AdvGameState.Layer.ITEMS, spawnable);
     else if (spawnable instanceof AdvPacManEntity)
     {
       gameState.players.add((AdvPacManEntity) spawnable);
       gameState.requestedDirections.add(Direction.down);
-      gameState.spawnScaled(4, spawnable);
+      gameState.spawnScaled(AdvGameState.Layer.ENTITIES, spawnable);
     }
     else
       throw new IllegalArgumentException("Invalid spawnable: " + spawnable.getClass().getSimpleName() + " " + Arrays.toString(spawnable.getClass().getInterfaces()));

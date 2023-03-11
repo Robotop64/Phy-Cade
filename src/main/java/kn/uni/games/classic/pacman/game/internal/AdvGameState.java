@@ -15,37 +15,33 @@ public class AdvGameState
 {
 
   //region game environment
-  public GameEnvironment                       env;
-  public int                                   tps                 = 120;
-  public int                                   fps                 = 60;
-  public boolean                               paused              = false;
-  public boolean                               running             = false;
-  public long                                  currentTick;
-  public long                                  lastTickTime;
-  //background[0], map[1], objects[2], items[3], entities[4], vfx[5]
+  public GameEnvironment env;
+  public int             tps     = 120;
+  public int             fps     = 60;
+  public boolean         paused  = false;
+  public boolean         running = false;
+  public long            currentTick;
+  public long            lastTickTime;
   public List <ConcurrentLinkedDeque <Object>> layers              = new ArrayList <>();
   public List <AdvPacManEntity>                players             = new ArrayList <>();
   public List <Direction>                      requestedDirections = new ArrayList <>();
-  //endregion
-
   //region game stats
   public long score       = 0;
+  //endregion
   public int  level       = 1;
   public int  lives       = 5;
   public int  livesGained = 0;
-  //endregion
-
   //region trackers
   public boolean fruitSpawned = false;
+  //endregion
   public int     pelletCount  = 0;
   public int     pelletsEaten = 0;
-  //endregion
-
   public AdvGameState (GameEnvironment env)
   {
     this.env = env;
     IntStream.range(0, 6).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
   }
+  //endregion
 
   public void addScore (long score)
   {
@@ -56,15 +52,15 @@ public class AdvGameState
       livesGained++;
   }
 
-  public void spawnScaled (int type, AdvPlacedObject obj)
+  public void spawnScaled (Layer type, AdvPlacedObject obj)
   {
     obj.absPos = obj.mapPos.multiply(( (AdvPacManMap) layers.get(1).getFirst() ).tileSize);
-    layers.get(type).add(obj);
+    layers.get(type.ordinal()).add(obj);
   }
 
-  public void spawn (int type, AdvPlacedObject obj)
+  public void spawn (Layer type, AdvPlacedObject obj)
   {
-    layers.get(type).add(obj);
+    layers.get(type.ordinal()).add(obj);
   }
 
   public void checkFruit ()
@@ -72,7 +68,7 @@ public class AdvGameState
     if (fruitSpawned)
       return;
 
-    if (layers.get(3).size() == pelletCount / 2)
+    if (layers.get(3).size() <= pelletCount / 2)
     {
       fruitSpawned = true;
       layers.get(3).stream()
@@ -82,4 +78,19 @@ public class AdvGameState
             .forEach(Spawner::spawn);
     }
   }
+
+  public void checkGameOver ()
+  {
+    if (lives <= 0)
+    {
+      env.stop();
+    }
+  }
+
+  //background[0], map[1], objects[2], items[3], entities[4], vfx[5]
+  public enum Layer
+  {
+    BACKGROUND, MAP, OBJECTS, ITEMS, ENTITIES, VFX
+  }
+
 }

@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.game.internal;
 
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
+import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.util.Direction;
 
@@ -55,7 +56,7 @@ public class GameEnvironment
     g2.dispose();
   }
 
-
+  //region display methods
   public JPanel getDisplay ()
   {
     return display;
@@ -75,8 +76,9 @@ public class GameEnvironment
   {
     ( layer.get(index) ).render();
   }
+  //endregion
 
-
+  //region control game status
   public void start ()
   {
     gameState.running = true;
@@ -348,8 +350,51 @@ public class GameEnvironment
 
   public void pause ()
   {
+    gameState.paused = true;
+  }
+
+  public void resume ()
+  {
     gameState.paused = false;
   }
+  //endregion
+
+  //region loaders
+  public void loadObjects ()
+  {
+    gameState.layers.get(2).addAll(( (AdvPacManMap) gameState.layers.get(1).getFirst() ).generateObjects());
+  }
+
+  public void loadItems ()
+  {
+    gameState.layers.get(3).addAll(( (AdvPacManMap) gameState.layers.get(1).getFirst() ).generateItems());
+    gameState.pelletCount = (int) gameState.layers.get(3).stream()
+                                                  .filter(item -> item instanceof PelletItem)
+                                                  .count();
+  }
+
+  public void loadEntities ()
+  {
+    gameState.layers.get(4).addAll(( (AdvPacManMap) gameState.layers.get(1).getFirst() ).generateEntities());
+  }
+
+  public void reloadLevel ()
+  {
+    gameState.layers.get(2).clear();
+    gameState.layers.get(3).clear();
+    gameState.layers.get(4).clear();
+    gameState.layers.get(5).clear();
+
+    gameState.players.clear();
+    gameState.requestedDirections.clear();
+    gameState.pelletCount = 0;
+
+    loadObjects();
+    loadItems();
+    loadEntities();
+  }
+  //endregion
+
 
   public void controlPlayer (int player, Direction nextDir)
   {
