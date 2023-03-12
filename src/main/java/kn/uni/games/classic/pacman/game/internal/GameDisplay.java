@@ -5,11 +5,13 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class GameDisplay extends JPanel
 {
-  BufferedImage finalImg;
+  List <GameLayer> layers;
 
   public GameDisplay (Dimension dim)
   {
@@ -20,17 +22,21 @@ public class GameDisplay extends JPanel
     setBorder(BorderFactory.createLineBorder(Color.cyan.darker().darker(), 2));
   }
 
-  public void setFinalImg (BufferedImage finalImg)
+  public void setLayers (List <GameLayer> layers)
   {
-    this.finalImg = finalImg;
+    this.layers = layers;
   }
 
   @Override
   public void paintComponent (Graphics g)
   {
     super.paintComponent(g);
+    Graphics2D g2 = (Graphics2D) g;
 
-    g.drawImage(finalImg, 0, 0, null);
+    IntStream.range(0, 6).forEach(i ->
+    {
+      this.layers.get(i).paintComponent(g2);
+    });
   }
 
 

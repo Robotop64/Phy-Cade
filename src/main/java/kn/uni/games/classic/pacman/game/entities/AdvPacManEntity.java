@@ -8,7 +8,6 @@ import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManTile;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -38,48 +37,48 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
       render();
 
 
-    AdvPacManMap  map               = (AdvPacManMap) gameState.layers.get(1).getFirst();
-    Vector2d      currentTilePosMap = map.getTileMapPos(this.absPos);
-    Vector2d      currentTilePosAbs = currentTilePosMap.multiply(map.tileSize);
-    AdvPacManTile currentTile       = map.tilesPixel.get(currentTilePosMap);
-
-    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
-    {
-      //      g.setColor(Color.GREEN);
-      //      g.fillRect((int) currentTilePosAbs.x, (int) currentTilePosAbs.y, iconSize, iconSize);
-      List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
-                                                 .map(dir -> currentTile.neighbors.get(dir))
-                                                 .filter(Objects::nonNull)
-                                                 .filter(tile -> Arrays.stream(validTiles.values()).toList().contains(tile.getType()))
-                                                 .toList();
-
-      //        map.tilesPixel.forEach((pos, tile) -> tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor);
-      //      map.tilesPixel.forEach((pos, tile) ->
-      //      {
-      //        tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor;
-      //        tile.render();
-      //      });
-      currentTile.neighbors.forEach((dir, tile) ->
-      {
-        tile.debugColor = Color.GREEN;
-        tile.primitiveColor = Color.GREEN;
-        tile.render();
-      });
-      currentTile.debugColor = Color.RED;
-      currentTile.primitiveColor = Color.RED;
-      currentTile.render();
-
-      AdvPacManTile next = currentTile.neighbors.get(this.facing);
-      if (next != null)
-      {
-        next.debugColor = Color.BLUE;
-        next.primitiveColor = Color.BLUE;
-        next.render();
-      }
-
-      map.render();
-      gameState.env.updateLayer.set(1, true);
-    }
+    //    AdvPacManMap  map               = (AdvPacManMap) gameState.layers.get(1).getFirst();
+    //    Vector2d      currentTilePosMap = map.getTileMapPos(this.absPos);
+    //    Vector2d      currentTilePosAbs = currentTilePosMap.multiply(map.tileSize);
+    //    AdvPacManTile currentTile       = map.tilesPixel.get(currentTilePosMap);
+    //
+    //    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    //    {
+    //      //      g.setColor(Color.GREEN);
+    //      //      g.fillRect((int) currentTilePosAbs.x, (int) currentTilePosAbs.y, iconSize, iconSize);
+    //      List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
+    //                                                 .map(dir -> currentTile.neighbors.get(dir))
+    //                                                 .filter(Objects::nonNull)
+    //                                                 .filter(tile -> Arrays.stream(validTiles.values()).toList().contains(tile.getType()))
+    //                                                 .toList();
+    //
+    //      //        map.tilesPixel.forEach((pos, tile) -> tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor);
+    //      //      map.tilesPixel.forEach((pos, tile) ->
+    //      //      {
+    //      //        tile.debugColor = tile.debugColor == Color.GREEN ? tile.primitiveColor : tile.debugColor;
+    //      //        tile.render();
+    //      //      });
+    //      currentTile.neighbors.forEach((dir, tile) ->
+    //      {
+    //        tile.debugColor = Color.GREEN;
+    //        tile.primitiveColor = Color.GREEN;
+    //        tile.render();
+    //      });
+    //      currentTile.debugColor = Color.RED;
+    //      currentTile.primitiveColor = Color.RED;
+    //      currentTile.render();
+    //
+    //      AdvPacManTile next = currentTile.neighbors.get(this.facing);
+    //      if (next != null)
+    //      {
+    //        next.debugColor = Color.BLUE;
+    //        next.primitiveColor = Color.BLUE;
+    //        next.render();
+    //      }
+    //
+    //      map.render();
+    //      gameState.env.updateLayer.set(1, true);
+    //    }
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, iconSize, iconSize, null);
   }

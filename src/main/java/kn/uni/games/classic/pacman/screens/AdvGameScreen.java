@@ -292,27 +292,27 @@ public class AdvGameScreen extends UIScreen
   //endregion
 
   //region update methods
-  private void setLevel (int level)
+  public void setLevel (int level)
   {
     ( (PacLabel) data.getItem(2) ).setText(StringUtils.leftPad(String.valueOf(level), 6));
   }
 
-  private void setScore (int score)
+  public void setScore (int score)
   {
     ( (PacLabel) data.getItem(6) ).setText("❰" + String.format("%09d", score) + "❱");
   }
 
-  private void setTime (long millis)
+  public void setTime (long millis)
   {
     ( (PacLabel) data.getItem(10) ).setText("%02d:%02d:%02d.%03d".formatted(millis / 3600000, ( millis / 60000 ) % 60, ( millis / 1000 ) % 60, millis % 1000));
   }
 
-  private void setLives (int lives)
+  public void setLives (int lives)
   {
     ( (PacLabel) data.getItem(14) ).setText("%7d".formatted(lives));
   }
 
-  private void updateLeaderboard (LeaderboardMenu.LeaderboardEntry[] entries)
+  public void updateLeaderboard (LeaderboardMenu.LeaderboardEntry[] entries)
   {
     PacList leaderboard = (PacList) uiComponents.get(1);
 
@@ -327,7 +327,7 @@ public class AdvGameScreen extends UIScreen
     //    ( (PacLabel) leaderboard.getItem(2) ).setText("❰" + String.format("%09d", score) + "❱");
   }
 
-  private void setLoadingProgress (boolean done, int progress, String text)
+  public void setLoadingProgress (boolean done, int progress, String text)
   {
     JPanel          panel      = (JPanel) uiComponents.get(2);
     Component[]     components = panel.getComponents();
@@ -349,7 +349,7 @@ public class AdvGameScreen extends UIScreen
     bar.setString(progress + "%");
   }
 
-  private void enableReadyPrompt (boolean enable)
+  public void enableReadyPrompt (boolean enable)
   {
     PacLabel readyPrompt = (PacLabel) uiComponents.get(3);
     readyPrompt.setVisible(enable);
@@ -364,12 +364,14 @@ public class AdvGameScreen extends UIScreen
         {
           setLoadingProgress(false, 10, "Creating game environment...");
           env = new GameEnvironment(uiComponents.get(0).getSize());
+          env.gameScreen = this;
 
 
           setLoadingProgress(false, 20, "Loading map...");
           //TODO : load map from file
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           map.calculateAbsolutes(uiComponents.get(0).getSize());
+          map.render();
 
           map.addToPool(new Spawner("PlayerSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new AdvPacManEntity(env.gameState, new Vector2d().cartesian(14, 23.5))));
           map.addToPool(new Spawner("FruitSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new FruitItem(env.gameState, new Vector2d().cartesian(14, 23.5))));

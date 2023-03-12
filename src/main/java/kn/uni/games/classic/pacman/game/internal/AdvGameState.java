@@ -50,6 +50,7 @@ public class AdvGameState
   {
     long oldScore = this.score;
     long newScore = oldScore + score;
+    this.score = newScore;
     //add a live if the score passed a multiple of 10000
     if (newScore / 10000 > oldScore / 10000)
       livesGained++;
