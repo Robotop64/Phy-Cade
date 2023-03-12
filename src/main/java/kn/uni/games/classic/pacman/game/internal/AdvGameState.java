@@ -15,27 +15,30 @@ public class AdvGameState
 {
 
   //region game environment
-  public GameEnvironment env;
-  public int             tps     = 120;
-  public int             fps     = 60;
-  public boolean         paused  = false;
-  public boolean         running = false;
-  public long            currentTick;
-  public long            lastTickTime;
+  public GameEnvironment                       env;
+  public int                                   tps                 = 120;
+  public int                                   fps                 = 60;
+  public boolean                               paused              = false;
+  public long                                  currentTick;
+  public long                                  lastTickTime;
   public List <ConcurrentLinkedDeque <Object>> layers              = new ArrayList <>();
   public List <AdvPacManEntity>                players             = new ArrayList <>();
   public List <Direction>                      requestedDirections = new ArrayList <>();
+  //endregion
+
   //region game stats
   public long score       = 0;
-  //endregion
-  public int  level       = 1;
   public int  lives       = 5;
   public int  livesGained = 0;
+  public int  level       = 1;
+  //endregion
+
   //region trackers
   public boolean fruitSpawned = false;
-  //endregion
   public int     pelletCount  = 0;
   public int     pelletsEaten = 0;
+  //endregion
+
   public AdvGameState (GameEnvironment env)
   {
     this.env = env;
@@ -83,7 +86,7 @@ public class AdvGameState
   {
     if (lives <= 0)
     {
-      env.stop();
+      env.stopGame();
     }
   }
 

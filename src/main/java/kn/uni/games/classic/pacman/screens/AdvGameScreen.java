@@ -394,7 +394,7 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress(true, 100, "Starting game!");
-          env.start();
+          env.startGame();
         }
     );
 

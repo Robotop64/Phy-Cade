@@ -13,6 +13,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static kn.uni.util.Util.round;
@@ -22,16 +26,20 @@ public class GameEnvironment
   public GameDisplay   display;
   public BufferedImage finalImg;
   public AdvGameState  gameState;
+  public Engine        engine;
 
   //background[0], map[1], objects[2], items[3], entities[4], vfx[5], frame[6]
   public List <GameLayer> layer       = new ArrayList <>();
   public List <Boolean>   updateLayer = new ArrayList <>();
+
 
   public GameEnvironment (Dimension dim)
   {
     display = new GameDisplay(dim);
 
     gameState = new AdvGameState(this);
+
+    engine = new Engine(this);
 
     //region fill displayStack with panels
     IntStream.range(0, 6).forEach(i ->
@@ -44,6 +52,17 @@ public class GameEnvironment
     //endregion
   }
 
+  //region display methods
+  public JPanel getDisplay ()
+  {
+    return display;
+  }
+
+  public AdvGameState getGameState ()
+  {
+    return gameState;
+  }
+
   public void render ()
   {
     finalImg = new BufferedImage(display.getWidth(), display.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -54,17 +73,6 @@ public class GameEnvironment
       layer.get(i).paintComponent(g2);
     });
     g2.dispose();
-  }
-
-  //region display methods
-  public JPanel getDisplay ()
-  {
-    return display;
-  }
-
-  public AdvGameState getGameState ()
-  {
-    return gameState;
   }
 
   public void updateAll ()
@@ -227,42 +235,23 @@ public class GameEnvironment
         if (!paused)
         {
           tickDuration = round(( tickEnd - tickStart ) / 1_000_000.0); //duration of last tick in ms
-          //          System.out.println("Tick " + tick + ": last tick took: " + tickDuration + "ms | " + "Work took: " + workDuration + "ms" + " | " + "Sleeping: " + sleepDuration + "ms");
+          System.out.println("Tick " + tick + ": last tick took: " + tickDuration + "ms | " + "Work took: " + workDuration + "ms" + " | " + "Sleeping: " + sleepDuration + "ms");
           tickStart = System.nanoTime();
 
           workStart = System.nanoTime();
           //region tick
 
-          //tick all objects
-          gameState.layers.forEach(layer ->
-              layer.stream()
-                   .filter(gameObject -> gameObject instanceof AdvTicking)
-                   .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
-
-          //reRender layers if needed
-          IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
-          {
-            update(i);
-            updateLayer.set(i, false);
-          });
-
-          //render final image
-          if (gameState.currentTick % 2 == 0)
-          {
-            render();
-            display.setFinalImg(finalImg);
-            display.repaint();
-          }
-
-          if (tick == 250)
-          {
-            AdvPacManMap map = (AdvPacManMap) gameState.layers.get(1).getFirst();
-            map.spawnables.stream()
-                          .filter(obj -> obj instanceof Spawner)
-                          .map(obj -> (Spawner) obj)
-                          .filter(spawner -> spawner.name.equals("PlayerSpawn"))
-                          .forEach(Spawner::spawn);
-          }
+          //          loop();
+          //
+          //          if (tick == 250)
+          //          {
+          //            AdvPacManMap map = (AdvPacManMap) gameState.layers.get(1).getFirst();
+          //            map.spawnables.stream()
+          //                          .filter(obj -> obj instanceof Spawner)
+          //                          .map(obj -> (Spawner) obj)
+          //                          .filter(spawner -> spawner.name.equals("PlayerSpawn"))
+          //                          .forEach(Spawner::spawn);
+          //          }
 
           //endregion
           workEnd = System.nanoTime();
@@ -276,7 +265,7 @@ public class GameEnvironment
             int ns = (int) ( ( sleepDuration - ms ) * 1_000_000 );
             try
             {
-              Thread.sleep(ms, ns);
+              Thread.sleep(1);
             }
             catch (InterruptedException e)
             {
@@ -340,20 +329,124 @@ public class GameEnvironment
       }
     });
 
-    tickerRestructure.start();
+
+    //    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    //
+    //    Runnable beeper = new Runnable()
+    //    {
+    //      public void run ()
+    //      {
+    //        System.out.println("beep");
+    //      }
+    //    };
+
+    //    final ScheduledFuture <?> beeperHandle = scheduler.scheduleAtFixedRate(loop, 2L, (long) prefTickDuration, NANOSECONDS);
+
+    //    scheduler.schedule(new Runnable()
+    //    {
+    //      public void run () { beeperHandle.cancel(true); }
+    //    }, 10, SECONDS);
+
+    //    oldClock.start();
   }
 
-  public void stop ()
+  public void startGame ()
   {
-    gameState.running = false;
+    double prefTickDuration = ( 1_000_000_000.0 / gameState.tps ); //in ms, at 120 tps: 8_333_333ns
+    double frameTickRation  = gameState.tps / ( gameState.fps * 1.0 );
+
+    final long[] tick = { 0 };
+
+    final long[]   tickStart    = { System.nanoTime() };
+    final long[]   tickEnd      = { System.nanoTime() };
+    final double[] tickDuration = { 0 };
+
+    final long[]   renderStart    = { System.nanoTime() };
+    final long[]   renderEnd      = { System.nanoTime() };
+    final double[] renderDuration = { 0 };
+
+    final double[] loopDuration = { 0 };
+    final double[] idleDuration = { 0 };
+
+    Runnable render = () ->
+    {
+      //reRender layers if needed
+      IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
+      {
+        update(i);
+        updateLayer.set(i, false);
+      });
+
+      //render final image
+      if (tick[0] % frameTickRation == 0)
+      {
+        render();
+        display.setFinalImg(finalImg);
+        display.repaint();
+      }
+
+      if (tick[0] == 250)
+      {
+        AdvPacManMap map = (AdvPacManMap) gameState.layers.get(1).getFirst();
+        map.spawnables.stream()
+                      .filter(obj -> obj instanceof Spawner)
+                      .map(obj -> (Spawner) obj)
+                      .filter(spawner -> spawner.name.equals("PlayerSpawn"))
+                      .forEach(Spawner::spawn);
+      }
+    };
+
+    Runnable ticker = () ->
+    {
+      //tick all objects
+      gameState.layers.forEach(layer ->
+          layer.stream()
+               .filter(gameObject -> gameObject instanceof AdvTicking)
+               .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
+    };
+
+    Runnable loop = () ->
+    {
+      if (!gameState.paused)
+      {
+        tickDuration[0] = round(( tickEnd[0] - tickStart[0] ) / 1_000_000.0); //duration of last tick in ms
+        renderDuration[0] = round(( renderEnd[0] - renderStart[0] ) / 1_000_000.0); //duration of last tick in ms
+        loopDuration[0] = tickDuration[0] + renderDuration[0]; //duration of last tick in ms
+        idleDuration[0] = round(( prefTickDuration / 1_000_000.0 - loopDuration[0] )); //duration of last tick in ms
+
+        System.out.println("Tick " + tick[0] + ":"
+            + " Loop: " + String.format("%.4f", loopDuration[0]) + "ms" + "|"
+            + " Tick: " + String.format("%.4f", tickDuration[0]) + "ms" + "|"
+            + " Render: " + String.format("%.4f", renderDuration[0]) + "ms" + "|"
+            + " Idle: " + String.format("%.4f", idleDuration[0]) + "/" + String.format("%.4f", prefTickDuration / 1_000_000.0) + "ms");
+
+        tickStart[0] = System.nanoTime();
+        ticker.run();
+        tickEnd[0] = System.nanoTime();
+
+        renderStart[0] = System.nanoTime();
+        render.run();
+        renderEnd[0] = System.nanoTime();
+
+        tick[0] += 1;
+      }
+    };
+
+
+    engine.start(loop, prefTickDuration);
   }
 
-  public void pause ()
+  public void stopGame ()
+  {
+    engine.stop();
+  }
+
+  public void pauseGame ()
   {
     gameState.paused = true;
   }
 
-  public void resume ()
+  public void resumeGame ()
   {
     gameState.paused = false;
   }
@@ -400,5 +493,23 @@ public class GameEnvironment
   {
     if (player > 0 && gameState.players.size() >= player)
       gameState.requestedDirections.set(player - 1, nextDir);
+  }
+
+  public record Engine()
+  {
+    static ScheduledExecutorService scheduler;
+    static ScheduledFuture <?>      gameLoop;
+
+    public void stop ()
+    {
+      gameLoop.cancel(true);
+      scheduler.shutdown();
+    }
+
+    public void start (Runnable loop, double prefTickDuration)
+    {
+      scheduler = Executors.newScheduledThreadPool(1);
+      gameLoop = scheduler.scheduleAtFixedRate(loop, 2L, (long) prefTickDuration, TimeUnit.NANOSECONDS);
+    }
   }
 }
