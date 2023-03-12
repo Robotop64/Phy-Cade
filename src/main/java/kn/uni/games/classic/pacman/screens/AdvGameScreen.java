@@ -4,6 +4,7 @@ import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
+import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
@@ -54,7 +55,7 @@ public class AdvGameScreen extends UIScreen
 
     createReadyPopup();
 
-    enableReadyPrompt(false);
+    enableReadyPrompt(true);
 
 
     loadGame();
@@ -376,7 +377,7 @@ public class AdvGameScreen extends UIScreen
           map.addToPool(new Spawner("PlayerSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new AdvPacManEntity(env.gameState, new Vector2d().cartesian(14, 23.5))));
           map.addToPool(new Spawner("FruitSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new FruitItem(env.gameState, new Vector2d().cartesian(14, 23.5))));
 
-          env.getGameState().layers.get(1).add(map);
+          env.getGameState().layers.get(AdvGameState.Layer.MAP.ordinal()).add(map);
 
 
           setLoadingProgress(false, 30, "Loading objects...");
@@ -390,13 +391,20 @@ public class AdvGameScreen extends UIScreen
           setLoadingProgress(false, 50, "Loading entities...");
           env.loadEntities();
 
+          //          AdvPacManMap map = (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
+          map.spawnables.stream()
+                        .filter(obj -> obj instanceof Spawner)
+                        .map(obj -> (Spawner) obj)
+                        .filter(spawner -> spawner.name.equals("PlayerSpawn"))
+                        .forEach(Spawner::spawn);
+
 
           setLoadingProgress(false, 95, "Finished initializing!");
           ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplay(), 0);
+          ( (JLayeredPane) uiComponents.get(0) ).setLayer(env.getDisplay(), 0);
 
 
           setLoadingProgress(true, 100, "Starting game!");
-          env.startGame();
         }
     );
 
@@ -416,6 +424,12 @@ public class AdvGameScreen extends UIScreen
       {
         joystick.put(input.key(), input);
         env.controlPlayer(1, input.toDirection());
+      }
+
+      if (input.key() == InputListener.Key.A && ( uiComponents.get(3) ).isVisible())
+      {
+        enableReadyPrompt(false);
+        env.startGame();
       }
     });
   }

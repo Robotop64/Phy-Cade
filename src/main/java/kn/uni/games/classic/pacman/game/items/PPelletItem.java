@@ -29,7 +29,7 @@ public class PPelletItem extends Item implements AdvRendered
     if (classIcon == null)
       render();
 
-    g.drawImage((Image) classIcon, (int) absPos.x, (int) absPos.y, iconSize, iconSize, null);
+    g.drawImage((Image) classIcon, (int) absPos.x, (int) absPos.y, null);
   }
 
   @Override
@@ -41,7 +41,8 @@ public class PPelletItem extends Item implements AdvRendered
   @Override
   public void render ()
   {
-    classIcon = TextureEditor.getInstance().loadTexture("items", type.name() + ".png");
+    BufferedImage raw = TextureEditor.getInstance().loadTexture("items", type.name() + ".png");
+    classIcon = TextureEditor.getInstance().scale(raw, iconSize, iconSize);
   }
 
   @Override
@@ -49,7 +50,7 @@ public class PPelletItem extends Item implements AdvRendered
   {
     super.consumeAction();
     gameState.addScore(worth);
-    gameState.layers.get(3).remove(this);
+    gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
     //TODO: Add power pellet effect
     //TODO: Spawn score number
   }

@@ -18,18 +18,18 @@ import java.util.function.Consumer;
 public class InputListener extends Celebrity <Input>
 {
 
-  private static InputListener instance;
-  private final Map <Component.Identifier.Key, InputState> inputMap = Map.of(
-    Component.Identifier.Key.W, new InputState(Key.vertical, State.up),
-    Component.Identifier.Key.S, new InputState(Key.vertical, State.down),
-    Component.Identifier.Key.A, new InputState(Key.horizontal, State.up),
-    Component.Identifier.Key.D, new InputState(Key.horizontal, State.down),
-    Component.Identifier.Key.ESCAPE, new InputState(Key.B, State.down),
-    Component.Identifier.Key.SPACE, new InputState(Key.A, State.down),
-    Component.Identifier.Key.H, new InputState(Key.C, State.down),
-    Component.Identifier.Key.J, new InputState(Key.D, State.down),
-    Component.Identifier.Key.K, new InputState(Key.E, State.down),
-    Component.Identifier.Key.L, new InputState(Key.F, State.down)
+  private static InputListener                              instance;
+  private final  Map <Component.Identifier.Key, InputState> inputMap = Map.of(
+      Component.Identifier.Key.W, new InputState(Key.vertical, State.up),
+      Component.Identifier.Key.S, new InputState(Key.vertical, State.down),
+      Component.Identifier.Key.A, new InputState(Key.horizontal, State.up),
+      Component.Identifier.Key.D, new InputState(Key.horizontal, State.down),
+      Component.Identifier.Key.ESCAPE, new InputState(Key.B, State.down),
+      Component.Identifier.Key.SPACE, new InputState(Key.A, State.down),
+      Component.Identifier.Key.H, new InputState(Key.C, State.down),
+      Component.Identifier.Key.J, new InputState(Key.D, State.down),
+      Component.Identifier.Key.K, new InputState(Key.E, State.down),
+      Component.Identifier.Key.L, new InputState(Key.F, State.down)
   );
   Thread                   thread;
   Map <Controller, Player> controllerPlayerMap = new HashMap <>();
@@ -70,7 +70,7 @@ public class InputListener extends Celebrity <Input>
           keyStateMap.keySet()
                      .stream()
                      .map(key -> Map.entry(key, keyboards.stream()
-                                                         .map(keyboard -> ((Keyboard)keyboard))
+                                                         .map(keyboard -> ( (Keyboard) keyboard ))
                                                          .map(keyboard -> keyboard.isKeyDown(key))
                                                          .reduce(Boolean::logicalOr)
                                                          .get() ? State.down : State.none))
@@ -84,9 +84,9 @@ public class InputListener extends Celebrity <Input>
 
           newState.keySet().stream().filter(k -> !newState.get(k).equals(keyStateMap.get(k)))
                   .map(key -> new Input(
-                    inputMap.get(key).key,
-                    newState.get(key).equals(State.none) ? State.none : inputMap.get(key).state,
-                    Player.playerOne))
+                      inputMap.get(key).key,
+                      newState.get(key).equals(State.none) ? State.none : inputMap.get(key).state,
+                      Player.playerOne))
                   .forEach(this::post);
 
           keyStateMap = newState;
@@ -156,22 +156,22 @@ public class InputListener extends Celebrity <Input>
     System.out.println(e.getComponent().getName());
     // todo map this
     return switch (e.getComponent().getName())
-      {
-        case "Y Axis", "y" -> Key.vertical;
-        case "X Axis", "x" -> Key.horizontal;
-        case "Button 0", "Trigger" -> Key.A;
-        case "Button 1", "Thumb" -> Key.B;
-        case "Button 2", "Thumb 2" -> Key.C;
-        case "Button 3", "Top" -> Key.D;
-        case "Button 4", "Top 2" -> Key.E;
-        case "Button 5", "Pinkie" -> Key.F;
-        case "Button 6", "Base" -> Key.A;
-        case "Button 7", "Base 2" -> Key.B;
-        default -> null;
-      };
+        {
+          case "Y Axis", "y" -> Key.vertical;
+          case "X Axis", "x" -> Key.horizontal;
+          case "Button 0", "Trigger" -> Key.A;
+          case "Button 1", "Thumb" -> Key.B;
+          case "Button 2", "Thumb 2" -> Key.C;
+          case "Button 3", "Top" -> Key.D;
+          case "Button 4", "Top 2" -> Key.E;
+          case "Button 5", "Pinkie" -> Key.F;
+          case "Button 6", "Base" -> Key.A; //SPACE
+          case "Button 7", "Base 2" -> Key.B; // ESC
+          default -> null;
+        };
   }
 
-  public void start () {thread.start();}
+  public void start () { thread.start(); }
 
   public enum Key
   { vertical, horizontal, A, B, C, D, J, H, G, F, E }
@@ -187,24 +187,24 @@ public class InputListener extends Celebrity <Input>
     public Direction toDirection ()
     {
       return switch (key())
-        {
-          case vertical -> switch (state())
-            {
-              case up -> Direction.up;
-              case down -> Direction.down;
-              case none -> null;
-            };
-          case horizontal -> switch (state())
-            {
-              case up -> Direction.left;
-              case down -> Direction.right;
-              case none -> null;
-            };
-          default -> null;
-        };
+          {
+            case vertical -> switch (state())
+                {
+                  case up -> Direction.up;
+                  case down -> Direction.down;
+                  case none -> null;
+                };
+            case horizontal -> switch (state())
+                {
+                  case up -> Direction.left;
+                  case down -> Direction.right;
+                  case none -> null;
+                };
+            default -> null;
+          };
     }
   }
 
-  record InputState(Key key, State state) {}
+  record InputState(Key key, State state) { }
 
 }

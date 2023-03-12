@@ -29,7 +29,7 @@ public class Item extends AdvPlacedObject
 
   public void expire ()
   {
-    this.gameState.layers.get(2).remove(this);
+    this.gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
   }
 
   public enum ItemType

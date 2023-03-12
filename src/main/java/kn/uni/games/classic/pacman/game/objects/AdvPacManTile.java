@@ -69,17 +69,14 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     items.forEach(item ->
     {
       item.absPos = pos;
-      item.iconSize = iconSize;
     });
     entities.forEach(entity ->
     {
       entity.absPos = pos;
-      entity.iconSize = iconSize;
     });
     objects.forEach(object ->
     {
       object.absPos = pos;
-      object.iconSize = iconSize;
     });
   }
   //endregion
@@ -231,7 +228,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     if (cachedImg == null)
       render();
 
-    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, iconSize, iconSize, null);
+    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, null);
   }
 
   @Override
@@ -263,6 +260,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
         g.fillRect(0, 0, iconSize, iconSize);
       }
     }
+    g.dispose();
   }
   //endregion
 

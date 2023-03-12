@@ -42,9 +42,8 @@ public class AdvGameState
   public AdvGameState (GameEnvironment env)
   {
     this.env = env;
-    IntStream.range(0, 6).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
+    IntStream.range(0, Layer.values().length).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
   }
-  //endregion
 
   public void addScore (long score)
   {
@@ -58,7 +57,7 @@ public class AdvGameState
 
   public void spawnScaled (Layer type, AdvPlacedObject obj)
   {
-    obj.absPos = obj.mapPos.multiply(( (AdvPacManMap) layers.get(1).getFirst() ).tileSize);
+    obj.absPos = obj.mapPos.multiply(( (AdvPacManMap) layers.get(Layer.MAP.ordinal()).getFirst() ).tileSize);
     layers.get(type.ordinal()).add(obj);
   }
 
@@ -72,10 +71,10 @@ public class AdvGameState
     if (fruitSpawned)
       return;
 
-    if (layers.get(3).size() <= pelletCount / 2)
+    if (layers.get(Layer.ITEMS.ordinal()).size() <= pelletCount / 2)
     {
       fruitSpawned = true;
-      layers.get(3).stream()
+      layers.get(Layer.ITEMS.ordinal()).stream()
             .filter(obj -> obj instanceof Spawner)
             .map(obj -> (Spawner) obj)
             .filter(spawner -> spawner.name.equals("FruitSpawn"))
@@ -91,10 +90,9 @@ public class AdvGameState
     }
   }
 
-  //background[0], map[1], objects[2], items[3], entities[4], vfx[5]
   public enum Layer
   {
-    BACKGROUND, MAP, OBJECTS, ITEMS, ENTITIES, VFX
+    BACKGROUND, INTERNALS, MAP, OBJECTS, ITEMS, ENTITIES, VFX
   }
 
 }

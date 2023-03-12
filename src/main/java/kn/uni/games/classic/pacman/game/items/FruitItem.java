@@ -32,7 +32,7 @@ public class FruitItem extends Item implements AdvRendered
     if (cachedImg == null)
       render();
 
-    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, iconSize, iconSize, null);
+    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, null);
   }
 
   @Override
@@ -52,7 +52,7 @@ public class FruitItem extends Item implements AdvRendered
   {
     super.consumeAction();
     gameState.addScore(worth);
-    gameState.layers.get(3).remove(this);
+    gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
     //TODO: Spawn score number
   }
 }

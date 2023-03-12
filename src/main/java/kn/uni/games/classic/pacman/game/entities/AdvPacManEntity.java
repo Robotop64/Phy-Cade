@@ -80,7 +80,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
     //      gameState.env.updateLayer.set(1, true);
     //    }
 
-    g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, iconSize, iconSize, null);
+    g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
   }
 
   @Override
@@ -97,6 +97,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
 
     g.setColor(Color.YELLOW);
     g.fillOval(0, 0, iconSize, iconSize);
+    g.dispose();
   }
   //endregion
 
@@ -112,7 +113,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
     if (!stunned)
     {
       Vector2d      currentTilePos = getMapPos();
-      AdvPacManMap  map            = (AdvPacManMap) gameState.layers.get(1).getFirst();
+      AdvPacManMap  map            = (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
       AdvPacManTile currentTile    = map.tilesPixel.get(currentTilePos);
 
       List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
@@ -133,10 +134,8 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
       if (possibleTiles.contains(currentTile.neighbors.get(this.facing)) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) < 0)
         absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
 
-      gameState.env.updateLayer.set(4, true);
+      gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
   }
-
-
   //endregion
 }

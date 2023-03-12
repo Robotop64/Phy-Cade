@@ -138,6 +138,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
                 }
             );
     });
+    g2d.dispose();
   }
   //endregion
 

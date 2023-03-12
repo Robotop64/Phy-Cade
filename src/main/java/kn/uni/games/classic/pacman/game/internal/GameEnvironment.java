@@ -1,6 +1,5 @@
 package kn.uni.games.classic.pacman.game.internal;
 
-import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
 import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
@@ -27,7 +26,6 @@ public class GameEnvironment
   public AdvGameState  gameState;
   public Engine        engine;
 
-  //background[0], map[1], objects[2], items[3], entities[4], vfx[5], frame[6]
   public List <GameLayer> layer       = new ArrayList <>();
   public List <Boolean>   updateLayer = new ArrayList <>();
 
@@ -41,7 +39,7 @@ public class GameEnvironment
     engine = new Engine();
 
     //region fill displayStack with panels
-    IntStream.range(0, 6).forEach(i ->
+    IntStream.range(0, AdvGameState.Layer.values().length).forEach(i ->
     {
       GameLayer panel = new GameLayer(dim, i);
       panel.gameState = gameState;
@@ -344,8 +342,6 @@ public class GameEnvironment
     double prefTickDuration = ( 1_000_000_000.0 / gameState.tps ); //in ms, at 120 tps: 8_333_333ns
     double frameTickRation  = gameState.tps / ( gameState.fps * 1.0 );
 
-    final long[] tick = { 0 };
-
     final long[]   tickStart    = { System.nanoTime() };
     final long[]   tickEnd      = { System.nanoTime() };
     final double[] tickDuration = { 0 };
@@ -360,26 +356,19 @@ public class GameEnvironment
     Runnable render = () ->
     {
       //reRender layers if needed
-      IntStream.range(0, 6).filter(i -> updateLayer.get(i)).forEach((i) ->
+      if (gameState.currentTick % frameTickRation != 0)
       {
-        update(i);
-        updateLayer.set(i, false);
-      });
-
-      //render final image
-      if (tick[0] % frameTickRation == 0)
-      {
-        display.repaint();
+        IntStream.range(0, AdvGameState.Layer.values().length).filter(i -> updateLayer.get(i)).forEach((i) ->
+        {
+          update(i);
+          updateLayer.set(i, false);
+        });
       }
 
-      if (tick[0] == 250)
+      //render final image
+      if (gameState.currentTick % frameTickRation == 0)
       {
-        AdvPacManMap map = (AdvPacManMap) gameState.layers.get(1).getFirst();
-        map.spawnables.stream()
-                      .filter(obj -> obj instanceof Spawner)
-                      .map(obj -> (Spawner) obj)
-                      .filter(spawner -> spawner.name.equals("PlayerSpawn"))
-                      .forEach(Spawner::spawn);
+        display.repaint();
       }
     };
 
@@ -401,7 +390,7 @@ public class GameEnvironment
         loopDuration[0] = tickDuration[0] + renderDuration[0]; //duration of last tick in ms
         idleDuration[0] = round(( prefTickDuration / 1_000_000.0 - loopDuration[0] )); //duration of last tick in ms
 
-        System.out.println("Tick " + tick[0] + ":"
+        System.out.println("Tick " + gameState.currentTick + ":"
             + " Loop: " + String.format("%.4f", loopDuration[0]) + "ms" + "|"
             + " Tick: " + String.format("%.4f", tickDuration[0]) + "ms" + "|"
             + " Render: " + String.format("%.4f", renderDuration[0]) + "ms" + "|"
@@ -415,7 +404,7 @@ public class GameEnvironment
         render.run();
         renderEnd[0] = System.nanoTime();
 
-        tick[0] += 1;
+        gameState.currentTick += 1;
       }
     };
 
@@ -442,28 +431,28 @@ public class GameEnvironment
   //region loaders
   public void loadObjects ()
   {
-    gameState.layers.get(2).addAll(( (AdvPacManMap) gameState.layers.get(1).getFirst() ).generateObjects());
+    gameState.layers.get(AdvGameState.Layer.OBJECTS.ordinal()).addAll(( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).generateObjects());
   }
 
   public void loadItems ()
   {
-    gameState.layers.get(3).addAll(( (AdvPacManMap) gameState.layers.get(1).getFirst() ).generateItems());
-    gameState.pelletCount = (int) gameState.layers.get(3).stream()
+    gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).addAll(( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).generateItems());
+    gameState.pelletCount = (int) gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).stream()
                                                   .filter(item -> item instanceof PelletItem)
                                                   .count();
   }
 
   public void loadEntities ()
   {
-    gameState.layers.get(4).addAll(( (AdvPacManMap) gameState.layers.get(1).getFirst() ).generateEntities());
+    gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).addAll(( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).generateEntities());
   }
 
   public void reloadLevel ()
   {
-    gameState.layers.get(2).clear();
-    gameState.layers.get(3).clear();
-    gameState.layers.get(4).clear();
-    gameState.layers.get(5).clear();
+    gameState.layers.get(AdvGameState.Layer.OBJECTS.ordinal()).clear();
+    gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).clear();
+    gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).clear();
+    gameState.layers.get(AdvGameState.Layer.VFX.ordinal()).clear();
 
     gameState.players.clear();
     gameState.requestedDirections.clear();
