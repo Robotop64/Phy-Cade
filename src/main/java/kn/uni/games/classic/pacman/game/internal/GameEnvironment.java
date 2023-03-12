@@ -39,7 +39,7 @@ public class GameEnvironment
 
     gameState = new AdvGameState(this);
 
-    engine = new Engine(this);
+    engine = new Engine();
 
     //region fill displayStack with panels
     IntStream.range(0, 6).forEach(i ->
@@ -89,7 +89,7 @@ public class GameEnvironment
   //region control game status
   public void start ()
   {
-    gameState.running = true;
+    boolean running = true;
     gameState.paused = false;
 
     gameState.currentTick = 0;
@@ -100,7 +100,7 @@ public class GameEnvironment
 
     Thread oldClock = new Thread(() ->
     {
-      while (gameState.running)
+      while (running)
       {
         if (!gameState.paused)
         {
@@ -145,8 +145,8 @@ public class GameEnvironment
 
     Thread ticker = new Thread(() ->
     {
-      boolean running = true;
-      boolean paused  = false;
+      //      boolean running = true;
+      boolean paused = false;
 
       long tick              = 0;
       long lastTickTime      = System.nanoTime();
@@ -214,7 +214,7 @@ public class GameEnvironment
 
     Thread tickerRestructure = new Thread(() ->
     {
-      boolean running           = true;
+      //      boolean running           = true;
       boolean paused            = false;
       double  prefTickDuration2 = ( 1_000_000_000.0 / gameState.tps ) / 1_000_000.0; //in ms, at 120 tps: 8_333_333ns
 
@@ -283,9 +283,9 @@ public class GameEnvironment
 
     Thread online = new Thread(() ->
     {
-      int     TPS     = 120, FPS = 60;
-      boolean running = true;
-      boolean paused  = false;
+      int TPS = 120, FPS = 60;
+      //      boolean running = true;
+      boolean paused = false;
 
       long         initialTime = System.nanoTime();
       final double timeU       = 1000000000. / TPS;
