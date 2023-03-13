@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.game.internal;
 
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
+import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
 import kn.uni.util.Direction;
@@ -61,7 +62,7 @@ public class AdvGameState
     layers.get(type.ordinal()).add(obj);
   }
 
-  public void spawn (Layer type, AdvPlacedObject obj)
+  public void spawn (Layer type, AdvGameObject obj)
   {
     layers.get(type.ordinal()).add(obj);
   }

@@ -146,8 +146,8 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
   //region calculations
   public void calculateAbsolutes (Dimension size)
   {
-    this.size = size;
     tileSize = (int) Math.round(Math.min(size.width / mapSize.x, size.height / mapSize.y));
+    this.size = new Dimension((int) ( mapSize.x * tileSize ), (int) ( mapSize.y * tileSize ));
     AdvPlacedObject.iconSize = tileSize;
     tilesPixel.forEach((k, v) ->
     {
@@ -175,14 +175,37 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
     );
   }
 
-  public Vector2d getTileMapPos (Vector2d pos)
+  /**
+   * returns the tile map position of the given absolute position
+   *
+   * @param absPos
+   * @return mapPos
+   */
+  public Vector2d getTileMapPos (Vector2d absPos)
   {
-    return pos.divide(tileSize).floor();
+    return absPos.divide(tileSize).floor();
   }
 
-  public Vector2d getTileInnerPos (Vector2d pos)
+  /**
+   * returns the tile inner position of the given absolute position
+   *
+   * @param absPos
+   * @return innerPos
+   */
+  public Vector2d getTileInnerPos (Vector2d absPos)
   {
-    return pos.subtract(getTileMapPos(pos).multiply(tileSize)).subtract(new Vector2d().cartesian(1, 1).multiply(tileSize / 2.));
+    return absPos.subtract(getTileMapPos(absPos).multiply(tileSize)).subtract(new Vector2d().cartesian(1, 1).multiply(tileSize / 2.));
+  }
+
+  /**
+   * returns the absolute position of the given tile map position
+   *
+   * @param mapPos
+   * @return absPos
+   */
+  public Vector2d getTileAbsPos (Vector2d mapPos)
+  {
+    return getTileMapPos(mapPos).multiply(tileSize);
   }
   //endregion
 

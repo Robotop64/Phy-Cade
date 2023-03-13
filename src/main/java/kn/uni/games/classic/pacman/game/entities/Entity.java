@@ -63,6 +63,11 @@ public class Entity extends AdvPlacedObject
     this.absPos.add(offset);
   }
 
+  /**
+   * Returns the position of the entity in the map in tile coordinates
+   *
+   * @return
+   */
   public Vector2d getMapPos ()
   {
     AdvPacManMap map = (AdvPacManMap) this.gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();

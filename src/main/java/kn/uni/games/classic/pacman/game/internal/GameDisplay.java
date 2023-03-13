@@ -1,8 +1,6 @@
 package kn.uni.games.classic.pacman.game.internal;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,7 +17,6 @@ public class GameDisplay extends JPanel
     setLayout(null);
     setOpaque(false);
     setBackground(null);
-    setBorder(BorderFactory.createLineBorder(Color.cyan.darker().darker(), 2));
   }
 
   public void setLayers (List <GameLayer> layers)
@@ -38,6 +35,4 @@ public class GameDisplay extends JPanel
       this.layers.get(i).paintComponent(g2);
     });
   }
-
-
 }

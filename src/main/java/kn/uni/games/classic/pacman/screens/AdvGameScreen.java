@@ -5,6 +5,7 @@ import kn.uni.Gui;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
@@ -88,6 +89,16 @@ public class AdvGameScreen extends UIScreen
     hud.setLayout(null);
     add(hud);
     uiComponents.add(hud);
+
+
+    JPanel border = new JPanel();
+    border.setBackground(null);
+    border.setOpaque(false);
+    border.setBorder(BorderFactory.createLineBorder(Color.CYAN.darker().darker(), 2));
+    border.setBounds(0, 0, uiComponents.get(0).getWidth(), uiComponents.get(0).getHeight());
+
+    ( (JLayeredPane) uiComponents.get(0) ).add(border);
+    ( (JLayeredPane) uiComponents.get(0) ).setLayer(border, Integer.MAX_VALUE);
   }
 
   private void createHud ()
@@ -278,17 +289,27 @@ public class AdvGameScreen extends UIScreen
   {
     Dimension gameSize = uiComponents.get(0).getSize();
 
-    Dimension readySize = new Dimension(400, 400);
-    Vector2d  readyPos  = new Vector2d().cartesian(gameSize.width / 2. - readySize.width / 2., gameSize.height / 2. - readySize.height / 2.);
+    Dimension readySize = new Dimension(300, 150);
+    Vector2d  readyPos  = new Vector2d().cartesian(gameSize.width / 2. - readySize.width / 2., gameSize.height / 2. - readySize.height / 2. - 30);
 
-    PacLabel readyPrompt = new PacLabel(new Vector2d().cartesian((int) readyPos.x, (int) readyPos.y), new Dimension(readySize.width, readySize.height), "<html> <body> <p align=\"center\"> Ready ?<br/>Press a Button! </p> </body> </html>");
+    JPanel readyBackground = new JPanel();
+    readyBackground.setBounds(2, 2, gameSize.width - 2, gameSize.height - 2);
+    readyBackground.setLayout(null);
+    readyBackground.setBackground(new Color(0, 0, 0, 225));
+    readyBackground.setBorder(BorderFactory.createLineBorder(Color.CYAN.darker().darker(), 1));
+    readyBackground.setOpaque(true);
+
+    PacLabel readyPrompt = new PacLabel(new Vector2d().cartesian((int) readyPos.x, (int) readyPos.y), new Dimension(readySize.width, readySize.height), "<html> <body> <p align=\"center\"> Ready ?<br/>Press START! </p> </body> </html>");
     readyPrompt.setFont(readyPrompt.getFont().deriveFont(35f));
     readyPrompt.setHorizontalAlignment(SwingConstants.CENTER);
     readyPrompt.setForeground(Color.CYAN);
     readyPrompt.setBackground(Color.BLACK);
     readyPrompt.setOpaque(true);
     uiComponents.add(readyPrompt);
-    ( (JLayeredPane) uiComponents.get(0) ).add(readyPrompt, Integer.MAX_VALUE - 10);
+
+    readyBackground.add(readyPrompt);
+    ( (JLayeredPane) uiComponents.get(0) ).add(readyBackground);
+    ( (JLayeredPane) uiComponents.get(0) ).setLayer(readyBackground, Integer.MAX_VALUE - 20);
   }
   //endregion
 
@@ -353,7 +374,37 @@ public class AdvGameScreen extends UIScreen
   public void enableReadyPrompt (boolean enable)
   {
     PacLabel readyPrompt = (PacLabel) uiComponents.get(3);
-    readyPrompt.setVisible(enable);
+
+    Thread countdown = new Thread(() ->
+    {
+      String[] num = new String[]{ "5", "4", "3", "2", "1", "GO!" };
+
+      for (String s : num)
+      {
+        readyPrompt.setText("<html> <body> <p align=\"center\"> " + s + " </p> </body> </html>");
+        try
+        {
+          Thread.sleep(1000);
+        }
+        catch (InterruptedException e)
+        {
+          throw new RuntimeException(e);
+        }
+      }
+
+      readyPrompt.setVisible(enable);
+      readyPrompt.getParent().setVisible(enable);
+      env.resumeGame();
+    });
+
+    if (!enable)
+      countdown.start();
+
+    if (enable)
+    {
+      readyPrompt.setVisible(true);
+      readyPrompt.getParent().setVisible(true);
+    }
   }
   //endregion
 
@@ -368,10 +419,20 @@ public class AdvGameScreen extends UIScreen
           env.gameScreen = this;
 
 
+          setLoadingProgress(false, 15, "Loading internals...");
+          AdvTimer timer = new AdvTimer(env.gameState);
+          env.gameState.spawn(AdvGameState.Layer.INTERNALS, timer);
+
+
           setLoadingProgress(false, 20, "Loading map...");
           //TODO : load map from file
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           map.calculateAbsolutes(uiComponents.get(0).getSize());
+          env.display.setBounds(
+              uiComponents.get(0).getSize().width / 2 - map.size.width / 2,
+              uiComponents.get(0).getSize().height / 2 - map.size.height / 2,
+              map.size.width,
+              map.size.height);
           map.render();
 
           map.addToPool(new Spawner("PlayerSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new AdvPacManEntity(env.gameState, new Vector2d().cartesian(14, 23.5))));
@@ -385,13 +446,12 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress(false, 40, "Loading items...");
-          env.loadItems();
+          //          env.loadItems();
 
 
           setLoadingProgress(false, 50, "Loading entities...");
           env.loadEntities();
-
-          //          AdvPacManMap map = (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
+          //spawn player
           map.spawnables.stream()
                         .filter(obj -> obj instanceof Spawner)
                         .map(obj -> (Spawner) obj)
@@ -400,7 +460,7 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress(false, 95, "Finished initializing!");
-          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplay(), 0);
+          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplay());
           ( (JLayeredPane) uiComponents.get(0) ).setLayer(env.getDisplay(), 0);
 
 
@@ -429,6 +489,7 @@ public class AdvGameScreen extends UIScreen
       if (input.key() == InputListener.Key.A && ( uiComponents.get(3) ).isVisible())
       {
         enableReadyPrompt(false);
+        env.pauseGame();
         env.startGame();
       }
     });

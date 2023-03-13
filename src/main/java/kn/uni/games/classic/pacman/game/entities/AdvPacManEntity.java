@@ -125,16 +125,68 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
       //set velocity
       if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeed, 0).multiply(map.tileSize).divide(gameState.tps);
 
+      double    stepSize      = velocity.x;
+      Direction nextDir       = gameState.requestedDirections.get(gameState.players.indexOf(this));
+      double    centerDist    = round(this.facing.toVector().scalar(map.getTileInnerPos(absPos)));
+      boolean   centerReached = centerDist == 0;
+      boolean   nextTileValid = possibleTiles.contains(currentTile.neighbors.get(this.facing));
+      boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbors.get(nextDir));
+
       //check if requested direction is valid or turn as soon as it is & turn if center has been reached
-      Direction nextDir = gameState.requestedDirections.get(gameState.players.indexOf(this));
-      if (possibleTiles.contains(currentTile.neighbors.get(nextDir)) && round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) == 0)
+      if (nextDirValid && centerReached)
         this.facing = nextDir;
 
       //next tile is valid or center has not been reached yet
-      if (possibleTiles.contains(currentTile.neighbors.get(this.facing)) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) < 0)
-        absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
+      if (nextTileValid || centerDist < 0)
+      {
+        absPos = absPos.add(this.facing.toVector().multiply(stepSize));
+        gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
+      }
+      else if (centerDist > 0)
+      {
+        absPos = currentTilePos.multiply(map.tileSize).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
+        gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
+      }
 
-      gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
+      //stats
+      //      System.out.println(""
+      //          + "centerDist: " + centerDist
+      //          + " nextTileValid: " + nextTileValid
+      //          + " nextDirValid: " + nextDirValid
+      //          + " centerReached: " + centerReached
+      //          + " facing: " + this.facing
+      //          + " nextDir: " + nextDir
+      //          + " absPos: " + absPos
+      //          + " currentTilePos: "+ currentTilePos
+      //          + " currentTile: " + currentTile
+      //          + " possibleTiles: " + possibleTiles);
+
+      //region oldCode
+      //      //check if requested direction is valid or turn as soon as it is & turn if center has been reached
+      //      Direction nextDir = gameState.requestedDirections.get(gameState.players.indexOf(this));
+      //      if (possibleTiles.contains(currentTile.neighbors.get(nextDir)) && round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) == 0)
+      //        this.facing = nextDir;
+      //
+      //      //next tile is valid or center has not been reached yet
+      //      if (possibleTiles.contains(currentTile.neighbors.get(this.facing)) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) < 0)
+      //      {
+      //        absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
+      //        gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
+      //        System.out.println(this.facing.toVector().multiply(velocity.x));
+      //      }
+      //
+      //      if (round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) <= round(this.facing.toVector().scalar(this.facing.toVector().multiply(velocity.x))))
+      //      {
+      //        System.out.println("mapPos" + getMapPos());
+      //        System.out.println("absPos" + map.getTileAbsPos(getMapPos()));
+      //        System.out.println("offset" + new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
+      //        absPos = map.getTileAbsPos(getMapPos()).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
+      //      }
+
+      //      System.out.println(possibleTiles.contains(currentTile.neighbors.get(this.facing)) + " a " + round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))));
+      //      System.out.println(possibleTiles.contains(currentTile.neighbors.get(nextDir)) + " b " + ( round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) == 0 ));
+      //      System.out.println(map.getTileInnerPos(absPos) + " " + round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))));
+      //endregion
     }
   }
   //endregion
