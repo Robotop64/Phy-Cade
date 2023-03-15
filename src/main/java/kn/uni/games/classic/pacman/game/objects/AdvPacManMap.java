@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.game.objects;
 
 import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.util.Direction;
@@ -147,6 +148,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
   public void calculateAbsolutes (Dimension size)
   {
     tileSize = (int) Math.round(Math.min(size.width / mapSize.x, size.height / mapSize.y));
+    AdvGameConst.tileSize = tileSize;
     this.size = new Dimension((int) ( mapSize.x * tileSize ), (int) ( mapSize.y * tileSize ));
     AdvPlacedObject.iconSize = tileSize;
     tilesPixel.forEach((k, v) ->

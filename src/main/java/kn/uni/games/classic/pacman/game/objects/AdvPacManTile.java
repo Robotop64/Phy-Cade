@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.game.objects;
 
 import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.util.Direction;
@@ -68,15 +69,15 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
 
     items.forEach(item ->
     {
-      item.absPos = pos;
+      item.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.));
     });
     entities.forEach(entity ->
     {
-      entity.absPos = pos;
+      entity.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.));
     });
     objects.forEach(object ->
     {
-      object.absPos = pos;
+      object.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.));
     });
   }
   //endregion

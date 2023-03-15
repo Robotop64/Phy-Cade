@@ -5,7 +5,6 @@ import kn.uni.Gui;
 import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
-import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
@@ -457,7 +456,6 @@ public class AdvGameScreen extends UIScreen
           //TODO : load map from file
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           map.calculateAbsolutes(uiComponents.get(GAME_WINDOW.ordinal()).getSize());
-          AdvGameConst.tileSize = map.tileSize;
           env.display.setBounds(
               uiComponents.get(GAME_WINDOW.ordinal()).getSize().width / 2 - map.size.width / 2,
               uiComponents.get(GAME_WINDOW.ordinal()).getSize().height / 2 - map.size.height / 2,
@@ -488,7 +486,7 @@ public class AdvGameScreen extends UIScreen
                         .filter(spawner -> spawner.name.equals("PlayerSpawn"))
                         .forEach(Spawner::spawn);
 
-          setLoadingProgress("loading", 60, "Loading physics features...");
+          setLoadingProgress("loading", 60, "Loading physics...");
           env.gameState.spawn(AdvGameState.Layer.PHYSICS, new AdvCollider(env.gameState));
 
 

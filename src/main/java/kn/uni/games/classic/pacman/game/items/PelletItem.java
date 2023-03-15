@@ -32,7 +32,7 @@ public class PelletItem extends Item implements AdvRendered, AdvColliding
     if (classIcon == null)
       render();
 
-    g.drawImage((Image) classIcon, (int) absPos.x, (int) absPos.y, null);
+    g.drawImage((Image) classIcon, (int) ( absPos.x - classIcon.getWidth() / 2. ), (int) ( absPos.y - classIcon.getHeight() / 2. ), null);
   }
 
   @Override

@@ -14,22 +14,23 @@ public class AdvGameConst
 
 
   //radius of collision box by entity type
-  public static final Map <String, Double> hitBoxes = Map.of(
+  public static final Map <String, Double> hitBoxes   = Map.of(
       "AdvPacManEntity", 0.5,
       "AdvGhostEntity", 0.5,
-      "PelletItem", 2 / 3.,
-      "PPelletItem", 2 / 3.,
-      "FruitItem", 2 / 3.
+      "PelletItem", 1 / 3.,
+      "PPelletItem", 1 / 3.,
+      "FruitItem", 1 / 3.
   );
   //color of score text by type
-  public static final Color[] fruitColor = { Color.RED.darker(), Color.RED.brighter(), Color.ORANGE.darker(), Color.RED, Color.green.darker(), Color.BLUE.brighter(), Color.yellow.darker(), Color.ORANGE.brighter().brighter() };
+  public static final Color[]              fruitColor = { Color.RED.darker(), Color.RED.brighter(), Color.ORANGE.darker(), Color.RED, Color.green.darker(), Color.BLUE.brighter(), Color.yellow.darker(), Color.ORANGE.brighter().brighter() };
   //endregion
   //score of fruit by type
-  public static final int[]   fruitScore = { 100, 300, 500, 700, 1000, 2000, 3000, 5000 };
+  public static final int[]                fruitScore = { 100, 300, 500, 700, 1000, 2000, 3000, 5000 };
   //array deciding which fruit is will spawn, level = index+1
-  public static final int[]   fruitSpawn = { 1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8 };
+  public static final int[]                fruitSpawn = { 1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8 };
   //region general constants
-  public static int tileSize = 0;
+  public static       int                  tileSize   = 0;
+
   //region fruit stuff
   //available fruit types
   public enum FruitType
