@@ -1,15 +1,17 @@
 package kn.uni.games.classic.pacman.game.items;
 
 import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
+import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
 
-public class FruitItem extends Item implements AdvRendered
+public class FruitItem extends Item implements AdvRendered, AdvColliding
 {
   AdvGameConst.FruitType fruitType;
 
@@ -21,7 +23,7 @@ public class FruitItem extends Item implements AdvRendered
     this.mapPos = pos;
     this.type = ItemType.FRUIT;
 
-    this.fruitType = AdvGameConst.FruitType.values()[( gameState.level + 1 ) % AdvGameConst.FruitType.values().length];
+    this.fruitType = AdvGameConst.FruitType.values()[( gameState.level - 1 ) % AdvGameConst.FruitType.values().length];
     this.worth = AdvGameConst.fruitScore[fruitType.ordinal()];
   }
 
@@ -53,6 +55,13 @@ public class FruitItem extends Item implements AdvRendered
     super.consumeAction();
     gameState.addScore(worth);
     gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
+    gameState.env.updateLayer.set(AdvGameState.Layer.ITEMS.ordinal(), true);
     //TODO: Spawn score number
+  }
+
+  @Override
+  public void onCollision (AdvGameObject collider)
+  {
+    consumeAction();
   }
 }

@@ -448,13 +448,14 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress("loading", 15, "Loading internals...");
-          AdvTimer timer = new AdvTimer(env.gameState);
-          env.gameState.spawn(AdvGameState.Layer.INTERNALS, timer);
+          env.gameState.spawn(AdvGameState.Layer.INTERNALS, new AdvTimer(env.gameState));
+          env.gameState.spawn(AdvGameState.Layer.INTERNALS, new AdvCollider(env.gameState));
 
 
           setLoadingProgress("loading", 20, "Loading map...");
           //TODO : load map from file
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
+          //
           map.calculateAbsolutes(uiComponents.get(GAME_WINDOW.ordinal()).getSize());
           env.display.setBounds(
               uiComponents.get(GAME_WINDOW.ordinal()).getSize().width / 2 - map.size.width / 2,
@@ -485,9 +486,6 @@ public class AdvGameScreen extends UIScreen
                         .map(obj -> (Spawner) obj)
                         .filter(spawner -> spawner.name.equals("PlayerSpawn"))
                         .forEach(Spawner::spawn);
-
-          setLoadingProgress("loading", 60, "Loading physics...");
-          env.gameState.spawn(AdvGameState.Layer.PHYSICS, new AdvCollider(env.gameState));
 
 
           setLoadingProgress("loading", 80, "Waiting for Benchmark...");
