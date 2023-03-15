@@ -5,10 +5,12 @@ import kn.uni.Gui;
 import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
+import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.items.FruitItem;
+import kn.uni.games.classic.pacman.game.objects.AdvCollider;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
@@ -439,11 +441,11 @@ public class AdvGameScreen extends UIScreen
         () ->
         {
           setLoadingProgress("loading", 10, "Creating game environment...");
-          env = new GameEnvironment(uiComponents.get(0).getSize());
+          env = new GameEnvironment(uiComponents.get(GAME_WINDOW.ordinal()).getSize());
           env.gameScreen = this;
 
-          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplay());
-          ( (JLayeredPane) uiComponents.get(0) ).setLayer(env.getDisplay(), 0);
+          ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).add(env.getDisplay());
+          ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).setLayer(env.getDisplay(), 0);
 
 
           setLoadingProgress("loading", 15, "Loading internals...");
@@ -454,10 +456,11 @@ public class AdvGameScreen extends UIScreen
           setLoadingProgress("loading", 20, "Loading map...");
           //TODO : load map from file
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
-          map.calculateAbsolutes(uiComponents.get(0).getSize());
+          map.calculateAbsolutes(uiComponents.get(GAME_WINDOW.ordinal()).getSize());
+          AdvGameConst.tileSize = map.tileSize;
           env.display.setBounds(
-              uiComponents.get(0).getSize().width / 2 - map.size.width / 2,
-              uiComponents.get(0).getSize().height / 2 - map.size.height / 2,
+              uiComponents.get(GAME_WINDOW.ordinal()).getSize().width / 2 - map.size.width / 2,
+              uiComponents.get(GAME_WINDOW.ordinal()).getSize().height / 2 - map.size.height / 2,
               map.size.width,
               map.size.height);
           map.render();
@@ -484,6 +487,9 @@ public class AdvGameScreen extends UIScreen
                         .map(obj -> (Spawner) obj)
                         .filter(spawner -> spawner.name.equals("PlayerSpawn"))
                         .forEach(Spawner::spawn);
+
+          setLoadingProgress("loading", 60, "Loading physics features...");
+          env.gameState.spawn(AdvGameState.Layer.PHYSICS, new AdvCollider(env.gameState));
 
 
           setLoadingProgress("loading", 80, "Waiting for Benchmark...");
@@ -513,7 +519,9 @@ public class AdvGameScreen extends UIScreen
 
     t.start();
   }
+  //endregion
 
+  //region input methods
   private void enableControls ()
   {
     bindPlayer(InputListener.Player.playerOne, input ->

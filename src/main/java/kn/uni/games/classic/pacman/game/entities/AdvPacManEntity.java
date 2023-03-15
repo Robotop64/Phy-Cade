@@ -2,8 +2,10 @@ package kn.uni.games.classic.pacman.game.entities;
 
 import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
+import kn.uni.games.classic.pacman.game.internal.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
+import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManTile;
 import kn.uni.util.Direction;
@@ -18,7 +20,7 @@ import java.util.Objects;
 
 import static kn.uni.util.Util.round;
 
-public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
+public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, AdvColliding
 {
 
   public AdvPacManEntity (AdvGameState gameState, Vector2d mapPos)
@@ -188,6 +190,12 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking
       //      System.out.println(map.getTileInnerPos(absPos) + " " + round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))));
       //endregion
     }
+  }
+
+  @Override
+  public void onCollision (AdvGameObject collider)
+  {
+    System.out.println("PacMan collided with " + collider.getClass().getSimpleName());
   }
   //endregion
 }
