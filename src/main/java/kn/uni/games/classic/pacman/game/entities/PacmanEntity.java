@@ -192,7 +192,6 @@
 //    }
 //
 
-//TODO continue implementing from here on
 
 //    //spawn fruit after eating half of the pills
 //    if (!gameState.fruitSpawned && gameState.map.getPillCount() <= 122)
@@ -213,7 +212,9 @@
 //      });
 //      gameState.fruitSpawned = true;
 //    }
-//
+
+//TODO continue implementing from here on
+
 //    //check level progress
 //    checkLevelStatus(gameState);
 //
@@ -310,6 +311,8 @@
 //    }
 //  }
 //
+//TODO implemented in AdvPacMan
+
 //  /**
 //   * Used to powerup the player if he eats a powerup item
 //   *
@@ -322,6 +325,8 @@
 //    powerUpStart = gameState.currentTick;
 //  }
 //
+//TODO implemented in Entity, animations and animation change pending
+
 //  /**
 //   * Event of a player dying to a ghost
 //   *
@@ -336,6 +341,9 @@
 //    deadAnimStartTick = gameState.currentTick + 1;
 //
 //  }
+
+//TODO implemented in GameState
+
 //
 //  /**
 //   * Used to determine if a level has been completed
@@ -355,6 +363,8 @@
 //    }
 //  }
 //
+    //TODO : implement this in GameEnvironment & GameScreen
+
 //  /**
 //   * Event of a players lives reaching 0
 //   *
@@ -381,6 +391,8 @@
 //    }
 //  }
 //
+  //TODO : has been moved to GameEnvironment
+
 //  /**
 //   * Reloads the level by reinitializing the map, player, ghosts and teleporters
 //   *
@@ -415,7 +427,9 @@
 //    level = ( level - 1 ) % levelFruit.length;
 //    return levelFruit[level];
 //  }
-//
+
+//   //TODO: will be replaced by pushing an event to the timer after the ghost was killed/ entered the ghost house
+
 //  /**
 //   * Unlocks the ghosts depending on the current level
 //   *
