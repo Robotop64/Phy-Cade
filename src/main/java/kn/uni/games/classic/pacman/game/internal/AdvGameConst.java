@@ -5,7 +5,7 @@ import java.awt.Color;
 public class AdvGameConst
 {
   //region entity constants
-  public static final double  pacmanSpeed = 5;
+  public static final double  pacmanSpeed = 6;
   public static final double  ghostRadius = 31;
   public static final double  ghostSpeed  = 4;
   public static final int     entityHp    = 1;

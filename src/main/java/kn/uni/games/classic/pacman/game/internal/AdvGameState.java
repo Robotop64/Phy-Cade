@@ -19,6 +19,7 @@ public class AdvGameState
   public GameEnvironment                       env;
   public int                                   tps                 = 120;
   public int                                   fps                 = 60;
+  public boolean                               running             = false;
   public boolean                               paused              = false;
   public long                                  currentTick;
   public long                                  lastTickTime;

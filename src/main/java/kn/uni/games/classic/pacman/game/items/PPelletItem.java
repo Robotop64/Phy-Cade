@@ -52,6 +52,7 @@ public class PPelletItem extends Item implements AdvRendered
     gameState.addScore(worth);
     gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
     //TODO: Add power pellet effect
+    //TODO: add task to remove power pellet effect to timer
     //TODO: Spawn score number
   }
 }

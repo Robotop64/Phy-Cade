@@ -9,20 +9,26 @@ import kn.uni.util.fileRelated.Permission;
 
 public class PacPhi
 {
-  public static final String     GAME_VERSION = "BETA-1.0.3";
-  public static final String     GAME_BRANCH  = "UNSTABLE";
+  public static final String     GAME_VERSION = "BETA-1.0.5";
+  public static final String     GAME_BRANCH  = "ENTROPIC";
   public static final String     GAME_UPDATE  = " ";
   public static       Permission permissions;
   public static       Database   database;
 
+  public static double THREAD_DELAY = -1;
+  public static Thread benchmarkThread;
+
   public static void main (String[] args)
   {
+    //    System.setProperty("sun.java2d.opengl", "true");
 
     getSettings();
 
     getPermission();
 
     getDatabase();
+
+    benchmark();
 
     FlatDarculaLaf.setup();
 
@@ -34,7 +40,7 @@ public class PacPhi
     PacPhiConfig.getInstance().load();
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
-    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", true);
+    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", false);
     PacPhiConfig.getInstance().save();
     PacPhiConfig.getInstance().createDescriptions();
   }
@@ -58,6 +64,46 @@ public class PacPhi
       System.out.println("Database: " + dba.getDatabaseName(database));
     }
     else System.out.println("No database for current permissions found");
+  }
+
+  /**
+   * Benchmarking the delay of the Thread.sleep() method
+   */
+  public static void benchmark ()
+  {
+    int  iterations = 300;
+    long pause      = 8;
+    int  repeats    = 1;
+
+    for (int x = 0; x < repeats; x++)
+    {
+      benchmarkThread = new Thread(() ->
+      {
+        long start = System.nanoTime();
+
+
+        for (int i = 0; i < iterations; i++)
+        {
+          try
+          {
+            Thread.sleep(pause);
+          }
+          catch (InterruptedException e)
+          {
+            throw new RuntimeException(e);
+          }
+        }
+
+        long end = System.nanoTime();
+
+        double time  = ( end - start ) / 1_000_000.0;
+        double delay = ( time - iterations * pause ) / iterations;
+
+        System.out.println("Thread-Benchmark: " + "Time: " + String.format("%.4f", time) + "ms, rescheduleDelay " + String.format("%.4f", delay) + "ms");
+        THREAD_DELAY = delay;
+      });
+      benchmarkThread.start();
+    }
   }
 }
 

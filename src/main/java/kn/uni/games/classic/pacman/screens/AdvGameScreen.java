@@ -2,6 +2,7 @@ package kn.uni.games.classic.pacman.screens;
 
 import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
+import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
@@ -25,9 +26,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static kn.uni.games.classic.pacman.screens.AdvGameScreen.Components.GAME_HUD;
+import static kn.uni.games.classic.pacman.screens.AdvGameScreen.Components.GAME_WINDOW;
+import static kn.uni.games.classic.pacman.screens.AdvGameScreen.Components.LOADING_CONTAINER;
+import static kn.uni.games.classic.pacman.screens.AdvGameScreen.Components.READY_LABEL;
 
 public class AdvGameScreen extends UIScreen
 {
@@ -40,6 +47,8 @@ public class AdvGameScreen extends UIScreen
   private PacList leaderboard;
 
   private GameEnvironment env;
+
+  private boolean gameStarted = false;
 
 
   public AdvGameScreen (JPanel parent)
@@ -55,9 +64,6 @@ public class AdvGameScreen extends UIScreen
     createLoadingPopup();
 
     createReadyPopup();
-
-    enableReadyPrompt(true);
-
 
     loadGame();
 
@@ -95,15 +101,15 @@ public class AdvGameScreen extends UIScreen
     border.setBackground(null);
     border.setOpaque(false);
     border.setBorder(BorderFactory.createLineBorder(Color.CYAN.darker().darker(), 2));
-    border.setBounds(0, 0, uiComponents.get(0).getWidth(), uiComponents.get(0).getHeight());
+    border.setBounds(0, 0, uiComponents.get(GAME_WINDOW.ordinal()).getWidth(), uiComponents.get(GAME_WINDOW.ordinal()).getHeight());
 
-    ( (JLayeredPane) uiComponents.get(0) ).add(border);
-    ( (JLayeredPane) uiComponents.get(0) ).setLayer(border, Integer.MAX_VALUE);
+    ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).add(border);
+    ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).setLayer(border, Integer.MAX_VALUE);
   }
 
   private void createHud ()
   {
-    Dimension hudBounds = uiComponents.get(1).getSize();
+    Dimension hudBounds = uiComponents.get(GAME_HUD.ordinal()).getSize();
 
     //region GameState values
     data = new PacList(new Vector2d().cartesian(5, 5), new Dimension(hudBounds.width - 10, 400 - 10));
@@ -161,7 +167,7 @@ public class AdvGameScreen extends UIScreen
     data.fitComponents();
     data.unifyFontSize(35f);
 
-    ( (JPanel) uiComponents.get(1) ).add(data);
+    ( (JPanel) uiComponents.get(GAME_HUD.ordinal()) ).add(data);
     //endregion
 
     //region Dynamic Leaderboard
@@ -236,7 +242,7 @@ public class AdvGameScreen extends UIScreen
   private void createLoadingPopup ()
   {
     int       buffer   = 20;
-    Dimension gameSize = uiComponents.get(0).getSize();
+    Dimension gameSize = uiComponents.get(GAME_WINDOW.ordinal()).getSize();
     Vector2d  infoPos  = new Vector2d().cartesian(buffer, gameSize.height - 100);
 
     //create container
@@ -246,7 +252,8 @@ public class AdvGameScreen extends UIScreen
     //add to list
     uiComponents.add(loadInfo);
     //add to Layered Frame
-    ( (JLayeredPane) uiComponents.get(0) ).add(loadInfo, Integer.MAX_VALUE);
+    ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).add(loadInfo);
+    ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).setLayer(loadInfo, Integer.MAX_VALUE);
 
     //create List for formatting
     PacList loading = new PacList(new Vector2d().cartesian(0, 0), new Dimension(loadInfo.getWidth(), loadInfo.getHeight()));
@@ -287,17 +294,18 @@ public class AdvGameScreen extends UIScreen
 
   private void createReadyPopup ()
   {
-    Dimension gameSize = uiComponents.get(0).getSize();
+    Dimension gameSize = uiComponents.get(GAME_WINDOW.ordinal()).getSize();
 
     Dimension readySize = new Dimension(300, 150);
     Vector2d  readyPos  = new Vector2d().cartesian(gameSize.width / 2. - readySize.width / 2., gameSize.height / 2. - readySize.height / 2. - 30);
 
     JPanel readyBackground = new JPanel();
     readyBackground.setBounds(2, 2, gameSize.width - 2, gameSize.height - 2);
-    readyBackground.setLayout(null);
     readyBackground.setBackground(new Color(0, 0, 0, 225));
+    readyBackground.setLayout(null);
     readyBackground.setBorder(BorderFactory.createLineBorder(Color.CYAN.darker().darker(), 1));
     readyBackground.setOpaque(true);
+    readyBackground.setVisible(false);
 
     PacLabel readyPrompt = new PacLabel(new Vector2d().cartesian((int) readyPos.x, (int) readyPos.y), new Dimension(readySize.width, readySize.height), "<html> <body> <p align=\"center\"> Ready ?<br/>Press START! </p> </body> </html>");
     readyPrompt.setFont(readyPrompt.getFont().deriveFont(35f));
@@ -305,11 +313,12 @@ public class AdvGameScreen extends UIScreen
     readyPrompt.setForeground(Color.CYAN);
     readyPrompt.setBackground(Color.BLACK);
     readyPrompt.setOpaque(true);
+    readyPrompt.setVisible(false);
     uiComponents.add(readyPrompt);
 
     readyBackground.add(readyPrompt);
-    ( (JLayeredPane) uiComponents.get(0) ).add(readyBackground);
-    ( (JLayeredPane) uiComponents.get(0) ).setLayer(readyBackground, Integer.MAX_VALUE - 20);
+    ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).add(readyBackground);
+    ( (JLayeredPane) uiComponents.get(GAME_WINDOW.ordinal()) ).setLayer(readyBackground, Integer.MAX_VALUE - 20);
   }
   //endregion
 
@@ -336,7 +345,7 @@ public class AdvGameScreen extends UIScreen
 
   public void updateLeaderboard (LeaderboardMenu.LeaderboardEntry[] entries)
   {
-    PacList leaderboard = (PacList) uiComponents.get(1);
+    PacList leaderboard = (PacList) uiComponents.get(GAME_HUD.ordinal());
 
     for (int i = 0; i < entries.length; i++)
     {
@@ -349,20 +358,27 @@ public class AdvGameScreen extends UIScreen
     //    ( (PacLabel) leaderboard.getItem(2) ).setText("❰" + String.format("%09d", score) + "❱");
   }
 
-  public void setLoadingProgress (boolean done, int progress, String text)
+  public void setLoadingProgress (String state, int progress, String text)
   {
-    JPanel          panel      = (JPanel) uiComponents.get(2);
+    JPanel          panel      = (JPanel) uiComponents.get(LOADING_CONTAINER.ordinal());
     Component[]     components = panel.getComponents();
     PacList         list       = (PacList) components[0];
     PacLabel        label      = (PacLabel) list.getItem(0);
     FlatProgressBar bar        = (FlatProgressBar) list.getItem(1);
 
 
-    if (done)
+    if (state.equals("done"))
     {
       panel.setVisible(false);
       bar.setValue(100);
       bar.setString("Done");
+      return;
+    }
+
+    if (state.equals("ready"))
+    {
+      bar.setVisible(false);
+      label.setText(text);
       return;
     }
 
@@ -371,9 +387,9 @@ public class AdvGameScreen extends UIScreen
     bar.setString(progress + "%");
   }
 
-  public void enableReadyPrompt (boolean enable)
+  public void enableReadyPopup (boolean enable)
   {
-    PacLabel readyPrompt = (PacLabel) uiComponents.get(3);
+    PacLabel readyPrompt = (PacLabel) uiComponents.get(READY_LABEL.ordinal());
 
     Thread countdown = new Thread(() ->
     {
@@ -406,6 +422,14 @@ public class AdvGameScreen extends UIScreen
       readyPrompt.getParent().setVisible(true);
     }
   }
+
+  public void enableLoadingPopup (boolean enable)
+  {
+    JPanel panel = (JPanel) uiComponents.get(LOADING_CONTAINER.ordinal());
+    panel.setVisible(enable);
+    Arrays.stream(panel.getComponents()).forEach(c -> c.setVisible(enable));
+    uiComponents.get(GAME_WINDOW.ordinal()).repaint();
+  }
   //endregion
 
   //region game methods
@@ -414,17 +438,20 @@ public class AdvGameScreen extends UIScreen
     Thread t = new Thread(
         () ->
         {
-          setLoadingProgress(false, 10, "Creating game environment...");
+          setLoadingProgress("loading", 10, "Creating game environment...");
           env = new GameEnvironment(uiComponents.get(0).getSize());
           env.gameScreen = this;
 
+          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplay());
+          ( (JLayeredPane) uiComponents.get(0) ).setLayer(env.getDisplay(), 0);
 
-          setLoadingProgress(false, 15, "Loading internals...");
+
+          setLoadingProgress("loading", 15, "Loading internals...");
           AdvTimer timer = new AdvTimer(env.gameState);
           env.gameState.spawn(AdvGameState.Layer.INTERNALS, timer);
 
 
-          setLoadingProgress(false, 20, "Loading map...");
+          setLoadingProgress("loading", 20, "Loading map...");
           //TODO : load map from file
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           map.calculateAbsolutes(uiComponents.get(0).getSize());
@@ -441,15 +468,15 @@ public class AdvGameScreen extends UIScreen
           env.getGameState().layers.get(AdvGameState.Layer.MAP.ordinal()).add(map);
 
 
-          setLoadingProgress(false, 30, "Loading objects...");
+          setLoadingProgress("loading", 30, "Loading objects...");
           env.loadObjects();
 
 
-          setLoadingProgress(false, 40, "Loading items...");
-          //          env.loadItems();
+          setLoadingProgress("loading", 40, "Loading items...");
+          env.loadItems();
 
 
-          setLoadingProgress(false, 50, "Loading entities...");
+          setLoadingProgress("loading", 50, "Loading entities...");
           env.loadEntities();
           //spawn player
           map.spawnables.stream()
@@ -459,12 +486,28 @@ public class AdvGameScreen extends UIScreen
                         .forEach(Spawner::spawn);
 
 
-          setLoadingProgress(false, 95, "Finished initializing!");
-          ( (JLayeredPane) uiComponents.get(0) ).add(env.getDisplay());
-          ( (JLayeredPane) uiComponents.get(0) ).setLayer(env.getDisplay(), 0);
+          setLoadingProgress("loading", 80, "Waiting for Benchmark...");
+
+          while (PacPhi.benchmarkThread.isAlive())
+          {
+            try
+            {
+              Thread.sleep(1L);
+            }
+            catch (InterruptedException e)
+            {
+              throw new RuntimeException(e);
+            }
+          }
 
 
-          setLoadingProgress(true, 100, "Starting game!");
+          setLoadingProgress("loading", 95, "Finished initializing!");
+
+
+          setLoadingProgress("ready", 100, "Ready to start the Game!");
+          enableReadyPopup(true);
+          env.pauseGame();
+          env.startGame();
         }
     );
 
@@ -486,13 +529,21 @@ public class AdvGameScreen extends UIScreen
         env.controlPlayer(1, input.toDirection());
       }
 
-      if (input.key() == InputListener.Key.A && ( uiComponents.get(3) ).isVisible())
+      if (input.key() == InputListener.Key.A && ( uiComponents.get(LOADING_CONTAINER.ordinal()) ).isVisible() && !gameStarted)
       {
-        enableReadyPrompt(false);
-        env.pauseGame();
-        env.startGame();
+        gameStarted = true;
+        enableLoadingPopup(false);
+        enableReadyPopup(false);
       }
     });
   }
   //endregion
+
+  public enum Components
+  {
+    GAME_WINDOW,
+    GAME_HUD,
+    LOADING_CONTAINER,
+    READY_LABEL
+  }
 }
