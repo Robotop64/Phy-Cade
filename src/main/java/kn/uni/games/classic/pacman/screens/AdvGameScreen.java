@@ -449,7 +449,7 @@ public class AdvGameScreen extends UIScreen
 
           setLoadingProgress("loading", 15, "Loading internals...");
           env.gameState.spawn(AdvGameState.Layer.INTERNALS, new AdvTimer(env.gameState));
-          env.gameState.spawn(AdvGameState.Layer.INTERNALS, new AdvCollider(env.gameState));
+          env.gameState.spawn(AdvGameState.Layer.PHYSICS, new AdvCollider(env.gameState));
 
 
           setLoadingProgress("loading", 20, "Loading map...");

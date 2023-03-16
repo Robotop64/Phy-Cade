@@ -6,6 +6,7 @@ import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.AdvGameState;
 import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
 import kn.uni.util.Vector2d;
+import kn.uni.util.fileRelated.PacPhiConfig;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
@@ -37,8 +38,16 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
       render();
 
     g.drawImage((Image) cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
-    g.setColor(Color.GREEN);
-    g.drawOval((int) ( absPos.x - AdvGameConst.hitBoxes.get("FruitItem") * AdvGameConst.tileSize ), (int) ( absPos.y - AdvGameConst.hitBoxes.get("FruitItem") * AdvGameConst.tileSize ), (int) ( AdvGameConst.hitBoxes.get("FruitItem") * 2 * AdvGameConst.tileSize ), (int) ( AdvGameConst.hitBoxes.get("FruitItem") * 2 * AdvGameConst.tileSize ));
+
+    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    {
+      g.setColor(Color.GREEN);
+      g.drawOval(
+          (int) ( absPos.x - AdvGameConst.hitBoxes.get("FruitItem") * AdvGameConst.tileSize ),
+          (int) ( absPos.y - AdvGameConst.hitBoxes.get("FruitItem") * AdvGameConst.tileSize ),
+          (int) ( AdvGameConst.hitBoxes.get("FruitItem") * 2 * AdvGameConst.tileSize ),
+          (int) ( AdvGameConst.hitBoxes.get("FruitItem") * 2 * AdvGameConst.tileSize ));
+    }
   }
 
   @Override
@@ -60,7 +69,6 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
     super.consumeAction();
     gameState.addScore(worth);
     gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
-    System.out.println("Fruit consumed");
     //TODO: Spawn score number
   }
 

@@ -97,7 +97,7 @@ public class AdvGameState
 
   public enum Layer
   {
-    BACKGROUND, INTERNALS, MAP, OBJECTS, ITEMS, ENTITIES, VFX
+    BACKGROUND, INTERNALS, MAP, OBJECTS, ITEMS, ENTITIES, VFX, PHYSICS
   }
 
 }

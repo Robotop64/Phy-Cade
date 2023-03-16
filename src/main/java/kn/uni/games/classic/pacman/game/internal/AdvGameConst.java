@@ -17,8 +17,8 @@ public class AdvGameConst
   public static final Map <String, Double> hitBoxes   = Map.of(
       "AdvPacManEntity", 1 / 2.,
       "AdvGhostEntity", 1 / 2.,
-      "PelletItem", 1 / 3.,
-      "PPelletItem", 1 / 3.,
+      "PelletItem", 1 / 4.,
+      "PPelletItem", 1 / 4.,
       "FruitItem", 2 / 5.
   );
   //color of score text by type
