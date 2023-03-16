@@ -3,7 +3,6 @@ package kn.uni.games.classic.pacman.game.internal;
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
-import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
 import kn.uni.util.Direction;
 
@@ -59,13 +58,17 @@ public class AdvGameState
 
   public void spawnScaled (Layer type, AdvPlacedObject obj)
   {
-    obj.absPos = obj.mapPos.multiply(( (AdvPacManMap) layers.get(Layer.MAP.ordinal()).getFirst() ).tileSize);
+    obj.absPos = obj.mapPos.multiply(AdvGameConst.tileSize);
     layers.get(type.ordinal()).add(obj);
+    if (type != Layer.INTERNALS)
+      env.updateLayer.set(type.ordinal(), true);
   }
 
   public void spawn (Layer type, AdvGameObject obj)
   {
     layers.get(type.ordinal()).add(obj);
+    if (type != Layer.INTERNALS)
+      env.updateLayer.set(type.ordinal(), true);
   }
 
   public void checkFruit ()
@@ -73,10 +76,10 @@ public class AdvGameState
     if (fruitSpawned)
       return;
 
-    if (layers.get(Layer.ITEMS.ordinal()).size() <= pelletCount / 2)
+    if (pelletsEaten >= 4) //pelletCount / 2
     {
       fruitSpawned = true;
-      layers.get(Layer.ITEMS.ordinal()).stream()
+      layers.get(Layer.ENTITIES.ordinal()).stream()
             .filter(obj -> obj instanceof Spawner)
             .map(obj -> (Spawner) obj)
             .filter(spawner -> spawner.name.equals("FruitSpawn"))
@@ -94,7 +97,7 @@ public class AdvGameState
 
   public enum Layer
   {
-    BACKGROUND, INTERNALS, MAP, OBJECTS, ITEMS, ENTITIES, VFX, PHYSICS
+    BACKGROUND, INTERNALS, MAP, OBJECTS, ITEMS, ENTITIES, VFX
   }
 
 }

@@ -8,19 +8,21 @@ import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.TextureEditor;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class FruitItem extends Item implements AdvRendered, AdvColliding
 {
   AdvGameConst.FruitType fruitType;
 
-  public FruitItem (AdvGameState gameState, Vector2d pos)
+  public FruitItem (AdvGameState gameState, Vector2d mapPos)
   {
     super();
     this.gameState = gameState;
 
-    this.mapPos = pos;
+    this.mapPos = mapPos;
     this.type = ItemType.FRUIT;
 
     this.fruitType = AdvGameConst.FruitType.values()[( gameState.level - 1 ) % AdvGameConst.FruitType.values().length];
@@ -34,7 +36,9 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
     if (cachedImg == null)
       render();
 
-    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, null);
+    g.drawImage((Image) cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
+    g.setColor(Color.GREEN);
+    g.drawOval((int) ( absPos.x - AdvGameConst.hitBoxes.get("FruitItem") * AdvGameConst.tileSize ), (int) ( absPos.y - AdvGameConst.hitBoxes.get("FruitItem") * AdvGameConst.tileSize ), (int) ( AdvGameConst.hitBoxes.get("FruitItem") * 2 * AdvGameConst.tileSize ), (int) ( AdvGameConst.hitBoxes.get("FruitItem") * 2 * AdvGameConst.tileSize ));
   }
 
   @Override
@@ -46,7 +50,8 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
   @Override
   public void render ()
   {
-    cachedImg = TextureEditor.getInstance().loadTexture("items", fruitType.name() + ".png");
+    BufferedImage raw = TextureEditor.getInstance().loadTexture("items", fruitType.name() + ".png");
+    cachedImg = TextureEditor.getInstance().scale(raw, iconSize, iconSize);
   }
 
   @Override
@@ -55,7 +60,7 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
     super.consumeAction();
     gameState.addScore(worth);
     gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
-    gameState.env.updateLayer.set(AdvGameState.Layer.ITEMS.ordinal(), true);
+    System.out.println("Fruit consumed");
     //TODO: Spawn score number
   }
 

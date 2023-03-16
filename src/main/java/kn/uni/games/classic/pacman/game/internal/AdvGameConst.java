@@ -15,11 +15,11 @@ public class AdvGameConst
 
   //radius of collision box by entity type
   public static final Map <String, Double> hitBoxes   = Map.of(
-      "AdvPacManEntity", 0.5,
-      "AdvGhostEntity", 0.5,
+      "AdvPacManEntity", 1 / 2.,
+      "AdvGhostEntity", 1 / 2.,
       "PelletItem", 1 / 3.,
       "PPelletItem", 1 / 3.,
-      "FruitItem", 1 / 3.
+      "FruitItem", 2 / 5.
   );
   //color of score text by type
   public static final Color[]              fruitColor = { Color.RED.darker(), Color.RED.brighter(), Color.ORANGE.darker(), Color.RED, Color.green.darker(), Color.BLUE.brighter(), Color.yellow.darker(), Color.ORANGE.brighter().brighter() };

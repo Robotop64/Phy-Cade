@@ -46,6 +46,14 @@ public class AdvCollider extends AdvGameObject implements AdvTicking
                               .forEach(colliders::add)
           );
 
+    colliders.stream().forEach(o ->
+    {
+      AdvPacManMap map = (AdvPacManMap) this.gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
+      o.mapPos = map.getTileMapPos(o.absPos);
+    });
+
+    //TODO this doesnt quite work for items that are between tiles (e.g. fruit)
+    //alteration mapPos create a Rectangle around the entity and check if any of the colliders are in that rectangle
     filteredColliders = entities.stream()
                                 //get entity mapPos
                                 .map(e -> (Vector2d) e.getMapPos())

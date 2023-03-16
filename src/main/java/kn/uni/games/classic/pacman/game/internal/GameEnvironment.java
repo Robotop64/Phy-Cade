@@ -401,15 +401,15 @@ public class GameEnvironment
         workDuration[0] = tickDuration[0] + renderDuration[0]; //duration of last tick in ms
         idleDuration[0] = round(( prefTickDuration / 1_000_000.0 - workDuration[0] )); //duration of last tick in ms
 
-        System.out.println("Tick " + gameState.currentTick + "(tps:" + gameState.tps + "):"
-            + " Loop: " + String.format("%.4f", loopDuration[0]) + "ms" + ";"
-            + " timing: " + String.format("%.4f", loopTiming[0]) + "ms" + ";"
-            + " loopDelay:" + String.format("%.4f", delayBetweenLoops[0]) + "ms" + "|"
-            + " TickDur: " + String.format("%.4f", tickDuration[0]) + "ms" + "|"
-            + " RenderDur: " + String.format("%.4f", renderDuration[0]) + "ms" + "|"
-            + " WorkDur: " + String.format("%.4f", workDuration[0]) + "ms" + "|"
-            + " IdleDur: " + String.format("%.4f", idleDuration[0]) + "/" + String.format("%.4f", prefTickDuration / 1_000_000.0) + "ms"
-            + " (" + String.format("%.2f", ( idleDuration[0] / ( prefTickDuration / 1_000_000.0 ) ) * 100) + "%)" + "|");
+        //        System.out.println("Tick " + gameState.currentTick + "(tps:" + gameState.tps + "):"
+        //            + " Loop: " + String.format("%.4f", loopDuration[0]) + "ms" + ";"
+        //            + " timing: " + String.format("%.4f", loopTiming[0]) + "ms" + ";"
+        //            + " loopDelay:" + String.format("%.4f", delayBetweenLoops[0]) + "ms" + "|"
+        //            + " TickDur: " + String.format("%.4f", tickDuration[0]) + "ms" + "|"
+        //            + " RenderDur: " + String.format("%.4f", renderDuration[0]) + "ms" + "|"
+        //            + " WorkDur: " + String.format("%.4f", workDuration[0]) + "ms" + "|"
+        //            + " IdleDur: " + String.format("%.4f", idleDuration[0]) + "/" + String.format("%.4f", prefTickDuration / 1_000_000.0) + "ms"
+        //            + " (" + String.format("%.2f", ( idleDuration[0] / ( prefTickDuration / 1_000_000.0 ) ) * 100) + "%)" + "|");
 
         tickStart[0] = System.nanoTime();
         ticker.run();
@@ -429,7 +429,6 @@ public class GameEnvironment
     Thread gameLoop = new Thread(() ->
     {
       render.run();
-      System.out.println("rendered first frame");
 
       while (gameState.running)
       {

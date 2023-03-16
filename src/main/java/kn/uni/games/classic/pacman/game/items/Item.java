@@ -22,9 +22,12 @@ public class Item extends AdvPlacedObject
 
   public void consumeAction ()
   {
-    gameState.checkFruit();
     if (this instanceof PelletItem)
       gameState.pelletsEaten++;
+
+    gameState.checkFruit();
+
+    gameState.env.updateLayer.set(AdvGameState.Layer.ITEMS.ordinal(), true);
   }
 
   public void expire ()

@@ -83,6 +83,10 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     //    }
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
+
+    g.setColor(Color.RED);
+    g.drawOval((int) ( absPos.x - AdvGameConst.hitBoxes.get("AdvPacManEntity") * AdvGameConst.tileSize ), (int) ( absPos.y - AdvGameConst.hitBoxes.get("AdvPacManEntity") * AdvGameConst.tileSize ), (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ), (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ));
+
   }
 
   @Override
@@ -195,7 +199,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
   @Override
   public void onCollision (AdvGameObject collider)
   {
-    System.out.println("PacMan collided with " + collider.getClass().getSimpleName());
+    //    System.out.println("PacMan collided with " + collider.getClass().getSimpleName());
   }
   //endregion
 }
