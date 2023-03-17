@@ -3,6 +3,7 @@ package kn.uni.games.classic.pacman.game.items;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.TextureEditor;
@@ -22,8 +23,8 @@ public class PelletItem extends Item implements AdvRendered, AdvColliding
     this.gameState = gameState;
 
     this.mapPos = mapPos;
-    this.type = ItemType.PELLET;
-    this.worth = 100;
+    this.type = AdvGameConst.ItemType.PELLET;
+    this.worth = AdvGameConst.itemWorth.get(type);
   }
 
   @Override
@@ -52,6 +53,7 @@ public class PelletItem extends Item implements AdvRendered, AdvColliding
   public void consumeAction ()
   {
     super.consumeAction();
+    gameState.pelletsEaten++;
     gameState.addScore(worth);
     gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
     //TODO: Spawn score number

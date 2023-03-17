@@ -17,8 +17,6 @@ public class AdvGameState
 
   //region game environment
   public GameEnvironment                       env;
-  public int                                   tps                 = 120;
-  public int                                   fps                 = 60;
   public boolean                               running             = false;
   public boolean                               paused              = false;
   public long                                  currentTick;
@@ -99,7 +97,22 @@ public class AdvGameState
   {
     if (pelletsEaten == pelletCount)
     {
-      env.pauseGameIn(1000, () -> env.reloadLevel());
+      env.pauseGameIn(1000, () ->
+      {
+      });
+
+      new Thread(() ->
+      {
+        try
+        {
+          Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+          throw new RuntimeException(e);
+        }
+        env.reloadLevel();
+      }).start();
     }
   }
 

@@ -336,12 +336,12 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
     return AdvPacManTile.TileType.EMPTY;
   }
 
-  private Item.ItemType convertColorToItemType (Color color)
+  private AdvGameConst.ItemType convertColorToItemType (Color color)
   {
     if (color.equals(Color.YELLOW))
-      return Item.ItemType.PELLET;
+      return AdvGameConst.ItemType.PELLET;
     else if (color.equals(new Color(255, 88, 0)))
-      return Item.ItemType.PPELLET;
+      return AdvGameConst.ItemType.PPELLET;
     return null;
   }
   //endregion

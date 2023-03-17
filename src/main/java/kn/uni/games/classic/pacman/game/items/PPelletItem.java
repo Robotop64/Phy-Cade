@@ -3,6 +3,7 @@ package kn.uni.games.classic.pacman.game.items;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.TextureEditor;
@@ -21,8 +22,8 @@ public class PPelletItem extends Item implements AdvRendered, AdvColliding
     this.gameState = gameState;
 
     this.mapPos = mapPos;
-    this.type = ItemType.PPELLET;
-    this.worth = 100;
+    this.type = AdvGameConst.ItemType.PPELLET;
+    this.worth = AdvGameConst.itemWorth.get(type);
   }
 
   @Override

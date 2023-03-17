@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.game.entities;
 
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.util.Direction;
@@ -14,7 +15,7 @@ public class Entity extends AdvPlacedObject
   public Direction facing     = Direction.right;
   public Vector2d  velocity;
 
-  public EntityType type;
+  public AdvGameConst.EntityType type;
 
   public int maxHealth;
   public int currentHealth;
@@ -53,11 +54,6 @@ public class Entity extends AdvPlacedObject
 
   }
 
-  public void expire ()
-  {
-    this.gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).remove(this);
-  }
-
   public void moveAbs (Vector2d offset)
   {
     this.absPos.add(offset);
@@ -72,11 +68,6 @@ public class Entity extends AdvPlacedObject
   {
     AdvPacManMap map = (AdvPacManMap) this.gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
     return map.getTileMapPos(this.absPos);
-  }
-
-  public enum EntityType
-  {
-    PACMAN, GHOST
   }
 
   public enum validTiles
