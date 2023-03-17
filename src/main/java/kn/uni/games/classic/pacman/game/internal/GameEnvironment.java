@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.game.internal;
 
 import kn.uni.PacPhi;
+import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
 import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
@@ -24,6 +25,11 @@ public class GameEnvironment
 
   public List <GameLayer> layer       = new ArrayList <>();
   public List <Boolean>   updateLayer = new ArrayList <>();
+
+  private Runnable render;
+  private Runnable ticker;
+  private Runnable loop;
+  private Thread   gameLoop;
 
 
   public GameEnvironment (Dimension dim)
@@ -339,9 +345,8 @@ public class GameEnvironment
   public void startGame ()
   {
     gameState.running = true;
-    double       prefTickDuration = ( 1_000_000_000.0 / gameState.tps ); //in ns, at 120 tps: 8_333_333ns
-    double       frameTickRation  = gameState.tps / ( gameState.fps * 1.0 );
-    final long[] absStart         = { System.nanoTime() };
+    double prefTickDuration = ( 1_000_000_000.0 / gameState.tps ); //in ns, at 120 tps: 8_333_333ns
+    double frameTickRation  = gameState.tps / ( gameState.fps * 1.0 );
 
     final long[]   tickStart    = { System.nanoTime() };
     final long[]   tickEnd      = { System.nanoTime() };
@@ -360,10 +365,10 @@ public class GameEnvironment
     final double[] idleDuration      = { 0 };
     final double[] loopTiming        = { 0 };
 
-    Runnable render = () ->
+    render = () ->
     {
       //reRender layers if needed
-      if (gameState.currentTick % frameTickRation == 0)
+      if (gameState.currentTick % frameTickRation == 0 || gameState.paused)
       {
         IntStream.range(0, AdvGameState.Layer.values().length).filter(i -> updateLayer.get(i)).forEach((i) ->
         {
@@ -373,22 +378,26 @@ public class GameEnvironment
       }
 
       //render final image
-      if (gameState.currentTick % frameTickRation == 0)
+      if (gameState.currentTick % frameTickRation == 0 || gameState.paused)
       {
         display.repaint();
       }
     };
 
-    Runnable ticker = () ->
+    ticker = () ->
     {
       //tick all objects
       gameState.layers.forEach(layer ->
           layer.stream()
                .filter(gameObject -> gameObject instanceof AdvTicking)
                .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
+
+
+      gameState.time += 8_333_333;
+      gameScreen.setTime((long) ( gameState.time / 1_000_000.0 ));
     };
 
-    Runnable loop = () ->
+    loop = () ->
     {
 
       if (!gameState.paused)
@@ -426,7 +435,7 @@ public class GameEnvironment
       }
     };
 
-    Thread gameLoop = new Thread(() ->
+    gameLoop = new Thread(() ->
     {
       render.run();
 
@@ -465,16 +474,70 @@ public class GameEnvironment
   public void stopGame ()
   {
     gameState.running = false;
+    System.out.println("Stopping game");
   }
 
   public void pauseGame ()
   {
     gameState.paused = true;
+    System.out.println("Pausing game");
   }
 
   public void resumeGame ()
   {
     gameState.paused = false;
+    System.out.println("Resuming game");
+  }
+
+  public void pauseGameIn (long ms, Runnable task)
+  {
+    new Thread(() ->
+    {
+      try
+      {
+        Thread.sleep(ms);
+      }
+      catch (InterruptedException e)
+      {
+        throw new RuntimeException(e);
+      }
+      pauseGame();
+      task.run();
+    }).start();
+  }
+
+  public void resumeGameIn (long ms, Runnable task)
+  {
+    new Thread(() ->
+    {
+      try
+      {
+        Thread.sleep(ms);
+      }
+      catch (InterruptedException e)
+      {
+        throw new RuntimeException(e);
+      }
+      resumeGame();
+      task.run();
+    }).start();
+  }
+
+  public void stopGameIn (long ms, Runnable task)
+  {
+    new Thread(() ->
+    {
+      try
+      {
+        Thread.sleep(ms);
+      }
+      catch (InterruptedException e)
+      {
+        throw new RuntimeException(e);
+      }
+      stopGame();
+      task.run();
+    }).start();
   }
   //endregion
 
@@ -497,20 +560,44 @@ public class GameEnvironment
     gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).addAll(( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).generateEntities());
   }
 
+  public void spawnPlayers ()
+  {
+    gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
+                    .filter(obj -> obj instanceof Spawner)
+                    .map(obj -> (Spawner) obj)
+                    .filter(spawner -> spawner.name.equals("PlayerSpawn"))
+                    .forEach(Spawner::spawn);
+  }
+
   public void reloadLevel ()
   {
     gameState.layers.get(AdvGameState.Layer.OBJECTS.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.VFX.ordinal()).clear();
+    System.out.println("Cleared layers");
 
     gameState.players.clear();
     gameState.requestedDirections.clear();
     gameState.pelletCount = 0;
+    gameState.pelletsEaten = 0;
+    gameState.fruitSpawned = false;
+    System.out.println("Reset players and trackers");
 
     loadObjects();
     loadItems();
     loadEntities();
+    spawnPlayers();
+    gameState.level++;
+    gameScreen.setLevel(gameState.level);
+    gameScreen.gameReloading = true;
+    System.out.println("Reloaded level");
+
+    IntStream.range(0, updateLayer.size()).forEach(i -> updateLayer.set(i, true));
+    render.run();
+    System.out.println("Rendered level");
+
+    gameScreen.enableReadyPopup(true);
   }
   //endregion
 

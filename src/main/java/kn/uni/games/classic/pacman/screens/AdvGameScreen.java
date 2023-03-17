@@ -40,16 +40,15 @@ import static kn.uni.games.classic.pacman.screens.AdvGameScreen.Components.READY
 public class AdvGameScreen extends UIScreen
 {
   //components
-  public List <Component> uiComponents = new ArrayList <>();
+  public List <Component> uiComponents  = new ArrayList <>();
+  public boolean          gameReloading = false;
   //controls
   Map <InputListener.Key, InputListener.Input> joystick = new HashMap <>();
   //hud data lists
-  private PacList data;
-  private PacList leaderboard;
-
+  private PacList         data;
+  private PacList         leaderboard;
   private GameEnvironment env;
-
-  private boolean gameStarted = false;
+  private boolean         gameStarted = false;
 
 
   public AdvGameScreen (JPanel parent)
@@ -125,7 +124,7 @@ public class AdvGameScreen extends UIScreen
 
     data.addBuffer(0, 5);
 
-    PacLabel level = new PacLabel("%7d".formatted(1));
+    PacLabel level = new PacLabel(StringUtils.leftPad(String.valueOf(1), 6));
     level.setHeader("Level:");
     level.setHorizontalAlignment(PacLabel.LEFT);
     data.addObject(level);
@@ -160,7 +159,7 @@ public class AdvGameScreen extends UIScreen
 
     data.addBuffer(0, 5);
 
-    PacLabel lives = new PacLabel("5");
+    PacLabel lives = new PacLabel(StringUtils.leftPad(String.valueOf(5), 4));
     lives.setHeader("Lives: x");
     lives.setHorizontalAlignment(PacLabel.LEFT);
     data.addObject(lives);
@@ -341,7 +340,7 @@ public class AdvGameScreen extends UIScreen
 
   public void setLives (int lives)
   {
-    ( (PacLabel) data.getItem(14) ).setText("%7d".formatted(lives));
+    ( (PacLabel) data.getItem(12) ).setText(StringUtils.leftPad(String.valueOf(lives), 4));
   }
 
   public void updateLeaderboard (LeaderboardMenu.LeaderboardEntry[] entries)
@@ -356,7 +355,6 @@ public class AdvGameScreen extends UIScreen
       score.setText("❰" + String.format("%09d", entries[i].highScore()) + "❱");
       name.setText(entries[i].name());
     }
-    //    ( (PacLabel) leaderboard.getItem(2) ).setText("❰" + String.format("%09d", score) + "❱");
   }
 
   public void setLoadingProgress (String state, int progress, String text)
@@ -412,6 +410,9 @@ public class AdvGameScreen extends UIScreen
       readyPrompt.setVisible(enable);
       readyPrompt.getParent().setVisible(enable);
       env.resumeGame();
+      if (!gameReloading)
+        env.gameState.gameStartTime = System.nanoTime();
+      gameReloading = false;
     });
 
     if (!enable)
@@ -419,8 +420,13 @@ public class AdvGameScreen extends UIScreen
 
     if (enable)
     {
+      if (gameReloading)
+        readyPrompt.setText("<html> <body> <p align=\"center\"> Ready? </p> </body> </html>");
       readyPrompt.setVisible(true);
+
       readyPrompt.getParent().setVisible(true);
+      //TODO after reloading, the background is not transparent
+      //      ( (JPanel) readyPrompt.getParent() ).setOpaque(true);
     }
   }
 
@@ -480,13 +486,8 @@ public class AdvGameScreen extends UIScreen
 
           setLoadingProgress("loading", 50, "Loading entities...");
           env.loadEntities();
-          //spawn player
-          map.spawnables.stream()
-                        .filter(obj -> obj instanceof Spawner)
-                        .map(obj -> (Spawner) obj)
-                        .filter(spawner -> spawner.name.equals("PlayerSpawn"))
-                        .forEach(Spawner::spawn);
 
+          env.spawnPlayers();
 
           setLoadingProgress("loading", 80, "Waiting for Benchmark...");
 
@@ -533,7 +534,7 @@ public class AdvGameScreen extends UIScreen
         env.controlPlayer(1, input.toDirection());
       }
 
-      if (input.key() == InputListener.Key.A && ( uiComponents.get(LOADING_CONTAINER.ordinal()) ).isVisible() && !gameStarted)
+      if (input.key() == InputListener.Key.A && ( !gameStarted || gameReloading ))
       {
         gameStarted = true;
         enableLoadingPopup(false);

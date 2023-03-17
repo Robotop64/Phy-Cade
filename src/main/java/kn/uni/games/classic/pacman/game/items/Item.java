@@ -26,6 +26,7 @@ public class Item extends AdvPlacedObject
       gameState.pelletsEaten++;
 
     gameState.checkFruit();
+    gameState.checkProgress();
 
     gameState.env.updateLayer.set(AdvGameState.Layer.ITEMS.ordinal(), true);
   }

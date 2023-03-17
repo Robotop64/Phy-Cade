@@ -22,6 +22,7 @@ public class AdvGameState
   public boolean                               paused              = false;
   public long                                  currentTick;
   public long                                  lastTickTime;
+  public long                                  gameStartTime;
   public List <ConcurrentLinkedDeque <Object>> layers              = new ArrayList <>();
   public List <AdvPacManEntity>                players             = new ArrayList <>();
   public List <Direction>                      requestedDirections = new ArrayList <>();
@@ -32,6 +33,7 @@ public class AdvGameState
   public int  lives       = 5;
   public int  livesGained = 0;
   public int  level       = 1;
+  public long time        = 0;
   //endregion
 
   //region trackers
@@ -53,7 +55,12 @@ public class AdvGameState
     this.score = newScore;
     //add a live if the score passed a multiple of 10000
     if (newScore / 10000 > oldScore / 10000)
+    {
       livesGained++;
+      lives++;
+      env.gameScreen.setLives(lives);
+    }
+    env.gameScreen.setScore((int) this.score);
   }
 
   public void spawnScaled (Layer type, AdvPlacedObject obj)
@@ -76,7 +83,7 @@ public class AdvGameState
     if (fruitSpawned)
       return;
 
-    if (pelletsEaten >= 4) //pelletCount / 2
+    if (pelletsEaten >= pelletCount / 2)
     {
       fruitSpawned = true;
       layers.get(Layer.ENTITIES.ordinal()).stream()
@@ -84,6 +91,14 @@ public class AdvGameState
             .map(obj -> (Spawner) obj)
             .filter(spawner -> spawner.name.equals("FruitSpawn"))
             .forEach(Spawner::spawn);
+    }
+  }
+
+  public void checkProgress ()
+  {
+    if (pelletsEaten == pelletCount)
+    {
+      env.pauseGameIn(1000, () -> env.reloadLevel());
     }
   }
 
