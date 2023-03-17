@@ -1,7 +1,7 @@
-package kn.uni.games.classic.pacman.game.internal;
+package kn.uni.games.classic.pacman.game.internal.tracker;
 
-import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
-import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
+import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 
 import java.util.ArrayList;
 import java.util.List;

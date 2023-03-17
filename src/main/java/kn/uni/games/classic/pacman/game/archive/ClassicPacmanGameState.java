@@ -1,7 +1,7 @@
 //package kn.uni.games.classic.pacman.game.internal;
 //
 //
-//import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
+//import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 //import kn.uni.games.classic.pacman.game.objects.PacManMap;
 //import kn.uni.ui.InputListener;
 //import kn.uni.util.Direction;

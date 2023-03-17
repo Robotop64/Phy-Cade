@@ -2,9 +2,12 @@ package kn.uni.games.classic.pacman.game.internal;
 
 import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
-import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
+import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
+import kn.uni.games.classic.pacman.game.internal.graphics.GameDisplay;
+import kn.uni.games.classic.pacman.game.internal.graphics.GameLayer;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.PelletItem;
-import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
+import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.screens.AdvGameScreen;
 import kn.uni.util.Direction;
 

@@ -1,8 +1,8 @@
 package kn.uni.games.classic.pacman.game.entities;
 
-import kn.uni.games.classic.pacman.game.internal.AdvGameState;
-import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
-import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
+import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 

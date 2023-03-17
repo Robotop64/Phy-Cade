@@ -1,4 +1,4 @@
-//package kn.uni.games.classic.pacman.game.entities.ghostAi;
+//package kn.uni.games.classic.pacman.game.archive.ghostAi;
 //
 //import kn.uni.games.classic.pacman.game.entities.GhostEntity;
 //import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameState;

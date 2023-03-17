@@ -1,9 +1,10 @@
-package kn.uni.games.classic.pacman.game.objects;
+package kn.uni.games.classic.pacman.game.map;
 
 import kn.uni.games.classic.pacman.game.entities.Entity;
-import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
-import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
-import kn.uni.games.classic.pacman.game.internal.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;

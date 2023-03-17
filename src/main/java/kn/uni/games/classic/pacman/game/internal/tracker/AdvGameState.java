@@ -1,9 +1,10 @@
-package kn.uni.games.classic.pacman.game.internal;
+package kn.uni.games.classic.pacman.game.internal.tracker;
 
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
-import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
-import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.util.Direction;
 
 import java.util.ArrayList;

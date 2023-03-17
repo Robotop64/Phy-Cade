@@ -3,7 +3,7 @@
 //
 //import kn.uni.games.classic.pacman.game.graphics.Ticking;
 //import kn.uni.games.classic.pacman.game.hud.DebugDisplay;
-//import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
+//import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 //
 //import java.util.LinkedList;
 //import java.util.List;

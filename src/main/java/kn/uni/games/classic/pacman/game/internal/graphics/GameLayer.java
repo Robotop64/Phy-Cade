@@ -1,6 +1,6 @@
-package kn.uni.games.classic.pacman.game.internal;
+package kn.uni.games.classic.pacman.game.internal.graphics;
 
-import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;

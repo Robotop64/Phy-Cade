@@ -1,13 +1,13 @@
 package kn.uni.games.classic.pacman.game.entities;
 
-import kn.uni.games.classic.pacman.game.graphics.AdvRendered;
-import kn.uni.games.classic.pacman.game.graphics.AdvTicking;
-import kn.uni.games.classic.pacman.game.internal.AdvColliding;
-import kn.uni.games.classic.pacman.game.internal.AdvGameConst;
-import kn.uni.games.classic.pacman.game.internal.AdvGameState;
-import kn.uni.games.classic.pacman.game.objects.AdvGameObject;
-import kn.uni.games.classic.pacman.game.objects.AdvPacManMap;
-import kn.uni.games.classic.pacman.game.objects.AdvPacManTile;
+import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
+import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
+import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
+import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.PacPhiConfig;

@@ -2,11 +2,11 @@
 //
 //import kn.uni.games.classic.pacman.game.entities.GhostEntity;
 //import kn.uni.games.classic.pacman.game.entities.PacmanEntity;
-//import kn.uni.games.classic.pacman.game.entities.ghostAi.AggressiveAI;
-//import kn.uni.games.classic.pacman.game.entities.ghostAi.ConfusedAI;
-//import kn.uni.games.classic.pacman.game.entities.ghostAi.GhostAI;
-//import kn.uni.games.classic.pacman.game.entities.ghostAi.ShyAI;
-//import kn.uni.games.classic.pacman.game.entities.ghostAi.SneakyAI;
+//import kn.uni.games.classic.pacman.game.archive.ghostAi.AggressiveAI;
+//import kn.uni.games.classic.pacman.game.archive.ghostAi.ConfusedAI;
+//import kn.uni.games.classic.pacman.game.archive.ghostAi.GhostAI;
+//import kn.uni.games.classic.pacman.game.archive.ghostAi.ShyAI;
+//import kn.uni.games.classic.pacman.game.archive.ghostAi.SneakyAI;
 //import kn.uni.games.classic.pacman.game.graphics.Rendered;
 //import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameConstants;
 //import kn.uni.games.classic.pacman.game.internal.ClassicPacmanGameState;

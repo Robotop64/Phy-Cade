@@ -1,4 +1,4 @@
-package kn.uni.games.classic.pacman.game.internal;
+package kn.uni.games.classic.pacman.game.internal.tracker;
 
 import java.awt.Color;
 import java.util.Map;

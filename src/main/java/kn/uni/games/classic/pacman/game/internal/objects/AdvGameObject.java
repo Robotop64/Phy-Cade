@@ -1,6 +1,6 @@
-package kn.uni.games.classic.pacman.game.objects;
+package kn.uni.games.classic.pacman.game.internal.objects;
 
-import kn.uni.games.classic.pacman.game.internal.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 
 import java.awt.image.BufferedImage;
 

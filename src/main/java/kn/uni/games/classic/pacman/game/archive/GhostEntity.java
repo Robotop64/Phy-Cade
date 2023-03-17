@@ -1,7 +1,7 @@
 //package kn.uni.games.classic.pacman.game.entities;
 //
 //import kn.uni.Gui;
-//import kn.uni.games.classic.pacman.game.entities.ghostAi.GhostAI;
+//import kn.uni.games.classic.pacman.game.archive.ghostAi.GhostAI;
 //import kn.uni.games.classic.pacman.game.graphics.Rendered;
 //import kn.uni.games.classic.pacman.game.graphics.Ticking;
 //import kn.uni.games.classic.pacman.game.hud.DebugDisplay;

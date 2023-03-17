@@ -1,4 +1,4 @@
-package kn.uni.games.classic.pacman.game.graphics;
+package kn.uni.games.classic.pacman.game.internal.graphics;
 
 import java.awt.Graphics2D;
 

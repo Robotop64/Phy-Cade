@@ -1,10 +1,10 @@
 package kn.uni.games.classic.pacman.game.entities;
 
-import kn.uni.games.classic.pacman.game.internal.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.items.PPelletItem;
 import kn.uni.games.classic.pacman.game.items.PelletItem;
-import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 

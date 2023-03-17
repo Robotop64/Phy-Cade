@@ -1,7 +1,7 @@
 package kn.uni.games.classic.pacman.game.items;
 
-import kn.uni.games.classic.pacman.game.internal.AdvGameState;
-import kn.uni.games.classic.pacman.game.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.util.Vector2d;
 
 public class Item extends AdvPlacedObject

@@ -146,7 +146,6 @@ public class Vector2d
     return y;
   }
 
-  //ToDo get better name
   public void use (BiConsumer <Integer, Integer> consumer)
   {
     consumer.accept((int) rounded().x, (int) rounded().y);
