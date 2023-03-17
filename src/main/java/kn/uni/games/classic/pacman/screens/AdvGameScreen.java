@@ -3,13 +3,11 @@ package kn.uni.games.classic.pacman.screens;
 import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
 import kn.uni.PacPhi;
-import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvCollider;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
-import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
@@ -470,8 +468,20 @@ public class AdvGameScreen extends UIScreen
               map.size.height);
           map.render();
 
-          map.addToPool(new Spawner("PlayerSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new AdvPacManEntity(env.gameState, new Vector2d().cartesian(14, 23.5))));
-          map.addToPool(new Spawner("FruitSpawn", env.getGameState(), new Vector2d().cartesian(14, 23.5), new FruitItem(env.gameState, new Vector2d().cartesian(14, 23.5))));
+          map.addToPool(
+              new Spawner(
+                  "PlayerSpawn", env.getGameState(),
+                  new Vector2d().cartesian(14, 23.5),
+                  Spawner.SpawnerType.PLAYER,
+                  new Vector2d().cartesian(14, 23.5))
+          );
+          map.addToPool(
+              new Spawner(
+                  "FruitSpawn", env.getGameState(),
+                  new Vector2d().cartesian(14, 23.5),
+                  Spawner.SpawnerType.FRUIT,
+                  new Vector2d().cartesian(14, 23.5))
+          );
 
           env.getGameState().layers.get(AdvGameState.Layer.MAP.ordinal()).add(map);
 

@@ -26,7 +26,10 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
     this.mapPos = mapPos;
     this.type = ItemType.FRUIT;
 
-    this.fruitType = AdvGameConst.FruitType.values()[( gameState.level - 1 ) % AdvGameConst.FruitType.values().length];
+    int fruitIndex = AdvGameConst.fruitSpawn[( gameState.level - 1 ) % AdvGameConst.fruitSpawn.length];
+    System.out.println("Fruit index: " + fruitIndex);
+    this.fruitType = AdvGameConst.FruitType.values()[fruitIndex - 1];
+
     this.worth = AdvGameConst.fruitScore[fruitType.ordinal()];
   }
 

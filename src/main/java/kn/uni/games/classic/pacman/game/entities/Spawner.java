@@ -1,6 +1,5 @@
 package kn.uni.games.classic.pacman.game.entities;
 
-import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.items.PPelletItem;
@@ -8,38 +7,45 @@ import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
-import java.util.Arrays;
-
 public class Spawner extends Entity
 {
-  public AdvPlacedObject spawnable;
-  public String          name;
+  public String      name;
+  public SpawnerType type;
+  public Vector2d    spawnMapPos;
 
-  public Spawner (String name, AdvGameState gameState, Vector2d mapPos, AdvPlacedObject spawnable)
+  public Spawner (String name, AdvGameState gameState, Vector2d mapPos, SpawnerType type, Vector2d spawnMapPos)
   {
     super();
     this.name = name;
     this.gameState = gameState;
     this.mapPos = mapPos;
-    this.spawnable = spawnable;
+    this.type = type;
+    this.spawnMapPos = spawnMapPos;
   }
 
   public void spawn ()
   {
-    if (spawnable instanceof PelletItem)
-      gameState.spawnScaled(AdvGameState.Layer.ITEMS, spawnable);
-    else if (spawnable instanceof PPelletItem)
-      gameState.spawnScaled(AdvGameState.Layer.ITEMS, spawnable);
-    else if (spawnable instanceof FruitItem)
-      gameState.spawnScaled(AdvGameState.Layer.ITEMS, spawnable);
-    else if (spawnable instanceof AdvPacManEntity)
+    if (type == SpawnerType.PELLET)
+      gameState.spawnScaled(AdvGameState.Layer.ITEMS, new PelletItem(gameState, spawnMapPos));
+    else if (type == SpawnerType.PPELLET)
+      gameState.spawnScaled(AdvGameState.Layer.ITEMS, new PPelletItem(gameState, spawnMapPos));
+    else if (type == SpawnerType.FRUIT)
+      gameState.spawnScaled(AdvGameState.Layer.ITEMS, new FruitItem(gameState, spawnMapPos));
+    else if (type == SpawnerType.PLAYER)
     {
-      gameState.players.add((AdvPacManEntity) spawnable);
+      AdvPacManEntity player = new AdvPacManEntity(gameState, spawnMapPos);
+      gameState.players.add(player);
       gameState.requestedDirections.add(Direction.down);
-      gameState.spawnScaled(AdvGameState.Layer.ENTITIES, spawnable);
+      gameState.spawnScaled(AdvGameState.Layer.ENTITIES, player);
     }
-    else
-      throw new IllegalArgumentException("Invalid spawnable: " + spawnable.getClass().getSimpleName() + " " + Arrays.toString(spawnable.getClass().getInterfaces()));
+    //    else if (type == SpawnerType.TELEPORTER)
+    //      gameState.spawnScaled(AdvGameState.Layer.ENTITIES, new Teleporter(gameState, spawnMapPos));
 
   }
+
+  public enum SpawnerType
+  {
+    PELLET, PPELLET, FRUIT, PLAYER, TELEPORTER
+  }
 }
+
