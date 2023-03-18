@@ -8,6 +8,8 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
+import kn.uni.games.classic.pacman.game.objects.Blocker;
+import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.PacPhiConfig;
 
@@ -65,6 +67,27 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
                                 .map(t -> colliders.stream().filter(o -> pointInRect(o.absPos, t)).toList())
                                 .toList();
 
+    filteredColliders.forEach(e ->
+        //for each entity
+        e.stream()
+         //filter if filteredColliders contains a blocker object
+         .filter(o -> o instanceof Blocker)
+         //adjust the suppressed direction of the entity
+         .forEach(o ->
+             {
+               Entity  a = entities.get(filteredColliders.indexOf(e));
+               Blocker b = (Blocker) o;
+
+               Direction dir = getDirection(a, b);
+
+               if (distance(a, b) <= criticalDist(a, b) + 20)
+                 a.suppressedDirections.add(dir);
+               else
+                 a.suppressedDirections.clear();
+             }
+         )
+    );
+
     entities.forEach(e ->
     {
       filteredColliders.get(entities.indexOf(e)).forEach(c ->
@@ -80,17 +103,42 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
 
   private boolean colliding (AdvPlacedObject a, AdvPlacedObject b)
   {
+    return distance(a, b) <= criticalDist(a, b);
+  }
+
+  private double criticalDist (AdvPlacedObject a, AdvPlacedObject b)
+  {
     double radA = AdvGameConst.hitBoxes.get(a.getClass().getSimpleName());
     double radB = AdvGameConst.hitBoxes.get(b.getClass().getSimpleName());
 
-    double dist = a.absPos.subtract(b.absPos).length();
+    return ( radA + radB ) * AdvGameConst.tileSize;
+  }
 
-    return dist <= ( radA + radB ) * AdvGameConst.tileSize;
+  private double distance (AdvPlacedObject a, AdvPlacedObject b)
+  {
+    return ( a.absPos.subtract(b.absPos) ).rounded().length();
   }
 
   private boolean pointInRect (Vector2d point, Rectangle2D rect)
   {
     return point.x >= rect.getMinX() && point.x <= rect.getMaxX() && point.y >= rect.getMinY() && point.y <= rect.getMaxY();
+  }
+
+  private Direction getDirection (AdvPlacedObject a, AdvPlacedObject b)
+  {
+    if (a.mapPos.x == b.mapPos.floor().x)
+      if (a.mapPos.y < b.mapPos.floor().y)
+        return Direction.down;
+      else
+        return Direction.up;
+
+    if (a.mapPos.y == b.mapPos.floor().y)
+      if (a.mapPos.x < b.mapPos.floor().x)
+        return Direction.right;
+      else
+        return Direction.left;
+
+    return null;
   }
 
   @Override

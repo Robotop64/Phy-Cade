@@ -276,6 +276,15 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
   {
     spawnables.add(object);
   }
+
+  public void scaleSpawnablesPos ()
+  {
+    spawnables.stream()
+              .filter(o -> o instanceof AdvPlacedObject)
+              .map(o -> (AdvPlacedObject) o)
+              .filter(o -> o.absPos.length() == 0 && o.mapPos.length() != 0)
+              .forEach(o -> o.absPos = o.mapPos.multiply(AdvGameConst.tileSize));
+  }
   //endregion
 
   //the following methods are used to initialise a primitive map from a file

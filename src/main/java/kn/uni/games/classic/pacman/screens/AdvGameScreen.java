@@ -6,9 +6,11 @@ import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvCollider;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
+import kn.uni.games.classic.pacman.game.objects.Blocker;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
@@ -482,6 +484,15 @@ public class AdvGameScreen extends UIScreen
                   Spawner.SpawnerType.FRUIT,
                   new Vector2d().cartesian(14, 23.5))
           );
+
+          map.addToPool(
+              new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension((int) ( AdvGameConst.tileSize * 2 ), 3))
+          );
+          map.addToPool(
+              new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension((int) ( AdvGameConst.tileSize * 2 ), 3))
+          );
+
+          map.scaleSpawnablesPos();
 
           env.getGameState().layers.get(AdvGameState.Layer.MAP.ordinal()).add(map);
 

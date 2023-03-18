@@ -7,13 +7,17 @@ import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Entity extends AdvPlacedObject
 {
-  public boolean   stunned    = false;
-  public boolean   edible     = false;
-  public boolean   vulnerable = false;
-  public Direction facing     = Direction.right;
-  public Vector2d  velocity;
+  public boolean          stunned              = false;
+  public boolean          edible               = false;
+  public boolean          vulnerable           = false;
+  public Direction        facing               = Direction.right;
+  public List <Direction> suppressedDirections = new ArrayList <>();
+  public Vector2d         velocity;
 
   public AdvGameConst.EntityType type;
 

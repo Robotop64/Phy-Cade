@@ -140,24 +140,43 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
 
       double    stepSize      = velocity.x;
       Direction nextDir       = gameState.requestedDirections.get(gameState.players.indexOf(this));
-      double    centerDist    = round(this.facing.toVector().scalar(map.getTileInnerPos(absPos)));
+      Vector2d  innerPos      = map.getTileInnerPos(absPos);
+      double    centerDist    = round(this.facing.toVector().scalar(innerPos));
       boolean   centerReached = centerDist == 0;
       boolean   nextTileValid = possibleTiles.contains(currentTile.neighbors.get(this.facing));
       boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbors.get(nextDir));
 
-      //check if requested direction is valid or turn as soon as it is & turn if center has been reached
-      if (nextDirValid && centerReached)
-        this.facing = nextDir;
+
+      //allows turning vertically if innerTilePosition x == 0 or horizontally if innerTilePosition y == 0
+      if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
+        //if the next direction is a valid tile
+        if (nextDirValid)
+          //if the next direction is not marked as suppressed
+          if (!suppressedDirections.contains(nextDir))
+          {
+            this.facing = nextDir;
+            suppressedDirections.clear();
+          }
+
+      //stops the entity from moving in a suppressed direction
+      if (suppressedDirections.contains(this.facing))
+      {
+        System.out.println(this.facing + " " + nextDir + " " + suppressedDirections);
+        suppressedDirections.clear();
+        return;
+      }
 
       //next tile is valid or center has not been reached yet
       if (nextTileValid || centerDist < 0)
       {
         absPos = absPos.add(this.facing.toVector().multiply(stepSize));
+        mapPos = map.getTileMapPos(absPos);
         gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
       }
       else if (centerDist > 0)
       {
         absPos = currentTilePos.multiply(map.tileSize).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
+        mapPos = map.getTileMapPos(absPos);
         gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
       }
 
@@ -174,39 +193,12 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
       //          + " currentTile: " + currentTile
       //          + " possibleTiles: " + possibleTiles);
 
-      //region oldCode
-      //      //check if requested direction is valid or turn as soon as it is & turn if center has been reached
-      //      Direction nextDir = gameState.requestedDirections.get(gameState.players.indexOf(this));
-      //      if (possibleTiles.contains(currentTile.neighbors.get(nextDir)) && round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) == 0)
-      //        this.facing = nextDir;
-      //
-      //      //next tile is valid or center has not been reached yet
-      //      if (possibleTiles.contains(currentTile.neighbors.get(this.facing)) || round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) < 0)
-      //      {
-      //        absPos = absPos.add(this.facing.toVector().multiply(velocity.x));
-      //        gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
-      //        System.out.println(this.facing.toVector().multiply(velocity.x));
-      //      }
-      //
-      //      if (round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) <= round(this.facing.toVector().scalar(this.facing.toVector().multiply(velocity.x))))
-      //      {
-      //        System.out.println("mapPos" + getMapPos());
-      //        System.out.println("absPos" + map.getTileAbsPos(getMapPos()));
-      //        System.out.println("offset" + new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
-      //        absPos = map.getTileAbsPos(getMapPos()).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
-      //      }
-
-      //      System.out.println(possibleTiles.contains(currentTile.neighbors.get(this.facing)) + " a " + round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))));
-      //      System.out.println(possibleTiles.contains(currentTile.neighbors.get(nextDir)) + " b " + ( round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))) == 0 ));
-      //      System.out.println(map.getTileInnerPos(absPos) + " " + round(this.facing.toVector().scalar(map.getTileInnerPos(absPos))));
-      //endregion
     }
   }
 
   @Override
   public void onCollision (AdvGameObject collider)
   {
-    //    System.out.println("PacMan collided with " + collider.getClass().getSimpleName());
   }
   //endregion
 }
