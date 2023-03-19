@@ -79,4 +79,19 @@ public enum Direction
           case bottomRight -> topLeft;
         };
   }
+
+  public int toAngle ()
+  {
+    return switch (this)
+        {
+          case right -> 0;
+          case bottomRight -> 45;
+          case down -> 90;
+          case bottomLeft -> 135;
+          case left -> 180;
+          case topLeft -> 225;
+          case up -> 270;
+          case topRight -> 315;
+        };
+  }
 }

@@ -16,6 +16,7 @@ import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
 import kn.uni.ui.UIScreen;
+import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import org.apache.commons.lang3.StringUtils;
 
@@ -493,9 +494,11 @@ public class AdvGameScreen extends UIScreen
               new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension((int) ( AdvGameConst.tileSize * 2 ), 3))
           );
 
-          map.addToPool(
-              new Teleporter(env.gameState, new Vector2d().cartesian(1.5, 14.5))
-          );
+          Teleporter t1 = new Teleporter(env.gameState, new Vector2d().cartesian(1.5, 14.5), Direction.right);
+          Teleporter t2 = new Teleporter(env.gameState, new Vector2d().cartesian(26.5, 14.5), Direction.left);
+          t1.pair(t2, Color.ORANGE);
+          map.addToPool(t1);
+          map.addToPool(t2);
 
           map.scaleSpawnablesPos();
 
@@ -534,7 +537,7 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress("ready", 100, "Ready to start the Game!");
-          //          enableReadyPopup(true);
+          enableReadyPopup(true);
           env.pauseGame();
           env.startGame();
         }

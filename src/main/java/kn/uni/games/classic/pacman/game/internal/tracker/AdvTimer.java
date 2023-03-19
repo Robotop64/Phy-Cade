@@ -34,10 +34,24 @@ public class AdvTimer extends AdvGameObject implements AdvTicking
       if (task.startTick + task.waitPeriod == gameState.currentTick)
       {
         task.task.run();
-        removeTask(task);
       }
     });
+
+    for (int i = 0; i < tasks.size(); i++)
+    {
+      if (tasks.get(i).isCompleted(gameState))
+      {
+        tasks.remove(i);
+        i--;
+      }
+    }
   }
 
-  public record TimerTask(long startTick, long waitPeriod, Runnable task) { }
+  public record TimerTask(long startTick, long waitPeriod, Runnable task)
+  {
+    public boolean isCompleted (AdvGameState gameState)
+    {
+      return startTick + waitPeriod < gameState.currentTick;
+    }
+  }
 }

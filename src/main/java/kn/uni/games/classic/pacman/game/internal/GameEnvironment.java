@@ -413,7 +413,7 @@ public class GameEnvironment
         workDuration[0] = tickDuration[0] + renderDuration[0]; //duration of last tick in ms
         idleDuration[0] = round(( prefTickDuration / 1_000_000.0 - workDuration[0] )); //duration of last tick in ms
 
-        //        System.out.println("Tick " + gameState.currentTick + "(tps:" + gameState.tps + "):"
+        //        System.out.println("Tick " + gameState.currentTick + "(tps:" + AdvGameConst.tps + "):"
         //            + " Loop: " + String.format("%.4f", loopDuration[0]) + "ms" + ";"
         //            + " timing: " + String.format("%.4f", loopTiming[0]) + "ms" + ";"
         //            + " loopDelay:" + String.format("%.4f", delayBetweenLoops[0]) + "ms" + "|"

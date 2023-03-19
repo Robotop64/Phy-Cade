@@ -101,4 +101,14 @@ public class Util
   {
     return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
   }
+
+  public static double degToRad (double deg)
+  {
+    return deg * Math.PI / 180;
+  }
+
+  public static double radToDeg (double rad)
+  {
+    return rad * 180 / Math.PI;
+  }
 }
