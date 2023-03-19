@@ -72,6 +72,7 @@ public class PacPhiConfig
     settings.get("Graphics").addSubGroup("General");
     settings.get("Graphics").get("General").addSetting("Effects", "Boolean", true, new Boolean[]{ true, false }, true, true);
     settings.get("Graphics").addSubGroup("Advanced");
+    settings.get("Graphics").get("Advanced").addSetting("Antialiasing", "Boolean", false, new Boolean[]{ true, false }, false, true);
     settings.get("Graphics").addSubGroup("Style");
     settings.get("Graphics").get("Style").addSetting("MenuSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
     settings.get("Graphics").get("Style").addSetting("SeasonalSkins", "Boolean", true, new Boolean[]{ true, false }, true, true);
@@ -154,6 +155,11 @@ public class PacPhiConfig
   public void save ()
   {
     JsonEditor.save(settings, "settings");
+  }
+
+  public boolean checkSetting (String group, String subGroup, String setting, Object value)
+  {
+    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting().current().equals(value);
   }
 
   // record for setting

@@ -11,6 +11,7 @@ import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.Blocker;
+import kn.uni.games.classic.pacman.game.objects.Teleporter;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
@@ -492,6 +493,10 @@ public class AdvGameScreen extends UIScreen
               new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension((int) ( AdvGameConst.tileSize * 2 ), 3))
           );
 
+          map.addToPool(
+              new Teleporter(env.gameState, new Vector2d().cartesian(1.5, 14.5))
+          );
+
           map.scaleSpawnablesPos();
 
           env.getGameState().layers.get(AdvGameState.Layer.MAP.ordinal()).add(map);
@@ -529,7 +534,7 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress("ready", 100, "Ready to start the Game!");
-          enableReadyPopup(true);
+          //          enableReadyPopup(true);
           env.pauseGame();
           env.startGame();
         }

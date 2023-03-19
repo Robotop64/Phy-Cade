@@ -17,7 +17,8 @@ public class AdvGameConst
       "PelletItem", 1 / 4.,
       "PPelletItem", 1 / 4.,
       "FruitItem", 2 / 5.,
-      "Blocker", ( 1 / 2. ) - 0.05
+      "Blocker", ( 1 / 2. ) - 0.05,
+      "Teleporter", 1 / 4.
   );
   //endregion
 

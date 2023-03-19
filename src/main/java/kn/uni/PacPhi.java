@@ -41,6 +41,7 @@ public class PacPhi
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
     PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
     PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", false);
+    PacPhiConfig.getInstance().settings.get("Graphics").get("Advanced").set("Antialiasing", true);
     PacPhiConfig.getInstance().save();
     PacPhiConfig.getInstance().createDescriptions();
   }

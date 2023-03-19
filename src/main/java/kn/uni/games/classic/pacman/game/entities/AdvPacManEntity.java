@@ -14,6 +14,7 @@ import kn.uni.util.fileRelated.PacPhiConfig;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +86,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
 
-    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    if (PacPhiConfig.getInstance().checkSetting("Debugging", "-", "Enabled", true))
     {
       g.setColor(Color.RED);
       g.drawOval(
@@ -107,6 +108,13 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
   {
     cachedImg = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = cachedImg.createGraphics();
+
+    if (PacPhiConfig.getInstance().checkSetting("Graphics", "Advanced", "Antialiasing", true))
+    {
+      g.setRenderingHint(
+          RenderingHints.KEY_ANTIALIASING,
+          RenderingHints.VALUE_ANTIALIAS_ON);
+    }
 
     g.setColor(Color.YELLOW);
     g.fillOval(0, 0, iconSize, iconSize);
