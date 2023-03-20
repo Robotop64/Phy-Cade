@@ -6,6 +6,7 @@ import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.util.Direction;
+import kn.uni.util.fileRelated.PacPhiConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class AdvGameState
 
   //region game stats
   public long score       = 0;
-  public int  lives       = 5;
+  public int  lives       = 0;
   public int  livesGained = 0;
   public int  level       = 1;
   public long time        = 0;
@@ -45,6 +46,8 @@ public class AdvGameState
   {
     this.env = env;
     IntStream.range(0, Layer.values().length).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
+
+    lives = (int) ( (double) PacPhiConfig.getCurrent("Gameplay", "PacMan", "StartLives") );
   }
 
   public void addScore (long score)
@@ -52,8 +55,8 @@ public class AdvGameState
     long oldScore = this.score;
     long newScore = oldScore + score;
     this.score = newScore;
-    //add a live if the score passed a multiple of 10000
-    if (newScore / 10000 > oldScore / 10000)
+    //add a live if the score passed a multiple of 10000 (AdvGameConst.pointsToLife)
+    if (newScore / AdvGameConst.pointsToLife > oldScore / AdvGameConst.pointsToLife)
     {
       livesGained++;
       lives++;

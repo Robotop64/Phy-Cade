@@ -448,6 +448,7 @@ public class AdvGameScreen extends UIScreen
         () ->
         {
           setLoadingProgress("loading", 10, "Creating game environment...");
+          AdvGameConst.init();
           env = new GameEnvironment(uiComponents.get(GAME_WINDOW.ordinal()).getSize());
           env.gameScreen = this;
 

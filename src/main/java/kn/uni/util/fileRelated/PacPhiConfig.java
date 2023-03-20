@@ -88,16 +88,21 @@ public class PacPhiConfig
     settings.get("Debugging").addSubGroup("Gameplay");
     settings.get("Debugging").get("Gameplay").addSetting("Immortal", "Boolean", false, new Boolean[]{ true, false }, false, true);
     settings.get("Debugging").get("Gameplay").get("Immortal").makeDebug();
-    settings.get("Debugging").get("Gameplay").addSetting("StartLives", "Level", 5, null, 5, true);
-    settings.get("Debugging").get("Gameplay").get("StartLives").makeDebug();
-    settings.get("Debugging").get("Gameplay").addSetting("StartSpeed", "Level", 1, null, 1, true);
-    settings.get("Debugging").get("Gameplay").get("StartSpeed").makeDebug();
 
     //Gameplay branch
     settings.addSubGroup("Gameplay");
     settings.get("Gameplay").addSubGroup("-");
-    settings.get("Gameplay").addSubGroup("GameSpecific");
-    //    settings.get("Gameplay").get("GameSpecific").addSubGroup("PacMan");
+    settings.get("Gameplay").addSubGroup("PacMan");
+    settings.get("Gameplay").get("PacMan").addSetting("StartLives", "Value", 5, null, 5, false);
+    settings.get("Gameplay").get("PacMan").get("StartLives").makeDebug();
+    settings.get("Gameplay").get("PacMan").addSetting("StartSpeed", "Value", 6, null, 6, false);
+    settings.get("Gameplay").get("PacMan").get("StartSpeed").makeDebug();
+    settings.get("Gameplay").get("PacMan").addSetting("PlayerHP", "Value", 1, null, 1, false);
+    settings.get("Gameplay").get("PacMan").get("PlayerHP").makeDebug();
+    settings.get("Gameplay").get("PacMan").addSetting("GhostHP", "Value", 1, null, 1, false);
+    settings.get("Gameplay").get("PacMan").get("GhostHP").makeDebug();
+    settings.get("Gameplay").get("PacMan").addSetting("PointsToLife", "Value", 10000, null, 10000, false);
+    settings.get("Gameplay").get("PacMan").get("PointsToLife").makeDebug();
 
 
     //Graphics branch
