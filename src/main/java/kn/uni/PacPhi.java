@@ -37,13 +37,12 @@ public class PacPhi
 
   public static void getSettings ()
   {
-    PacPhiConfig.getInstance().load();
-    PacPhiConfig.getInstance().settings.get("General").get("-").set("Version", GAME_VERSION);
-    PacPhiConfig.getInstance().settings.get("General").get("-").set("Branch", GAME_BRANCH);
-    PacPhiConfig.getInstance().settings.get("Debugging").get("-").set("Enabled", false);
-    PacPhiConfig.getInstance().settings.get("Graphics").get("Advanced").set("Antialiasing", true);
-    PacPhiConfig.getInstance().save();
-    PacPhiConfig.getInstance().createDescriptions();
+    PacPhiConfig.load();
+    PacPhiConfig.setCurrent("General", "-", "Version", GAME_VERSION);
+    PacPhiConfig.setCurrent("General", "-", "Branch", GAME_BRANCH);
+    PacPhiConfig.setCurrent("Debugging", "-", "Enabled", false);
+    PacPhiConfig.setCurrent("Graphics", "Advanced", "Antialiasing", true);
+    PacPhiConfig.save();
   }
 
   public static void getPermission ()

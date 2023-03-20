@@ -27,10 +27,43 @@ public class PacPhiConfig
     return instance;
   }
 
+  public static boolean checkSetting (String group, String subGroup, String setting, Object value)
+  {
+    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting().current().equals(value);
+  }
+
+  public static Object getCurrent (String group, String subGroup, String setting)
+  {
+    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting().current();
+  }
+
+  public static Setting getSetting (String group, String subGroup, String setting)
+  {
+    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting();
+  }
+
+  public static void setCurrent (String group, String subGroup, String setting, Object value)
+  {
+    PacPhiConfig.getInstance().settings.get(group).get(subGroup).set(setting, value);
+  }
+
+  public static void load ()
+  {
+    //create defaults
+    PacPhiConfig.getInstance().init();
+    //load settings
+    PacPhiConfig.getInstance().settings = (SettingTree) JsonEditor.load(PacPhiConfig.getInstance().settings, "settings");
+  }
+
+  public static void save ()
+  {
+    JsonEditor.save(PacPhiConfig.getInstance().settings, "settings");
+  }
+
   public void init ()
   {
     createDefaultSettings();
-    //createDescriptions();
+    createDescriptions();
   }
 
   public void createDefaultSettings ()
@@ -141,25 +174,6 @@ public class PacPhiConfig
     descriptions.put("SFX", new Context("Soundeffekte", "Aktiviert oder deaktiviert die Soundeffekte"));
     descriptions.put("SFXVolume", new Context("Soundlautstärke", "Steuert die Lautstärke der Soundeffekte"));
 
-  }
-
-  public void load ()
-  {
-    //create defaults
-    init();
-    //load settings
-    settings = (SettingTree) JsonEditor.load(settings, "settings");
-
-  }
-
-  public void save ()
-  {
-    JsonEditor.save(settings, "settings");
-  }
-
-  public boolean checkSetting (String group, String subGroup, String setting, Object value)
-  {
-    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting().current().equals(value);
   }
 
   // record for setting

@@ -46,7 +46,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
 
     g.drawImage(cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. + cachedImg.getWidth() / 4. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
 
-    if (PacPhiConfig.getInstance().checkSetting("Debugging", "-", "Enabled", true))
+    if (PacPhiConfig.checkSetting("Debugging", "-", "Enabled", true))
     {
       g.setColor(Color.RED);
       int radius = (int) ( AdvGameConst.hitBoxes.get("Teleporter") * AdvGameConst.tileSize );
@@ -68,7 +68,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
     cachedImg = new BufferedImage(iconSize * 2, (int) ( iconSize * 1.5 ), BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = cachedImg.createGraphics();
 
-    if (PacPhiConfig.getInstance().checkSetting("Graphics", "Advanced", "Antialiasing", true))
+    if (PacPhiConfig.checkSetting("Graphics", "Advanced", "Antialiasing", true))
     {
       g.setRenderingHint(
           RenderingHints.KEY_ANTIALIASING,
