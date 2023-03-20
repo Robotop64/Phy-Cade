@@ -76,7 +76,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
     Graphics2D g2d = cachedImg.createGraphics();
     tilesAbs.forEach((k, v) ->
     {
-      if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+      if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
       {
         Color c = v.getType() == AdvPacManTile.TileType.FLOOR ? Color.BLUE : Color.BLACK;
         g2d.setColor(c);
@@ -106,7 +106,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
                   g2d.setColor(Color.CYAN.darker());
                   g2d.drawLine((int) center.x, (int) center.y, (int) end.x, (int) end.y);
 
-                  if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+                  if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
                   {
                     g2d.setColor(Color.RED);
                     g2d.drawString(v.connectionType.name(), (int) center.x, (int) center.y);
@@ -133,7 +133,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
                   g2d.drawLine((int) center.x, (int) center.y, (int) endA.x, (int) endA.y);
                   g2d.drawLine((int) center.x, (int) center.y, (int) endB.x, (int) endB.y);
 
-                  if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+                  if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
                   {
                     g2d.setColor(Color.RED);
                     g2d.drawString(v.connectionType.name(), (int) center.x, (int) center.y);

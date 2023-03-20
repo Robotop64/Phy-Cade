@@ -68,7 +68,7 @@ public class Gui
     content.setBounds(defaultFrameBounds);
     content.setLayout(null);
     // todo remove for release
-    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
       content.setBackground(Color.orange);
     //    content.setBackground(Color.black);
 

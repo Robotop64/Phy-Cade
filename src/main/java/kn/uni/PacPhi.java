@@ -38,10 +38,10 @@ public class PacPhi
   public static void getSettings ()
   {
     PacPhiConfig.load();
-    PacPhiConfig.setCurrent("General", "-", "Version", GAME_VERSION);
-    PacPhiConfig.setCurrent("General", "-", "Branch", GAME_BRANCH);
-    PacPhiConfig.setCurrent("Debugging", "-", "Enabled", false);
-    PacPhiConfig.setCurrent("Graphics", "Advanced", "Antialiasing", true);
+    //    PacPhiConfig.setCurrent("General", "-", "Version", GAME_VERSION);
+    //    PacPhiConfig.setCurrent("General", "-", "Branch", GAME_BRANCH);
+    //    PacPhiConfig.setCurrent("Debugging", "-", "Enabled", true);
+    //    PacPhiConfig.setCurrent("Graphics", "Advanced", "Antialiasing", true);
     PacPhiConfig.save();
   }
 

@@ -245,7 +245,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     cachedImg = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = cachedImg.createGraphics();
 
-    if (PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current().equals(true))
+    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
     {
       g.setColor(primitiveColor);
       g.fillRect(0, 0, iconSize, iconSize);

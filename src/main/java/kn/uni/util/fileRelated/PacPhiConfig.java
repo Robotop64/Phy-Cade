@@ -27,14 +27,9 @@ public class PacPhiConfig
     return instance;
   }
 
-  public static boolean checkSetting (String group, String subGroup, String setting, Object value)
+  public static Object getContent (String group, String subGroup, String setting)
   {
-    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting().current().equals(value);
-  }
-
-  public static Object getCurrent (String group, String subGroup, String setting)
-  {
-    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting().current();
+    return PacPhiConfig.getInstance().settings.get(group).get(subGroup).get(setting).setting().content;
   }
 
   public static Setting getSetting (String group, String subGroup, String setting)
@@ -69,66 +64,70 @@ public class PacPhiConfig
   public void createDefaultSettings ()
   {
     //trunk
-    settings = new SettingTree(new TreeMap <>(), new Setting <>("Settings", "Group", null, null, null), 0);
+    settings = new SettingTree(new TreeMap <>(), new Setting <>("Settings", new Group(0)), 0);
 
     //General branch
     settings.addSubGroup("General");
+
     settings.get("General").addSubGroup("-");
-    settings.get("General").get("-").addSetting("Version", "Value", null, null, null, false);
-    settings.get("General").get("-").get("Version").makeNonEditable();
-    settings.get("General").get("-").addSetting("Branch", "Value", "UNSTABLE", new String[]{ "STABLE", "UNSTABLE" }, "STABLE", true);
-    settings.get("General").get("-").addSetting("AccessLevel", "Value", "User", new String[]{ "User", "Developer" }, "User", false);
-    settings.get("General").get("-").get("AccessLevel").makeNonEditable();
+    settings.get("General").get("-").addSetting("Version", new Value(null, null, null), true, false, false);
+    settings.get("General").get("-").addSetting("Branch", new Value("ENTROPIC", "STABLE", new String[]{ "STABLE", "UNSTABLE" }), true, true, false);
+    settings.get("General").get("-").addSetting("AccessLevel", new Value("User", "User", new String[]{ "User", "Developer" }), false, false, false);
+
 
     //Debugging branch
     settings.addSubGroup("Debugging");
+
     settings.get("Debugging").addSubGroup("-");
-    settings.get("Debugging").get("-").addSetting("Enabled", "Boolean", false, null, null, true);
+    settings.get("Debugging").get("-").addSetting("Enabled", new Switch(false, false), true, true, false);
+
     settings.get("Debugging").addSubGroup("Graphics");
+
     settings.get("Debugging").addSubGroup("Gameplay");
-    settings.get("Debugging").get("Gameplay").addSetting("Immortal", "Boolean", false, new Boolean[]{ true, false }, false, true);
-    settings.get("Debugging").get("Gameplay").get("Immortal").makeDebug();
+    settings.get("Debugging").get("Gameplay").addSetting("Immortal", new Switch(false, false), true, true, true);
+
 
     //Gameplay branch
     settings.addSubGroup("Gameplay");
+
     settings.get("Gameplay").addSubGroup("-");
+
     settings.get("Gameplay").addSubGroup("PacMan");
-    settings.get("Gameplay").get("PacMan").addSetting("StartLives", "Value", 5, null, 5, false);
-    settings.get("Gameplay").get("PacMan").get("StartLives").makeDebug();
-    settings.get("Gameplay").get("PacMan").addSetting("StartSpeed", "Value", 6, null, 6, false);
-    settings.get("Gameplay").get("PacMan").get("StartSpeed").makeDebug();
-    settings.get("Gameplay").get("PacMan").addSetting("PlayerHP", "Value", 1, null, 1, false);
-    settings.get("Gameplay").get("PacMan").get("PlayerHP").makeDebug();
-    settings.get("Gameplay").get("PacMan").addSetting("GhostHP", "Value", 1, null, 1, false);
-    settings.get("Gameplay").get("PacMan").get("GhostHP").makeDebug();
-    settings.get("Gameplay").get("PacMan").addSetting("PointsToLife", "Value", 10000, null, 10000, false);
-    settings.get("Gameplay").get("PacMan").get("PointsToLife").makeDebug();
+    settings.get("Gameplay").get("PacMan").addSetting("StartLives", new Digit(5, 5, null), true, true, true);
+    settings.get("Gameplay").get("PacMan").addSetting("StartSpeed", new Digit(6, 6, null), true, true, true);
+    settings.get("Gameplay").get("PacMan").addSetting("PlayerHP", new Digit(1, 1, null), true, true, true);
+    settings.get("Gameplay").get("PacMan").addSetting("GhostHP", new Digit(1, 1, null), true, true, true);
+    settings.get("Gameplay").get("PacMan").addSetting("PointsToLife", new Digit(10000, 10000, null), true, true, true);
+    settings.get("Gameplay").get("PacMan").addSetting("PortalDelay", new Digit(0.01, 0.01, null), true, true, true);
+    settings.get("Gameplay").get("PacMan").addSetting("PortalCooldown", new Digit(1, 1, null), true, true, true);
 
 
     //Graphics branch
     settings.addSubGroup("Graphics");
     settings.get("Graphics").addSubGroup("General");
-    settings.get("Graphics").get("General").addSetting("Effects", "Boolean", true, new Boolean[]{ true, false }, true, true);
+    settings.get("Graphics").get("General").addSetting("Effects", new Switch(true, true), true, true, false);
+
     settings.get("Graphics").addSubGroup("Advanced");
-    settings.get("Graphics").get("Advanced").addSetting("Antialiasing", "Boolean", false, new Boolean[]{ true, false }, false, true);
+    settings.get("Graphics").get("Advanced").addSetting("Antialiasing", new Switch(false, false), true, true, false);
+
     settings.get("Graphics").addSubGroup("Style");
-    settings.get("Graphics").get("Style").addSetting("MenuSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("SeasonalSkins", "Boolean", true, new Boolean[]{ true, false }, true, true);
-    settings.get("Graphics").get("Style").addSetting("PlayerSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("GhostSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("ItemSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("MapSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
-    settings.get("Graphics").get("Style").addSetting("WallSkin", "Value", "Classic", new String[]{ "Classic" }, "Classic", true);
+    settings.get("Graphics").get("Style").addSetting("MenuSkin", new Value("Classic", "Classic", new String[]{ "Classic" }), true, true, false);
+    settings.get("Graphics").get("Style").addSetting("SeasonalSkins", new Switch(true, true), true, true, false);
+    settings.get("Graphics").get("Style").addSetting("PlayerSkin", new Value("Classic", "Classic", new String[]{ "Classic" }), true, true, false);
+    settings.get("Graphics").get("Style").addSetting("GhostSkin", new Value("Classic", "Classic", new String[]{ "Classic" }), true, true, false);
+    settings.get("Graphics").get("Style").addSetting("ItemSkin", new Value("Classic", "Classic", new String[]{ "Classic" }), true, true, false);
+    settings.get("Graphics").get("Style").addSetting("MapSkin", new Value("Classic", "Classic", new String[]{ "Classic" }), true, true, false);
+    settings.get("Graphics").get("Style").addSetting("WallSkin", new Value("Classic", "Classic", new String[]{ "Classic" }), true, true, false);
 
     //Audio branch
     settings.addSubGroup("Audio");
     settings.get("Audio").addSubGroup("General");
-    settings.get("Audio").get("General").addSetting("Enabled", "Boolean", true, new Boolean[]{ true, false }, true, true);
-    settings.get("Audio").get("General").addSetting("MasterVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
-    settings.get("Audio").get("General").addSetting("Music", "Boolean", true, new Boolean[]{ true, false }, true, true);
-    settings.get("Audio").get("General").addSetting("MusicVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
-    settings.get("Audio").get("General").addSetting("SFX", "Boolean", true, new Boolean[]{ true, false }, true, true);
-    settings.get("Audio").get("General").addSetting("SFXVolume", "Range", 100, new Integer[]{ 0, 100 }, 100, true);
+    settings.get("Audio").get("General").addSetting("Enabled", new Switch(true, true), true, true, false);
+    settings.get("Audio").get("General").addSetting("MasterVolume", new Range(100, 0, 100, 5), true, true, false);
+    settings.get("Audio").get("General").addSetting("Music", new Switch(true, true), true, true, false);
+    settings.get("Audio").get("General").addSetting("MusicVolume", new Range(100, 0, 100, 5), true, true, false);
+    settings.get("Audio").get("General").addSetting("SFX", new Switch(true, true), true, true, false);
+    settings.get("Audio").get("General").addSetting("SFXVolume", new Range(100, 0, 100, 5), true, true, false);
   }
 
   public void createDescriptions ()
@@ -182,7 +181,7 @@ public class PacPhiConfig
   }
 
   // record for setting
-  public record Setting <T>(String name, T type, T current, T possibleVal, T defaultVal) { }
+  public record Setting <T>(String name, T content) { }
 
   // tree consisting of setting groups and settings as leaves
   public record SettingTree(TreeMap <String, SettingTree> children, Setting <?> setting, int order)
@@ -196,7 +195,7 @@ public class PacPhiConfig
       AtomicBoolean hasSubGroups = new AtomicBoolean(false);
       children.forEach((s, settingTree) ->
       {
-        if (settingTree.setting.type == "SubGroup") hasSubGroups.set(true);
+        if (!( settingTree.setting.content instanceof Group )) hasSubGroups.set(true);
       });
 
       return hasSubGroups.get();
@@ -204,7 +203,7 @@ public class PacPhiConfig
 
     public boolean isGroup ()
     {
-      return setting.type == "SubGroup" || setting.type == "Group";
+      return setting.content instanceof Group;
     }
 
     public SettingTree get (String key)
@@ -217,17 +216,35 @@ public class PacPhiConfig
     public void set (String key, Object value)
     {
       Setting <?> old = children.get(key).setting;
+
+      if (old.content instanceof Group) return;
+
+      Object newContent = null;
+
+      if (old.content instanceof Range o)
+        newContent = new Range((Double) value, o.min, o.max, o.stepSize);
+
+      else if (old.content instanceof Switch o)
+        newContent = new Switch((Boolean) value, o.defaultVal);
+
+      else if (old.content instanceof Value o)
+        newContent = new Value((String) value, o.defaultVal, o.possible);
+
+      else if (old.content instanceof Digit o)
+        newContent = new Digit((Double) value, o.defaultVal, o.possible);
+
+
       children.replace(
           key,
-          new SettingTree(new TreeMap <>(), new Setting <>(old.name, old.type, value, old.possibleVal, old.defaultVal), children.get(key).order));
+          new SettingTree(new TreeMap <>(), new Setting <>(old.name, newContent), children.get(key).order));
     }
 
-    public void addSubGroup (String name)
+    private void addSubGroup (String name)
     {
-      children.put(name, new SettingTree(new TreeMap <>(), new Setting <>(name, "SubGroup", null, null, null), children.size()));
+      children.put(name, new SettingTree(new TreeMap <>(), new Setting <>(name, new Group(1)), children.size()));
     }
 
-    public void addSetting (String name, Object type, Object current, Object possibleVal, Object defaultVal, boolean editable)
+    private void addSetting (String name, Object content, boolean visible, boolean editable, boolean debug)
     {
       AtomicInteger order = new AtomicInteger();
 
@@ -237,17 +254,19 @@ public class PacPhiConfig
                    .max(Comparator.comparingInt(settingTree -> settingTree.order))
                    .ifPresent(settingTree -> order.set(settingTree.order + 1));
 
-      if (!editable) order.set(-1);
+      if (!visible) order.set(-1);
+      if (!editable) PacPhiConfig.getInstance().nonEditable.add(this);
+      if (debug) PacPhiConfig.getInstance().debugOnly.add(this);
 
-      children.put(name, new SettingTree(new TreeMap <>(), new Setting <>(name, type, current, possibleVal, defaultVal), order.get()));
+      children.put(name, new SettingTree(new TreeMap <>(), new Setting <>(name, content), order.get()));
     }
 
-    public void makeDebug ()
+    private void makeDebug ()
     {
       PacPhiConfig.getInstance().debugOnly.add(this);
     }
 
-    public void makeNonEditable ()
+    private void makeNonEditable ()
     {
       PacPhiConfig.getInstance().nonEditable.add(this);
     }
@@ -262,7 +281,17 @@ public class PacPhiConfig
 
   public record Context(String displayName, String info) { }
 
-  record Range(int min, int max, int stepSize) { }
+  //region setting types
+  public record Range(double current, double min, double max, double stepSize) { }
+
+  public record Switch(boolean current, boolean defaultVal) { }
+
+  public record Value(String current, String defaultVal, String[] possible) { }
+
+  public record Digit(double current, double defaultVal, double[] possible) { }
+
+  public record Group(int ordinal) { }
+  //endregion
 }
 
 //example for reading the configs

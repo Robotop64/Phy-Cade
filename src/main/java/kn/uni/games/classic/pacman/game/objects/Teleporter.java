@@ -46,7 +46,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
 
     g.drawImage(cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. + cachedImg.getWidth() / 4. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
 
-    if (PacPhiConfig.checkSetting("Debugging", "-", "Enabled", true))
+    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
     {
       g.setColor(Color.RED);
       int radius = (int) ( AdvGameConst.hitBoxes.get("Teleporter") * AdvGameConst.tileSize );
@@ -68,7 +68,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
     cachedImg = new BufferedImage(iconSize * 2, (int) ( iconSize * 1.5 ), BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = cachedImg.createGraphics();
 
-    if (PacPhiConfig.checkSetting("Graphics", "Advanced", "Antialiasing", true))
+    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Graphics", "Advanced", "Antialiasing") ).current())
     {
       g.setRenderingHint(
           RenderingHints.KEY_ANTIALIASING,
@@ -121,19 +121,41 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
     if (onCooldown)
       return;
 
-    AdvPlacedObject trigger = (AdvPlacedObject) collider;
-    trigger.mapPos = other.mapPos;
-    trigger.absPos = other.absPos;
-
-    if (trigger instanceof Entity e)
-      e.facing = other.facing;
-
     other.onCooldown = true;
+    this.onCooldown = true;
 
+    AdvPlacedObject triggerInit = (AdvPlacedObject) collider;
+    triggerInit.mapPos = new Vector2d().cartesian(1, 1);
+    triggerInit.absPos = new Vector2d().cartesian(5, 5);
+
+    //delay teleport
     gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
                     .filter(o -> o instanceof AdvTimer)
                     .map(o -> (AdvTimer) o)
-                    .forEach(o -> o.addTask(new AdvTimer.TimerTask(gameState.currentTick, 120, () -> other.onCooldown = false)));
+                    .forEach(o -> o.addTask(new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * AdvGameConst.portalDelay ), () ->
+                    {
+                      AdvPlacedObject trigger = (AdvPlacedObject) collider;
+                      trigger.mapPos = other.mapPos;
+                      trigger.absPos = other.absPos;
+
+                      if (trigger instanceof Entity e)
+                      {
+                        e.facing = other.facing;
+                      }
+
+                      System.out.println("Teleported " + trigger + " to " + other.mapPos + " facing " + other.facing);
+                      System.out.println(AdvGameConst.portalCooldown);
+                    })));
+
+    //remove cooldown
+    gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
+                    .filter(o -> o instanceof AdvTimer)
+                    .map(o -> (AdvTimer) o)
+                    .forEach(o -> o.addTask(new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * AdvGameConst.portalCooldown ), () ->
+                    {
+                      other.onCooldown = false;
+                      this.onCooldown = false;
+                    })));
 
     gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
 

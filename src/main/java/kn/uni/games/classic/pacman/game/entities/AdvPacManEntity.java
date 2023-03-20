@@ -42,7 +42,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
 
-    if (PacPhiConfig.checkSetting("Debugging", "-", "Enabled", true))
+    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
     {
       g.setColor(Color.RED);
       g.drawOval(
@@ -65,7 +65,8 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     cachedImg = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = cachedImg.createGraphics();
 
-    if (PacPhiConfig.checkSetting("Graphics", "Advanced", "Antialiasing", true))
+
+    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Graphics", "Advanced", "Antialiasing") ).current())
     {
       g.setRenderingHint(
           RenderingHints.KEY_ANTIALIASING,

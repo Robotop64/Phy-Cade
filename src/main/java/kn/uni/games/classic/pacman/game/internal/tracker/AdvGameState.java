@@ -47,7 +47,7 @@ public class AdvGameState
     this.env = env;
     IntStream.range(0, Layer.values().length).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
 
-    lives = (int) ( (double) PacPhiConfig.getCurrent("Gameplay", "PacMan", "StartLives") );
+    lives = (int) ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "StartLives") ).current();
   }
 
   public void addScore (long score)

@@ -1,134 +1,134 @@
-package kn.uni.menus.G2D;
-
-import kn.uni.Gui;
-import kn.uni.PacPhi;
-import kn.uni.menus.G2D.engine.Projector;
-import kn.uni.menus.G2D.objects.UIImage;
-import kn.uni.menus.G2D.objects.UILabel;
-import kn.uni.menus.G2D.objects.UITable;
-import kn.uni.ui.InputListener;
-import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
-
-import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
-
-public class MainMenu extends Menu
-{
-  UITable selected;
-
-  public MainMenu (JPanel parent)
-  {
-    super(parent);
-
-    createUIComponents();
-
-    bindPlayer(InputListener.Player.playerOne, input ->
-    {
-      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
-      {
-        selected.pressSelected();
-        return;
-      }
-
-      selected.moveSelection(input.toDirection());
-
-    });
-  }
-
-  private void createUIComponents ()
-  {
-    //titel
-    UILabel titel = new UILabel(new Vector2d().cartesian(390, 100), new Dimension(500, 120), "~ PAC - MAN ~", 0);
-    titel.setFontSize(54);
-    titel.borderColor = null;
-    titel.textColor = Color.yellow;
-    elements.add(titel);
-    //
-
-    //buttons
-    UITable main = new UITable(
-        new Vector2d().cartesian(390, 217),
-        new Dimension(500, 120 * 5 + 4 * 9), 0,
-        new Dimension(1, 5));
-    main.setSpacing(main.hSpacing, 9);
-    main.borderWidth = 1;
-
-    main.cellToButton(new int[]{ 0, 0 }, "EIN SPIELER");
-    main.getCellContent(new int[]{ 0, 0 }).asLabel().setFontSize(32);
-
-    main.cellToButton(new int[]{ 0, 1 }, "ZWEI SPIELER");
-    main.getCellContent(new int[]{ 0, 1 }).asLabel().setFontSize(32);
-
-    main.cellToButton(new int[]{ 0, 2 }, "BESTENLISTE");
-    main.getCellContent(new int[]{ 0, 2 }).asLabel().setFontSize(32);
-
-    main.cellToButton(new int[]{ 0, 3 }, "EINSTELLUNGEN");
-    main.getCellContent(new int[]{ 0, 3 }).asLabel().setFontSize(32);
-    main.getCellContent(new int[]{ 0, 3 }).asButton().addAction(() ->
-    {
-      kill();
-      Projector projector = Projector.getInstance(Gui.getInstance().content);
-      projector.setSelectedMenu(new SettingsMenu(Gui.getInstance().content));
-    });
-
-    main.cellToButton(new int[]{ 0, 4 }, "TON - AN");
-    main.getCellContent(new int[]{ 0, 4 }).asLabel().setFontSize(32);
-    main.getCellContent(new int[]{ 0, 4 }).asButton().addAction(() ->
-    {
-      UILabel label = main.getCellContent(new int[]{ 0, 4 }).asLabel();
-      label.setText(label.text.getText().equals("TON - AN") ? "TON - AUS" : "TON - AN");
-    });
-
-    main.selectCell(new int[]{ 0, 0 });
-    selected = main;
-    elements.add(main);
-    //
-
-    //infos
-    UILabel i = new UILabel(
-        new Vector2d().cartesian(10, Gui.frameHeight - ( 20 * 5 + 4 * 5 + 10 )),
-        new Dimension(300, 20 * 5 + 4 * 3),
-        "a", 0);
-    i.setFontSize(16);
-    i.setAlignment(UILabel.Alignment.BOTTOM_LEFT);
-    i.textLineSpacing = 8;
-    i.borderColor = null;
-
-    List <String> content = new ArrayList <>();
-    content.add("Ver.:" + PacPhi.GAME_VERSION);
-    content.add("Latest Feature: " + PacPhi.GAME_UPDATE);
-    content.add("Branch: " + PacPhi.GAME_BRANCH);
-    String currentVersion = (String) PacPhiConfig.getInstance().settings.get("General").get("-").get("Branch").setting().current();
-    content.add(PacPhi.GAME_BRANCH.equals(currentVersion) ? "" : "Restart to: " + currentVersion);
-    boolean debug = (boolean) PacPhiConfig.getInstance().settings.get("Debugging").get("-").get("Enabled").setting().current();
-    content.add(debug ? "Debug Mode" : "");
-
-    content.removeIf(String::isEmpty);
-
-    StringBuilder text = new StringBuilder();
-    for (String s : content)
-    {
-      text.append(s).append("\n");
-    }
-    i.setText(String.valueOf(text));
-    elements.add(i);
-    //
-
-    //QR-Code
-    UIImage a = new UIImage(new Vector2d().cartesian(Gui.frameWidth - 180, Gui.frameHeight - 260), new Dimension(170, 250), 0, "pacman/QR_Code_GitLab.png");
-    //    a.setText("Vorschläge\n    & \n  Fehler ");
-    a.setText("Vorschläge\n    &     \n Probleme ");
-    a.label.fitText();
-    a.label.setAlignment(UILabel.Alignment.MIDDLE_CENTER);
-    a.label.borderColor = null;
-    a.setImageDim(new Dimension(150, 150));
-    a.setAlignment(UIImage.Alignment.BOTTOM);
-    a.setProportion(3 / 5.);
-    elements.add(a);
-
-  }
-}
+//package kn.uni.menus.G2D;
+//
+//import kn.uni.Gui;
+//import kn.uni.PacPhi;
+//import kn.uni.menus.G2D.engine.Projector;
+//import kn.uni.menus.G2D.objects.UIImage;
+//import kn.uni.menus.G2D.objects.UILabel;
+//import kn.uni.menus.G2D.objects.UITable;
+//import kn.uni.ui.InputListener;
+//import kn.uni.util.Vector2d;
+//import kn.uni.util.fileRelated.PacPhiConfig;
+//
+//import javax.swing.JPanel;
+//import java.awt.Color;
+//import java.awt.Dimension;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class MainMenu extends Menu
+//{
+//  UITable selected;
+//
+//  public MainMenu (JPanel parent)
+//  {
+//    super(parent);
+//
+//    createUIComponents();
+//
+//    bindPlayer(InputListener.Player.playerOne, input ->
+//    {
+//      if (input.equals(new InputListener.Input(InputListener.Key.A, InputListener.State.down, InputListener.Player.playerOne)))
+//      {
+//        selected.pressSelected();
+//        return;
+//      }
+//
+//      selected.moveSelection(input.toDirection());
+//
+//    });
+//  }
+//
+//  private void createUIComponents ()
+//  {
+//    //titel
+//    UILabel titel = new UILabel(new Vector2d().cartesian(390, 100), new Dimension(500, 120), "~ PAC - MAN ~", 0);
+//    titel.setFontSize(54);
+//    titel.borderColor = null;
+//    titel.textColor = Color.yellow;
+//    elements.add(titel);
+//    //
+//
+//    //buttons
+//    UITable main = new UITable(
+//        new Vector2d().cartesian(390, 217),
+//        new Dimension(500, 120 * 5 + 4 * 9), 0,
+//        new Dimension(1, 5));
+//    main.setSpacing(main.hSpacing, 9);
+//    main.borderWidth = 1;
+//
+//    main.cellToButton(new int[]{ 0, 0 }, "EIN SPIELER");
+//    main.getCellContent(new int[]{ 0, 0 }).asLabel().setFontSize(32);
+//
+//    main.cellToButton(new int[]{ 0, 1 }, "ZWEI SPIELER");
+//    main.getCellContent(new int[]{ 0, 1 }).asLabel().setFontSize(32);
+//
+//    main.cellToButton(new int[]{ 0, 2 }, "BESTENLISTE");
+//    main.getCellContent(new int[]{ 0, 2 }).asLabel().setFontSize(32);
+//
+//    main.cellToButton(new int[]{ 0, 3 }, "EINSTELLUNGEN");
+//    main.getCellContent(new int[]{ 0, 3 }).asLabel().setFontSize(32);
+//    main.getCellContent(new int[]{ 0, 3 }).asButton().addAction(() ->
+//    {
+//      kill();
+//      Projector projector = Projector.getInstance(Gui.getInstance().content);
+//      projector.setSelectedMenu(new SettingsMenu(Gui.getInstance().content));
+//    });
+//
+//    main.cellToButton(new int[]{ 0, 4 }, "TON - AN");
+//    main.getCellContent(new int[]{ 0, 4 }).asLabel().setFontSize(32);
+//    main.getCellContent(new int[]{ 0, 4 }).asButton().addAction(() ->
+//    {
+//      UILabel label = main.getCellContent(new int[]{ 0, 4 }).asLabel();
+//      label.setText(label.text.getText().equals("TON - AN") ? "TON - AUS" : "TON - AN");
+//    });
+//
+//    main.selectCell(new int[]{ 0, 0 });
+//    selected = main;
+//    elements.add(main);
+//    //
+//
+//    //infos
+//    UILabel i = new UILabel(
+//        new Vector2d().cartesian(10, Gui.frameHeight - ( 20 * 5 + 4 * 5 + 10 )),
+//        new Dimension(300, 20 * 5 + 4 * 3),
+//        "a", 0);
+//    i.setFontSize(16);
+//    i.setAlignment(UILabel.Alignment.BOTTOM_LEFT);
+//    i.textLineSpacing = 8;
+//    i.borderColor = null;
+//
+//    List <String> content = new ArrayList <>();
+//    content.add("Ver.:" + PacPhi.GAME_VERSION);
+//    content.add("Latest Feature: " + PacPhi.GAME_UPDATE);
+//    content.add("Branch: " + PacPhi.GAME_BRANCH);
+//    String currentVersion = ((PacPhiConfig.Value) PacPhiConfig.getContent("General","-","Branch")).current();
+//    content.add(PacPhi.GAME_BRANCH.equals(currentVersion) ? "" : "Restart to: " + currentVersion);
+//    boolean debug = ( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current();
+//    content.add(debug ? "Debug Mode" : "");
+//
+//    content.removeIf(String::isEmpty);
+//
+//    StringBuilder text = new StringBuilder();
+//    for (String s : content)
+//    {
+//      text.append(s).append("\n");
+//    }
+//    i.setText(String.valueOf(text));
+//    elements.add(i);
+//    //
+//
+//    //QR-Code
+//    UIImage a = new UIImage(new Vector2d().cartesian(Gui.frameWidth - 180, Gui.frameHeight - 260), new Dimension(170, 250), 0, "pacman/QR_Code_GitLab.png");
+//    //    a.setText("Vorschläge\n    & \n  Fehler ");
+//    a.setText("Vorschläge\n    &     \n Probleme ");
+//    a.label.fitText();
+//    a.label.setAlignment(UILabel.Alignment.MIDDLE_CENTER);
+//    a.label.borderColor = null;
+//    a.setImageDim(new Dimension(150, 150));
+//    a.setAlignment(UIImage.Alignment.BOTTOM);
+//    a.setProportion(3 / 5.);
+//    elements.add(a);
+//
+//  }
+//}
