@@ -11,7 +11,6 @@ import kn.uni.util.fileRelated.Config.Config;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 
@@ -40,7 +39,7 @@ public class Blocker extends AdvPlacedObject implements AdvRendered, AdvCollidin
     if (cachedImg == null)
       render();
 
-    g.drawImage((Image) cachedImg, (int) ( absPos.x - size.getWidth() / 2. ), (int) ( absPos.y - size.getHeight() / 2. ), null);
+    g.drawImage(cachedImg, (int) ( absPos.x - size.getWidth() / 2. ), (int) ( absPos.y - size.getHeight() / 2. ), null);
 
     if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {

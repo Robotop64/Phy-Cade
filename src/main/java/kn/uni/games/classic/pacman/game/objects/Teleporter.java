@@ -140,12 +140,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
                       trigger.absPos = other.absPos;
 
                       if (trigger instanceof Entity e)
-                      {
                         e.facing = other.facing;
-                      }
-
-                      System.out.println("Teleported " + trigger + " to " + other.mapPos + " facing " + other.facing);
-                      System.out.println(AdvGameConst.portalCooldown);
                     })));
 
     //remove cooldown

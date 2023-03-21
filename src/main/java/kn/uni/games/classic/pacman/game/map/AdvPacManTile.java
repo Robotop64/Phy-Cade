@@ -13,7 +13,6 @@ import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +29,6 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
   public  ConnectionType                 connectionType;
   public  int[]                          neighboursCount = new int[2];
   public  Map <Direction, AdvPacManTile> neighbors;
-  public  Color                          debugColor      = Color.BLACK;
   public  Color                          primitiveColor  = Color.BLACK;
   //type of the tile
   private TileType                       type;
@@ -42,6 +40,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
 
   public AdvPacManTile (AdvGameState gameState, Vector2d mapPos, TileType type)
   {
+    this.gameState = gameState;
     this.mapPos = mapPos;
     this.type = type;
 
@@ -71,17 +70,11 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     absPos = pos;
 
     items.forEach(item ->
-    {
-      item.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.));
-    });
+        item.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.)));
     entities.forEach(entity ->
-    {
-      entity.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.));
-    });
+        entity.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.)));
     objects.forEach(object ->
-    {
-      object.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.));
-    });
+        object.absPos = pos.add(new Vector2d().cartesian(1, 1).multiply(AdvGameConst.tileSize / 2.)));
   }
   //endregion
 
@@ -232,7 +225,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     if (cachedImg == null)
       render();
 
-    g.drawImage((Image) cachedImg, (int) absPos.x, (int) absPos.y, null);
+    g.drawImage(cachedImg, (int) absPos.x, (int) absPos.y, null);
   }
 
   @Override
@@ -275,7 +268,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
   }
 
   /**
-   * The connection type of a tile.
+   * The connection type of tile.
    * H: Horizontal
    * V: Vertical
    * TT: T-Top

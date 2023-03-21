@@ -182,7 +182,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
   /**
    * returns the tile map position of the given absolute position
    *
-   * @param absPos
+   * @param absPos absolute position
    * @return mapPos
    */
   public Vector2d getTileMapPos (Vector2d absPos)
@@ -193,7 +193,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
   /**
    * returns the tile inner position of the given absolute position
    *
-   * @param absPos
+   * @param absPos absolute position
    * @return innerPos
    */
   public Vector2d getTileInnerPos (Vector2d absPos)
@@ -204,7 +204,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
   /**
    * returns the absolute position of the given tile map position
    *
-   * @param mapPos
+   * @param mapPos map position
    * @return absPos
    */
   public Vector2d getTileAbsPos (Vector2d mapPos)

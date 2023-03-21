@@ -17,7 +17,6 @@ public class Item extends AdvPlacedObject
           case PELLET -> new PelletItem(gameState, mapPos);
           case PPELLET -> new PPelletItem(gameState, mapPos);
           case FRUIT -> new FruitItem(gameState, mapPos);
-          default -> null;
         };
   }
 

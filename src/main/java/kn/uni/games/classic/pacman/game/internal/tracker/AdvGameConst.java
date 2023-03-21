@@ -82,7 +82,7 @@ public class AdvGameConst
   //region ghost stuff
   //available ghost names
   public enum GhostNames
-  { blinky, pinky, inky, clyde }
+  { Blinky, Pinky, Inky, Clyde }
 
   //available ghost modes
   public enum GhostMode

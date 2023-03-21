@@ -489,10 +489,10 @@ public class AdvGameScreen extends UIScreen
           );
 
           map.addToPool(
-              new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension((int) ( AdvGameConst.tileSize * 2 ), 3))
+              new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
           );
           map.addToPool(
-              new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension((int) ( AdvGameConst.tileSize * 2 ), 3))
+              new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
           );
 
           Teleporter t1 = new Teleporter(env.gameState, new Vector2d().cartesian(1.5, 14.5), Direction.right);

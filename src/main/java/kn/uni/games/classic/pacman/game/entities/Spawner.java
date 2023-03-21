@@ -38,8 +38,6 @@ public class Spawner extends Entity
       gameState.requestedDirections.add(Direction.down);
       gameState.spawnScaled(AdvGameState.Layer.ENTITIES, player);
     }
-    //    else if (type == SpawnerType.TELEPORTER)
-    //      gameState.spawnScaled(AdvGameState.Layer.ENTITIES, new Teleporter(gameState, spawnMapPos));
 
   }
 

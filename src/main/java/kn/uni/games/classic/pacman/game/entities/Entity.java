@@ -24,16 +24,6 @@ public class Entity extends AdvPlacedObject
   public int maxHealth;
   public int currentHealth;
 
-  //  public static Entity createEntity (AdvGameState gameState, EntityType type)
-  //  {
-  //    return switch (type)
-  //        {
-  //          case PACMAN -> new Pacman();
-  //          case GHOST -> new Ghost();
-  //          default -> null;
-  //        };
-  //  }
-
   public void heal (int amount)
   {
     currentHealth += amount;
@@ -66,7 +56,7 @@ public class Entity extends AdvPlacedObject
   /**
    * Returns the position of the entity in the map in tile coordinates
    *
-   * @return
+   * @return the position of the entity in the map in tile coordinates
    */
   public Vector2d getMapPos ()
   {

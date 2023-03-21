@@ -11,7 +11,6 @@ import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 
@@ -41,7 +40,7 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
     if (cachedImg == null)
       render();
 
-    g.drawImage((Image) cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
+    g.drawImage(cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
 
     if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {

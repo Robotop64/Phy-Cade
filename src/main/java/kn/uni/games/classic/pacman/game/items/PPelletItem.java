@@ -9,7 +9,6 @@ import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 public class PPelletItem extends Item implements AdvRendered, AdvColliding
@@ -32,7 +31,7 @@ public class PPelletItem extends Item implements AdvRendered, AdvColliding
     if (classIcon == null)
       render();
 
-    g.drawImage((Image) classIcon, (int) ( absPos.x - classIcon.getWidth() / 2. ), (int) ( absPos.y - classIcon.getHeight() / 2. ), null);
+    g.drawImage(classIcon, (int) ( absPos.x - classIcon.getWidth() / 2. ), (int) ( absPos.y - classIcon.getHeight() / 2. ), null);
   }
 
   @Override

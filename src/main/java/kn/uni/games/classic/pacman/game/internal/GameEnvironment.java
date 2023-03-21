@@ -32,7 +32,6 @@ public class GameEnvironment
   private Runnable render;
   private Runnable ticker;
   private Runnable loop;
-  private Thread   gameLoop;
 
 
   public GameEnvironment (Dimension dim)
@@ -438,7 +437,7 @@ public class GameEnvironment
       }
     };
 
-    gameLoop = new Thread(() ->
+    Thread gameLoop = new Thread(() ->
     {
       render.run();
 

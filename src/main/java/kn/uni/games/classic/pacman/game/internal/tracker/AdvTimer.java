@@ -21,11 +21,6 @@ public class AdvTimer extends AdvGameObject implements AdvTicking
     tasks.add(task);
   }
 
-  public void removeTask (TimerTask task)
-  {
-    tasks.remove(task);
-  }
-
   @Override
   public void tick ()
   {

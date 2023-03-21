@@ -59,7 +59,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
 
     filteredColliders = entities.stream()
                                 //get the mapPos of the entity
-                                .map(e -> (Vector2d) e.getMapPos())
+                                .map(Entity::getMapPos)
                                 //get the absPos of the tile
                                 .map(t -> ( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).tilesPixel.get(t).absPos)
                                 //create a rectangle around the tile containing the surrounding tiles
@@ -90,16 +90,14 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
     );
 
     entities.forEach(e ->
-    {
-      filteredColliders.get(entities.indexOf(e)).forEach(c ->
-      {
-        if (colliding(e, c))
+        filteredColliders.get(entities.indexOf(e)).forEach(c ->
         {
-          ( (AdvColliding) e ).onCollision(c);
-          ( (AdvColliding) c ).onCollision(e);
-        }
-      });
-    });
+          if (colliding(e, c))
+          {
+            ( (AdvColliding) e ).onCollision(c);
+            ( (AdvColliding) c ).onCollision(e);
+          }
+        }));
   }
 
   private boolean colliding (AdvPlacedObject a, AdvPlacedObject b)
@@ -165,7 +163,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
 
       List <Rectangle> rect = entities.stream()
                                       //get the mapPos of the entity
-                                      .map(e -> (Vector2d) e.getMapPos())
+                                      .map(Entity::getMapPos)
                                       //get the absPos of the tile
                                       .map(t -> ( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).tilesPixel.get(t).absPos)
                                       //create a rectangle around the tile containing the surrounding tiles
