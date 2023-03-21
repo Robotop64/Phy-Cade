@@ -1,6 +1,6 @@
 package kn.uni.games.classic.pacman.game.internal.tracker;
 
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
 import java.util.Map;
@@ -49,13 +49,13 @@ public class AdvGameConst
 
   public static void init ()
   {
-    pacmanSpeed = ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "StartSpeed") ).current();
+    pacmanSpeed = (double) Config.getCurrent("Gameplay/PacMan/StartSpeed");
     ghostSpeed = 4 / pacmanSpeed;
-    playerHp = (int) ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "PlayerHP") ).current();
-    ghostHp = (int) ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "GhostHP") ).current();
-    pointsToLife = (int) ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "PointsToLife") ).current();
-    portalDelay = ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "PortalDelay") ).current();
-    portalCooldown = ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "PortalCooldown") ).current();
+    playerHp = (int) (double) Config.getCurrent("Gameplay/PacMan/PlayerHP");
+    ghostHp = (int) (double) Config.getCurrent("Gameplay/PacMan/GhostHP");
+    pointsToLife = (int) (double) Config.getCurrent("Gameplay/PacMan/PointsToLife");
+    portalDelay = (double) Config.getCurrent("Gameplay/PacMan/PortalDelay");
+    portalCooldown = (double) Config.getCurrent("Gameplay/PacMan/PortalCooldown");
   }
 
   public enum EntityType

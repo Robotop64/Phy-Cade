@@ -8,7 +8,7 @@ import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
@@ -245,7 +246,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     cachedImg = new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = cachedImg.createGraphics();
 
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {
       g.setColor(primitiveColor);
       g.fillRect(0, 0, iconSize, iconSize);

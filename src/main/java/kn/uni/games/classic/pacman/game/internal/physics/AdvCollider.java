@@ -11,7 +11,7 @@ import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.Blocker;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -20,6 +20,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendered
 {
@@ -145,14 +146,14 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
   public void tick ()
   {
     checkCollisions();
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
       gameState.env.updateLayer.set(AdvGameState.Layer.PHYSICS.ordinal(), true);
   }
 
   @Override
   public void paintComponent (Graphics2D g)
   {
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {
       filteredColliders.forEach(
           l -> l.forEach(o ->

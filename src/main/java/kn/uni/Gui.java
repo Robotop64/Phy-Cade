@@ -3,13 +3,14 @@ package kn.uni;
 import kn.uni.games.classic.pacman.screens.AdvGameScreen;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.pmButton;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.util.Objects;
 
 public class Gui
 {
@@ -68,7 +69,7 @@ public class Gui
     content.setBounds(defaultFrameBounds);
     content.setLayout(null);
     // todo remove for release
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), "true"))
       content.setBackground(Color.orange);
     //    content.setBackground(Color.black);
 

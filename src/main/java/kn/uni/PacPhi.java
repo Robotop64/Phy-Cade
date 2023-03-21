@@ -1,10 +1,10 @@
 package kn.uni;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.Database;
 import kn.uni.util.fileRelated.DatabaseAccess;
 import kn.uni.util.fileRelated.JsonEditor;
-import kn.uni.util.fileRelated.PacPhiConfig;
 import kn.uni.util.fileRelated.Permission;
 
 public class PacPhi
@@ -20,7 +20,6 @@ public class PacPhi
 
   public static void main (String[] args)
   {
-    //    System.setProperty("sun.java2d.opengl", "true");
 
     getSettings();
 
@@ -37,12 +36,13 @@ public class PacPhi
 
   public static void getSettings ()
   {
-    PacPhiConfig.load();
-    //    PacPhiConfig.setCurrent("General", "-", "Version", GAME_VERSION);
-    //    PacPhiConfig.setCurrent("General", "-", "Branch", GAME_BRANCH);
-    //    PacPhiConfig.setCurrent("Debugging", "-", "Enabled", true);
-    //    PacPhiConfig.setCurrent("Graphics", "Advanced", "Antialiasing", true);
-    PacPhiConfig.save();
+    Config.init();
+    Config.load();
+    Config.setCurrent("General/-/Version", GAME_VERSION);
+    Config.setCurrent("General/-/Branch", GAME_BRANCH);
+    Config.setCurrent("Debugging/-/Enabled", false);
+    Config.setCurrent("Graphics/Advanced/Antialiasing", true);
+    Config.save();
   }
 
   public static void getPermission ()

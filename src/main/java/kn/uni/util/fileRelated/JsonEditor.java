@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-import static java.nio.file.Files.createDirectories;
-
 public class JsonEditor
 {
   public static Object load (Object obj, String name)
@@ -42,27 +40,41 @@ public class JsonEditor
 
   public static void save (Object obj, String name)
   {
-    Gson   gson = new Gson();
-    String json = gson.toJson(obj, obj.getClass());
-    //save json to file
-    try
+    Gson gson = new Gson();
+
+    gson.toJson(obj, obj.getClass());
+
+    try (FileWriter b = new FileWriter(getPath() + name + ".json"))
     {
-      File f = new File(getPath() + name + ".json");
-      createDirectories(f.toPath().getParent());
-      //noinspection ResultOfMethodCallIgnored
-      f.createNewFile();
-      FileWriter writer = new FileWriter(getPath() + name + ".json");
-      writer.write(json);
-      writer.close();
-      System.out.println("Saved " + name);
+      gson.toJson(obj, b);
+      b.flush();
     }
     catch (Exception e)
     {
       e.printStackTrace();
     }
+
+
+    //    //save json to file
+    //    try
+    //    {
+    //      File f = new File(getPath() + name + ".json");
+    //      createDirectories(f.toPath().getParent());
+    //      //noinspection ResultOfMethodCallIgnored
+    //      f.createNewFile();
+    //      FileWriter writer = new FileWriter(getPath() + name + ".json");
+    //      writer.write(json);
+    //      writer.flush();
+    //      writer.close();
+    //      System.out.println("Saved " + name);
+    //    }
+    //    catch (Exception e)
+    //    {
+    //      e.printStackTrace();
+    //    }
   }
 
-  private static String getPath ()
+  public static String getPath ()
   {
     String os            = System.getProperty("os.name");
     String locationWin   = System.getProperty("user.home") + "\\Appdata\\Roaming\\Pacphi\\";

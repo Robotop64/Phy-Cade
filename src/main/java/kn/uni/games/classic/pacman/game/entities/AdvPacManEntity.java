@@ -10,7 +10,7 @@ import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -42,7 +42,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
 
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {
       g.setColor(Color.RED);
       g.drawOval(
@@ -66,7 +66,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     Graphics2D g = cachedImg.createGraphics();
 
 
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Graphics", "Advanced", "Antialiasing") ).current())
+    if (Objects.equals(Config.getCurrent("Graphics/Advanced/Antialiasing"), true))
     {
       g.setRenderingHint(
           RenderingHints.KEY_ANTIALIASING,

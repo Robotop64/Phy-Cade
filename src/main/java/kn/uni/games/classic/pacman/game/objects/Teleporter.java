@@ -11,12 +11,13 @@ import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.util.Direction;
 import kn.uni.util.Util;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColliding
 {
@@ -46,7 +47,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
 
     g.drawImage(cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. + cachedImg.getWidth() / 4. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
 
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {
       g.setColor(Color.RED);
       int radius = (int) ( AdvGameConst.hitBoxes.get("Teleporter") * AdvGameConst.tileSize );
@@ -68,7 +69,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
     cachedImg = new BufferedImage(iconSize * 2, (int) ( iconSize * 1.5 ), BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = cachedImg.createGraphics();
 
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Graphics", "Advanced", "Antialiasing") ).current())
+    if (Objects.equals(Config.getCurrent("Graphics/Advanced/Antialiasing"), true))
     {
       g.setRenderingHint(
           RenderingHints.KEY_ANTIALIASING,

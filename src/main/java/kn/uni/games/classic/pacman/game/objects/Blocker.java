@@ -6,13 +6,14 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 public class Blocker extends AdvPlacedObject implements AdvRendered, AdvColliding
 {
@@ -41,7 +42,7 @@ public class Blocker extends AdvPlacedObject implements AdvRendered, AdvCollidin
 
     g.drawImage((Image) cachedImg, (int) ( absPos.x - size.getWidth() / 2. ), (int) ( absPos.y - size.getHeight() / 2. ), null);
 
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {
       g.setColor(Color.RED);
       int hitBox = (int) ( AdvGameConst.hitBoxes.get("Blocker") * AdvGameConst.tileSize ) * 2;

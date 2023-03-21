@@ -6,7 +6,7 @@ import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.util.Direction;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class AdvGameState
     this.env = env;
     IntStream.range(0, Layer.values().length).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
 
-    lives = (int) ( (PacPhiConfig.Digit) PacPhiConfig.getContent("Gameplay", "PacMan", "StartLives") ).current();
+    lives = (int) (double) Config.getCurrent("Gameplay/PacMan/StartLives");
   }
 
   public void addScore (long score)

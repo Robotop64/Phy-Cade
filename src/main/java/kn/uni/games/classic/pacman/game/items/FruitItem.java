@@ -6,13 +6,14 @@ import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.util.Vector2d;
-import kn.uni.util.fileRelated.PacPhiConfig;
+import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 public class FruitItem extends Item implements AdvRendered, AdvColliding
 {
@@ -42,7 +43,7 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
 
     g.drawImage((Image) cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
 
-    if (( (PacPhiConfig.Switch) PacPhiConfig.getContent("Debugging", "-", "Enabled") ).current())
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
     {
       g.setColor(Color.GREEN);
       g.drawOval(
