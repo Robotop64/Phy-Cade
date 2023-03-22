@@ -158,7 +158,6 @@ public class Config
       if (tree == null)
       {
         current.addBranch(path[i]);
-        System.out.println("Added branch: " + path[i]);
         tree = current.getBranch(path[i]);
       }
     }

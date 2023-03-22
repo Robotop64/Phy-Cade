@@ -40,9 +40,17 @@ public class JsonEditor
 
   public static void save (Object obj, String name)
   {
-    Gson gson = new Gson();
 
-    gson.toJson(obj, obj.getClass());
+    //create dir if not exists
+    String dirPath   = getPath();
+    File   directory = new File(dirPath);
+    if (!directory.exists())
+    {
+      directory.mkdirs();
+    }
+
+    //save obj to json
+    Gson gson = new Gson();
 
     try (FileWriter b = new FileWriter(getPath() + name + ".json"))
     {
@@ -53,25 +61,6 @@ public class JsonEditor
     {
       e.printStackTrace();
     }
-
-
-    //    //save json to file
-    //    try
-    //    {
-    //      File f = new File(getPath() + name + ".json");
-    //      createDirectories(f.toPath().getParent());
-    //      //noinspection ResultOfMethodCallIgnored
-    //      f.createNewFile();
-    //      FileWriter writer = new FileWriter(getPath() + name + ".json");
-    //      writer.write(json);
-    //      writer.flush();
-    //      writer.close();
-    //      System.out.println("Saved " + name);
-    //    }
-    //    catch (Exception e)
-    //    {
-    //      e.printStackTrace();
-    //    }
   }
 
   public static String getPath ()
