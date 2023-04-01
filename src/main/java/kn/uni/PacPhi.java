@@ -20,6 +20,8 @@ public class PacPhi
 
   public static void main (String[] args)
   {
+    System.out.println("||------Starting PacPhi-----||");
+    System.out.println();
 
     getSettings();
 
@@ -31,39 +33,51 @@ public class PacPhi
 
     FlatDarculaLaf.setup();
 
-    Gui.getInstance().initialize();
+    //    Gui.getInstance().initialize();
   }
 
   public static void getSettings ()
   {
+    System.out.println("╭─────┤ Init Settings ├──────╮");
     Config.init();
+    System.out.print("│ -> ");
     Config.load();
     Config.setCurrent("General/-/Version", GAME_VERSION);
     Config.setCurrent("General/-/Branch", GAME_BRANCH);
     Config.setCurrent("Debugging/-/Enabled", false);
     Config.setCurrent("Graphics/Advanced/Antialiasing", true);
     Config.save();
+    System.out.println("╰────────────────────────────╯");
   }
 
   public static void getPermission ()
   {
+    System.out.println("╭────┤ Init Permission  ├────╮");
+    System.out.print("│ -> ");
     permissions = (Permission) JsonEditor.load(new Permission(), "Permission");
     assert permissions != null;
-    System.out.println("Permission-Level: " + permissions.current);
+    System.out.print("│ -> ");
+    System.out.println("Level: " + permissions.current);
+    System.out.println("╰────────────────────────────╯");
   }
 
   public static void getDatabase ()
   {
+    System.out.println("╭─────┤ Init Database ├──────╮");
+    System.out.print("│ -> ");
     DatabaseAccess dba = (DatabaseAccess) JsonEditor.load(new DatabaseAccess(), "DatabaseAccess");
     assert dba != null;
     database = dba.getMatchingPermissionDatabase(permissions.current);
 
     if (database != null)
     {
-      System.out.println("Database access found");
+      System.out.print("│ -> ");
+      System.out.println("found matching Database");
+      System.out.print("│ -> ");
       System.out.println("Database: " + dba.getDatabaseName(database));
     }
     else System.out.println("No database for current permissions found");
+    System.out.println("╰────────────────────────────╯");
   }
 
   /**
@@ -99,8 +113,13 @@ public class PacPhi
         double time  = ( end - start ) / 1_000_000.0;
         double delay = ( time - iterations * pause ) / iterations;
 
-        System.out.println("Thread-Benchmark: " + "Time: " + String.format("%.4f", time) + "ms, rescheduleDelay " + String.format("%.4f", delay) + "ms");
+        System.out.println("╭────┤ Thread Benchmark ├────╮");
+        System.out.print("│ -> ");
+        System.out.println("Time: " + String.format("%.4f", time) + "ms");
+        System.out.print("│ -> ");
+        System.out.println("rescheduleDelay: " + String.format("%.4f", delay) + "ms");
         THREAD_DELAY = delay;
+        System.out.println("╰────────────────────────────╯");
       });
       benchmarkThread.start();
     }
