@@ -26,9 +26,12 @@ public abstract class Celebrity <Type>
     int id = subId;
     subId++;
     subscribersQueue.put(id, fan);
-    System.out.println(id + " wants to sub");
-    System.out.println("all subs: " + subscribers);
-    System.out.println("sub queue: " + subscribersQueue);
+
+    System.out.println("╭─────┤ Subscription ├────────────────────────────────────────────────────────╮");
+    System.out.println("⎢ -> Requested by: " + fan.getClass().getSimpleName().split("\\$")[0] + " (id:" + id + ")");
+    System.out.println("⎢ -> All current subs: " + getSubs());
+    System.out.println("⎢ -> Queued subs: " + getQueue());
+    System.out.println("╰─────────────────────────────────────────────────────────────────────────────╯");
 
     if (!locked)
     {
@@ -40,9 +43,39 @@ public abstract class Celebrity <Type>
 
   public void unsubscribe (int id)
   {
+    Fan <Type> fan = subscribers.get(id);
     subscribers.remove(id);
-    System.out.println(id + " unsubbed");
-    System.out.println("all subs: " + subscribers);
+    System.out.println(fan.getClass().getSimpleName() + "(" + id + ")" + " unsubbed");
+    System.out.println("all subs: " + getSubs());
+  }
+
+  private String getSubs ()
+  {
+    StringBuilder subs = new StringBuilder();
+
+    for (Fan <Type> f : subscribers.values())
+    {
+
+      subs.append(f.getClass().getSimpleName().split("\\$")[0]).append(", ");
+    }
+
+    return "{" + subs + "}";
+  }
+
+  private String getQueue ()
+  {
+    StringBuilder subs = new StringBuilder();
+
+    for (Fan <Type> f : subscribersQueue.values())
+    {
+      subs.append(f.getClass().getSimpleName().split("\\$")[0]);
+      if (subscribersQueue.values().stream().toList().indexOf(f) < subscribersQueue.values().size() - 1)
+      {
+        subs.append(", ");
+      }
+    }
+
+    return "{" + subs + "}";
   }
 
   public interface Fan <Type>

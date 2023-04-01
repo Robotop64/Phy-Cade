@@ -38,6 +38,7 @@ public class Gui
 
   public void initialize ()
   {
+    System.out.println("╭─────┤ Init GUI ├────────────────────────────────────────────────────────────╮");
     frame = new JFrame("Pac-Φ");
     frame.setSize(frameWidth, frameHeight);
     frame.setLocation(0, 0);
@@ -78,6 +79,7 @@ public class Gui
     frame.getContentPane().setComponentZOrder(debug, 0);
     frame.getContentPane().setComponentZOrder(content, 1);
 
+    System.out.println("╰─────────────────────────────────────────────────────────────────────────────╯");
     //use alternative Content
     if (true)
     {
