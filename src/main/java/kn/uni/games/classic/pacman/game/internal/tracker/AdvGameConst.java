@@ -15,7 +15,8 @@ public class AdvGameConst
       "PPelletItem", 1 / 4.,
       "FruitItem", 2 / 5.,
       "Blocker", ( 1 / 2. ) - 0.05,
-      "Teleporter", 1 / 4.
+      "Teleporter", 1 / 4.,
+      "Waypoint", 1 / 10.
   );
   //buffer
   //region fruit stuff
@@ -82,7 +83,7 @@ public class AdvGameConst
   //region ghost stuff
   //available ghost names
   public enum GhostNames
-  { Blinky, Pinky, Inky, Clyde }
+  { BLINKY, PINKY, INKY, CLYDE }
 
   //available ghost modes
   public enum GhostMode

@@ -1,5 +1,7 @@
 package kn.uni.games.classic.pacman.game.entities;
 
+import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostEntity;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.items.PPelletItem;
@@ -38,12 +40,29 @@ public class Spawner extends Entity
       gameState.requestedDirections.add(Direction.down);
       gameState.spawnScaled(AdvGameState.Layer.ENTITIES, player);
     }
+    else if (type == SpawnerType.GHOST)
+    {
+      AdvGameConst.GhostNames name = null;
+      if (this.name.contains("Blinky"))
+        name = AdvGameConst.GhostNames.BLINKY;
+      else if (this.name.contains("Pinky"))
+        name = AdvGameConst.GhostNames.PINKY;
+      else if (this.name.contains("Inky"))
+        name = AdvGameConst.GhostNames.INKY;
+      else if (this.name.contains("Clyde"))
+        name = AdvGameConst.GhostNames.CLYDE;
+      else
+        throw new RuntimeException("Unknown ghost name: " + this.name);
+
+      AdvGhostEntity ghost = new AdvGhostEntity(gameState, spawnMapPos, name);
+      gameState.spawnScaled(AdvGameState.Layer.ENTITIES, ghost);
+    }
 
   }
 
   public enum SpawnerType
   {
-    PELLET, PPELLET, FRUIT, PLAYER, TELEPORTER
+    PELLET, PPELLET, FRUIT, PLAYER, GHOST, TELEPORTER
   }
 }
 

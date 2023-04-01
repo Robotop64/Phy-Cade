@@ -1,5 +1,6 @@
-package kn.uni.games.classic.pacman.game.entities;
+package kn.uni.games.classic.pacman.game.entities.ghosts;
 
+import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
@@ -22,15 +23,19 @@ import java.util.Objects;
 
 import static kn.uni.util.Util.round;
 
-public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, AdvColliding
+public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, AdvColliding
 {
+  public AdvGhostAi              ai;
+  public AdvGameConst.GhostNames name;
 
-  public AdvPacManEntity (AdvGameState gameState, Vector2d mapPos)
+  public AdvGhostEntity (AdvGameState gameState, Vector2d mapPos, AdvGameConst.GhostNames name)
   {
     super();
     this.gameState = gameState;
     this.mapPos = mapPos;
     this.stunned = false;
+    this.name = name;
+    this.ai = new AdvGhostAi(name, this);
   }
 
   //region graphics
@@ -73,20 +78,28 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
           RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
-    g.setColor(Color.YELLOW);
+    switch (name)
+    {
+      case BLINKY -> g.setColor(Color.RED);
+      case PINKY -> g.setColor(Color.PINK);
+      case INKY -> g.setColor(Color.CYAN);
+      case CLYDE -> g.setColor(Color.ORANGE);
+      default -> g.setColor(Color.GRAY);
+    }
+
     g.fillOval(0, 0, iconSize, iconSize);
     g.dispose();
   }
   //endregion
 
-  //region updating
+  //region update
   @Override
   public void tick ()
   {
     move();
   }
 
-  private void move ()
+  public void move ()
   {
     if (stunned) return;
 
@@ -101,15 +114,14 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
                                                .toList();
 
     //set velocity
-    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeed, 0).multiply(map.tileSize).divide(AdvGameConst.tps);
+    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.ghostSpeed, 0).multiply(AdvGameConst.tileSize).divide(AdvGameConst.tps);
 
     double    stepSize      = velocity.x;
-    Direction nextDir       = gameState.requestedDirections.get(gameState.players.indexOf(this));
     Vector2d  innerPos      = map.getTileInnerPos(absPos);
     double    centerDist    = round(this.facing.toVector().scalar(innerPos));
     boolean   nextTileValid = possibleTiles.contains(currentTile.neighbors.get(this.facing));
+    Direction nextDir       = ai.getDirection();
     boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbors.get(nextDir));
-
 
     //allows turning vertically if innerTilePosition x == 0 or horizontally if innerTilePosition y == 0
     if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
@@ -125,7 +137,6 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     //stops the entity from moving in a suppressed direction
     if (suppressedDirections.contains(this.facing))
     {
-      System.out.println(this.facing + " " + nextDir + " " + suppressedDirections);
       suppressedDirections.clear();
       return;
     }
@@ -144,16 +155,10 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
   }
-
-  public void die ()
-  {
-    super.die();
-    gameState.checkGameOver();
-  }
+  //endregion
 
   @Override
   public void onCollision (AdvGameObject collider)
   {
   }
-  //endregion
 }

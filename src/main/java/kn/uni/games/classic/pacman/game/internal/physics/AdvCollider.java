@@ -107,8 +107,17 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
 
   private double criticalDist (AdvPlacedObject a, AdvPlacedObject b)
   {
-    double radA = AdvGameConst.hitBoxes.get(a.getClass().getSimpleName());
-    double radB = AdvGameConst.hitBoxes.get(b.getClass().getSimpleName());
+    String aName = a.getClass().getSimpleName();
+    String bName = b.getClass().getSimpleName();
+
+    Object aVal = AdvGameConst.hitBoxes.get(aName);
+    Object bVal = AdvGameConst.hitBoxes.get(bName);
+
+    if (aVal == null || bVal == null)
+      throw new NullPointerException("No hitbox for " + aName + " or " + bName);
+
+    double radA = Double.parseDouble(aVal.toString());
+    double radB = Double.parseDouble(bVal.toString());
 
     return ( radA + radB ) * AdvGameConst.tileSize;
   }

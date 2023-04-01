@@ -9,6 +9,7 @@ import kn.uni.games.classic.pacman.game.internal.physics.AdvCollider;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvWaypointManager;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.Blocker;
 import kn.uni.games.classic.pacman.game.objects.Teleporter;
@@ -458,10 +459,13 @@ public class AdvGameScreen extends UIScreen
 
           setLoadingProgress("loading", 15, "Loading internals...");
           env.gameState.spawn(AdvGameState.Layer.INTERNALS, new AdvTimer(env.gameState));
+          AdvWaypointManager waypointManager = new AdvWaypointManager(env.gameState);
+          env.gameState.spawn(AdvGameState.Layer.INTERNALS, waypointManager);
           env.gameState.spawn(AdvGameState.Layer.PHYSICS, new AdvCollider(env.gameState));
 
 
           setLoadingProgress("loading", 20, "Loading map...");
+          //region map
           //TODO : load map from file
           AdvPacManMap map = new AdvPacManMap(env.getGameState());
           //
@@ -473,6 +477,22 @@ public class AdvGameScreen extends UIScreen
               map.size.height);
           map.render();
 
+          //region waypoints
+          waypointManager.addWaypoint("GhostPenOutside", new Vector2d().cartesian(14, 11.5), () ->
+          { });
+          waypointManager.addWaypoint("GhostPenInside", new Vector2d().cartesian(14, 14.5), () ->
+          { });
+          waypointManager.addWaypoint("BLINKY_SCATTER", new Vector2d().cartesian(0, 0), () ->
+          { });
+          waypointManager.addWaypoint("PINKY_SCATTER", new Vector2d().cartesian(28, 0), () ->
+          { });
+          waypointManager.addWaypoint("INKY_SCATTER", new Vector2d().cartesian(0, 31), () ->
+          { });
+          waypointManager.addWaypoint("CLYDE_SCATTER", new Vector2d().cartesian(28, 31), () ->
+          { });
+          //endregion
+
+          //region spawners
           map.addToPool(
               new Spawner(
                   "PlayerSpawn", env.getGameState(),
@@ -487,19 +507,53 @@ public class AdvGameScreen extends UIScreen
                   Spawner.SpawnerType.FRUIT,
                   new Vector2d().cartesian(14, 23.5))
           );
+          map.addToPool(
+              new Spawner(
+                  "BlinkySpawn", env.getGameState(),
+                  new Vector2d().cartesian(14, 14.5),
+                  Spawner.SpawnerType.GHOST,
+                  new Vector2d().cartesian(14, 14.5))
+          );
+          //          map.addToPool(
+          //              new Spawner(
+          //                  "PinkySpawn", env.getGameState(),
+          //                  new Vector2d().cartesian(14, 14.5),
+          //                  Spawner.SpawnerType.GHOST,
+          //                  new Vector2d().cartesian(14, 14.5))
+          //          );
+          //          map.addToPool(
+          //              new Spawner(
+          //                  "InkySpawn", env.getGameState(),
+          //                  new Vector2d().cartesian(14, 14.5),
+          //                  Spawner.SpawnerType.GHOST,
+          //                  new Vector2d().cartesian(14, 14.5))
+          //          );
+          //          map.addToPool(
+          //              new Spawner(
+          //                  "ClydeSpawn", env.getGameState(),
+          //                  new Vector2d().cartesian(14, 14.5),
+          //                  Spawner.SpawnerType.GHOST,
+          //                  new Vector2d().cartesian(14, 14.5))
+          //          );
+          //endregion
 
+          //region objects
           map.addToPool(
               new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
           );
           map.addToPool(
               new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
           );
+          //endregion
 
+          //region portals
           Teleporter t1 = new Teleporter(env.gameState, new Vector2d().cartesian(1.5, 14.5), Direction.right);
           Teleporter t2 = new Teleporter(env.gameState, new Vector2d().cartesian(26.5, 14.5), Direction.left);
           t1.pair(t2, Color.ORANGE);
           map.addToPool(t1);
           map.addToPool(t2);
+          //endregion
+          //endregion
 
           map.scaleSpawnablesPos();
 
@@ -518,6 +572,7 @@ public class AdvGameScreen extends UIScreen
           env.loadEntities();
 
           env.spawnPlayers();
+          env.spawnGhosts();
 
           setLoadingProgress("loading", 80, "Waiting for Benchmark...");
 

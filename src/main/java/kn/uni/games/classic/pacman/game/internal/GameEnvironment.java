@@ -571,6 +571,15 @@ public class GameEnvironment
                     .forEach(Spawner::spawn);
   }
 
+  public void spawnGhosts ()
+  {
+    gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
+                    .filter(obj -> obj instanceof Spawner)
+                    .map(obj -> (Spawner) obj)
+                    .filter(spawner -> spawner.type.name().equals("GHOST"))
+                    .forEach(Spawner::spawn);
+  }
+
   public void reloadLevel ()
   {
     gameState.layers.get(AdvGameState.Layer.OBJECTS.ordinal()).clear();
