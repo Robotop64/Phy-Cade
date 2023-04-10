@@ -1,5 +1,6 @@
 package kn.uni.util.fileRelated.Config;
 
+import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.JsonEditor;
 
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class Config
   public static void init ()
   {
     Config.getInstance().createDef();
+    PrettyPrint.bullet("Initiated default Config");
   }
 
   public static void load ()

@@ -1,5 +1,7 @@
 package kn.uni.ui;
 
+import kn.uni.util.PrettyPrint;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -27,11 +29,11 @@ public abstract class Celebrity <Type>
     subId++;
     subscribersQueue.put(id, fan);
 
-    System.out.println("╭─────┤ Subscription ├────────────────────────────────────────────────────────╮");
-    System.out.println("⎢ -> Requested by: " + fan.getClass().getSimpleName().split("\\$")[0] + " (id:" + id + ")");
-    System.out.println("⎢ -> All current subs: " + getSubs());
-    System.out.println("⎢ -> Queued subs: " + getQueue());
-    System.out.println("╰─────────────────────────────────────────────────────────────────────────────╯");
+    PrettyPrint.startGroup(PrettyPrint.Type.Message, "Subscription");
+    PrettyPrint.bullet("Requested by: " + fan.getClass().getSimpleName().split("\\$")[0] + " (id:" + id + ")");
+    PrettyPrint.bullet("All current subs: " + getSubs());
+    PrettyPrint.bullet("Queued subs: " + getQueue());
+    PrettyPrint.endGroup();
 
     if (!locked)
     {
@@ -45,18 +47,22 @@ public abstract class Celebrity <Type>
   {
     Fan <Type> fan = subscribers.get(id);
     subscribers.remove(id);
-    System.out.println(fan.getClass().getSimpleName() + "(" + id + ")" + " unsubbed");
-    System.out.println("all subs: " + getSubs());
+
+    PrettyPrint.startGroup(PrettyPrint.Type.Message, "Unsubscription");
+    PrettyPrint.bullet("Requested by: " + fan.getClass().getSimpleName().split("\\$")[0] + " (id:" + id + ")");
+    PrettyPrint.bullet("All current subs: " + getSubs());
+    PrettyPrint.endGroup();
   }
 
   private String getSubs ()
   {
     StringBuilder subs = new StringBuilder();
 
-    for (Fan <Type> f : subscribers.values())
+    for (int i = 0; i < subscribers.size(); i++)
     {
-
-      subs.append(f.getClass().getSimpleName().split("\\$")[0]).append(", ");
+      subs.append(subscribers.get(i).getClass().getSimpleName().split("\\$")[0]);
+      if (i < subscribers.size() - 1)
+        subs.append(", ");
     }
 
     return "{" + subs + "}";

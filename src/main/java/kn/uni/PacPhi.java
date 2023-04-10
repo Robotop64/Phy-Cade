@@ -1,6 +1,7 @@
 package kn.uni;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.Database;
 import kn.uni.util.fileRelated.DatabaseAccess;
@@ -20,8 +21,9 @@ public class PacPhi
 
   public static void main (String[] args)
   {
-    System.out.println("||------<Starting PacPhi>----------------------------------------------------||");
-    System.out.println();
+    PrettyPrint.announce("Starting PacPhi");
+    PrettyPrint.empty();
+
 
     getSettings();
 
@@ -38,46 +40,51 @@ public class PacPhi
 
   public static void getSettings ()
   {
-    System.out.println("╭─────┤ Init Settings ├───────────────────────────────────────────────────────╮");
+    PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Settings");
+
     Config.init();
-    System.out.print("│ -> ");
+
     Config.load();
+
     Config.setCurrent("General/-/Version", GAME_VERSION);
     Config.setCurrent("General/-/Branch", GAME_BRANCH);
     Config.setCurrent("Debugging/-/Enabled", false);
     Config.setCurrent("Graphics/Advanced/Antialiasing", true);
+    PrettyPrint.bullet("changed startup settings");
+
     Config.save();
-    System.out.println("╰─────────────────────────────────────────────────────────────────────────────╯");
+
+    PrettyPrint.endGroup();
   }
 
   public static void getPermission ()
   {
-    System.out.println("╭─────┤ Init Permission ├─────────────────────────────────────────────────────╮");
-    System.out.print("│ -> ");
+    PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Permission");
+
     permissions = (Permission) JsonEditor.load(new Permission(), "Permission");
     assert permissions != null;
-    System.out.print("│ -> ");
-    System.out.println("Level: " + permissions.current);
-    System.out.println("╰─────────────────────────────────────────────────────────────────────────────╯");
+
+    PrettyPrint.bullet("Level: " + permissions.current);
+    PrettyPrint.endGroup();
   }
 
   public static void getDatabase ()
   {
-    System.out.println("╭─────┤ Init Database ├───────────────────────────────────────────────────────╮");
-    System.out.print("│ -> ");
+    PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Database");
+
     DatabaseAccess dba = (DatabaseAccess) JsonEditor.load(new DatabaseAccess(), "DatabaseAccess");
     assert dba != null;
     database = dba.getMatchingPermissionDatabase(permissions.current);
 
     if (database != null)
     {
-      System.out.print("│ -> ");
-      System.out.println("found matching Database");
-      System.out.print("│ -> ");
-      System.out.println("Database: " + dba.getDatabaseName(database));
+      PrettyPrint.bullet("found matching Database");
+      PrettyPrint.bullet("Database: " + dba.getDatabaseName(database));
     }
-    else System.out.println("No database for current permissions found");
-    System.out.println("╰─────────────────────────────────────────────────────────────────────────────╯");
+    else
+      PrettyPrint.bullet("no matching Database found");
+
+    PrettyPrint.endGroup();
   }
 
   /**
@@ -113,13 +120,12 @@ public class PacPhi
         double time  = ( end - start ) / 1_000_000.0;
         double delay = ( time - iterations * pause ) / iterations;
 
-        System.out.println("╭─────┤ Thread Benchmark ├────────────────────────────────────────────────────╮");
-        System.out.print("│ -> ");
-        System.out.println("Time: " + String.format("%.4f", time) + "ms");
-        System.out.print("│ -> ");
-        System.out.println("rescheduleDelay: " + String.format("%.4f", delay) + "ms");
         THREAD_DELAY = delay;
-        System.out.println("╰─────────────────────────────────────────────────────────────────────────────╯");
+
+        PrettyPrint.startGroup(PrettyPrint.Type.Message, "Thread Benchmark");
+        PrettyPrint.bullet("Time: " + String.format("%.4f", time) + "ms");
+        PrettyPrint.bullet("rescheduleDelay: " + String.format("%.4f", delay) + "ms");
+        PrettyPrint.endGroup();
       });
       benchmarkThread.start();
     }

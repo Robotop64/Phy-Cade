@@ -1,6 +1,7 @@
 package kn.uni.util.fileRelated;
 
 import com.google.gson.Gson;
+import kn.uni.util.PrettyPrint;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +19,9 @@ public class JsonEditor
     if (!f.exists())
     {
       save(obj, name);
-      System.out.println("Created " + name);
+
+      PrettyPrint.bullet("Created " + name);
+
       return obj;
     }
     else
@@ -27,12 +30,15 @@ public class JsonEditor
       try
       {
         obj = gson.fromJson(new FileReader(getPath() + name + ".json"), obj.getClass());
-        System.out.println("Loaded " + name);
+
+        PrettyPrint.bullet("Loaded " + name);
+
         return obj;
       }
       catch (FileNotFoundException e)
       {
         e.printStackTrace();
+        PrettyPrint.bullet("Failed to load " + name);
       }
     }
     return null;
@@ -56,10 +62,13 @@ public class JsonEditor
     {
       gson.toJson(obj, b);
       b.flush();
+
+      PrettyPrint.bullet("Saved " + name);
     }
     catch (Exception e)
     {
       e.printStackTrace();
+      PrettyPrint.bullet("Failed to save " + name);
     }
   }
 

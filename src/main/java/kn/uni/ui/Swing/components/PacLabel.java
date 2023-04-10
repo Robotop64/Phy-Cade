@@ -50,4 +50,9 @@ public class PacLabel extends FlatLabel
     else
       super.setText(header + " " + text);
   }
+
+  public void setFontSize (int size)
+  {
+    setFont(getFont().deriveFont((float) size));
+  }
 }
