@@ -7,6 +7,7 @@ import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.items.PPelletItem;
 import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.util.Direction;
+import kn.uni.util.PrettyPrint;
 import kn.uni.util.Vector2d;
 
 public class Spawner extends Entity
@@ -27,6 +28,13 @@ public class Spawner extends Entity
 
   public void spawn ()
   {
+    PrettyPrint.startGroup(PrettyPrint.Type.Event, "Spawning");
+    PrettyPrint.bullet("Type: " + type);
+    if (type == SpawnerType.GHOST)
+      PrettyPrint.bullet("SubType: " + name.replace("Spawn", ""));
+    PrettyPrint.bullet("MapPos: " + mapPos);
+    PrettyPrint.endGroup();
+
     if (type == SpawnerType.PELLET)
       gameState.spawnScaled(AdvGameState.Layer.ITEMS, new PelletItem(gameState, spawnMapPos));
     else if (type == SpawnerType.PPELLET)

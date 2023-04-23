@@ -101,7 +101,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
                                                .toList();
 
     //set velocity
-    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeed, 0).multiply(map.tileSize).divide(AdvGameConst.tps);
+    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeedBase, 0).multiply(map.tileSize).divide(AdvGameConst.tps);
 
     double    stepSize      = velocity.x;
     Direction nextDir       = gameState.requestedDirections.get(gameState.players.indexOf(this));

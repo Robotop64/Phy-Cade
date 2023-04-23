@@ -11,6 +11,7 @@ import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.screens.AdvGameScreen;
 import kn.uni.util.Direction;
+import kn.uni.util.PrettyPrint;
 
 import javax.swing.JPanel;
 import java.awt.Dimension;
@@ -482,6 +483,8 @@ public class GameEnvironment
   public void pauseGame ()
   {
     gameState.paused = true;
+
+
     System.out.println("Pausing game");
   }
 
@@ -582,33 +585,39 @@ public class GameEnvironment
 
   public void reloadLevel ()
   {
+    PrettyPrint.startGroup(PrettyPrint.Type.Message, "Reloading level");
+
     gameState.layers.get(AdvGameState.Layer.OBJECTS.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.VFX.ordinal()).clear();
-    System.out.println("Cleared layers");
+    PrettyPrint.bullet("Cleared layers");
 
     gameState.players.clear();
     gameState.requestedDirections.clear();
     gameState.pelletCount = 0;
     gameState.pelletsEaten = 0;
     gameState.fruitSpawned = false;
-    System.out.println("Reset players and trackers");
+    PrettyPrint.bullet("Reset players and trackers");
 
     loadObjects();
     loadItems();
     loadEntities();
     spawnPlayers();
+    spawnGhosts();
     gameState.level++;
     gameScreen.setLevel(gameState.level);
     gameScreen.gameReloading = true;
-    System.out.println("Reloaded level");
+    PrettyPrint.bullet("Reloaded level contents");
 
     IntStream.range(0, updateLayer.size()).forEach(i -> updateLayer.set(i, true));
     render.run();
-    System.out.println("Rendered level");
+    PrettyPrint.bullet("Rendered level");
 
     gameScreen.enableReadyPopup(true);
+    PrettyPrint.bullet("Enabled ready popup");
+
+    PrettyPrint.endGroup();
   }
   //endregion
 
