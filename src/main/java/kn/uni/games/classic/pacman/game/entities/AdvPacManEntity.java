@@ -6,6 +6,7 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.tracker.DebugManager;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
@@ -14,8 +15,11 @@ import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -24,13 +28,14 @@ import static kn.uni.util.Util.round;
 
 public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, AdvColliding
 {
-
   public AdvPacManEntity (AdvGameState gameState, Vector2d mapPos)
   {
     super();
     this.gameState = gameState;
     this.mapPos = mapPos;
     this.stunned = false;
+
+    debugManager = new DebugManager();
   }
 
   //region graphics
@@ -50,6 +55,14 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
           (int) ( absPos.y - AdvGameConst.hitBoxes.get("AdvPacManEntity") * AdvGameConst.tileSize ),
           (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ),
           (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ));
+
+      debugManager.getInfoTagged("shape").forEach(info ->
+          {
+            Object[] infoData = (Object[]) info.value();
+            g.setColor((Color) infoData[0]);
+            g.draw((Shape) infoData[1]);
+          }
+      );
     }
   }
 
@@ -100,6 +113,17 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
                                                .filter(tile -> Arrays.stream(validTiles.values()).map(Enum::name).toList().contains(tile.getType().name()))
                                                .toList();
 
+    debugManager.remove("movement");
+
+    //add new debugInfo
+    possibleTiles.forEach(tile ->
+        debugManager.addInfo("possibleTile",
+            new ArrayList <>(List.of("movement", "shape")),
+            new Object[]{ Color.GREEN, new Rectangle((int) tile.absPos.x, (int) tile.absPos.y, AdvGameConst.tileSize, AdvGameConst.tileSize) }
+        )
+    );
+
+    //region init movement variables
     //set velocity
     if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeedBase, 0).multiply(map.tileSize).divide(AdvGameConst.tps);
 
@@ -109,8 +133,9 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     double    centerDist    = round(this.facing.toVector().scalar(innerPos));
     boolean   nextTileValid = possibleTiles.contains(currentTile.neighbors.get(this.facing));
     boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbors.get(nextDir));
+    //endregion
 
-
+    //region controls turning
     //allows turning vertically if innerTilePosition x == 0 or horizontally if innerTilePosition y == 0
     if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
       //if the next direction is a valid tile
@@ -121,7 +146,9 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
           this.facing = nextDir;
           suppressedDirections.clear();
         }
+    //endregion
 
+    //region controls moving
     //stops the entity from moving in a suppressed direction
     if (suppressedDirections.contains(this.facing))
     {
@@ -143,6 +170,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
       mapPos = map.getTileMapPos(absPos);
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
+    //endregion
   }
 
   public void die ()

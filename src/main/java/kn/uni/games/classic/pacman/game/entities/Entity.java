@@ -13,6 +13,8 @@ import java.util.List;
 public class Entity extends AdvPlacedObject
 {
   public boolean          stunned              = false;
+  public boolean          dead                 = false;
+  public boolean          undead               = false;
   public boolean          edible               = false;
   public boolean          vulnerable           = false;
   public Direction        facing               = Direction.right;

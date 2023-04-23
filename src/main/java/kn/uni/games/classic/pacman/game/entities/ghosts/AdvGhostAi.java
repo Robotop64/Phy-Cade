@@ -5,11 +5,12 @@ import kn.uni.games.classic.pacman.game.entities.Ai;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvWaypointManager;
+import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
+import kn.uni.util.PrettyPrint;
 import kn.uni.util.Vector2d;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,6 +35,9 @@ public class AdvGhostAi extends Ai
 
   public void setMode (AdvGameConst.GhostMode mode)
   {
+    PrettyPrint.startGroup(PrettyPrint.Type.Event, "Action");
+    PrettyPrint.bullet("Ghost " + name + " changed mode from " + this.mode + " to " + mode);
+    PrettyPrint.endGroup();
     this.mode = mode;
   }
 
@@ -49,11 +53,7 @@ public class AdvGhostAi extends Ai
 
   public AdvPacManEntity getNearestTargetEntity ()
   {
-    List <AdvPacManEntity> possibleTargets = new ArrayList <>();
-
-    gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
-                    .filter(entity -> entity instanceof AdvPacManEntity)
-                    .forEach(entity -> possibleTargets.add((AdvPacManEntity) entity));
+    List <AdvPacManEntity> possibleTargets = ghost.gameState.players;
 
     //get closest target to ghost
     AtomicReference <AdvPacManEntity> closestTarget = new AtomicReference <>();
@@ -90,7 +90,7 @@ public class AdvGhostAi extends Ai
     return closestTarget.get();
   }
 
-  public Vector2d getCurrentTargetPos ()
+  public Vector2d getCurrentTargetPos (AdvGameConst.GhostNames name)
   {
     AdvPacManEntity target = getNearestTargetEntity();
 
@@ -114,7 +114,7 @@ public class AdvGhostAi extends Ai
       }
       case CLYDE ->
       {
-        //target is pacman if more than 8 tiles away, otherwise away pacman
+        //target is pacman if more than 8 tiles away, otherwise away from pacman
         if (target.absPos.subtract(ghost.absPos).length() > 8 * AdvGameConst.tileSize)
           return target.absPos;
         else
@@ -131,49 +131,67 @@ public class AdvGhostAi extends Ai
   {
     switch (mode)
     {
-      case CHASE, FRIGHTENED ->
+      case CHASE ->
       {
-        return getCurrentTargetPos();
+        return getCurrentTargetPos(name);
+      }
+      case FRIGHTENED ->
+      {
+        return getCurrentTargetPos(AdvGameConst.GhostNames.BLINKY);
       }
       case SCATTER ->
       {
-        return AdvWaypointManager.getWaypoint(name.toString() + "_SCATTER").absPos;
+        return AdvWaypointManager.getInstance(ghost.gameState).get().getWaypoint(name.toString() + "_SCATTER").absPos;
       }
       case EXIT, RETREAT ->
       {
-        return AdvWaypointManager.getWaypoint("GhostPenOutside").absPos;
+        return AdvWaypointManager.getInstance(ghost.gameState).get().getWaypoint("GhostPenOutside").absPos;
       }
       case ENTER ->
       {
-        return AdvWaypointManager.getWaypoint("GhostPenInside").absPos;
+        return AdvWaypointManager.getInstance(ghost.gameState).get().getWaypoint("GhostPenInside").absPos;
       }
       default ->
       {
         return null;
       }
     }
-
-
   }
 
-  public Direction getDirection ()
+  public Direction getDirection (List <AdvPacManTile> possibleTiles)
   {
-    Vector2d target = getModeTarget();
-    //all possible positions, unrelated if they are valid
-    List <Vector2d> possiblePositions = new ArrayList <>();
-    Arrays.stream(Direction.valuesCardinal()).toList()
-          .forEach(direction -> possiblePositions.add(ghost.absPos.add(direction.toVector().multiply(AdvGameConst.tileSize))));
+    //turn 180° if no possible tiles are available
+    if (possibleTiles.size() == 0)
+      return ghost.facing.opposite();
+
+
+    Vector2d targetPos = getModeTarget();
+
+    //sort possible tiles by distance to target
+    //closest tile is first, furthest tile is last
+    possibleTiles =
+        possibleTiles.stream()
+                     .sorted((a, b) ->
+                     {
+                       Vector2d aVec  = a.absPos.subtract(targetPos);
+                       Vector2d bVec  = b.absPos.subtract(targetPos);
+                       double   aDist = aVec.length();
+                       double   bDist = bVec.length();
+                       return Double.compare(aDist, bDist);
+                     })
+                     .toList();
+
     //get the closest position to target
-    Vector2d closestPosition = null;
-    for (Vector2d possiblePosition : possiblePositions)
+    switch (mode)
     {
-      if (closestPosition == null)
-        closestPosition = possiblePosition;
-      else if (possiblePosition.subtract(target).length() < closestPosition.subtract(target).length())
-        closestPosition = possiblePosition;
+      case FRIGHTENED ->
+      {
+        return Direction.getDirection(ghost.absPos, possibleTiles.get(possibleTiles.size() - 1).absPos);
+      }
+      default ->
+      {
+        return Direction.getDirection(ghost.absPos, possibleTiles.get(0).absPos);
+      }
     }
-    //get the direction to the closest position
-    assert closestPosition != null;
-    return Direction.getDirection(ghost.absPos, closestPosition);
   }
 }

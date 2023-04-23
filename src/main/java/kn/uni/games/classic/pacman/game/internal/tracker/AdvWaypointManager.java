@@ -14,18 +14,33 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class AdvWaypointManager extends AdvGameObject
 {
-  public static List <Waypoint> waypoints = new ArrayList <>();
+  public List <Waypoint> waypoints = new ArrayList <>();
+
+  public AdvGameState gameState;
 
   public AdvWaypointManager (AdvGameState gameState)
   {
-    super();
     this.gameState = gameState;
   }
 
-  public static Waypoint getWaypoint (String name)
+  public static Optional <AdvWaypointManager> getInstance (AdvGameState gameState)
+  {
+    return gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
+                           .filter(o -> o instanceof AdvWaypointManager)
+                           .map(o -> (AdvWaypointManager) o)
+                           .findFirst();
+  }
+
+  public void removeWaypoint (String name)
+  {
+    waypoints.removeIf(waypoint -> waypoint.name.equals(name));
+  }
+
+  public Waypoint getWaypoint (String name)
   {
     return waypoints.stream().filter(waypoint -> waypoint.name.equals(name)).findFirst().orElse(null);
   }
@@ -38,16 +53,13 @@ public class AdvWaypointManager extends AdvGameObject
     waypoints.add(waypoint);
   }
 
-  public void removeWaypoint (String name)
-  {
-    waypoints.removeIf(waypoint -> waypoint.name.equals(name));
-  }
-
   public static class Waypoint extends AdvPlacedObject implements AdvColliding, AdvRendered
   {
     public Vector2d mapPos;
     public Runnable onCollision;
     public String   name;
+
+    public AdvGameObject collider;
 
     public BufferedImage cachedImg;
 
@@ -62,7 +74,9 @@ public class AdvWaypointManager extends AdvGameObject
     @Override
     public void onCollision (AdvGameObject collider)
     {
+      this.collider = collider;
       onCollision.run();
+      this.collider = null;
     }
 
     @Override

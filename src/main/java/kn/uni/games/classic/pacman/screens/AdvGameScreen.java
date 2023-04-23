@@ -479,17 +479,38 @@ public class AdvGameScreen extends UIScreen
 
           //region waypoints
           waypointManager.addWaypoint("GhostPenOutside", new Vector2d().cartesian(14, 11.5), () ->
-          { });
+          {
+            //            Entity entity = (Entity) AdvWaypointManager.getWaypoint("GhostPenOutside").collider;
+            //            if (entity instanceof AdvGhostEntity ghost)
+            //            {
+            //              System.out.println("GhostPenOutside");
+            //              if (ghost.ai.getMode() == AdvGameConst.GhostMode.EXIT && ghost.ai.getMode() != AdvGameConst.GhostMode.CHASE)
+            //                ghost.ai.setMode(AdvGameConst.GhostMode.CHASE);
+            //              else if (ghost.ai.getMode() == AdvGameConst.GhostMode.RETREAT && ghost.ai.getMode() != AdvGameConst.GhostMode.ENTER)
+            //                ghost.ai.setMode(AdvGameConst.GhostMode.ENTER);
+            //            }
+          });
           waypointManager.addWaypoint("GhostPenInside", new Vector2d().cartesian(14, 14.5), () ->
-          { });
+          {
+            //            Entity entity = (Entity) AdvWaypointManager.getWaypoint("GhostPenInside").collider;
+            //            if (entity instanceof AdvGhostEntity ghost)
+            //            {
+            //              if (ghost.ai.getMode() == AdvGameConst.GhostMode.ENTER && ghost.ai.getMode() != AdvGameConst.GhostMode.CHASE && !ghost.undead)
+            //                AdvTimer.getInstance(env.gameState).get().addTask(new AdvTimer.TimerTask(env.gameState.currentTick, 1200, () -> ghost.ai.setMode(AdvGameConst.GhostMode.CHASE)));
+            //            }
+          });
           waypointManager.addWaypoint("BLINKY_SCATTER", new Vector2d().cartesian(0, 0), () ->
-          { });
+          {
+          });
           waypointManager.addWaypoint("PINKY_SCATTER", new Vector2d().cartesian(28, 0), () ->
-          { });
+          {
+          });
           waypointManager.addWaypoint("INKY_SCATTER", new Vector2d().cartesian(0, 31), () ->
-          { });
+          {
+          });
           waypointManager.addWaypoint("CLYDE_SCATTER", new Vector2d().cartesian(28, 31), () ->
-          { });
+          {
+          });
           //endregion
 
           //region spawners

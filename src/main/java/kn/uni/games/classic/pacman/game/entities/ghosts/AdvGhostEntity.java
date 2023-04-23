@@ -7,6 +7,7 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.tracker.DebugManager;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
@@ -15,8 +16,11 @@ import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +40,8 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     this.stunned = false;
     this.name = name;
     this.ai = new AdvGhostAi(name, this);
+
+    debugManager = new DebugManager();
   }
 
   //region graphics
@@ -55,6 +61,14 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
           (int) ( absPos.y - AdvGameConst.hitBoxes.get("AdvPacManEntity") * AdvGameConst.tileSize ),
           (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ),
           (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ));
+
+      debugManager.getInfoTagged("shape").forEach(info ->
+          {
+            Object[] infoData = (Object[]) info.value();
+            g.setColor((Color) infoData[0]);
+            g.draw((Shape) infoData[1]);
+          }
+      );
     }
   }
 
@@ -113,27 +127,43 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
                                                .filter(tile -> Arrays.stream(validTiles.values()).map(Enum::name).toList().contains(tile.getType().name()))
                                                .toList();
 
-    //set velocity
-    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.ghostSpeed, 0).multiply(AdvGameConst.tileSize).divide(AdvGameConst.tps);
+    //remove old debugInfo from previous tick
+    debugManager.remove("movement");
+
+    //add new debugInfo
+    possibleTiles.forEach(tile ->
+        debugManager.addInfo("possibleTile",
+            new ArrayList <>(List.of("movement", "shape")),
+            new Object[]{ Color.GREEN, new Rectangle((int) tile.absPos.x, (int) tile.absPos.y, AdvGameConst.tileSize, AdvGameConst.tileSize) }
+        )
+    );
+
+    //region init movement variables
+    //set initial velocity
+    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.ghostSpeedBase, 0).multiply(AdvGameConst.tileSize).divide(AdvGameConst.tps);
 
     double    stepSize      = velocity.x;
     Vector2d  innerPos      = map.getTileInnerPos(absPos);
     double    centerDist    = round(this.facing.toVector().scalar(innerPos));
     boolean   nextTileValid = possibleTiles.contains(currentTile.neighbors.get(this.facing));
-    Direction nextDir       = ai.getDirection();
+    Direction nextDir       = ai.getDirection(possibleTiles);
     boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbors.get(nextDir));
+    //endregion
 
+    //region control turning
     //allows turning vertically if innerTilePosition x == 0 or horizontally if innerTilePosition y == 0
     if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
       //if the next direction is a valid tile
       if (nextDirValid)
-        //if the next direction is not marked as suppressed
+        //if the next direction is not marked as suppressed turn into it and clear the suppressed directions
         if (!suppressedDirections.contains(nextDir))
         {
           this.facing = nextDir;
           suppressedDirections.clear();
         }
+    //endregion
 
+    //region control movement
     //stops the entity from moving in a suppressed direction
     if (suppressedDirections.contains(this.facing))
     {
@@ -154,6 +184,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
       mapPos = map.getTileMapPos(absPos);
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
+    //endregion
   }
   //endregion
 
