@@ -11,7 +11,6 @@ import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvWaypointManager;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
-import kn.uni.games.classic.pacman.game.objects.Blocker;
 import kn.uni.games.classic.pacman.game.objects.Teleporter;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacLabel;
@@ -559,12 +558,12 @@ public class AdvGameScreen extends UIScreen
           //endregion
 
           //region objects
-          map.addToPool(
-              new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
-          );
-          map.addToPool(
-              new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
-          );
+          //          map.addToPool(
+          //              new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
+          //          );
+          //          map.addToPool(
+          //              new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
+          //          );
           //endregion
 
           //region portals

@@ -69,6 +69,44 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
             g.draw((Shape) infoData[1]);
           }
       );
+      debugManager.getInfoTagged("direction").forEach(info ->
+          {
+            Object[] infoData = (Object[]) info.value();
+            g.setColor((Color) infoData[0]);
+            Direction dir = (Direction) infoData[1];
+            Vector2d  vec = dir.toVector();
+
+            int width  = (int) ( Math.abs(AdvGameConst.tileSize * vec.x) + 5 );
+            int height = (int) ( Math.abs(AdvGameConst.tileSize * vec.y) + 5 );
+
+            if (dir == Direction.right || dir == Direction.down)
+              g.fillRect((int) absPos.x, (int) absPos.y, width, height);
+            if (dir == Direction.left || dir == Direction.up)
+            {
+              g.rotate(Math.toRadians(180), absPos.x, absPos.y);
+              g.fillRect((int) absPos.x, (int) absPos.y, width, height);
+              g.rotate(Math.toRadians(-180), absPos.x, absPos.y);
+            }
+          }
+      );
+      debugManager.getInfoNamed("target").forEach(info ->
+          {
+            Object[] infoData = (Object[]) info.value();
+            g.setColor((Color) infoData[0]);
+            Vector2d target = (Vector2d) infoData[1];
+            g.setStroke(new java.awt.BasicStroke(2));
+            g.drawLine((int) absPos.x, (int) absPos.y, (int) target.x, (int) target.y);
+          }
+      );
+      debugManager.getInfoNamed("bestTile").forEach(info ->
+          {
+            Object[] infoData = (Object[]) info.value();
+            g.setColor((Color) infoData[0]);
+            Vector2d target = (Vector2d) infoData[1];
+            g.setStroke(new java.awt.BasicStroke(2));
+            g.drawLine((int) absPos.x, (int) absPos.y, (int) target.x, (int) target.y);
+          }
+      );
     }
   }
 
@@ -101,7 +139,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
       default -> g.setColor(Color.GRAY);
     }
 
-    g.fillOval(0, 0, iconSize, iconSize);
+    g.fillOval(iconSize / 2 - 10, iconSize / 2 - 10, 20, 20);
     g.dispose();
   }
   //endregion
@@ -122,7 +160,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     AdvPacManTile currentTile    = map.tilesPixel.get(currentTilePos);
 
     List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
-                                               .map(dir -> currentTile.neighbors.get(dir))
+                                               .map(dir -> currentTile.neighbours.get(dir))
                                                .filter(Objects::nonNull)
                                                .filter(tile -> Arrays.stream(validTiles.values()).map(Enum::name).toList().contains(tile.getType().name()))
                                                .toList();
@@ -145,22 +183,34 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     double    stepSize      = velocity.x;
     Vector2d  innerPos      = map.getTileInnerPos(absPos);
     double    centerDist    = round(this.facing.toVector().scalar(innerPos));
-    boolean   nextTileValid = possibleTiles.contains(currentTile.neighbors.get(this.facing));
-    Direction nextDir       = ai.getDirection(possibleTiles);
-    boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbors.get(nextDir));
+    boolean   nextTileValid = possibleTiles.contains(currentTile.neighbours.get(this.facing));
+    Direction nextDir       = ai.getDirection(currentTile, possibleTiles);
+    boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbours.get(nextDir));
     //endregion
 
+    debugManager.addInfo("facing",
+        new ArrayList <>(List.of("movement", "direction")),
+        new Object[]{ Color.YELLOW, this.facing }
+    );
+    debugManager.addInfo("nextDir",
+        new ArrayList <>(List.of("movement", "direction")),
+        new Object[]{ Color.MAGENTA, nextDir }
+    );
+
+    //    System.out.println(innerPos.rounded());
     //region control turning
     //allows turning vertically if innerTilePosition x == 0 or horizontally if innerTilePosition y == 0
     if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
       //if the next direction is a valid tile
       if (nextDirValid)
+      {
         //if the next direction is not marked as suppressed turn into it and clear the suppressed directions
         if (!suppressedDirections.contains(nextDir))
         {
           this.facing = nextDir;
           suppressedDirections.clear();
         }
+      }
     //endregion
 
     //region control movement
@@ -171,19 +221,31 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
       return;
     }
 
-    //next tile is valid or center has not been reached yet
-    if (nextTileValid || centerDist < 0)
+    Vector2d currentPos     = absPos;
+    Vector2d tileCenter     = currentTilePos.multiply(map.tileSize).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
+    Vector2d nextPos        = currentPos.add(this.facing.toVector().multiply(stepSize * 0.85));
+    double   nextCenterDist = round(this.facing.toVector().scalar(nextPos));
+
+    System.out.println("reset?: " + ( centerDist < 0 && nextCenterDist > 0 ) + " | centerDist: " + centerDist + " | innerPos: " + innerPos);
+
+    //center would have been passed over (turning not possible), reset position to center
+    if (( centerDist < 0 && nextCenterDist > 0 ) || ( centerDist > 0 && !nextTileValid ))
     {
-      absPos = absPos.add(this.facing.toVector().multiply(stepSize));
+      absPos = tileCenter;
       mapPos = map.getTileMapPos(absPos);
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
+      //          return;
     }
-    else if (centerDist > 0)
+
+
+    //next tile is valid or center has not been reached yet (distance to center is negative, positive if center has been passed)
+    else if (nextTileValid || centerDist < 0)//(centerDist < 0 || ( centerDist > 0 && nextTileValid ))
     {
-      absPos = currentTilePos.multiply(map.tileSize).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
+      absPos = nextPos;
       mapPos = map.getTileMapPos(absPos);
-      gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
+      //      gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
+    gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     //endregion
   }
   //endregion

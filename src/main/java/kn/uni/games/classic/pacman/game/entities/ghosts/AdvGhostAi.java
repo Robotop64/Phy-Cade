@@ -10,6 +10,7 @@ import kn.uni.util.Direction;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.Vector2d;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +26,7 @@ public class AdvGhostAi extends Ai
   {
     this.name = name;
     this.ghost = ghost;
-    this.mode = AdvGameConst.GhostMode.ENTER;
+    this.mode = AdvGameConst.GhostMode.CHASE;
   }
 
   public AdvGameConst.GhostMode getMode ()
@@ -158,7 +159,7 @@ public class AdvGhostAi extends Ai
     }
   }
 
-  public Direction getDirection (List <AdvPacManTile> possibleTiles)
+  public Direction getDirection (AdvPacManTile current, List <AdvPacManTile> possibleTiles)
   {
     //turn 180° if no possible tiles are available
     if (possibleTiles.size() == 0)
@@ -181,17 +182,30 @@ public class AdvGhostAi extends Ai
                      })
                      .toList();
 
+    ghost.debugManager.remove("ai");
+    ghost.debugManager.addInfo("target",
+        new ArrayList <>(List.of("ai")),
+        new Object[]{ Color.GREEN, targetPos });
+    ghost.debugManager.addInfo("bestTile",
+        new ArrayList <>(List.of("ai")),
+        new Object[]{ Color.CYAN, possibleTiles.get(0).absPos });
+
     //get the closest position to target
     switch (mode)
     {
       case FRIGHTENED ->
       {
-        return Direction.getDirection(ghost.absPos, possibleTiles.get(possibleTiles.size() - 1).absPos);
+        for (Direction direction : current.neighbours.keySet())
+          if (current.neighbours.get(direction) == possibleTiles.get(possibleTiles.size() - 1))
+            return direction;
       }
       default ->
       {
-        return Direction.getDirection(ghost.absPos, possibleTiles.get(0).absPos);
+        for (Direction direction : current.neighbours.keySet())
+          if (current.neighbours.get(direction) == possibleTiles.get(0))
+            return direction;
       }
     }
+    return null;
   }
 }

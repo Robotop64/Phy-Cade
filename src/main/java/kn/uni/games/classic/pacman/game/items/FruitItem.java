@@ -1,7 +1,6 @@
 package kn.uni.games.classic.pacman.game.items;
 
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
-import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
@@ -74,9 +73,4 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
     super.consumeAction();
   }
 
-  @Override
-  public void onCollision (AdvGameObject collider)
-  {
-    consumeAction();
-  }
 }

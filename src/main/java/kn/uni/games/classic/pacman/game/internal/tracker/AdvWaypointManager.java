@@ -88,6 +88,8 @@ public class AdvWaypointManager extends AdvGameObject
           render();
 
         g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
+        g.setColor(Color.RED);
+        g.drawString(name, (int) absPos.x, (int) absPos.y - iconSize / 2);
       }
     }
 
@@ -110,8 +112,7 @@ public class AdvWaypointManager extends AdvGameObject
       }
 
       g.setColor(Color.RED);
-      g.fillOval(0, 0, iconSize, iconSize);
-
+      g.fillOval(iconSize / 2 - 5, iconSize / 2 - 5, 10, 10);
     }
   }
 

@@ -90,12 +90,12 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
             .filter(d -> v.getType() == AdvPacManTile.TileType.WALL)
             .filter(d -> v.connections.containsKey(d) && v.connections.get(d).equals(true))
             .filter(d -> !( v.connectionType.equals(AdvPacManTile.ConnectionType.T)
-                && v.neighbors.containsKey(d.opposite())
-                && v.neighbors.get(d.opposite()).getType() == AdvPacManTile.TileType.FLOOR ))
+                && v.neighbours.containsKey(d.opposite())
+                && v.neighbours.get(d.opposite()).getType() == AdvPacManTile.TileType.FLOOR ))
             .filter(d -> !( v.neighboursCount[1] == 1
                 && v.connectionType.equals(AdvPacManTile.ConnectionType.T)
-                && v.neighbors.containsKey(d.opposite())
-                && v.neighbors.get(d.opposite()).connectionType.equals(AdvPacManTile.ConnectionType.S) ))
+                && v.neighbours.containsKey(d.opposite())
+                && v.neighbours.get(d.opposite()).connectionType.equals(AdvPacManTile.ConnectionType.S) ))
             .filter(d -> !( v.connectionType.equals(AdvPacManTile.ConnectionType.X) ))
             .forEach(d ->
                 {
@@ -118,8 +118,8 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
             .stream()
             .filter(d -> v.getType() == AdvPacManTile.TileType.WALL)
             .filter(d -> v.connectionType.equals(AdvPacManTile.ConnectionType.X))
-            .filter(d -> v.neighbors.containsKey(d))
-            .filter(d -> v.neighbors.get(d).getType() == AdvPacManTile.TileType.FLOOR)
+            .filter(d -> v.neighbours.containsKey(d))
+            .filter(d -> v.neighbours.get(d).getType() == AdvPacManTile.TileType.FLOOR)
             .forEach(
                 d ->
                 {

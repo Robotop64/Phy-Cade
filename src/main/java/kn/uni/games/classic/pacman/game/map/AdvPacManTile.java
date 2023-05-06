@@ -28,7 +28,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
   public  Map <Direction, Boolean>       connections;
   public  ConnectionType                 connectionType;
   public  int[]                          neighboursCount = new int[2];
-  public  Map <Direction, AdvPacManTile> neighbors;
+  public  Map <Direction, AdvPacManTile> neighbours;
   public  Color                          primitiveColor  = Color.BLACK;
   //type of the tile
   private TileType                       type;
@@ -44,7 +44,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     this.mapPos = mapPos;
     this.type = type;
 
-    neighbors = new HashMap <>();
+    neighbours = new HashMap <>();
     connections = new HashMap <>();
 
     items = new ArrayList <>();
@@ -91,24 +91,24 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
   //endregion
 
   //region neighbours
-  public Map <Direction, AdvPacManTile> getNeighbors ()
+  public Map <Direction, AdvPacManTile> getNeighbours ()
   {
-    return neighbors;
+    return neighbours;
   }
 
-  public void setNeighbors (Map <Direction, AdvPacManTile> neighbors)
+  public void setNeighbours (Map <Direction, AdvPacManTile> neighbours)
   {
-    this.neighbors = neighbors;
+    this.neighbours = neighbours;
   }
 
   public void addNeighbour (Direction dir, AdvPacManTile tile)
   {
-    neighbors.put(dir, tile);
+    neighbours.put(dir, tile);
   }
 
   public AdvPacManTile getNeighbour (Direction dir)
   {
-    return neighbors.get(dir);
+    return neighbours.get(dir);
   }
   //endregion
 
@@ -181,7 +181,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
   {
     Arrays.stream(Direction.valuesAll()).forEach(dir ->
     {
-      if (neighbors.containsKey(dir) && neighbors.get(dir).getType() == this.type)
+      if (neighbours.containsKey(dir) && neighbours.get(dir).getType() == this.type)
         connections.put(dir, true);
       else
         connections.put(dir, false);
@@ -201,7 +201,7 @@ public class AdvPacManTile extends AdvPlacedObject implements AdvRendered
     AtomicInteger fCount = new AtomicInteger();
     Arrays.stream(Direction.valuesDiagonal()).forEach(dir ->
     {
-      if (neighbors.containsKey(dir) && neighbors.get(dir).getType() == this.type)
+      if (neighbours.containsKey(dir) && neighbours.get(dir).getType() == this.type)
         fCount.getAndIncrement();
     });
     neighboursCount[1] = fCount.get();

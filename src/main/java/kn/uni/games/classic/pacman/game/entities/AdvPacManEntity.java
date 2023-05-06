@@ -7,6 +7,7 @@ import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.DebugManager;
+import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
@@ -108,7 +109,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     AdvPacManTile currentTile    = map.tilesPixel.get(currentTilePos);
 
     List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
-                                               .map(dir -> currentTile.neighbors.get(dir))
+                                               .map(dir -> currentTile.neighbours.get(dir))
                                                .filter(Objects::nonNull)
                                                .filter(tile -> Arrays.stream(validTiles.values()).map(Enum::name).toList().contains(tile.getType().name()))
                                                .toList();
@@ -131,8 +132,8 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     Direction nextDir       = gameState.requestedDirections.get(gameState.players.indexOf(this));
     Vector2d  innerPos      = map.getTileInnerPos(absPos);
     double    centerDist    = round(this.facing.toVector().scalar(innerPos));
-    boolean   nextTileValid = possibleTiles.contains(currentTile.neighbors.get(this.facing));
-    boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbors.get(nextDir));
+    boolean   nextTileValid = possibleTiles.contains(currentTile.neighbours.get(this.facing));
+    boolean   nextDirValid  = possibleTiles.contains(currentTile.neighbours.get(nextDir));
     //endregion
 
     //region controls turning
@@ -182,6 +183,9 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
   @Override
   public void onCollision (AdvGameObject collider)
   {
+    if (collider instanceof Item item)
+      item.consumeAction();
+
   }
   //endregion
 }
