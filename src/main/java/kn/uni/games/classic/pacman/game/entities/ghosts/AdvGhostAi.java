@@ -21,12 +21,15 @@ public class AdvGhostAi extends Ai
   public AdvGameConst.GhostNames name;
   public AdvGameConst.GhostMode  mode;
   public AdvGhostEntity          ghost;
+  public AdvPacManTile[]         memory;
 
   public AdvGhostAi (AdvGameConst.GhostNames name, AdvGhostEntity ghost)
   {
     this.name = name;
     this.ghost = ghost;
+    this.gameState = ghost.gameState;
     this.mode = AdvGameConst.GhostMode.CHASE;
+    this.memory = new AdvPacManTile[2];
   }
 
   public AdvGameConst.GhostMode getMode ()
@@ -119,7 +122,7 @@ public class AdvGhostAi extends Ai
         if (target.absPos.subtract(ghost.absPos).length() > 8 * AdvGameConst.tileSize)
           return target.absPos;
         else
-          return target.absPos.add(Objects.requireNonNull(Direction.getDirection(ghost, target)).opposite().toVector().multiply(8 * AdvGameConst.tileSize));
+          return target.absPos.add(Objects.requireNonNull(target.absPos.subtract(ghost.absPos).approxDirection()).opposite().toVector().multiply(8 * AdvGameConst.tileSize));
       }
       default ->
       {
@@ -161,6 +164,17 @@ public class AdvGhostAi extends Ai
 
   public Direction getDirection (AdvPacManTile current, List <AdvPacManTile> possibleTiles)
   {
+    //region tile memory
+    //set initial tile
+    if (memory[0] == null)
+      memory[0] = current;
+    //update previous tile
+    if (memory[1] != null && current != memory[1])
+      memory[0] = memory[1];
+    //update current tile
+    memory[1] = current;
+    //endregion
+
     //turn 180° if no possible tiles are available
     if (possibleTiles.size() == 0)
       return ghost.facing.opposite();
@@ -169,7 +183,7 @@ public class AdvGhostAi extends Ai
     Vector2d targetPos = getModeTarget();
 
     //sort possible tiles by distance to target
-    //closest tile is first, furthest tile is last
+    //the closest tile is first, furthest tile is last
     possibleTiles =
         possibleTiles.stream()
                      .sorted((a, b) ->
@@ -182,30 +196,42 @@ public class AdvGhostAi extends Ai
                      })
                      .toList();
 
-    ghost.debugManager.remove("ai");
-    ghost.debugManager.addInfo("target",
+    ghost.tagManager.remove("ai");
+    ghost.tagManager.addInfo("target",
         new ArrayList <>(List.of("ai")),
         new Object[]{ Color.GREEN, targetPos });
-    ghost.debugManager.addInfo("bestTile",
+    ghost.tagManager.addInfo("bestTile",
         new ArrayList <>(List.of("ai")),
         new Object[]{ Color.CYAN, possibleTiles.get(0).absPos });
 
-    //get the closest position to target
-    switch (mode)
-    {
-      case FRIGHTENED ->
-      {
-        for (Direction direction : current.neighbours.keySet())
-          if (current.neighbours.get(direction) == possibleTiles.get(possibleTiles.size() - 1))
-            return direction;
-      }
-      default ->
-      {
-        for (Direction direction : current.neighbours.keySet())
-          if (current.neighbours.get(direction) == possibleTiles.get(0))
-            return direction;
-      }
-    }
-    return null;
+
+    List <AdvPacManTile> finalPossibleTiles = possibleTiles;
+
+    return current.neighbours.keySet().stream()
+                             //filter out all directions that don't lead to a possible tile
+                             .filter(direction -> current.neighbours.get(direction) != null)
+                             //filter out directions that lead to the previous tile
+                             .filter(direction -> current.neighbours.get(direction) != memory[0])
+                             //filter out all directions that don't lead to the best tile for the current mode
+                             .filter(direction ->
+                             {
+                               switch (mode)
+                               {
+                                 case FRIGHTENED ->
+                                 {
+                                   return current.neighbours.get(direction) == finalPossibleTiles.get(finalPossibleTiles.size() - 1);
+                                 }
+                                 default ->
+                                 {
+                                   return current.neighbours.get(direction) == finalPossibleTiles.get(0);
+                                 }
+                               }
+                             })
+                             .findFirst()
+                             .orElseGet(() ->
+                             {
+                               //if no possible tile is found, turn 180°
+                               return ghost.facing.opposite();
+                             });
   }
 }

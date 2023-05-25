@@ -3,11 +3,11 @@ package kn.uni.games.classic.pacman.game.internal.tracker;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebugManager
+public class TagManager
 {
   public List <Info> infos;
 
-  public DebugManager ()
+  public TagManager ()
   {
     infos = new ArrayList <>();
   }
@@ -37,5 +37,11 @@ public class DebugManager
     return List.of(infos.stream().filter(info -> info.tags.stream().anyMatch(tag -> tag.equals(tagged))).toArray(Info[]::new));
   }
 
-  public record Info(String name, List <String> tags, Object value) { }
+  public record Info(String name, List <String> tags, Object value)
+  {
+    public boolean isTagged (String tag)
+    {
+      return tags.stream().anyMatch(tag::equals);
+    }
+  }
 }

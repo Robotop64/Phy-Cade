@@ -180,6 +180,18 @@ public class Vector2d
     throw new IllegalStateException("Vector2d is not a Direction");
   }
 
+  public Direction approxDirection ()
+  {
+    Vector2d unit = this.unitVector();
+    //find closest Cardinal Direction
+    if (unit.x > 0.5) return Direction.right;
+    if (unit.x < -0.5) return Direction.left;
+    if (unit.y > 0.5) return Direction.down;
+    if (unit.y < -0.5) return Direction.up;
+
+    throw new IllegalStateException("Vector2d cannot be approximated to a Direction");
+  }
+
   @Override
   public int hashCode ()
   {

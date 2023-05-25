@@ -534,27 +534,27 @@ public class AdvGameScreen extends UIScreen
                   Spawner.SpawnerType.GHOST,
                   new Vector2d().cartesian(14, 14.5))
           );
-          //          map.addToPool(
-          //              new Spawner(
-          //                  "PinkySpawn", env.getGameState(),
-          //                  new Vector2d().cartesian(14, 14.5),
-          //                  Spawner.SpawnerType.GHOST,
-          //                  new Vector2d().cartesian(14, 14.5))
-          //          );
-          //          map.addToPool(
-          //              new Spawner(
-          //                  "InkySpawn", env.getGameState(),
-          //                  new Vector2d().cartesian(14, 14.5),
-          //                  Spawner.SpawnerType.GHOST,
-          //                  new Vector2d().cartesian(14, 14.5))
-          //          );
-          //          map.addToPool(
-          //              new Spawner(
-          //                  "ClydeSpawn", env.getGameState(),
-          //                  new Vector2d().cartesian(14, 14.5),
-          //                  Spawner.SpawnerType.GHOST,
-          //                  new Vector2d().cartesian(14, 14.5))
-          //          );
+          map.addToPool(
+              new Spawner(
+                  "PinkySpawn", env.getGameState(),
+                  new Vector2d().cartesian(14, 14.5),
+                  Spawner.SpawnerType.GHOST,
+                  new Vector2d().cartesian(14, 14.5))
+          );
+          map.addToPool(
+              new Spawner(
+                  "InkySpawn", env.getGameState(),
+                  new Vector2d().cartesian(14, 14.5),
+                  Spawner.SpawnerType.GHOST,
+                  new Vector2d().cartesian(14, 14.5))
+          );
+          map.addToPool(
+              new Spawner(
+                  "ClydeSpawn", env.getGameState(),
+                  new Vector2d().cartesian(14, 14.5),
+                  Spawner.SpawnerType.GHOST,
+                  new Vector2d().cartesian(14, 14.5))
+          );
           //endregion
 
           //region objects

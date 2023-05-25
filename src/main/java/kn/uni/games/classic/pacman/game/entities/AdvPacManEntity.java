@@ -6,7 +6,7 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
-import kn.uni.games.classic.pacman.game.internal.tracker.DebugManager;
+import kn.uni.games.classic.pacman.game.internal.tracker.TagManager;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
@@ -36,7 +36,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     this.mapPos = mapPos;
     this.stunned = false;
 
-    debugManager = new DebugManager();
+    tagManager = new TagManager();
   }
 
   //region graphics
@@ -57,7 +57,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
           (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ),
           (int) ( AdvGameConst.hitBoxes.get("AdvPacManEntity") * 2 * AdvGameConst.tileSize ));
 
-      debugManager.getInfoTagged("shape").forEach(info ->
+      tagManager.getInfoTagged("shape").forEach(info ->
           {
             Object[] infoData = (Object[]) info.value();
             g.setColor((Color) infoData[0]);
@@ -114,11 +114,11 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
                                                .filter(tile -> Arrays.stream(validTiles.values()).map(Enum::name).toList().contains(tile.getType().name()))
                                                .toList();
 
-    debugManager.remove("movement");
+    tagManager.remove("movement");
 
     //add new debugInfo
     possibleTiles.forEach(tile ->
-        debugManager.addInfo("possibleTile",
+        tagManager.addInfo("possibleTile",
             new ArrayList <>(List.of("movement", "shape")),
             new Object[]{ Color.GREEN, new Rectangle((int) tile.absPos.x, (int) tile.absPos.y, AdvGameConst.tileSize, AdvGameConst.tileSize) }
         )
