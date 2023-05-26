@@ -7,26 +7,35 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Math.sqrt;
-import static kn.uni.util.Util.cos;
+import static kn.uni.util.Util.cosDeg;
 import static kn.uni.util.Util.round;
-import static kn.uni.util.Util.sin;
+import static kn.uni.util.Util.sinDeg;
 
 @SuppressWarnings({ "unused", "NonAsciiCharacters" })
 public class Vector2d
 {
   public final double x;
   public final double y;
+  public final double ρ;
+  public final double φ;
+
 
   public Vector2d ()
   {
     x = 0;
     y = 0;
+    ρ = 0;
+    φ = 0;
   }
 
   private Vector2d (double x, double y)
   {
     this.x = x;
     this.y = y;
+    ρ = magnitude();
+    double deg = Math.toDegrees(Math.atan2(y, x));
+    if (deg < 0) deg += 360;
+    φ = deg;
   }
 
   public Vector2d copy () { return new Vector2d(x, y); }
@@ -41,10 +50,26 @@ public class Vector2d
     return new Vector2d(x, y);
   }
 
+//  //transform a polar vector to a cartesian vector
+//  public Vector2d toCartesian ()
+//  {
+//    return new Vector2d().polar(x, y);
+//  }
+//
+  //0° is right, 90° is up, 180° is left, 270° is down
   public Vector2d polar (double ρ, double φ)
   {
-    return new Vector2d(ρ * cos(φ), ρ * sin(φ));
+    return new Vector2d(ρ * cosDeg(φ), ρ * sinDeg(φ));
   }
+
+//  //transform a cartesian vector to a polar vector
+//  public Vector2d toPolar ()
+//  {
+//    double deg = Math.toDegrees(Math.atan2(y, x));
+//    if (deg < 0) deg += 360;
+//    Vector2d v = new Vector2d(magnitude(), deg);
+//    return v;
+//  }
 
   public Vector2d add (Vector2d v) { return new Vector2d(x + v.x, y + v.y); }
 
@@ -64,7 +89,7 @@ public class Vector2d
 
   public Vector2d rotate (double φ)
   {
-    return new Vector2d(cos(φ) * x - sin(φ) * y, sin(φ) * x + cos(φ) * y);
+    return new Vector2d(cosDeg(φ) * x - sinDeg(φ) * y, sinDeg(φ) * x + cosDeg(φ) * y);
   }
 
   public double length ()
@@ -170,7 +195,7 @@ public class Vector2d
     return rounded().x == vector2D.rounded().x && rounded().y == vector2D.rounded().y;
   }
 
-  public Direction toDirection ()
+  public Direction toDirectionCardinal ()
   {
     if (x == 0 && y == 0) return null;
     if (x == 0 && y == -1) return Direction.up;
@@ -182,14 +207,22 @@ public class Vector2d
 
   public Direction approxDirection ()
   {
-    Vector2d unit = this.unitVector();
-    //find closest Cardinal Direction
-    if (unit.x > 0.5) return Direction.right;
-    if (unit.x < -0.5) return Direction.left;
-    if (unit.y > 0.5) return Direction.down;
-    if (unit.y < -0.5) return Direction.up;
+    Vector2d polar = this.unitVector();
+    double   φ     = polar.φ;
+    φ = φ % 360;
 
-    throw new IllegalStateException("Vector2d cannot be approximated to a Direction");
+    Direction dir = Direction.up;
+
+    if (φ <= 45 || φ >= 315) dir = Direction.right;
+    if (φ >= 45 && φ < 135) dir = Direction.up;
+    if (φ >= 135 && φ < 225) dir = Direction.left;
+    if (φ >= 225 && φ < 315) dir = Direction.down;
+
+    //swap up and down due to the coordinate system of monitors having a y-axis pointing down
+    if (dir == Direction.up) dir = Direction.down;
+    else if (dir == Direction.down) dir = Direction.up;
+
+    return dir;
   }
 
   @Override

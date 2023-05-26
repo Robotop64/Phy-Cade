@@ -27,9 +27,14 @@ public class Util
    * @param φ Angle in <b>DEGREES</b>
    * @return sin(φ)
    */
-  public static double sin (double φ)
+  public static double sinDeg (double φ)
   {
     return Math.sin(Math.toRadians(φ));
+  }
+
+  public static double sinRad (double φ )
+  {
+    return Math.sin(φ);
   }
 
   /**
@@ -38,11 +43,15 @@ public class Util
    * @param φ Angle in <b>DEGREES</b>
    * @return cos(φ)
    */
-  public static double cos (double φ)
+  public static double cosDeg (double φ)
   {
     return Math.cos(Math.toRadians(φ));
   }
 
+  public static double cosRad (double φ )
+  {
+    return Math.cos(φ);
+  }
   /**
    * Rounds to pre defined precision
    *
