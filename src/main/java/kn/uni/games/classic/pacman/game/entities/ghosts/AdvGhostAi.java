@@ -112,9 +112,10 @@ public class AdvGhostAi extends Ai
       }
       case INKY ->
       {
+        Vector2d offset = target.absPos.add(target.facing.toVector().multiply(3 * AdvGameConst.tileSize));
+        Vector2d targetToOffset = offset.subtract(getNextGhost(AdvGameConst.GhostNames.BLINKY).absPos);
         //target is 3 tiles in front of pacman, then mirrored to blinky
-        return target.absPos.add(target.facing.toVector().multiply(3 * AdvGameConst.tileSize))
-                            .subtract(getNextGhost(AdvGameConst.GhostNames.BLINKY).absPos);
+        return offset.add(targetToOffset);
       }
       case CLYDE ->
       {

@@ -50,26 +50,11 @@ public class Vector2d
     return new Vector2d(x, y);
   }
 
-//  //transform a polar vector to a cartesian vector
-//  public Vector2d toCartesian ()
-//  {
-//    return new Vector2d().polar(x, y);
-//  }
-//
   //0° is right, 90° is up, 180° is left, 270° is down
   public Vector2d polar (double ρ, double φ)
   {
     return new Vector2d(ρ * cosDeg(φ), ρ * sinDeg(φ));
   }
-
-//  //transform a cartesian vector to a polar vector
-//  public Vector2d toPolar ()
-//  {
-//    double deg = Math.toDegrees(Math.atan2(y, x));
-//    if (deg < 0) deg += 360;
-//    Vector2d v = new Vector2d(magnitude(), deg);
-//    return v;
-//  }
 
   public Vector2d add (Vector2d v) { return new Vector2d(x + v.x, y + v.y); }
 
