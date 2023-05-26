@@ -527,27 +527,28 @@ public class AdvGameScreen extends UIScreen
                   Spawner.SpawnerType.FRUIT,
                   new Vector2d().cartesian(14, 23.5))
           );
-          map.addToPool(
-              new Spawner(
-                  "BlinkySpawn", env.getGameState(),
-                  new Vector2d().cartesian(14, 14.5),
-                  Spawner.SpawnerType.GHOST,
-                  new Vector2d().cartesian(14, 14.5))
-          );
-          map.addToPool(
-              new Spawner(
-                  "PinkySpawn", env.getGameState(),
-                  new Vector2d().cartesian(14, 14.5),
-                  Spawner.SpawnerType.GHOST,
-                  new Vector2d().cartesian(14, 14.5))
-          );
-          map.addToPool(
-              new Spawner(
-                  "InkySpawn", env.getGameState(),
-                  new Vector2d().cartesian(14, 14.5),
-                  Spawner.SpawnerType.GHOST,
-                  new Vector2d().cartesian(14, 14.5))
-          );
+
+//          map.addToPool(
+//              new Spawner(
+//                  "BlinkySpawn", env.getGameState(),
+//                  new Vector2d().cartesian(14, 14.5),
+//                  Spawner.SpawnerType.GHOST,
+//                  new Vector2d().cartesian(14, 14.5))
+//          );
+//          map.addToPool(
+//              new Spawner(
+//                  "PinkySpawn", env.getGameState(),
+//                  new Vector2d().cartesian(14, 14.5),
+//                  Spawner.SpawnerType.GHOST,
+//                  new Vector2d().cartesian(14, 14.5))
+//          );
+//          map.addToPool(
+//              new Spawner(
+//                  "InkySpawn", env.getGameState(),
+//                  new Vector2d().cartesian(14, 14.5),
+//                  Spawner.SpawnerType.GHOST,
+//                  new Vector2d().cartesian(14, 14.5))
+//          );
           map.addToPool(
               new Spawner(
                   "ClydeSpawn", env.getGameState(),
@@ -558,12 +559,12 @@ public class AdvGameScreen extends UIScreen
           //endregion
 
           //region objects
-          //          map.addToPool(
-          //              new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
-          //          );
-          //          map.addToPool(
-          //              new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3))
-          //          );
+//          Blocker b1 = new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3));
+//          b1.tagManager.addInfo("restriction", List.of("affectOnly","player"), null);
+//          map.addToPool(b1);
+//          Blocker b2 = new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3));
+//          b2.tagManager.addInfo("restriction", List.of("affectOnly","player"), null);
+//          map.addToPool(b2);
           //endregion
 
           //region portals
