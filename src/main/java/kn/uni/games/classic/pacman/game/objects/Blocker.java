@@ -5,6 +5,7 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
+import kn.uni.games.classic.pacman.game.internal.tracker.TagManager;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
 
@@ -24,6 +25,7 @@ public class Blocker extends AdvPlacedObject implements AdvRendered, AdvCollidin
     super();
     this.mapPos = mapPos;
     this.size = dim;
+    this.tagManager = new TagManager();
   }
 
   @Override

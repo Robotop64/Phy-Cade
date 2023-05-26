@@ -176,7 +176,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     //add new debugInfo
     possibleTiles.forEach(tile ->
         tagManager.addInfo("possibleTile",
-            new ArrayList <>(List.of("movement", "shape")),
+            new ArrayList <>(List.of("debug", "movement", "shape")),
             new Object[]{ Color.ORANGE, new Rectangle((int) tile.absPos.x, (int) tile.absPos.y, AdvGameConst.tileSize, AdvGameConst.tileSize) }
         )
     );
@@ -194,11 +194,11 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     //endregion
 
     tagManager.addInfo("facing",
-        new ArrayList <>(List.of("movement", "direction")),
+        new ArrayList <>(List.of("debug", "movement", "direction")),
         new Object[]{ Color.YELLOW, this.facing }
     );
     tagManager.addInfo("nextDir",
-        new ArrayList <>(List.of("movement", "direction")),
+        new ArrayList <>(List.of("debug", "movement", "direction")),
         new Object[]{ Color.MAGENTA, nextDir }
     );
 

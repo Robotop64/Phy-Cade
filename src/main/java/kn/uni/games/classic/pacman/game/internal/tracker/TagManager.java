@@ -32,9 +32,9 @@ public class TagManager
     return List.of(infos.stream().filter(info -> info.name.equals(name)).toArray(Info[]::new));
   }
 
-  public List <Info> getInfoTagged (String tagged)
+  public List <Info> getInfoTagged (String tag)
   {
-    return List.of(infos.stream().filter(info -> info.tags.stream().anyMatch(tag -> tag.equals(tagged))).toArray(Info[]::new));
+    return List.of(infos.stream().filter(info -> info.tags.stream().anyMatch(label -> label.equals(tag))).toArray(Info[]::new));
   }
 
   public record Info(String name, List <String> tags, Object value)
