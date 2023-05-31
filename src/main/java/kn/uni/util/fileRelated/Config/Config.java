@@ -1,5 +1,6 @@
 package kn.uni.util.fileRelated.Config;
 
+import kn.uni.PacPhi;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.JsonEditor;
 
@@ -33,12 +34,23 @@ public class Config
 
   public static void load ()
   {
-    Config.getInstance().root = (Tree) JsonEditor.load(new Tree(), "config");
+    Config local = new Config();
+    local.root = (Tree) JsonEditor.load(new Tree(), "config"+ PacPhi.GAME_BRANCH);
+
+    if (Config.compareSetting(Config.getInstance(), local,"General/-/Version"))
+    {
+      Config.getInstance().root = local.root;
+      PrettyPrint.bullet("Local Config version is up to date");
+      return;
+    }
+
+    PrettyPrint.bullet("Local Config version is expired/incompatible or unavailable");
+    PrettyPrint.bullet("Using default Config");
   }
 
   public static void save ()
   {
-    JsonEditor.save(Config.getInstance().root, "config");
+    JsonEditor.save(Config.getInstance().root, "config"+ PacPhi.GAME_BRANCH);
   }
 
   public static void setCurrent (String root, Object value)
@@ -52,21 +64,21 @@ public class Config
     }
     SettingType setting = tree.getLeaf(path[path.length - 1]).getType();
 
-    if (setting instanceof Value)
+    if (setting instanceof Value v)
     {
-      setting.toValue().current = (String) value;
+      v.current = (String) value;
     }
-    else if (setting instanceof Switch)
+    else if (setting instanceof Switch s)
     {
-      setting.toSwitch().current = (boolean) value;
+      s.current = (boolean) value;
     }
-    else if (setting instanceof Digit)
+    else if (setting instanceof Digit d)
     {
-      setting.toDigit().current = (double) value;
+      d.current = (double) value;
     }
-    else if (setting instanceof Range)
+    else if (setting instanceof Range r)
     {
-      setting.toRange().current = (double) value;
+      r.current = (double) value;
     }
   }
 
@@ -103,37 +115,38 @@ public class Config
   {
     root = new Tree();
 
+    //@formatter:off
     //general
-    newSetting("General/-/Version", new Value("1.0.5", null, null), 0, true, false, false);
-    newSetting("General/-/Branch", new Value("ENTROPIC", "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, true, true, false);
-    newSetting("General/-/AccessLevel", new Value("User", "User", new String[]{ "User", "Developer" }), 2, true, false, false);
+    newSetting("General/-/Version",             new Value(PacPhi.GAME_VERSION, null, null), 0, new String[]{"visible"});
+    newSetting("General/-/Branch",              new Value(PacPhi.GAME_BRANCH, "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, new String[]{"visible", "editable"});
+    newSetting("General/-/AccessLevel",         new Value("User", "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
 
     //debugging
-    newSetting("Debugging/-/Enabled", new Switch(false, false), 0, true, true, false);
-    newSetting("Debugging/-/Immortal", new Switch(false, false), 1, true, true, true);
+    newSetting("Debugging/-/Enabled",           new Switch(false, false), 0, new String[]{"visible", "editable"});
+    newSetting("Debugging/-/Immortal",          new Switch(false, false), 1, new String[]{"visible", "editable", "debug"});
 
     //gameplay
-    newSetting("Gameplay/PacMan/StartLives", new Digit(5, 5, null), 0, true, true, true);
-    newSetting("Gameplay/PacMan/StartSpeed", new Digit(6, 6, null), 1, true, true, true);
-    newSetting("Gameplay/PacMan/PlayerHP", new Digit(1, 1, null), 2, true, true, true);
-    newSetting("Gameplay/PacMan/GhostHP", new Digit(1, 1, null), 3, true, true, true);
-    newSetting("Gameplay/PacMan/PointsToLife", new Digit(10000, 10000, null), 4, true, true, true);
-    newSetting("Gameplay/PacMan/PortalDelay", new Digit(0.01, 0.01, null), 5, true, true, true);
-    newSetting("Gameplay/PacMan/PortalCooldown", new Digit(1, 1, null), 6, true, true, true);
+    newSetting("Gameplay/PacMan/StartLives",    new Digit(5, 5, null), 0, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/StartSpeed",    new Digit(6, 6, null), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PlayerHP",      new Digit(1, 1, null), 2, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/GhostHP",       new Digit(1, 1, null), 3, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PointsToLife",  new Digit(10000, 10000, null), 4, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PortalDelay",   new Digit(0.01, 0.01, null), 5, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PortalCooldown",new Digit(1, 1, null), 6, new String[]{"visible", "editable", "debug"});
 
     //graphics
-    newSetting("Graphics/General/Effects", new Switch(true, true), 0, true, true, false);
+    newSetting("Graphics/General/Effects",      new Switch(true, true), 0, new String[]{"visible", "editable"});
 
-    newSetting("Graphics/Advanced/Antialiasing", new Switch(true, true), 1, true, true, false);
+    newSetting("Graphics/Advanced/Antialiasing",new Switch(true, true), 1, new String[]{"visible", "editable"});
 
     //music
-    newSetting("Audio/General/Enabled", new Switch(true, true), 0, true, true, false);
-    newSetting("Audio/General/MasterVolume", new Range(100, 0, 100, 5), 1, true, true, false);
-    newSetting("Audio/General/Music", new Switch(true, true), 2, true, true, false);
-    newSetting("Audio/General/MusicVolume", new Range(100, 0, 100, 5), 3, true, true, false);
-    newSetting("Audio/General/SFX", new Switch(true, true), 4, true, true, false);
-    newSetting("Audio/General/SFXVolume", new Range(100, 0, 100, 5), 5, true, true, false);
-
+    newSetting("Audio/General/Enabled",         new Switch(true, true), 0, new String[]{"visible", "editable"});
+    newSetting("Audio/General/MasterVolume",    new Range(100, 0, 100, 5), 1, new String[]{"visible", "editable"});
+    newSetting("Audio/General/Music",           new Switch(true, true), 2, new String[]{"visible", "editable"});
+    newSetting("Audio/General/MusicVolume",     new Range(100, 0, 100, 5), 3, new String[]{"visible", "editable"});
+    newSetting("Audio/General/SFX",             new Switch(true, true), 4, new String[]{"visible", "editable"});
+    newSetting("Audio/General/SFXVolume",       new Range(100, 0, 100, 5), 5, new String[]{"visible", "editable"});
+    //@formatter:on
   }
 
   public SettingType getSetting (String root)
@@ -147,7 +160,7 @@ public class Config
     return tree.getLeaf(path[path.length - 1]).getType();
   }
 
-  private void newSetting (String root, SettingType setting, int ordinal, boolean visible, boolean editable, boolean debug)
+  private void newSetting (String root, SettingType setting, int ordinal, String[] tags)
   {
     String[] path = root.split("/");
     Tree     tree = this.root;
@@ -163,7 +176,19 @@ public class Config
         tree = current.getBranch(path[i]);
       }
     }
-    tree.addLeaf(path[path.length - 1], new Leaf(ordinal, setting, visible, editable, debug));
+    tree.addLeaf(path[path.length - 1], new Leaf(ordinal, setting, tags));
+  }
+
+  private static boolean compareSetting (Config a, Config b, String root)
+  {
+    SettingType settA = a.getSetting(root);
+
+    if (b.root.branches.isEmpty())
+      return false;
+
+    SettingType settB = b.getSetting(root);
+
+    return settA.equals(settB);
   }
 
   //region tree classes
@@ -217,13 +242,10 @@ public class Config
     Value  value;
     Digit  digit;
 
-    boolean visible;
-    boolean editable;
-    boolean debug;
-
+    String[] tags;
     int ordinal;
 
-    public Leaf (int ordinal, SettingType type, boolean visible, boolean editable, boolean debug)
+    public Leaf (int ordinal, SettingType type, String[] tags)
     {
       if (type instanceof Range)
         range = (Range) type;
@@ -234,11 +256,18 @@ public class Config
       else if (type instanceof Digit)
         digit = (Digit) type;
 
-      this.visible = visible;
-      this.editable = editable;
-      this.debug = debug;
-
+      this.tags = tags;
       this.ordinal = ordinal;
+    }
+
+    public boolean hasTag (String tag)
+    {
+      for (String t : tags)
+      {
+        if (t.equals(tag))
+          return true;
+      }
+      return false;
     }
 
     public SettingType getType ()
@@ -283,6 +312,39 @@ public class Config
     public Group toGroup ()
     {
       return (Group) this;
+    }
+
+    public boolean equals(SettingType other)
+    {
+      if (this instanceof Range)
+      {
+        Range a = (Range) this;
+        Range b = other.toRange();
+        return a.current == b.current;
+      }
+      else if (this instanceof Switch)
+      {
+        Switch a = (Switch) this;
+        Switch b = other.toSwitch();
+        return a.current == b.current;
+      }
+      else if (this instanceof Value)
+      {
+        Value a = (Value) this;
+        Value b = other.toValue();
+        return a.current.equals(b.current);
+      }
+      else if (this instanceof Digit)
+      {
+        Digit a = (Digit) this;
+        Digit b = other.toDigit();
+        return a.current == b.current;
+      }
+      else if (this instanceof Group)
+      {
+        return other instanceof Group;
+      }
+      return false;
     }
   }
 

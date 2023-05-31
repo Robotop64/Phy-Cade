@@ -10,7 +10,7 @@ import kn.uni.util.fileRelated.Permission;
 
 public class PacPhi
 {
-  public static final String     GAME_VERSION = "BETA-1.0.5";
+  public static final String     GAME_VERSION = "1.0.6";
   public static final String     GAME_BRANCH  = "ENTROPIC";
   public static final String     GAME_UPDATE  = " ";
   public static       Permission permissions;
@@ -48,7 +48,6 @@ public class PacPhi
 
     Config.setCurrent("General/-/Version", GAME_VERSION);
     Config.setCurrent("General/-/Branch", GAME_BRANCH);
-    Config.setCurrent("Debugging/-/Enabled", false);
     Config.setCurrent("Graphics/Advanced/Antialiasing", true);
     PrettyPrint.bullet("changed startup settings");
 
