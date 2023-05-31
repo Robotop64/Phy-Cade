@@ -141,7 +141,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
 
                       if (trigger instanceof Entity e)
                         e.facing = other.facing;
-                    }), "teleport from " + this.mapPos + " to " + other.mapPos));
+                    }), "delay teleport from " + this.mapPos + " to " + other.mapPos));
 
     //remove cooldown
     gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
@@ -151,7 +151,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
                     {
                       other.onCooldown = false;
                       this.onCooldown = false;
-                    }), "teleport from " + this.mapPos + " to " + other.mapPos));
+                    }), "remove Cooldown of teleport from " + this.mapPos + " to " + other.mapPos));
 
     gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
 
