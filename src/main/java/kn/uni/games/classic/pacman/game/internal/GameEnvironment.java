@@ -614,7 +614,7 @@ public class GameEnvironment
     render.run();
     PrettyPrint.bullet("Rendered level");
 
-    gameScreen.enableReadyPopup(true);
+    gameScreen.enableReadyPopup(true, null);
     PrettyPrint.bullet("Enabled ready popup");
 
     PrettyPrint.endGroup();

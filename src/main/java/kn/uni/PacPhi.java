@@ -46,8 +46,7 @@ public class PacPhi
 
     Config.load();
 
-    Config.setCurrent("General/-/Version", GAME_VERSION);
-    Config.setCurrent("General/-/Branch", GAME_BRANCH);
+    Config.setCurrent("Debugging/-/Enabled", false);
     Config.setCurrent("Graphics/Advanced/Antialiasing", true);
     PrettyPrint.bullet("changed startup settings");
 

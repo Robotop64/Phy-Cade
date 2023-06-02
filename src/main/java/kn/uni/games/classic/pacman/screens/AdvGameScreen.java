@@ -388,37 +388,37 @@ public class AdvGameScreen extends UIScreen
     bar.setString(progress + "%");
   }
 
-  public void enableReadyPopup (boolean enable)
+  public void enableReadyPopup (boolean enable, String[] parts)
   {
     PacLabel readyPrompt = (PacLabel) uiComponents.get(READY_LABEL.ordinal());
 
-    Thread countdown = new Thread(() ->
-    {
-      String[] num = new String[]{ "5", "4", "3", "2", "1", "GO!" };
-
-      for (String s : num)
-      {
-        readyPrompt.setText("<html> <body> <p align=\"center\"> " + s + " </p> </body> </html>");
-        try
-        {
-          Thread.sleep(1000);
-        }
-        catch (InterruptedException e)
-        {
-          throw new RuntimeException(e);
-        }
-      }
-
-      readyPrompt.setVisible(enable);
-      readyPrompt.getParent().setVisible(enable);
-      env.resumeGame();
-      if (!gameReloading)
-        env.gameState.gameStartTime = System.nanoTime();
-      gameReloading = false;
-    });
-
     if (!enable)
+    {
+      Thread countdown = new Thread(() ->
+      {
+        for (String s : parts)
+        {
+          readyPrompt.setText("<html> <body> <p align=\"center\"> " + s + " </p> </body> </html>");
+          try
+          {
+            Thread.sleep(1000);
+          }
+          catch (InterruptedException e)
+          {
+            throw new RuntimeException(e);
+          }
+        }
+
+        readyPrompt.setVisible(enable);
+        readyPrompt.getParent().setVisible(enable);
+        env.resumeGame();
+        if (!gameReloading)
+          env.gameState.gameStartTime = System.nanoTime();
+        gameReloading = false;
+      });
+
       countdown.start();
+    }
 
     if (enable)
     {
@@ -614,7 +614,7 @@ public class AdvGameScreen extends UIScreen
 
 
           setLoadingProgress("ready", 100, "Ready to start the Game!");
-          enableReadyPopup(true);
+          enableReadyPopup(true, null);
           env.pauseGame();
           env.startGame();
         }
@@ -644,7 +644,8 @@ public class AdvGameScreen extends UIScreen
       {
         gameStarted = true;
         enableLoadingPopup(false);
-        enableReadyPopup(false);
+        String[] countdown = env.gameState.level == 1 ? new String[]{"5", "4", "3", "2", "1", "GO!"} : new String[]{"GO!"};
+        enableReadyPopup(false, countdown);
       }
     });
   }
