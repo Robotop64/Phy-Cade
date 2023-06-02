@@ -123,11 +123,11 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
       return;
 
     other.onCooldown = true;
-    this.onCooldown = true;
 
     AdvPlacedObject triggerInit = (AdvPlacedObject) collider;
-    triggerInit.mapPos = new Vector2d().cartesian(1, 1);
-    triggerInit.absPos = new Vector2d().cartesian(5, 5);
+    triggerInit.frozen = true;
+    triggerInit.mapPos = new Vector2d().cartesian(-5, -5);
+    triggerInit.absPos = new Vector2d().cartesian(-100, -100);
 
     //delay teleport
     gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
@@ -138,6 +138,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
                       AdvPlacedObject trigger = (AdvPlacedObject) collider;
                       trigger.mapPos = other.mapPos;
                       trigger.absPos = other.absPos;
+                      trigger.frozen = false;
 
                       if (trigger instanceof Entity e)
                         e.facing = other.facing;

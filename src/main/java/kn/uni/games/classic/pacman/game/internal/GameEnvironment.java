@@ -5,6 +5,7 @@ import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
 import kn.uni.games.classic.pacman.game.internal.graphics.GameDisplay;
 import kn.uni.games.classic.pacman.game.internal.graphics.GameLayer;
+import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.items.PelletItem;
@@ -393,6 +394,8 @@ public class GameEnvironment
       gameState.layers.forEach(layer ->
           layer.stream()
                .filter(gameObject -> gameObject instanceof AdvTicking)
+               .map(obj -> (AdvGameObject) obj)
+               .filter(obj -> !obj.frozen)
                .forEach(gameObject -> ( (AdvTicking) gameObject ).tick()));
 
 
