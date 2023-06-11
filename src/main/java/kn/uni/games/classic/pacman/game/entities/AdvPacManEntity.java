@@ -1,11 +1,13 @@
 package kn.uni.games.classic.pacman.game.entities;
 
+import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostEntity;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.tracker.TagManager;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
@@ -177,7 +179,21 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
   public void die ()
   {
     super.die();
-    gameState.checkGameOver();
+
+    this.frozen = true;
+    this.dead = true;
+
+    gameState.setLives(gameState.lives - 1);
+
+    //check if all players are dead
+    if (gameState.players.stream().allMatch(player -> player.dead))
+      //reload level
+      AdvTimer.getInstance(gameState).ifPresent(timer -> timer.addTask(
+          new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * 2 ), () ->
+          {
+            gameState.env.reloadLevel();
+            gameState.checkGameOver();
+          }), "restart level after the player died"));
   }
 
   @Override
@@ -186,6 +202,12 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     if (collider instanceof Item item)
       item.consumeAction();
 
+    if (collider instanceof AdvGhostEntity ghost)
+      if (ghost.edible)
+      {
+
+      }
+      else if (!dead) die();
   }
   //endregion
 }

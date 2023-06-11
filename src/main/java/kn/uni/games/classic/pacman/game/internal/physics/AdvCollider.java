@@ -48,7 +48,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
 
     List <AdvPlacedObject> colliders = new ArrayList <>();
     Arrays.stream(AdvGameState.Layer.values())
-          .filter(l -> l != AdvGameState.Layer.ENTITIES)
+//          .filter(l -> l != AdvGameState.Layer.ENTITIES)
           .forEach(l ->
               gameState.layers.get(l.ordinal()).stream()
                               .filter(o -> o instanceof AdvColliding)

@@ -29,7 +29,7 @@ public class AdvTimer extends AdvGameObject implements AdvTicking
   public void addTask (TimerTask task, String hint)
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Event, "Timer");
-    PrettyPrint.bullet("Added task " + hint + " to timer");
+    PrettyPrint.bullet("Added task \"" + hint + "\" to timer");
     PrettyPrint.bullet("Push on tick " + task.startTick + " and pop in " + task.waitPeriod + " ticks");
     PrettyPrint.endGroup();
 

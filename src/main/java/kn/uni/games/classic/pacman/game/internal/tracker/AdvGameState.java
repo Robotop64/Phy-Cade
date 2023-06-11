@@ -65,6 +65,11 @@ public class AdvGameState
     env.gameScreen.setScore((int) this.score);
   }
 
+  public void setLives(int lives) {
+    this.lives = lives;
+    env.gameScreen.setLives(lives);
+  }
+
   public void spawnScaled (Layer type, AdvPlacedObject obj)
   {
     obj.absPos = obj.mapPos.multiply(AdvGameConst.tileSize);
@@ -100,22 +105,7 @@ public class AdvGameState
   {
     if (pelletsEaten == pelletCount)
     {
-      env.pauseGameIn(1000, () ->
-      {
-      });
-
-      new Thread(() ->
-      {
-        try
-        {
-          Thread.sleep(2000);
-        }
-        catch (InterruptedException e)
-        {
-          throw new RuntimeException(e);
-        }
-        env.reloadLevel();
-      }).start();
+      env.reloadLevel();
     }
   }
 

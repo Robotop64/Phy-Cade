@@ -371,6 +371,7 @@ public class GameEnvironment
 
     render = () ->
     {
+      //TODO only repaint regions that have changed using .repaint(rectangle)
       //reRender layers if needed
       if (gameState.currentTick % frameTickRation == 0 || gameState.paused)
       {
@@ -486,8 +487,6 @@ public class GameEnvironment
   public void pauseGame ()
   {
     gameState.paused = true;
-
-
     System.out.println("Pausing game");
   }
 
@@ -547,6 +546,26 @@ public class GameEnvironment
       task.run();
     }).start();
   }
+
+  public void reloadLevel()
+  {
+    pauseGameIn(1000, () ->
+    {
+    });
+
+    new Thread(() ->
+    {
+      try
+      {
+        Thread.sleep(2000);
+      }
+      catch (InterruptedException e)
+      {
+        throw new RuntimeException(e);
+      }
+      reloadLevelContent();
+    }).start();
+  }
   //endregion
 
   //region loaders
@@ -586,7 +605,7 @@ public class GameEnvironment
                     .forEach(Spawner::spawn);
   }
 
-  public void reloadLevel ()
+  public void reloadLevelContent ()
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Message, "Reloading level");
 
