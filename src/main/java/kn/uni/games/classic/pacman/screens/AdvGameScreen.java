@@ -162,7 +162,7 @@ public class AdvGameScreen extends UIScreen
     data.addBuffer(0, 5);
 
     PacLabel lives = new PacLabel(StringUtils.leftPad(String.valueOf(5), 4));
-    lives.setHeader("Lives: x");
+    lives.setHeader("Lives:  ");
     lives.setHorizontalAlignment(PacLabel.LEFT);
     data.addObject(lives);
 
