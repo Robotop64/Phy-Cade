@@ -10,6 +10,7 @@ import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.tracker.TagManager;
 import kn.uni.games.classic.pacman.game.items.Item;
+import kn.uni.games.classic.pacman.game.items.PPelletItem;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
@@ -31,6 +32,8 @@ import static kn.uni.util.Util.round;
 
 public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, AdvColliding
 {
+  boolean empowered = false;
+
   public AdvPacManEntity (AdvGameState gameState, Vector2d mapPos)
   {
     super();
@@ -191,23 +194,50 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
       AdvTimer.getInstance(gameState).ifPresent(timer -> timer.addTask(
           new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * 2 ), () ->
           {
-            gameState.env.reloadLevel();
             gameState.checkGameOver();
-          }), "restart level after the player died"));
+            gameState.env.reloadLevel();
+          },"restartPostDeath"), "restart level after the player died"));
   }
 
   @Override
   public void onCollision (AdvGameObject collider)
   {
     if (collider instanceof Item item)
+    {
       item.consumeAction();
+      if (item instanceof PPelletItem)
+      {
+        empowered = true;
+        //remove previous powerUpTimers
+        AdvTimer.getInstance(gameState).get().removeTask("powerUpTimer");
+        AdvTimer.getInstance(gameState).get().removeTask("pacAnimBlink");
+
+        //TODO change animation/sprite
+
+        AdvTimer.getInstance(gameState).get().addTask(
+            new AdvTimer.TimerTask(gameState.currentTick, 120L * 10, () ->
+            {
+              empowered = false;
+              gameState.ghostStreak = 0;
+              /*TODO change animation/sprite back to normal*/
+            },"powerUpTimer"),
+            "remove empowerment of PacMan after 10 seconds"
+        );
+        AdvTimer.getInstance(gameState).get().addTask(
+            new AdvTimer.TimerTask(gameState.currentTick, 120L * 7, () ->
+            { /*TODO change animation/sprite to blinking*/ },"pacAnimBlink"),
+            "change Pacman Animation to blinking"
+        );
+      }
+    }
 
     if (collider instanceof AdvGhostEntity ghost)
-      if (ghost.edible)
+      if (ghost.edible && this.empowered)
       {
-
+        ghost.die();
       }
-      else if (!dead) die();
+      else if (!dead && !this.empowered)
+        die();
   }
   //endregion
 }

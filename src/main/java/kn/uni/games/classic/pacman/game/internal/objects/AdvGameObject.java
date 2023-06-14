@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 
 public class AdvGameObject
 {
+  public String id;
+
   public boolean frozen = false;
 
   public AdvGameState gameState;

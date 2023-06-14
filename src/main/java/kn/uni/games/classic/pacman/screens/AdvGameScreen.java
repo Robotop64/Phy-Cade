@@ -190,7 +190,7 @@ public class AdvGameScreen extends UIScreen
     spacer0.setBounds(0, 0, 1, 3);
     leaderboard.addSeparator(spacer0);
 
-    PacLabel nextScore = new PacLabel("❰" + String.format("%09d", 69420) + "❱");
+    PacLabel nextScore = new PacLabel("❰" + String.format("%09d", 0) + "❱");
     nextScore.setFont(nextScore.getFont().deriveFont(30f));
     nextScore.setHorizontalAlignment(PacLabel.CENTER);
     leaderboard.addObject(nextScore);
@@ -205,7 +205,7 @@ public class AdvGameScreen extends UIScreen
     spacer1.setBounds(0, 0, 1, 3);
     leaderboard.addSeparator(spacer1);
 
-    PacLabel yourScore = new PacLabel("❰" + String.format("%09d", 100) + "❱");
+    PacLabel yourScore = new PacLabel("❰" + String.format("%09d", 0) + "❱");
     yourScore.setFont(yourScore.getFont().deriveFont(30f));
     yourScore.setHorizontalAlignment(PacLabel.CENTER);
     leaderboard.addObject(yourScore);
@@ -220,7 +220,7 @@ public class AdvGameScreen extends UIScreen
     spacer2.setBounds(0, 0, 1, 3);
     leaderboard.addSeparator(spacer2);
 
-    PacLabel prevScore = new PacLabel("❰" + String.format("%09d", 64) + "❱");
+    PacLabel prevScore = new PacLabel("❰" + String.format("%09d", 0) + "❱");
     prevScore.setFont(prevScore.getFont().deriveFont(30f));
     prevScore.setHorizontalAlignment(PacLabel.CENTER);
     leaderboard.addObject(prevScore);
@@ -333,6 +333,7 @@ public class AdvGameScreen extends UIScreen
   public void setScore (int score)
   {
     ( (PacLabel) data.getItem(6) ).setText("❰" + String.format("%09d", score) + "❱");
+    ( (PacLabel) leaderboard.getItem(5)).setText("❰" + String.format("%09d", score) + "❱");
   }
 
   public void setTime (long millis)
@@ -643,6 +644,7 @@ public class AdvGameScreen extends UIScreen
       if (input.key() == InputListener.Key.A && ( !gameStarted || gameReloading ))
       {
         gameStarted = true;
+        gameReloading = false;
         enableLoadingPopup(false);
         String[] countdown = env.gameState.level == 1 ? new String[]{"5", "4", "3", "2", "1", "GO!"} : new String[]{"GO!"};
         enableReadyPopup(false, countdown);

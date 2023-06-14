@@ -3,6 +3,7 @@ package kn.uni.games.classic.pacman.game.internal.graphics;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class AdvAnimation
 {
@@ -48,5 +49,15 @@ public class AdvAnimation
         new java.awt.image.AffineTransformOp(at, java.awt.image.AffineTransformOp.TYPE_BILINEAR);
     out = scaleOp.filter(animationSource, out);
     animationSource = out;
+  }
+
+  public class Set
+  {
+    public ArrayList<AdvAnimation> animations;
+
+    public Set (ArrayList<AdvAnimation> animations)
+    {
+      this.animations = animations;
+    }
   }
 }

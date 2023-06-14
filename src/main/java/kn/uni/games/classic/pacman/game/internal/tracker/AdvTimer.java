@@ -36,6 +36,11 @@ public class AdvTimer extends AdvGameObject implements AdvTicking
     tasks.add(task);
   }
 
+  public void removeTask(String id)
+  {
+    tasks.removeIf(task -> task.id.equals(id));
+  }
+
   @Override
   public void tick ()
   {
@@ -57,7 +62,7 @@ public class AdvTimer extends AdvGameObject implements AdvTicking
     }
   }
 
-  public record TimerTask(long startTick, long waitPeriod, Runnable task)
+  public record TimerTask(long startTick, long waitPeriod, Runnable task, String id)
   {
     public boolean isCompleted (AdvGameState gameState)
     {

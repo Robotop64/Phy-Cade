@@ -241,10 +241,22 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     }
     //endregion
   }
-  //endregion
+
+  public void die()
+  {
+    super.die();
+
+    //determine the amount of points to add
+    if (gameState.ghostStreak == 0)
+      gameState.ghostStreak = 1;
+    else
+      gameState.ghostStreak *= 2;
+    gameState.addScore(200L * gameState.ghostStreak);
+  }
 
   @Override
   public void onCollision (AdvGameObject collider)
   {
   }
+  //endregion
 }

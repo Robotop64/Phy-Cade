@@ -549,6 +549,8 @@ public class GameEnvironment
 
   public void reloadLevel()
   {
+    if(!gameState.running) return;
+
     pauseGameIn(1000, () ->
     {
     });
@@ -607,27 +609,31 @@ public class GameEnvironment
 
   public void reloadLevelContent ()
   {
+    boolean hardReset = gameState.pelletsEaten == gameState.pelletCount;
+
     PrettyPrint.startGroup(PrettyPrint.Type.Message, "Reloading level");
 
     gameState.layers.get(AdvGameState.Layer.OBJECTS.ordinal()).clear();
-    gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).clear();
+    if (hardReset) gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).clear();
     gameState.layers.get(AdvGameState.Layer.VFX.ordinal()).clear();
     PrettyPrint.bullet("Cleared layers");
 
     gameState.players.clear();
     gameState.requestedDirections.clear();
-    gameState.pelletCount = 0;
-    gameState.pelletsEaten = 0;
-    gameState.fruitSpawned = false;
+    if (hardReset){
+      gameState.pelletCount = 0;
+      gameState.pelletsEaten = 0;
+      gameState.fruitSpawned = false;
+    }
     PrettyPrint.bullet("Reset players and trackers");
 
     loadObjects();
-    loadItems();
+    if (hardReset) loadItems();
     loadEntities();
     spawnPlayers();
     spawnGhosts();
-    gameState.level++;
+    if(hardReset) gameState.level++ ;
     gameScreen.setLevel(gameState.level);
     gameScreen.gameReloading = true;
     PrettyPrint.bullet("Reloaded level contents");

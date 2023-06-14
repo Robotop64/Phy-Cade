@@ -40,6 +40,7 @@ public class AdvGameState
   public boolean fruitSpawned = false;
   public int     pelletCount  = 0;
   public int     pelletsEaten = 0;
+  public int     ghostStreak  = 0;
   //endregion
 
   public AdvGameState (GameEnvironment env)
@@ -101,7 +102,7 @@ public class AdvGameState
     }
   }
 
-  public void checkProgress ()
+  public void checkProgress()
   {
     if (pelletsEaten == pelletCount)
     {
