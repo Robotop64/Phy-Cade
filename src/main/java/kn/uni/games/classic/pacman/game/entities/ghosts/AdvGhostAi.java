@@ -28,7 +28,7 @@ public class AdvGhostAi extends Ai
     this.name = name;
     this.ghost = ghost;
     this.gameState = ghost.gameState;
-    this.mode = AdvGameConst.GhostMode.CHASE;
+    this.mode = AdvGameConst.GhostMode.EXIT;
     this.memory = new AdvPacManTile[2];
   }
 

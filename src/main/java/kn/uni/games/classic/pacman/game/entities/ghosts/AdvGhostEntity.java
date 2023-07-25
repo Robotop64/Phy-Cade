@@ -1,5 +1,6 @@
 package kn.uni.games.classic.pacman.game.entities.ghosts;
 
+import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
@@ -205,17 +206,26 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
 
     //region control turning
     //allows turning vertically if innerTilePosition x == 0 or horizontally if innerTilePosition y == 0
-    if (innerPos.rounded().x == 0 && innerPos.rounded().y == 0)
+//    if (innerPos.rounded().x == 0 && innerPos.rounded().y == 0)
+//      //if the next direction is a valid tile
+//      if (nextDirValid)
+//      {
+//        //if the next direction is not marked as suppressed turn into it and clear the suppressed directions
+//        if (!suppressedDirections.contains(nextDir))
+//        {
+//          this.facing = nextDir;
+//          suppressedDirections.clear();
+//        }
+//      }
+    if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
       //if the next direction is a valid tile
       if (nextDirValid)
-      {
-        //if the next direction is not marked as suppressed turn into it and clear the suppressed directions
+        //if the next direction is not marked as suppressed
         if (!suppressedDirections.contains(nextDir))
         {
           this.facing = nextDir;
           suppressedDirections.clear();
         }
-      }
     //endregion
 
     //region control movement
@@ -239,12 +249,15 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
       mapPos = map.getTileMapPos(absPos);
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
+    suppressedDirections.clear();
     //endregion
   }
 
   public void die()
   {
     super.die();
+
+    ai.setMode(AdvGameConst.GhostMode.RETREAT);
 
     //determine the amount of points to add
     if (gameState.ghostStreak == 0)
@@ -257,6 +270,12 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
   @Override
   public void onCollision (AdvGameObject collider)
   {
+    if (ai.getMode() != AdvGameConst.GhostMode.RETREAT
+        && collider instanceof AdvPacManEntity player
+        && player.empowered)
+    {
+      this.die();
+    }
   }
   //endregion
 }

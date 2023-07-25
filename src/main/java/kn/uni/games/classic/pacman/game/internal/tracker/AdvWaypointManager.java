@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class AdvWaypointManager extends AdvGameObject
 {
-  public List <Waypoint> waypoints = new ArrayList <>();
+  public static List <Waypoint> waypoints = new ArrayList <>();
 
   public AdvGameState gameState;
 
@@ -40,7 +40,7 @@ public class AdvWaypointManager extends AdvGameObject
     waypoints.removeIf(waypoint -> waypoint.name.equals(name));
   }
 
-  public Waypoint getWaypoint (String name)
+  public static Waypoint getWaypoint (String name)
   {
     return waypoints.stream().filter(waypoint -> waypoint.name.equals(name)).findFirst().orElse(null);
   }

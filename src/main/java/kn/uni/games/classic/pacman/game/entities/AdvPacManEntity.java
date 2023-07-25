@@ -32,7 +32,7 @@ import static kn.uni.util.Util.round;
 
 public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, AdvColliding
 {
-  boolean empowered = false;
+  public boolean empowered = false;
 
   public AdvPacManEntity (AdvGameState gameState, Vector2d mapPos)
   {
@@ -158,7 +158,6 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     //stops the entity from moving in a suppressed direction
     if (suppressedDirections.contains(this.facing))
     {
-      System.out.println(this.facing + " " + nextDir + " " + suppressedDirections);
       suppressedDirections.clear();
       return;
     }
@@ -176,6 +175,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
       mapPos = map.getTileMapPos(absPos);
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
+    suppressedDirections.clear();
     //endregion
   }
 
