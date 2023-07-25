@@ -8,7 +8,6 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
-import kn.uni.games.classic.pacman.game.objects.Blocker;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
@@ -48,7 +47,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
 
     List <AdvPlacedObject> colliders = new ArrayList <>();
     Arrays.stream(AdvGameState.Layer.values())
-//          .filter(l -> l != AdvGameState.Layer.ENTITIES)
+          //          .filter(l -> l != AdvGameState.Layer.ENTITIES)
           .forEach(l ->
               gameState.layers.get(l.ordinal()).stream()
                               .filter(o -> o instanceof AdvColliding)
@@ -61,33 +60,12 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
                                 //get the mapPos of the entity
                                 .map(Entity::getMapPos)
                                 //get the absPos of the tile
-                                .map(t -> ( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).tilesPixel.get(t).absPos)
+                                .map(mapPos -> ( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).tilesPixel.get(mapPos).absPos)
                                 //create a rectangle around the tile containing the surrounding tiles
                                 .map(t -> new Rectangle((int) ( t.x - AdvGameConst.tileSize ), (int) ( t.y - AdvGameConst.tileSize ), AdvGameConst.tileSize * 3, AdvGameConst.tileSize * 3))
                                 //filter colliders to only those that are in the rectangle
                                 .map(t -> colliders.stream().filter(o -> pointInRect(o.absPos, t)).toList())
                                 .toList();
-
-    filteredColliders.forEach(e ->
-        //for each entity
-        e.stream()
-         //filter if filteredColliders contains a blocker object
-         .filter(o -> o instanceof Blocker)
-         //adjust the suppressed direction of the entity
-         .forEach(o ->
-             {
-               Entity  a = entities.get(filteredColliders.indexOf(e));
-               Blocker b = (Blocker) o;
-
-               Direction dir = getDirection(a, b);
-
-               if (distance(a, b) <= criticalDist(a, b) + 20)
-                 a.suppressedDirections.add(dir);
-               else
-                 a.suppressedDirections.clear();
-             }
-         )
-    );
 
     entities.forEach(e ->
         filteredColliders.get(entities.indexOf(e)).forEach(c ->
@@ -105,7 +83,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
     return distance(a, b) <= criticalDist(a, b);
   }
 
-  private double criticalDist (AdvPlacedObject a, AdvPlacedObject b)
+  public static double criticalDist (AdvPlacedObject a, AdvPlacedObject b)
   {
     String aName = a.getClass().getSimpleName();
     String bName = b.getClass().getSimpleName();
@@ -122,7 +100,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
     return ( radA + radB ) * AdvGameConst.tileSize;
   }
 
-  private double distance (AdvPlacedObject a, AdvPlacedObject b)
+  public static double distance (AdvPlacedObject a, AdvPlacedObject b)
   {
     return ( a.absPos.subtract(b.absPos) ).rounded().length();
   }
@@ -132,7 +110,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
     return point.x >= rect.getMinX() && point.x <= rect.getMaxX() && point.y >= rect.getMinY() && point.y <= rect.getMaxY();
   }
 
-  private Direction getDirection (AdvPlacedObject a, AdvPlacedObject b)
+  public static Direction getDirection (AdvPlacedObject a, AdvPlacedObject b)
   {
     if (a.mapPos.x == b.mapPos.floor().x)
       if (a.mapPos.y < b.mapPos.floor().y)

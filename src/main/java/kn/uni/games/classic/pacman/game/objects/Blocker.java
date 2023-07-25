@@ -1,11 +1,16 @@
 package kn.uni.games.classic.pacman.game.objects;
 
+import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
+import kn.uni.games.classic.pacman.game.entities.Entity;
+import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostEntity;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
+import kn.uni.games.classic.pacman.game.internal.physics.AdvCollider;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.TagManager;
+import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
 
@@ -31,8 +36,25 @@ public class Blocker extends AdvPlacedObject implements AdvRendered, AdvCollidin
   @Override
   public void onCollision (AdvGameObject collider)
   {
-    //    if (collider instanceof Entity)
-    //      ( (Entity) collider ).suppressedDirections.add(( (Entity) collider ).facing);
+    if (collider instanceof Entity entity)
+    {
+      if (entity instanceof AdvGhostEntity ghost &&
+          (ghost.ai.mode.equals(AdvGameConst.GhostMode.ENTER) || ghost.ai.mode.equals(AdvGameConst.GhostMode.EXIT)))
+        return;
+
+      if (entity instanceof AdvPacManEntity || entity instanceof AdvGhostEntity)
+      {
+        Direction dir = AdvCollider.getDirection(entity, this);
+
+        if (AdvCollider.distance(entity, this) <= AdvCollider.criticalDist(entity, this) + 20 )
+        {
+          if (!entity.suppressedDirections.contains(dir) && dir != null)
+            entity.suppressedDirections.add(dir);
+        }
+        else
+          entity.suppressedDirections.clear();
+      }
+    }
   }
 
   @Override
