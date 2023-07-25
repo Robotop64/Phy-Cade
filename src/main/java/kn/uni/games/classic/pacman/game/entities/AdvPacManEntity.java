@@ -208,6 +208,12 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
       if (item instanceof PPelletItem)
       {
         empowered = true;
+        gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
+            .filter(entity -> entity instanceof AdvGhostEntity)
+            .map(entity -> (AdvGhostEntity) entity)
+            .filter(ghost -> ghost.ai.mode == AdvGameConst.GhostMode.CHASE)
+            .forEach(ghost -> ghost.ai.setMode(AdvGameConst.GhostMode.FRIGHTENED));
+
         //remove previous powerUpTimers
         AdvTimer.getInstance(gameState).get().removeTask("powerUpTimer");
         AdvTimer.getInstance(gameState).get().removeTask("pacAnimBlink");
@@ -215,19 +221,26 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
         //TODO change animation/sprite
 
         AdvTimer.getInstance(gameState).get().addTask(
+            new AdvTimer.TimerTask(gameState.currentTick, 120L * 7, () ->
+            { /*TODO change animation/sprite to blinking*/ },"pacAnimBlink"),
+            "change Pacman Animation to blinking after 7 seconds"
+        );
+
+        AdvTimer.getInstance(gameState).get().addTask(
             new AdvTimer.TimerTask(gameState.currentTick, 120L * 10, () ->
             {
               empowered = false;
               gameState.ghostStreak = 0;
+              gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
+                              .filter(entity -> entity instanceof AdvGhostEntity)
+                              .map(entity -> (AdvGhostEntity) entity)
+                              .filter(ghost -> ghost.ai.mode == AdvGameConst.GhostMode.FRIGHTENED)
+                              .forEach(ghost -> ghost.ai.setMode(AdvGameConst.GhostMode.CHASE));
               /*TODO change animation/sprite back to normal*/
             },"powerUpTimer"),
             "remove empowerment of PacMan after 10 seconds"
         );
-        AdvTimer.getInstance(gameState).get().addTask(
-            new AdvTimer.TimerTask(gameState.currentTick, 120L * 7, () ->
-            { /*TODO change animation/sprite to blinking*/ },"pacAnimBlink"),
-            "change Pacman Animation to blinking"
-        );
+
       }
     }
 
