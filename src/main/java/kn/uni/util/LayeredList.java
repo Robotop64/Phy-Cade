@@ -67,6 +67,16 @@ public class LayeredList <T, E extends Enum <E>>
     }
   }
 
+  public void remove (E layer, T obj)
+  {
+    list.remove(obj);
+
+    for (int i = layer.ordinal() + 1; i < offsets.size(); i++)
+    {
+      offsets.set(i, offsets.get(i) - 1);
+    }
+  }
+
   /**
    * Get all objects of a specific layer
    * @param layer The layer, given by a predefined enum, to get the objects from

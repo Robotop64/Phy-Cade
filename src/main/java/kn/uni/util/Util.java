@@ -87,6 +87,12 @@ public class Util
     return Math.min(Math.max(( current - start ) * 1.0 / ( duration ), 0), 1);
   }
 
+  /**
+   * determines if a point is inside a rectangle
+   * @param point the point
+   * @param rect the rectangle
+   * @return true if the point is inside the rectangle
+   */
   public static boolean pointInRect (Vector2d point, Rectangle rect)
   {
     return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y && point.y <= rect.y + rect.height;
@@ -106,6 +112,11 @@ public class Util
     return Math.min(newFontSize - 1, dim.height) * 1.0f;
   }
 
+  /**
+   * Converts a color to a hex string
+   * @param color the color
+   * @return a hex string
+   */
   public static String colorToHex (Color color)
   {
     return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());

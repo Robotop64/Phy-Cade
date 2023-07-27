@@ -38,7 +38,10 @@ public class PacPhi
     Gui.getInstance().initialize();
   }
 
-  public static void getSettings ()
+  /**
+   * Loads the current settings from the settings file
+   */
+  private static void getSettings ()
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Settings");
 
@@ -55,7 +58,10 @@ public class PacPhi
     PrettyPrint.endGroup();
   }
 
-  public static void getPermission ()
+  /**
+   * Loads the current permission level from the permission file
+   */
+  private static void getPermission ()
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Permission");
 
@@ -66,7 +72,10 @@ public class PacPhi
     PrettyPrint.endGroup();
   }
 
-  public static void getDatabase ()
+  /**
+   * Loads the current database from the database file
+   */
+  private static void getDatabase ()
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Database");
 
@@ -88,7 +97,7 @@ public class PacPhi
   /**
    * Benchmarking the delay of the Thread.sleep() method
    */
-  public static void benchmark ()
+  private static void benchmark ()
   {
     int  iterations = 300;
     long pause      = 8;
