@@ -4,6 +4,7 @@ import kn.uni.games.classic.pacman.screens.AdvGameScreen;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.Style;
 import kn.uni.ui.Swing.components.PacLabel;
+import kn.uni.ui.Swing.menus.PacMainMenu;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
@@ -67,19 +68,18 @@ public class Gui
     content.setLayout(null);
 
     //create debug panel
-    debug = new PacLabel(new Vector2d().cartesian(1, frameHeight - 55), new Dimension(400, 40), "");
-    debug.setHeader("Input:");
+    debug = new PacLabel(new Vector2d().cartesian(5, frameHeight - 45), new Dimension(350, 40), "");
     debug.useColorSet(new Style.ColorSet(Color.RED, null, null));
     debug.setFontSize(14);
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), "true"))
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
       debug.setVisible(true);
     else
       debug.setVisible(false);
 
+    PrettyPrint.bullet("Hooked Debug Panel to InputListener");
     inputListener.subscribe(input -> debug.setText(input.toString()));
     frame.getContentPane().add(debug);
-
 
     //adjust content order
     frame.getContentPane().setComponentZOrder(debug, 0);
@@ -91,7 +91,7 @@ public class Gui
     PrettyPrint.announce("Starting Game");
 
     //use alternative Content
-    if (true)
+    if (false)
     {
       AdvGameScreen advGameScreen = new AdvGameScreen(content);
       advGameScreen.setBounds(defaultFrameBounds);
@@ -103,13 +103,16 @@ public class Gui
     }
     else
     {
-      //      content.add(MainMenu.getInstance());
-      //      MainMenu.getInstance().setBounds(defaultFrameBounds);
+      //            content.add(MainMenu.getInstance());
+      //            MainMenu.getInstance().setBounds(defaultFrameBounds);
+      PacMainMenu mainMenu = new PacMainMenu(content);
+      mainMenu.setBounds(defaultFrameBounds);
+      content.add(mainMenu);
     }
 
     //    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
-
     //    frame.setAlwaysOnTop(true);
+
     frame.setVisible(true);
     frame.createBufferStrategy(3);
   }

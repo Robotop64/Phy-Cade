@@ -173,6 +173,11 @@ public class InputListener extends Celebrity <Input>
 
   public void start () { thread.start(); }
 
+  public void clearInput()
+  {
+    keyStateMap.keySet().forEach(key -> keyStateMap.put(key, State.none));
+  }
+
   public enum Key
   { vertical, horizontal, A, B, C, D, J, H, G, F, E }
 

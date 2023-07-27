@@ -631,7 +631,7 @@ public class AdvGameScreen extends UIScreen
         env.controlPlayer(1, input.toDirection());
       }
 
-      if (input.key() == InputListener.Key.A && ( !gameStarted || gameReloading ))
+      if (input.key() == InputListener.Key.A && input.state() == InputListener.State.down  && ( !gameStarted || gameReloading ))
       {
         gameStarted = true;
         gameReloading = false;

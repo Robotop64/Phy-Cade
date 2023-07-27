@@ -12,10 +12,12 @@ public class UIScreen extends JPanel
 {
   private Map <Player, Consumer <Input>> handlers   = new HashMap <>();
   private int                            listenerId = -1;
+  public JPanel parent;
 
   public UIScreen (JPanel parent)
   {
     parent.add(this);
+    this.parent = parent;
   }
 
   public void bindPlayer (Player p, Consumer <Input> handler)

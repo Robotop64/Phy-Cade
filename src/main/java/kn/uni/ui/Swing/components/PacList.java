@@ -206,9 +206,25 @@ public class PacList extends JPanel
       ( (PacButton) selected ).setFocused(false);
     }
 
+    if (index > collection.size() - 1)
+      index = 0;
+    else if (index < 0)
+      index = collection.size() - 1;
+
     selected = collection.get(index);
 
     ( (PacButton) selected ).setFocused(true);
+  }
+
+  public void selectNext (int step)
+  {
+    selectItem(collection.indexOf(selected) + step);
+  }
+
+  public void fireSelectedAction ()
+  {
+    if(selected != null && selected instanceof PacButton)
+      ( (PacButton) selected ).press();
   }
   //endregion
 
