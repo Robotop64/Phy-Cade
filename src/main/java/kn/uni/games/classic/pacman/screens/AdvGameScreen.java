@@ -22,6 +22,7 @@ import kn.uni.ui.Swing.components.PacList;
 import kn.uni.ui.Swing.menus.PacMainMenu;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Direction;
+import kn.uni.util.PrettyPrint;
 import kn.uni.util.Vector2d;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,11 +53,11 @@ public class AdvGameScreen extends UIScreen
   //controls
   Map <InputListener.Key, InputListener.Input> joystick = new HashMap <>();
   //hud data lists
-  private PacList         data;
-  private PacList         leaderboard;
-  private GameEnvironment env;
-  private boolean         gameStarted = false;
-  public static AdvGameScreen instance;
+  private       PacList         data;
+  private       PacList         leaderboard;
+  private       GameEnvironment env;
+  private       boolean         gameStarted = false;
+  public static AdvGameScreen   instance;
 
 
   public AdvGameScreen (JPanel parent)
@@ -78,14 +79,17 @@ public class AdvGameScreen extends UIScreen
     enableControls();
   }
 
-  public static AdvGameScreen getInstance(JPanel parent) {
-    if (instance == null) {
+  public static AdvGameScreen getInstance (JPanel parent)
+  {
+    if (instance == null)
+    {
       instance = new AdvGameScreen(parent);
     }
     return instance;
   }
 
-  public static void clearInstance() {
+  public static void clearInstance ()
+  {
     instance = null;
   }
 
@@ -513,15 +517,20 @@ public class AdvGameScreen extends UIScreen
             }
           });
           waypointManager.addWaypoint("GhostPenInside", new Vector2d().cartesian(14, 14.5), () ->
-          { });
+          {
+          });
           waypointManager.addWaypoint("BLINKY_SCATTER", new Vector2d().cartesian(0, 0), () ->
-          { });
+          {
+          });
           waypointManager.addWaypoint("PINKY_SCATTER", new Vector2d().cartesian(28, 0), () ->
-          { });
+          {
+          });
           waypointManager.addWaypoint("INKY_SCATTER", new Vector2d().cartesian(0, 31), () ->
-          { });
+          {
+          });
           waypointManager.addWaypoint("CLYDE_SCATTER", new Vector2d().cartesian(28, 31), () ->
-          { });
+          {
+          });
           //endregion
 
           //region spawners
@@ -663,33 +672,43 @@ public class AdvGameScreen extends UIScreen
       {
         //pause the running game
         env.pauseGame();
+
+        PrettyPrint.startGroup(PrettyPrint.Type.Message, "Game Paused");
+        PrettyPrint.bullet("Disables game controls");
         instance.disableControls();
         instance.setVisible(false);
 
         //create the confirm dialog
-        int       buffer     = 200;
+        int buffer = 200;
 
         PacConfirm confirm = new PacConfirm(Gui.getInstance().content,
             new Vector2d().cartesian(buffer, buffer),
             new Dimension(Gui.frameWidth - 2 * buffer, Gui.frameHeight - 2 * buffer),
             new String[]{ "You are about to quit the game!\n Are you sure?", "Confirm", "Resume" });
+        PrettyPrint.bullet("Created confirm dialog");
 
         confirm.confirmAction = () ->
         {
+          PrettyPrint.bullet("Confirm action triggered");
           env.stopGame();
           confirm.kill();
           Gui.getInstance().content.remove(AdvGameScreen.getInstance(Gui.getInstance().content));
 
           Gui.getInstance().content.add(PacMainMenu.getInstance(Gui.getInstance().content));
           PacMainMenu.getInstance(Gui.getInstance().content).enableControls();
+          PrettyPrint.bullet("Switched to Main Menu");
+          PrettyPrint.endGroup();
         };
 
         confirm.cancelAction = () ->
         {
+          PrettyPrint.bullet("Cancel action triggered");
           confirm.kill();
           AdvGameScreen.getInstance(Gui.getInstance().content).setVisible(true);
           AdvGameScreen.getInstance(Gui.getInstance().content).enableControls();
           env.resumeGame();
+          PrettyPrint.bullet("Resumed game");
+          PrettyPrint.endGroup();
         };
 
         confirm.initComponents();
