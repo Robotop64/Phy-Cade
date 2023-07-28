@@ -16,8 +16,10 @@ import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.objects.Blocker;
 import kn.uni.games.classic.pacman.game.objects.Teleporter;
 import kn.uni.ui.InputListener;
+import kn.uni.ui.Swing.components.PacConfirm;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
+import kn.uni.ui.Swing.menus.PacMainMenu;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
@@ -54,6 +56,7 @@ public class AdvGameScreen extends UIScreen
   private PacList         leaderboard;
   private GameEnvironment env;
   private boolean         gameStarted = false;
+  public static AdvGameScreen instance;
 
 
   public AdvGameScreen (JPanel parent)
@@ -73,6 +76,17 @@ public class AdvGameScreen extends UIScreen
     loadGame();
 
     enableControls();
+  }
+
+  public static AdvGameScreen getInstance(JPanel parent) {
+    if (instance == null) {
+      instance = new AdvGameScreen(parent);
+    }
+    return instance;
+  }
+
+  public static void clearInstance() {
+    instance = null;
   }
 
   //region create UI
@@ -498,11 +512,16 @@ public class AdvGameScreen extends UIScreen
               }
             }
           });
-          waypointManager.addWaypoint("GhostPenInside", new Vector2d().cartesian(14, 14.5), () ->{});
-          waypointManager.addWaypoint("BLINKY_SCATTER", new Vector2d().cartesian(0, 0), () ->{});
-          waypointManager.addWaypoint("PINKY_SCATTER", new Vector2d().cartesian(28, 0), () ->{});
-          waypointManager.addWaypoint("INKY_SCATTER", new Vector2d().cartesian(0, 31), () ->{});
-          waypointManager.addWaypoint("CLYDE_SCATTER", new Vector2d().cartesian(28, 31), () ->{});
+          waypointManager.addWaypoint("GhostPenInside", new Vector2d().cartesian(14, 14.5), () ->
+          { });
+          waypointManager.addWaypoint("BLINKY_SCATTER", new Vector2d().cartesian(0, 0), () ->
+          { });
+          waypointManager.addWaypoint("PINKY_SCATTER", new Vector2d().cartesian(28, 0), () ->
+          { });
+          waypointManager.addWaypoint("INKY_SCATTER", new Vector2d().cartesian(0, 31), () ->
+          { });
+          waypointManager.addWaypoint("CLYDE_SCATTER", new Vector2d().cartesian(28, 31), () ->
+          { });
           //endregion
 
           //region spawners
@@ -616,7 +635,7 @@ public class AdvGameScreen extends UIScreen
   //endregion
 
   //region input methods
-  private void enableControls ()
+  public void enableControls ()
   {
     bindPlayer(InputListener.Player.playerOne, input ->
     {
@@ -631,13 +650,52 @@ public class AdvGameScreen extends UIScreen
         env.controlPlayer(1, input.toDirection());
       }
 
-      if (input.key() == InputListener.Key.A && input.state() == InputListener.State.down  && ( !gameStarted || gameReloading ))
+      if (input.key() == InputListener.Key.A && input.state() == InputListener.State.down && ( !gameStarted || gameReloading ))
       {
         gameStarted = true;
         gameReloading = false;
         enableLoadingPopup(false);
         String[] countdown = env.gameState.level == 1 ? new String[]{ "5", "4", "3", "2", "1", "GO!" } : new String[]{ "GO!" };
         enableReadyPopup(false, countdown);
+      }
+
+      if (input.key() == InputListener.Key.B && input.state() == InputListener.State.down && ( gameStarted && !gameReloading && !env.gameState.paused ))
+      {
+        //pause the running game
+        env.pauseGame();
+        instance.disableControls();
+        instance.setVisible(false);
+
+        //create the confirm dialog
+        int       buffer     = 200;
+
+        PacConfirm confirm = new PacConfirm(Gui.getInstance().content,
+            new Vector2d().cartesian(buffer, buffer),
+            new Dimension(Gui.frameWidth - 2 * buffer, Gui.frameHeight - 2 * buffer),
+            new String[]{ "You are about to quit the game!\n Are you sure?", "Confirm", "Resume" });
+
+        confirm.confirmAction = () ->
+        {
+          env.stopGame();
+          confirm.kill();
+          Gui.getInstance().content.remove(AdvGameScreen.getInstance(Gui.getInstance().content));
+
+          Gui.getInstance().content.add(PacMainMenu.getInstance(Gui.getInstance().content));
+          PacMainMenu.getInstance(Gui.getInstance().content).enableControls();
+        };
+
+        confirm.cancelAction = () ->
+        {
+          confirm.kill();
+          AdvGameScreen.getInstance(Gui.getInstance().content).setVisible(true);
+          AdvGameScreen.getInstance(Gui.getInstance().content).enableControls();
+          env.resumeGame();
+        };
+
+        confirm.initComponents();
+
+        Gui.getInstance().content.add(confirm);
+        Gui.getInstance().content.setComponentZOrder(confirm, 1);
       }
     });
   }

@@ -24,6 +24,7 @@ public class PacList extends JPanel
   public int       borderSize = 1;
   public boolean   showBorder = false;
   public boolean   autoFit    = true;
+  public boolean selectionRollAround = true;
 
   public  ArrayList <Component> collection;
   public  JScrollPane           scrollPane;
@@ -206,10 +207,20 @@ public class PacList extends JPanel
       ( (PacButton) selected ).setFocused(false);
     }
 
-    if (index > collection.size() - 1)
-      index = 0;
-    else if (index < 0)
-      index = collection.size() - 1;
+    if (selectionRollAround)
+    {
+      if (index > collection.size() - 1)
+        index = 0;
+      else if (index < 0)
+        index = collection.size() - 1;
+    }
+    else
+    {
+      if (index > collection.size() - 1)
+        index = collection.size() - 1;
+      else if (index < 0)
+        index = 0;
+    }
 
     selected = collection.get(index);
 

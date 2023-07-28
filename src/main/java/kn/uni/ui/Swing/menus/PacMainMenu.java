@@ -1,5 +1,6 @@
 package kn.uni.ui.Swing.menus;
 
+import kn.uni.Gui;
 import kn.uni.games.classic.pacman.screens.AdvGameScreen;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.Style;
@@ -20,6 +21,8 @@ public class PacMainMenu extends UIScreen
 {
   PacList list;
 
+  public static PacMainMenu instance;
+
   public PacMainMenu (JPanel parent)
   {
     super(parent);
@@ -30,23 +33,16 @@ public class PacMainMenu extends UIScreen
 
     addComponents();
 
-    bindPlayer(InputListener.Player.playerOne, input -> {
-      if (input.key() == InputListener.Key.A && input.state() == InputListener.State.down)
-      {
-        InputListener.getInstance().clearInput();
-        list.fireSelectedAction();
-      }
+    enableControls();
+  }
 
-      Direction dir = input.toDirection();
-      if (dir == null) return;
-      switch (dir)
-      {
-        case up -> list.selectNext(-1);
-        case down -> list.selectNext(1);
-        default -> {}
-      }
-    });
-
+  public static PacMainMenu getInstance(JPanel parent)
+  {
+    if (instance == null)
+    {
+      instance = new PacMainMenu(parent);
+    }
+    return instance;
   }
 
   public void addComponents ()
@@ -74,7 +70,8 @@ public class PacMainMenu extends UIScreen
     PacButton sp = new PacButton("EIN SPIELER");
     sp.addAction(() -> {
       this.kill();
-      AdvGameScreen advGameScreen = new AdvGameScreen(this.parent);
+      AdvGameScreen.clearInstance();
+      AdvGameScreen advGameScreen = AdvGameScreen.getInstance(Gui.getInstance().content);
       advGameScreen.setBounds(defaultFrameBounds);
       parent.add(advGameScreen);
     });
@@ -97,5 +94,25 @@ public class PacMainMenu extends UIScreen
 
     add(list);
     list.selectItem(0);
+  }
+
+  public void enableControls()
+  {
+    bindPlayer(InputListener.Player.playerOne, input -> {
+      if (input.key() == InputListener.Key.A && input.state() == InputListener.State.down)
+      {
+        InputListener.getInstance().clearInput();
+        list.fireSelectedAction();
+      }
+
+      Direction dir = input.toDirection();
+      if (dir == null) return;
+      switch (dir)
+      {
+        case up -> list.selectNext(-1);
+        case down -> list.selectNext(1);
+        default -> {}
+      }
+    });
   }
 }

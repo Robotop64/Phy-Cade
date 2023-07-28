@@ -1,6 +1,5 @@
 package kn.uni;
 
-import kn.uni.games.classic.pacman.screens.AdvGameScreen;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.Style;
 import kn.uni.ui.Swing.components.PacLabel;
@@ -66,6 +65,7 @@ public class Gui
     frame.getContentPane().add(content);
     content.setBounds(defaultFrameBounds);
     content.setLayout(null);
+    content.setBackground(Color.BLACK);
 
     //create debug panel
     debug = new PacLabel(new Vector2d().cartesian(5, frameHeight - 45), new Dimension(350, 40), "");
@@ -90,25 +90,9 @@ public class Gui
     PrettyPrint.empty();
     PrettyPrint.announce("Starting Game");
 
-    //use alternative Content
-    if (false)
-    {
-      AdvGameScreen advGameScreen = new AdvGameScreen(content);
-      advGameScreen.setBounds(defaultFrameBounds);
-      content.add(advGameScreen);
-      //
-      //      FLTestMenu flTestMenu = new FLTestMenu(content);
-      //      flTestMenu.setBounds(defaultFrameBounds);
-      //      content.add(flTestMenu);
-    }
-    else
-    {
-      //            content.add(MainMenu.getInstance());
-      //            MainMenu.getInstance().setBounds(defaultFrameBounds);
-      PacMainMenu mainMenu = new PacMainMenu(content);
-      mainMenu.setBounds(defaultFrameBounds);
-      content.add(mainMenu);
-    }
+    PacMainMenu mainMenu = PacMainMenu.getInstance(content);
+    mainMenu.setBounds(defaultFrameBounds);
+    content.add(mainMenu);
 
     //    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
     //    frame.setAlwaysOnTop(true);

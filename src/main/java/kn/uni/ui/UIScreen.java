@@ -1,5 +1,6 @@
 package kn.uni.ui;
 
+import kn.uni.Gui;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
 
@@ -11,7 +12,7 @@ import java.util.function.Consumer;
 public class UIScreen extends JPanel
 {
   private Map <Player, Consumer <Input>> handlers   = new HashMap <>();
-  private int                            listenerId = -1;
+  public int                            listenerId = -1;
   public JPanel parent;
 
   public UIScreen (JPanel parent)
@@ -38,8 +39,14 @@ public class UIScreen extends JPanel
   {
     InputListener.getInstance().unsubscribe(listenerId);
     listenerId = -1;
-    setVisible(false);
     getParent().remove(this);
+    Gui.getInstance().frame.repaint();
+  }
+
+  public void disableControls ()
+  {
+    InputListener.getInstance().unsubscribe(listenerId);
+    listenerId = -1;
   }
 
 }
