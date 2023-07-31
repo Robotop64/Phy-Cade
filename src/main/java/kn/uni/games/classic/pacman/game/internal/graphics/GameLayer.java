@@ -43,19 +43,21 @@ public class GameLayer implements AdvRendered
     cachedImg = new BufferedImage(dim.width, dim.height, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g2 = cachedImg.createGraphics();
 
-    gameState.layers.get(index).stream()
-                    //object is rendered
-                    .filter(gameObject -> gameObject instanceof AdvRendered)
-                    //object is on canvas
-                    .filter(gameObject ->
-                    {
-                     if (gameObject instanceof AdvPlacedObject obj)
-                       return new Rectangle(0, 0, dim.width, dim.height).contains(obj.absPos.x, obj.absPos.y);
-                     else
-                       return true;
-                    })
-                    .map(gameObject -> (AdvRendered) gameObject)
-                    .sorted(Comparator.comparingInt(AdvRendered::paintLayer))
-                    .forEach(gameObject -> ( gameObject ).paintComponent(g2));
+    AdvGameState.Layer layer = AdvGameState.Layer.values()[index];
+
+    gameState.objects.get(layer).stream()
+                     //object is rendered
+                     .filter(gameObject -> gameObject instanceof AdvRendered)
+                     //object is on canvas
+                     .filter(gameObject ->
+                     {
+                       if (gameObject instanceof AdvPlacedObject obj)
+                         return new Rectangle(0, 0, dim.width, dim.height).contains(obj.absPos.x, obj.absPos.y);
+                       else
+                         return true;
+                     })
+                     .map(gameObject -> (AdvRendered) gameObject)
+                     .sorted(Comparator.comparingInt(AdvRendered::paintLayer))
+                     .forEach(gameObject -> ( gameObject ).paintComponent(g2));
   }
 }

@@ -3,9 +3,6 @@ package kn.uni.games.classic.pacman.screens;
 import com.formdev.flatlaf.extras.components.FlatProgressBar;
 import kn.uni.Gui;
 import kn.uni.PacPhi;
-import kn.uni.games.classic.pacman.game.entities.Entity;
-import kn.uni.games.classic.pacman.game.entities.Spawner;
-import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostEntity;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvCollider;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
@@ -13,15 +10,12 @@ import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvWaypointManager;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
-import kn.uni.games.classic.pacman.game.objects.Blocker;
-import kn.uni.games.classic.pacman.game.objects.Teleporter;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.components.PacConfirm;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
 import kn.uni.ui.Swing.menus.PacMainMenu;
 import kn.uni.ui.UIScreen;
-import kn.uni.util.Direction;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.Vector2d;
 import org.apache.commons.lang3.StringUtils;
@@ -519,123 +513,29 @@ public class AdvGameScreen extends UIScreen
 
           setLoadingProgress("loading", 15, "Loading internals...");
           //region internals
-          env.gameState.spawn(AdvGameState.Layer.INTERNALS, new AdvTimer(env.gameState));
-          AdvWaypointManager waypointManager = new AdvWaypointManager(env.gameState);
-          env.gameState.spawn(AdvGameState.Layer.INTERNALS, waypointManager);
-          env.gameState.spawn(AdvGameState.Layer.PHYSICS, new AdvCollider(env.gameState));
+          env.gameState.objects.add(AdvGameState.Layer.INTERNALS, new AdvTimer(env.gameState));
+          env.gameState.objects.add(AdvGameState.Layer.INTERNALS,new AdvWaypointManager(env.gameState));
+          env.gameState.objects.add(AdvGameState.Layer.PHYSICS, new AdvCollider(env.gameState));
           //endregion
 
           setLoadingProgress("loading", 20, "Loading map...");
           //region map
           //TODO : load map from file
-          AdvPacManMap map = new AdvPacManMap(env.getGameState());
-          //
+
+          AdvPacManMap map = (AdvPacManMap) env.gameState.objects.add(AdvGameState.Layer.MAP, AdvPacManMap.generateDefault(env.gameState));
+
           map.calculateAbsolutes(uiComponents.get(GAME_WINDOW.ordinal()).getSize());
+          map.scaleSpawnablesPos();
+
+          //position the map in the center of the game window
           env.display.setBounds(
               uiComponents.get(GAME_WINDOW.ordinal()).getSize().width / 2 - map.size.width / 2,
               uiComponents.get(GAME_WINDOW.ordinal()).getSize().height / 2 - map.size.height / 2,
               map.size.width,
               map.size.height);
+          //render first frame of empty map
           map.render();
-
-          //region waypoints
-          waypointManager.addWaypoint("GhostPenOutside", new Vector2d().cartesian(14, 11.5), () ->
-          {
-            Entity entity = (Entity) AdvWaypointManager.getWaypoint("GhostPenOutside").collider;
-            if (entity instanceof AdvGhostEntity ghost)
-            {
-              if (ghost.ai.getMode() == AdvGameConst.GhostMode.EXIT && ghost.ai.getMode() != AdvGameConst.GhostMode.CHASE)
-                ghost.ai.setMode(AdvGameConst.GhostMode.CHASE);
-
-              else if (ghost.ai.getMode() == AdvGameConst.GhostMode.RETREAT && ghost.ai.getMode() != AdvGameConst.GhostMode.ENTER)
-              {
-                ghost.ai.setMode(AdvGameConst.GhostMode.ENTER);
-                AdvTimer.getInstance(env.gameState).get().addTask(new AdvTimer.TimerTask(env.gameState.currentTick, 120L * 10, () -> ghost.ai.setMode(AdvGameConst.GhostMode.EXIT), ghost.name + "HealTimer"), "Healing Ghost");
-              }
-            }
-          });
-          waypointManager.addWaypoint("GhostPenInside", new Vector2d().cartesian(14, 14.5), () ->
-          {
-          });
-          waypointManager.addWaypoint("BLINKY_SCATTER", new Vector2d().cartesian(0, 0), () ->
-          {
-          });
-          waypointManager.addWaypoint("PINKY_SCATTER", new Vector2d().cartesian(28, 0), () ->
-          {
-          });
-          waypointManager.addWaypoint("INKY_SCATTER", new Vector2d().cartesian(0, 31), () ->
-          {
-          });
-          waypointManager.addWaypoint("CLYDE_SCATTER", new Vector2d().cartesian(28, 31), () ->
-          {
-          });
           //endregion
-
-          //region spawners
-          map.addToPool(
-              new Spawner(
-                  "PlayerSpawn", env.getGameState(),
-                  new Vector2d().cartesian(14, 23.5),
-                  Spawner.SpawnerType.PLAYER,
-                  new Vector2d().cartesian(14, 23.5))
-          );
-          map.addToPool(
-              new Spawner(
-                  "FruitSpawn", env.getGameState(),
-                  new Vector2d().cartesian(14, 23.5),
-                  Spawner.SpawnerType.FRUIT,
-                  new Vector2d().cartesian(14, 23.5))
-          );
-
-          map.addToPool(
-              new Spawner(
-                  "BlinkySpawn", env.getGameState(),
-                  new Vector2d().cartesian(14, 14.5),
-                  Spawner.SpawnerType.GHOST,
-                  new Vector2d().cartesian(14, 14.5))
-          );
-          map.addToPool(
-              new Spawner(
-                  "PinkySpawn", env.getGameState(),
-                  new Vector2d().cartesian(13, 14.5),
-                  Spawner.SpawnerType.GHOST,
-                  new Vector2d().cartesian(13, 14.5))
-          );
-          map.addToPool(
-              new Spawner(
-                  "InkySpawn", env.getGameState(),
-                  new Vector2d().cartesian(15, 14.5),
-                  Spawner.SpawnerType.GHOST,
-                  new Vector2d().cartesian(15, 14.5))
-          );
-          map.addToPool(
-              new Spawner(
-                  "ClydeSpawn", env.getGameState(),
-                  new Vector2d().cartesian(14, 13.5),
-                  Spawner.SpawnerType.GHOST,
-                  new Vector2d().cartesian(14, 13.5))
-          );
-          //endregion
-
-          //region objects
-          Blocker b1 = new Blocker(new Vector2d().cartesian(13.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3));
-          map.addToPool(b1);
-          Blocker b2 = new Blocker(new Vector2d().cartesian(14.5, 12.5), new Dimension(( AdvGameConst.tileSize * 2 ), 3));
-          map.addToPool(b2);
-          //endregion
-
-          //region portals
-          Teleporter t1 = new Teleporter(env.gameState, new Vector2d().cartesian(1.5, 14.5), Direction.right);
-          Teleporter t2 = new Teleporter(env.gameState, new Vector2d().cartesian(26.5, 14.5), Direction.left);
-          t1.pair(t2, Color.ORANGE);
-          map.addToPool(t1);
-          map.addToPool(t2);
-          //endregion
-          //endregion
-
-          map.scaleSpawnablesPos();
-
-          env.getGameState().layers.get(AdvGameState.Layer.MAP.ordinal()).add(map);
 
 
           setLoadingProgress("loading", 30, "Loading objects...");

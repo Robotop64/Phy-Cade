@@ -24,6 +24,7 @@ public class Item extends AdvPlacedObject implements AdvColliding
 
   public void consumeAction ()
   {
+    gameState.objects.remove(AdvGameState.Layer.ITEMS, this);
     gameState.checkFruit();
     gameState.checkProgress();
 

@@ -52,7 +52,6 @@ public class PelletItem extends Item implements AdvRendered, AdvColliding
   {
     gameState.pelletsEaten++;
     gameState.addScore(worth);
-    gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
     //TODO: Spawn score number
     super.consumeAction();
   }

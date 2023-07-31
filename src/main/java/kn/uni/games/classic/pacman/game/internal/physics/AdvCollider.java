@@ -7,7 +7,6 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
-import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
@@ -40,7 +39,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
 
   public void checkCollisions ()
   {
-    entities = gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
+    entities = gameState.objects.get(AdvGameState.Layer.ENTITIES).stream()
                                .filter(o -> o instanceof AdvColliding)
                                .map(o -> (Entity) o)
                                .toList();
@@ -49,7 +48,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
     Arrays.stream(AdvGameState.Layer.values())
           //          .filter(l -> l != AdvGameState.Layer.ENTITIES)
           .forEach(l ->
-              gameState.layers.get(l.ordinal()).stream()
+              gameState.objects.get(l).stream()
                               .filter(o -> o instanceof AdvColliding)
                               .filter(o -> o instanceof AdvPlacedObject)
                               .map(o -> (AdvPlacedObject) o)
@@ -60,7 +59,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
                                 //get the mapPos of the entity
                                 .map(Entity::getMapPos)
                                 //get the absPos of the tile
-                                .map(mapPos -> ( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).tilesPixel.get(mapPos).absPos)
+                                .map(mapPos -> gameState.objects.maps().get(0).tilesPixel.get(mapPos).absPos)
                                 //create a rectangle around the tile containing the surrounding tiles
                                 .map(t -> new Rectangle((int) ( t.x - AdvGameConst.tileSize ), (int) ( t.y - AdvGameConst.tileSize ), AdvGameConst.tileSize * 3, AdvGameConst.tileSize * 3))
                                 //filter colliders to only those that are in the rectangle
@@ -152,7 +151,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
                                       //get the mapPos of the entity
                                       .map(Entity::getMapPos)
                                       //get the absPos of the tile
-                                      .map(t -> ( (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst() ).tilesPixel.get(t).absPos)
+                                      .map(t -> gameState.objects.maps().get(0).tilesPixel.get(t).absPos)
                                       //create a rectangle around the tile containing the surrounding tiles
                                       .map(t -> new Rectangle((int) ( t.x - AdvGameConst.tileSize ), (int) ( t.y - AdvGameConst.tileSize ), AdvGameConst.tileSize * 3, AdvGameConst.tileSize * 3))
                                       .toList();

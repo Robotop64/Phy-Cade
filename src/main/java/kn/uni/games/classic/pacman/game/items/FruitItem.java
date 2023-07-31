@@ -68,7 +68,6 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
   public void consumeAction ()
   {
     gameState.addScore(worth);
-    gameState.layers.get(AdvGameState.Layer.ITEMS.ordinal()).remove(this);
     //TODO: Spawn score number
     super.consumeAction();
   }

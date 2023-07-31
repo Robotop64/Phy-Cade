@@ -4,6 +4,7 @@ import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
 import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostEntity;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.graphics.Scaled;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvCollider;
@@ -20,7 +21,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 
-public class Blocker extends AdvPlacedObject implements AdvRendered, AdvColliding
+public class Blocker extends AdvPlacedObject implements AdvRendered, AdvColliding, Scaled
 {
   public BufferedImage cachedImg;
   public Dimension     size;
@@ -89,5 +90,11 @@ public class Blocker extends AdvPlacedObject implements AdvRendered, AdvCollidin
     g2.fillRect(0, 0, (int) size.getWidth(), (int) size.getHeight());
 
     g2.dispose();
+  }
+
+  @Override
+  public void scale (double scale)
+  {
+    size = new Dimension((int) ( size.getWidth()/100 * scale ), (int) ( size.getHeight()/100 * scale ));
   }
 }

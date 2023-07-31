@@ -2,7 +2,6 @@ package kn.uni.games.classic.pacman.game.entities;
 
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
-import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
@@ -62,7 +61,7 @@ public class Entity extends AdvPlacedObject
    */
   public Vector2d getMapPos ()
   {
-    AdvPacManMap map = (AdvPacManMap) this.gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
+    AdvPacManMap map = this.gameState.objects.maps().get(0);
     return map.getTileMapPos(this.absPos);
   }
 

@@ -130,29 +130,25 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
     triggerInit.absPos = new Vector2d().cartesian(0, 0);
 
     //delay teleport
-    gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
-                    .filter(o -> o instanceof AdvTimer)
-                    .map(o -> (AdvTimer) o)
-                    .forEach(o -> o.addTask(new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * AdvGameConst.portalDelay ), () ->
-                    {
-                      AdvPlacedObject trigger = (AdvPlacedObject) collider;
-                      trigger.mapPos = other.mapPos;
-                      trigger.absPos = other.absPos;
-                      trigger.frozen = false;
+    AdvTimer timer = AdvTimer.getInstance(gameState);
 
-                      if (trigger instanceof Entity e)
-                        e.facing = other.facing;
-                    },"portalDelay"), "delay teleport from " + this.mapPos + " to " + other.mapPos));
+    timer.addTask(new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * AdvGameConst.portalDelay ), () ->
+    {
+      AdvPlacedObject trigger = (AdvPlacedObject) collider;
+      trigger.mapPos = other.mapPos;
+      trigger.absPos = other.absPos;
+      trigger.frozen = false;
+
+      if (trigger instanceof Entity e)
+        e.facing = other.facing;
+    }, "portalDelay"), "delay teleport from " + this.mapPos + " to " + other.mapPos);
 
     //remove cooldown
-    gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
-                    .filter(o -> o instanceof AdvTimer)
-                    .map(o -> (AdvTimer) o)
-                    .forEach(o -> o.addTask(new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * AdvGameConst.portalCooldown ), () ->
-                    {
-                      other.onCooldown = false;
-                      this.onCooldown = false;
-                    },"portalCooldown"), "remove Cooldown of teleport from " + this.mapPos + " to " + other.mapPos));
+    timer.addTask(new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * AdvGameConst.portalCooldown ), () ->
+    {
+      other.onCooldown = false;
+      this.onCooldown = false;
+    }, "portalCooldown"), "remove Cooldown of teleport from " + this.mapPos + " to " + other.mapPos);
 
     gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
 

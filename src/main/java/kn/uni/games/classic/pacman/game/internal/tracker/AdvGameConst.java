@@ -17,7 +17,7 @@ public class AdvGameConst
       "PelletItem", 1 / 4.,
       "PPelletItem", 1 / 4.,
       "FruitItem", 2 / 5.,
-      "Blocker", ( 1 / 2. ),
+      "Blocker", 3/4.,
       "Teleporter", 1 / 4.,
       "Waypoint", 1 / 10.
   );
@@ -37,7 +37,7 @@ public class AdvGameConst
   public static void init ()
   {
     pacmanSpeedBase = (double) Config.getCurrent("Gameplay/PacMan/StartSpeed");
-    ghostSpeedBase = pacmanSpeedBase;
+    ghostSpeedBase = pacmanSpeedBase* 0.75;
     playerHp = (int) (double) Config.getCurrent("Gameplay/PacMan/PlayerHP");
     ghostHp = (int) (double) Config.getCurrent("Gameplay/PacMan/GhostHP");
     pointsToLife = (int) (double) Config.getCurrent("Gameplay/PacMan/PointsToLife");

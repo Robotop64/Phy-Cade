@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.game.internal.tracker;
 
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
+import kn.uni.games.classic.pacman.game.internal.graphics.Scaled;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
@@ -14,11 +15,10 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class AdvWaypointManager extends AdvGameObject
 {
-  public static List <Waypoint> waypoints = new ArrayList <>();
+  public List <Waypoint> waypoints = new ArrayList <>();
 
   public AdvGameState gameState;
 
@@ -27,12 +27,9 @@ public class AdvWaypointManager extends AdvGameObject
     this.gameState = gameState;
   }
 
-  public static Optional <AdvWaypointManager> getInstance (AdvGameState gameState)
+  public static AdvWaypointManager getInstance (AdvGameState gameState)
   {
-    return gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
-                           .filter(o -> o instanceof AdvWaypointManager)
-                           .map(o -> (AdvWaypointManager) o)
-                           .findFirst();
+    return (AdvWaypointManager) gameState.objects.find(AdvGameState.Layer.INTERNALS, AdvWaypointManager.class).get(0);
   }
 
   public void removeWaypoint (String name)
@@ -40,7 +37,7 @@ public class AdvWaypointManager extends AdvGameObject
     waypoints.removeIf(waypoint -> waypoint.name.equals(name));
   }
 
-  public static Waypoint getWaypoint (String name)
+  public Waypoint getWaypoint (String name)
   {
     return waypoints.stream().filter(waypoint -> waypoint.name.equals(name)).findFirst().orElse(null);
   }
@@ -48,12 +45,12 @@ public class AdvWaypointManager extends AdvGameObject
   public void addWaypoint (String name, Vector2d mapPos, Runnable onCollision)
   {
     Waypoint waypoint = new Waypoint(name, mapPos, onCollision);
-    waypoint.absPos = waypoint.mapPos.multiply(AdvGameConst.tileSize);
-    gameState.spawn(AdvGameState.Layer.INFORMATIONAL, waypoint);
+
+    gameState.add(AdvGameState.Layer.INFORMATIONAL, waypoint);
     waypoints.add(waypoint);
   }
 
-  public static class Waypoint extends AdvPlacedObject implements AdvColliding, AdvRendered
+  public static class Waypoint extends AdvPlacedObject implements AdvColliding, AdvRendered, Scaled
   {
     public Vector2d mapPos;
     public Runnable onCollision;
@@ -113,6 +110,12 @@ public class AdvWaypointManager extends AdvGameObject
 
       g.setColor(Color.RED);
       g.fillOval(iconSize / 2 - 5, iconSize / 2 - 5, 10, 10);
+    }
+
+    @Override
+    public void scale (double scale)
+    {
+      absPos = mapPos.multiply(scale);
     }
   }
 

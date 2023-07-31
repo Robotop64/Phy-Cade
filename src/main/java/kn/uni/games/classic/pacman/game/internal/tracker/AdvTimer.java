@@ -6,7 +6,6 @@ import kn.uni.util.PrettyPrint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class AdvTimer extends AdvGameObject implements AdvTicking
 {
@@ -18,12 +17,9 @@ public class AdvTimer extends AdvGameObject implements AdvTicking
     this.gameState = gameState;
   }
 
-  public static Optional <AdvTimer> getInstance (AdvGameState gameState)
+  public static AdvTimer getInstance (AdvGameState gameState)
   {
-    return gameState.layers.get(AdvGameState.Layer.INTERNALS.ordinal()).stream()
-                           .filter(o -> o instanceof AdvTimer)
-                           .map(o -> (AdvTimer) o)
-                           .findFirst();
+    return (AdvTimer) gameState.objects.find(AdvGameState.Layer.INTERNALS, AdvTimer.class).get(0);
   }
 
   public void addTask (TimerTask task, String hint)

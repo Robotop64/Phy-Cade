@@ -161,7 +161,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     if (stunned) return;
 
     Vector2d      currentTilePos = getMapPos();
-    AdvPacManMap  map            = (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
+    AdvPacManMap  map            = gameState.objects.maps().get(0);
     AdvPacManTile currentTile    = map.tilesPixel.get(currentTilePos);
 
     List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
@@ -186,7 +186,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     //set initial velocity
     if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.ghostSpeedBase, 0).multiply(AdvGameConst.tileSize).divide(AdvGameConst.tps);
 
-    double    stepSize      = velocity.x;
+    double    stepSize      = velocity.rounded().x;
     Direction nextDir       = ai.getDirection(currentTile, possibleTiles);
     Vector2d  innerPos      = map.getTileInnerPos(absPos);
     double    centerDist    = round(this.facing.toVector().scalar(innerPos));
@@ -205,19 +205,9 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
 
 
     //region control turning
-    //allows turning vertically if innerTilePosition x == 0 or horizontally if innerTilePosition y == 0
-//    if (innerPos.rounded().x == 0 && innerPos.rounded().y == 0)
-//      //if the next direction is a valid tile
-//      if (nextDirValid)
-//      {
-//        //if the next direction is not marked as suppressed turn into it and clear the suppressed directions
-//        if (!suppressedDirections.contains(nextDir))
-//        {
-//          this.facing = nextDir;
-//          suppressedDirections.clear();
-//        }
-//      }
+    //turn if at center of tile
     if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
+    {
       //if the next direction is a valid tile
       if (nextDirValid)
         //if the next direction is not marked as suppressed
@@ -226,6 +216,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
           this.facing = nextDir;
           suppressedDirections.clear();
         }
+    }
     //endregion
 
     //region control movement
@@ -237,13 +228,17 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     }
 
     //next tile is valid or center has not been reached yet
+    //move forward
     if (nextTileValid || centerDist < 0)
     {
       absPos = absPos.add(this.facing.toVector().multiply(stepSize));
       mapPos = map.getTileMapPos(absPos);
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
-    else if (centerDist > 0)
+
+    //if next tile is under or over shoot
+    //move to center of tile to enable turning
+    if (Math.abs(centerDist)<stepSize && Math.abs(centerDist) > 0)
     {
       absPos = currentTilePos.multiply(map.tileSize).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
       mapPos = map.getTileMapPos(absPos);
@@ -270,7 +265,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
   @Override
   public void onCollision (AdvGameObject collider)
   {
-    if (ai.getMode() != AdvGameConst.GhostMode.RETREAT
+    if (ai.getMode() == AdvGameConst.GhostMode.FRIGHTENED
         && collider instanceof AdvPacManEntity player
         && player.empowered)
     {

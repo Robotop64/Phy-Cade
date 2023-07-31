@@ -110,7 +110,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     if (stunned) return;
 
     Vector2d      currentTilePos = getMapPos();
-    AdvPacManMap  map            = (AdvPacManMap) gameState.layers.get(AdvGameState.Layer.MAP.ordinal()).getFirst();
+    AdvPacManMap  map            = gameState.objects.maps().get(0);
     AdvPacManTile currentTile    = map.tilesPixel.get(currentTilePos);
 
     List <AdvPacManTile> possibleTiles = Arrays.stream(Direction.valuesCardinal())
@@ -133,7 +133,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     //set velocity
     if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeedBase, 0).multiply(map.tileSize).divide(AdvGameConst.tps);
 
-    double    stepSize      = velocity.x;
+    double    stepSize      = velocity.rounded().x;
     Direction nextDir       = gameState.requestedDirections.get(gameState.players.indexOf(this));
     Vector2d  innerPos      = map.getTileInnerPos(absPos);
     double    centerDist    = round(this.facing.toVector().scalar(innerPos));
@@ -163,13 +163,17 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     }
 
     //next tile is valid or center has not been reached yet
+    //move forward
     if (nextTileValid || centerDist < 0)
     {
       absPos = absPos.add(this.facing.toVector().multiply(stepSize));
       mapPos = map.getTileMapPos(absPos);
       gameState.env.updateLayer.set(AdvGameState.Layer.ENTITIES.ordinal(), true);
     }
-    else if (centerDist > 0)
+
+    //if next tile is under or over shoot
+    //move to center of tile to enable turning
+    if (Math.abs(centerDist) < stepSize && Math.abs(centerDist) > 0)
     {
       absPos = currentTilePos.multiply(map.tileSize).add(new Vector2d().cartesian(1, 1).multiply(map.tileSize).divide(2));
       mapPos = map.getTileMapPos(absPos);
@@ -191,12 +195,12 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     //check if all players are dead
     if (gameState.players.stream().allMatch(player -> player.dead))
       //reload level
-      AdvTimer.getInstance(gameState).ifPresent(timer -> timer.addTask(
+      AdvTimer.getInstance(gameState).addTask(
           new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * 2 ), () ->
           {
             gameState.checkGameOver();
             gameState.env.reloadLevel();
-          },"restartPostDeath"), "restart level after the player died"));
+          }, "restartPostDeath"), "restart level after the player died");
   }
 
   @Override
@@ -208,36 +212,39 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
       if (item instanceof PPelletItem)
       {
         empowered = true;
-        gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
-            .filter(entity -> entity instanceof AdvGhostEntity)
-            .map(entity -> (AdvGhostEntity) entity)
-            .filter(ghost -> ghost.ai.mode == AdvGameConst.GhostMode.CHASE)
-            .forEach(ghost -> ghost.ai.setMode(AdvGameConst.GhostMode.FRIGHTENED));
+
+        gameState.objects.entities().stream()
+                         .filter(entity -> entity instanceof AdvGhostEntity)
+                         .map(entity -> (AdvGhostEntity) entity)
+                         .filter(ghost -> ghost.ai.mode == AdvGameConst.GhostMode.CHASE)
+                         .forEach(ghost -> ghost.ai.setMode(AdvGameConst.GhostMode.FRIGHTENED));
 
         //remove previous powerUpTimers
-        AdvTimer.getInstance(gameState).get().removeTask("powerUpTimer");
-        AdvTimer.getInstance(gameState).get().removeTask("pacAnimBlink");
+        AdvTimer timer = AdvTimer.getInstance(gameState);
+
+        timer.removeTask("powerUpTimer");
+        timer.removeTask("pacAnimBlink");
 
         //TODO change animation/sprite
 
-        AdvTimer.getInstance(gameState).get().addTask(
+        timer.addTask(
             new AdvTimer.TimerTask(gameState.currentTick, 120L * 7, () ->
-            { /*TODO change animation/sprite to blinking*/ },"pacAnimBlink"),
+            { /*TODO change animation/sprite to blinking*/ }, "pacAnimBlink"),
             "change Pacman Animation to blinking after 7 seconds"
         );
 
-        AdvTimer.getInstance(gameState).get().addTask(
+        timer.addTask(
             new AdvTimer.TimerTask(gameState.currentTick, 120L * 10, () ->
             {
               empowered = false;
               gameState.ghostStreak = 0;
-              gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
-                              .filter(entity -> entity instanceof AdvGhostEntity)
-                              .map(entity -> (AdvGhostEntity) entity)
-                              .filter(ghost -> ghost.ai.mode == AdvGameConst.GhostMode.FRIGHTENED)
-                              .forEach(ghost -> ghost.ai.setMode(AdvGameConst.GhostMode.CHASE));
+              gameState.objects.entities().stream()
+                               .filter(entity -> entity instanceof AdvGhostEntity)
+                               .map(entity -> (AdvGhostEntity) entity)
+                               .filter(ghost -> ghost.ai.mode == AdvGameConst.GhostMode.FRIGHTENED)
+                               .forEach(ghost -> ghost.ai.setMode(AdvGameConst.GhostMode.CHASE));
               /*TODO change animation/sprite back to normal*/
-            },"powerUpTimer"),
+            }, "powerUpTimer"),
             "remove empowerment of PacMan after 10 seconds"
         );
 

@@ -20,6 +20,7 @@ public class AdvGhostAi extends Ai
 {
   public AdvGameConst.GhostNames name;
   public AdvGameConst.GhostMode  mode;
+  public static AdvGameConst.GhostMode defaultMode = AdvGameConst.GhostMode.EXIT;
   public AdvGhostEntity          ghost;
   public AdvPacManTile[]         memory;
 
@@ -28,7 +29,7 @@ public class AdvGhostAi extends Ai
     this.name = name;
     this.ghost = ghost;
     this.gameState = ghost.gameState;
-    this.mode = AdvGameConst.GhostMode.EXIT;
+    this.mode = defaultMode;
     this.memory = new AdvPacManTile[2];
   }
 
@@ -76,10 +77,10 @@ public class AdvGhostAi extends Ai
   {
     List <AdvGhostEntity> possibleTargets = new ArrayList <>();
 
-    gameState.layers.get(AdvGameState.Layer.ENTITIES.ordinal()).stream()
-                    .filter(entity -> entity instanceof AdvGhostEntity)
-                    .filter(entity -> ( (AdvGhostEntity) entity ).ai.name == name)
-                    .forEach(entity -> possibleTargets.add((AdvGhostEntity) entity));
+    gameState.objects.get(AdvGameState.Layer.ENTITIES).stream()
+                     .filter(entity -> entity instanceof AdvGhostEntity)
+                     .filter(entity -> ( (AdvGhostEntity) entity ).ai.name == name)
+                     .forEach(entity -> possibleTargets.add((AdvGhostEntity) entity));
 
     //get closest target to ghost
     AtomicReference <AdvGhostEntity> closestTarget = new AtomicReference <>();
@@ -146,15 +147,15 @@ public class AdvGhostAi extends Ai
       }
       case SCATTER ->
       {
-        return AdvWaypointManager.getInstance(ghost.gameState).get().getWaypoint(name.toString() + "_SCATTER").absPos;
+        return AdvWaypointManager.getInstance(ghost.gameState).getWaypoint(name.toString() + "_SCATTER").absPos;
       }
       case EXIT, RETREAT ->
       {
-        return AdvWaypointManager.getInstance(ghost.gameState).get().getWaypoint("GhostPenOutside").absPos;
+        return AdvWaypointManager.getInstance(ghost.gameState).getWaypoint("GhostPenOutside").absPos;
       }
       case ENTER ->
       {
-        return AdvWaypointManager.getInstance(ghost.gameState).get().getWaypoint("GhostPenInside").absPos;
+        return AdvWaypointManager.getInstance(ghost.gameState).getWaypoint("GhostPenInside").absPos;
       }
       default ->
       {

@@ -1,6 +1,7 @@
 package kn.uni.games.classic.pacman.game.internal.tracker;
 
 import kn.uni.games.classic.pacman.game.entities.AdvPacManEntity;
+import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
 import kn.uni.games.classic.pacman.game.internal.GameEnvironment;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
@@ -14,7 +15,6 @@ import kn.uni.util.fileRelated.Config.Config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.stream.IntStream;
 
 public class AdvGameState
 {
@@ -51,8 +51,6 @@ public class AdvGameState
   {
     this.env = env;
 
-    IntStream.range(0, Layer.values().length).forEach(i -> layers.add(new ConcurrentLinkedDeque <Object>()));
-
     lives = (int) (double) Config.getCurrent("Gameplay/PacMan/StartLives");
   }
 
@@ -77,17 +75,19 @@ public class AdvGameState
     env.gameScreen.setLives(lives);
   }
 
-  public void spawnScaled (Layer type, AdvPlacedObject obj)
+  public void addScaled(Layer type, AdvPlacedObject obj)
   {
     obj.absPos = obj.mapPos.multiply(AdvGameConst.tileSize);
-    layers.get(type.ordinal()).add(obj);
+
+    objects.add(type, obj);
+
     if (type != Layer.INTERNALS)
       env.updateLayer.set(type.ordinal(), true);
   }
 
-  public void spawn (Layer type, AdvGameObject obj)
+  public void add(Layer type, AdvGameObject obj)
   {
-    layers.get(type.ordinal()).add(obj);
+    objects.add(type, obj);
     if (type != Layer.INTERNALS)
       env.updateLayer.set(type.ordinal(), true);
   }
@@ -100,7 +100,8 @@ public class AdvGameState
     if (pelletsEaten >= pelletCount / 2)
     {
       fruitSpawned = true;
-      layers.get(Layer.ENTITIES.ordinal()).stream()
+
+      objects.entities().stream()
             .filter(obj -> obj instanceof Spawner)
             .map(obj -> (Spawner) obj)
             .filter(spawner -> spawner.name.equals("FruitSpawn"))
@@ -151,14 +152,9 @@ public class AdvGameState
       return get(Layer.ITEMS).stream().map(o -> (Item) o).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
-    public ArrayList <AdvPacManEntity> entities ()
+    public ArrayList <Entity> entities ()
     {
-      return get(Layer.ENTITIES).stream().map(o -> (AdvPacManEntity) o).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-    }
-
-    public ArrayList find(Layer layer, Class target)
-    {
-      return get(layer).stream().filter(o -> o.getClass().equals(target)).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+      return get(Layer.ENTITIES).stream().map(o -> (Entity) o).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
   }
 
