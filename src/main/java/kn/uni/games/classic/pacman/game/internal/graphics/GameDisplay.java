@@ -33,8 +33,6 @@ public class GameDisplay extends JPanel
     Graphics2D g2 = (Graphics2D) g;
 
     IntStream.range(0, AdvGameState.Layer.values().length).forEach(i ->
-    {
-      this.layers.get(i).paintComponent(g2);
-    });
+        this.layers.get(i).paintComponent(g2));
   }
 }

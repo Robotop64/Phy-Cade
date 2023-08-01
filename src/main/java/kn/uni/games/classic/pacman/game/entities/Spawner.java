@@ -56,7 +56,7 @@ public class Spawner extends Entity
     }
     else if (type == SpawnerType.GHOST)
     {
-      AdvGameConst.GhostNames name = null;
+      AdvGameConst.GhostNames name;
       if (this.name.contains("Blinky"))
         name = AdvGameConst.GhostNames.BLINKY;
       else if (this.name.contains("Pinky"))
@@ -68,8 +68,7 @@ public class Spawner extends Entity
       else
         throw new RuntimeException("Unknown ghost name: " + this.name);
 
-      AdvGhostEntity ghost = new AdvGhostEntity(gameState, spawnMapPos, name);
-      gameState.addScaled(AdvGameState.Layer.ENTITIES, ghost);
+      gameState.addScaled(AdvGameState.Layer.ENTITIES, new AdvGhostEntity(gameState, spawnMapPos, name));
     }
 
   }

@@ -51,7 +51,7 @@ public class AdvAnimation
     animationSource = out;
   }
 
-  public class Set
+  public static class Set
   {
     public ArrayList<AdvAnimation> animations;
 

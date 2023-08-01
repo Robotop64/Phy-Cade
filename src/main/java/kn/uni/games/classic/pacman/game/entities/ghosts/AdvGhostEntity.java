@@ -205,7 +205,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
 
 
     //region control turning
-    //turn if at center of tile
+    //if at center of tile
     if (( innerPos.rounded().x == 0 && nextDir.toVector().isVertical() ) || ( innerPos.rounded().y == 0 && nextDir.toVector().isHorizontal() ))
     {
       //if the next direction is a valid tile

@@ -227,7 +227,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
     ConcurrentLinkedDeque <AdvGameObject> objects = new ConcurrentLinkedDeque <>();
     tilesPixel.forEach((k, v) ->
     {
-      if (v.getObjects().size() > 0)
+      if (!v.getObjects().isEmpty())
       {
         objects.addAll(v.getObjects());
       }
@@ -246,7 +246,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
     ConcurrentLinkedDeque <Item> items = new ConcurrentLinkedDeque <>();
     tilesPixel.forEach((k, v) ->
     {
-      if (v.getItems().size() > 0)
+      if (!v.getItems().isEmpty())
       {
         items.addAll(v.getItems());
       }
@@ -265,7 +265,7 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
     ConcurrentLinkedDeque <Entity> entities = new ConcurrentLinkedDeque <>();
     tilesPixel.forEach((k, v) ->
     {
-      if (v.getEntities().size() > 0)
+      if (!v.getEntities().isEmpty())
       {
         entities.addAll(v.getEntities());
       }

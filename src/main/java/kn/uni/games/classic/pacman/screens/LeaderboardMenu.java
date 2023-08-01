@@ -198,7 +198,7 @@ public class LeaderboardMenu extends JPanel
    */
   private void setGame (GameTitle g)
   {
-    if (games.size() >= 1)
+    if (!games.isEmpty())
     {
       entries = getGameLeaderboard(g);
       header.setText("Bestenliste : ~ " + g.name() + " ~");

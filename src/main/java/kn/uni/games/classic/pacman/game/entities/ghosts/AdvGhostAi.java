@@ -60,7 +60,7 @@ public class AdvGhostAi extends Ai
   {
     List <AdvPacManEntity> possibleTargets = ghost.gameState.players;
 
-    //get closest target to ghost
+    //get the closest target to ghost
     AtomicReference <AdvPacManEntity> closestTarget = new AtomicReference <>();
     possibleTargets.forEach(target ->
     {
@@ -82,7 +82,7 @@ public class AdvGhostAi extends Ai
                      .filter(entity -> ( (AdvGhostEntity) entity ).ai.name == name)
                      .forEach(entity -> possibleTargets.add((AdvGhostEntity) entity));
 
-    //get closest target to ghost
+    //get the closest target to ghost
     AtomicReference <AdvGhostEntity> closestTarget = new AtomicReference <>();
     possibleTargets.forEach(target ->
     {
@@ -115,7 +115,7 @@ public class AdvGhostAi extends Ai
       {
         Vector2d offset = target.absPos.add(target.facing.toVector().multiply(3 * AdvGameConst.tileSize));
         Vector2d targetToOffset = offset.subtract(getNextGhost(AdvGameConst.GhostNames.BLINKY).absPos);
-        //target is 3 tiles in front of pacman, then mirrored to blinky
+        //target is 3 tiles in front of pacman, then mirrored to Blinky's position
         return offset.add(targetToOffset);
       }
       case CLYDE ->
@@ -178,7 +178,7 @@ public class AdvGhostAi extends Ai
     //endregion
 
     //turn 180° if no possible tiles are available
-    if (possibleTiles.size() == 0)
+    if (possibleTiles.isEmpty())
       return ghost.facing.opposite();
 
 

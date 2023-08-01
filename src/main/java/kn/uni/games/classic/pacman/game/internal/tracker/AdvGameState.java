@@ -14,7 +14,6 @@ import kn.uni.util.fileRelated.Config.Config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class AdvGameState
 {
@@ -26,7 +25,6 @@ public class AdvGameState
   public long                                  currentTick;
   public long                                  lastTickTime;
   public long                                  gameStartTime;
-  public List <ConcurrentLinkedDeque <Object>> layers              = new ArrayList <>();
   public ObjList <AdvGameObject>               objects             = new ObjList <>();
   public List <AdvPacManEntity>                players             = new ArrayList <>();
   public List <Direction>                      requestedDirections = new ArrayList <>();
@@ -34,7 +32,7 @@ public class AdvGameState
 
   //region game stats
   public long score       = 0;
-  public int  lives       = 0;
+  public int  lives       ;
   public int  livesGained = 0;
   public int  level       = 1;
   public long time        = 0;
@@ -51,6 +49,7 @@ public class AdvGameState
   {
     this.env = env;
 
+    //noinspection DataFlowIssue
     lives = (int) (double) Config.getCurrent("Gameplay/PacMan/StartLives");
   }
 
@@ -144,7 +143,7 @@ public class AdvGameState
 
     public ArrayList <AdvGameObject> objects ()
     {
-      return get(Layer.OBJECTS).stream().map(o -> (AdvGameObject) o).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+      return get(Layer.OBJECTS).stream().collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
     public ArrayList <Item> items ()

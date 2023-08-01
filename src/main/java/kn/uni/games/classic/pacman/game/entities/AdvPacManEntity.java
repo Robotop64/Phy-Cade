@@ -196,7 +196,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     if (gameState.players.stream().allMatch(player -> player.dead))
       //reload level
       AdvTimer.getInstance(gameState).addTask(
-          new AdvTimer.TimerTask(gameState.currentTick, (long) ( 120L * 2 ), () ->
+          new AdvTimer.TimerTask(gameState.currentTick, 120L * 2, () ->
           {
             gameState.checkGameOver();
             gameState.env.reloadLevel();

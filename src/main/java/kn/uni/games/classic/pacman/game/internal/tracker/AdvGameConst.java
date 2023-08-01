@@ -34,6 +34,7 @@ public class AdvGameConst
   public static int    fps             = 60;
   //endregion
 
+  @SuppressWarnings("DataFlowIssue")
   public static void init ()
   {
     pacmanSpeedBase = (double) Config.getCurrent("Gameplay/PacMan/StartSpeed");

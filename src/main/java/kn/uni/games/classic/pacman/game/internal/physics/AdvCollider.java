@@ -91,7 +91,7 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
     Object bVal = AdvGameConst.hitBoxes.get(bName);
 
     if (aVal == null || bVal == null)
-      throw new NullPointerException("No hitbox for " + aName + " or " + bName);
+      throw new NullPointerException("No hit-box for " + aName + " or " + bName);
 
     double radA = Double.parseDouble(aVal.toString());
     double radB = Double.parseDouble(bVal.toString());

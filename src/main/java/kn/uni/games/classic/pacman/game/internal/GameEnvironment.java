@@ -129,7 +129,6 @@ public class GameEnvironment
       IntStream.range(0, gameState.objects.list.size()-1)
                .mapToObj(i -> gameState.objects.list.get(i))
                .filter(gameObject -> gameObject instanceof AdvTicking)
-               .map(obj -> (AdvGameObject) obj)
                .filter(obj -> !obj.frozen)
                .forEachOrdered(gameObject -> ( (AdvTicking) gameObject ).tick());
 
