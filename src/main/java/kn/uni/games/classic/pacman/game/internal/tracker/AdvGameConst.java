@@ -29,6 +29,9 @@ public class AdvGameConst
   public static int    pointsToLife    = 0;
   public static double portalDelay     = 0;
   public static double portalCooldown  = 0;
+  public static double[][] ghostSpeedScaling;
+  public static double[][] ghostScatterPlan;
+  public static double[][] ghostFrightenDuration;
   public static int    tileSize        = 0;
   public static int    tps             = 120;
   public static int    fps             = 60;
@@ -44,6 +47,9 @@ public class AdvGameConst
     pointsToLife = (int) (double) Config.getCurrent("Gameplay/PacMan/PointsToLife");
     portalDelay = (double) Config.getCurrent("Gameplay/PacMan/PortalDelay");
     portalCooldown = (double) Config.getCurrent("Gameplay/PacMan/PortalCooldown");
+    ghostSpeedScaling = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostSpeedScaling");
+    ghostScatterPlan = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostScatterPlan");
+    ghostFrightenDuration = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostFrightenDuration");
   }
 
   //region entity stuff

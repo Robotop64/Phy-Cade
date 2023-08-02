@@ -18,6 +18,7 @@ import kn.uni.util.PrettyPrint;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -350,6 +351,30 @@ public class GameEnvironment
                      .forEach(Spawner::spawn);
   }
 
+  public void adjustScaling()
+  {
+    //region ghost speed scaling
+    double[][] ghostSpeeds = AdvGameConst.ghostSpeedScaling;
+
+    //extract the levels from the array
+    List<Integer> levels = Arrays.stream(ghostSpeeds)
+                                 .mapToInt(arr -> (int) arr[0])
+                                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+
+    if (levels.contains(gameState.level))
+    {
+      List<Double> speeds = Arrays.stream(ghostSpeeds)
+                                  .map(arr -> arr[1])
+                                  .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+
+      double newScale = speeds.get(levels.indexOf(gameState.level));
+      AdvGameConst.ghostSpeedBase = AdvGameConst.pacmanSpeedBase * newScale;
+      PrettyPrint.bullet("Reached Lvl"+gameState.level);
+      PrettyPrint.bullet("Increased ghost speed to " + newScale + "x Pacman");
+    }
+    //endregion
+  }
+
   public void reloadLevelContent ()
   {
     boolean hardReset = gameState.pelletsEaten == gameState.pelletCount;
@@ -373,25 +398,16 @@ public class GameEnvironment
     }
     PrettyPrint.bullet("Reset players and trackers");
 
-    switch (gameState.level)
-    {
-      case 5 ->
-      {
-        AdvGameConst.ghostSpeedBase = AdvGameConst.pacmanSpeedBase * 0.85;
-        PrettyPrint.bullet("Reached Lvl 5");
-        PrettyPrint.bullet("Increased ghost speed to " + 0.85 + "x Pacman");
-      }
-      default ->
-      {
-      }
-    }
-
     loadObjects();
     if (hardReset) loadItems();
     loadEntities();
     spawnPlayers();
     spawnGhosts();
-    if (hardReset) gameState.level++;
+    if (hardReset)
+    {
+      gameState.level++;
+      adjustScaling();
+    }
     gameScreen.setLevel(gameState.level);
     gameScreen.gameReloading = true;
     PrettyPrint.bullet("Reloaded level contents");

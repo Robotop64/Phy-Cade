@@ -552,6 +552,9 @@ public class AdvGameScreen extends UIScreen
           env.spawnPlayers();
           env.spawnGhosts();
 
+          setLoadingProgress("loading", 60, "AdjustScalings");
+          env.adjustScaling();
+
           setLoadingProgress("loading", 80, "Waiting for Benchmark...");
 
           while (PacPhi.benchmarkThread.isAlive())

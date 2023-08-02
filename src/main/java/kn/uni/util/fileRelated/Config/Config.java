@@ -35,9 +35,9 @@ public class Config
   public static void load ()
   {
     Config local = new Config();
-    local.root = (Tree) JsonEditor.load(new Tree(), "config"+ PacPhi.GAME_BRANCH);
+    local.root = (Tree) JsonEditor.load(new Tree(), "config" + PacPhi.GAME_BRANCH);
 
-    if (Config.compareSetting(Config.getInstance(), local,"General/-/Version"))
+    if (Config.compareSetting(Config.getInstance(), local, "General/-/Version"))
     {
       Config.getInstance().root = local.root;
       PrettyPrint.bullet("Local Config version is up to date");
@@ -50,7 +50,7 @@ public class Config
 
   public static void save ()
   {
-    JsonEditor.save(Config.getInstance().root, "config"+ PacPhi.GAME_BRANCH);
+    JsonEditor.save(Config.getInstance().root, "config" + PacPhi.GAME_BRANCH);
   }
 
   public static void setCurrent (String root, Object value)
@@ -80,6 +80,14 @@ public class Config
     {
       r.current = (double) value;
     }
+    else if (setting instanceof Table t)
+    {
+      t.current = (String[][]) value;
+    }
+    else if (setting instanceof Matrix m)
+    {
+      m.current = (double[][]) value;
+    }
   }
 
   public static Object getCurrent (String root)
@@ -108,6 +116,14 @@ public class Config
     {
       return setting.toRange().current;
     }
+    else if (setting instanceof Table)
+    {
+      return setting.toTable().current;
+    }
+    else if (setting instanceof Matrix)
+    {
+      return setting.toMatrix().current;
+    }
     return null;
   }
 
@@ -117,34 +133,41 @@ public class Config
 
     //@formatter:off
     //general
-    newSetting("General/-/Version",             new Value(PacPhi.GAME_VERSION, null, null), 0, new String[]{"visible"});
-    newSetting("General/-/Branch",              new Value(PacPhi.GAME_BRANCH, "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, new String[]{"visible", "editable"});
-    newSetting("General/-/AccessLevel",         new Value("User", "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
+    newSetting("General/-/Version",             new Value(PacPhi.GAME_VERSION,  null), 0, new String[]{"visible"});
+    newSetting("General/-/Branch",              new Value( "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, new String[]{"visible", "editable"});
+    newSetting("General/-/AccessLevel",         new Value( "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
 
     //debugging
-    newSetting("Debugging/-/Enabled",           new Switch(false, false), 0, new String[]{"visible", "editable"});
-    newSetting("Debugging/-/Immortal",          new Switch(false, false), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Debugging/-/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
+    newSetting("Debugging/-/Immortal",          new Switch( false), 1, new String[]{"visible", "editable", "debug"});
 
     //gameplay
-    newSetting("Gameplay/PacMan/StartLives",    new Digit(5, 5, null), 0, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/StartSpeed",    new Digit(6, 6, null), 1, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PlayerHP",      new Digit(1, 1, null), 2, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/GhostHP",       new Digit(1, 1, null), 3, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PointsToLife",  new Digit(10000, 10000, null), 4, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PortalDelay",   new Digit(0.01, 0.01, null), 5, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PortalCooldown",new Digit(1, 1, null), 6, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/StartLives",    new Digit( 5, null), 0, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/StartSpeed",    new Digit( 20, null), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PlayerHP",      new Digit( 1, null), 2, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/GhostHP",       new Digit( 1, null), 3, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PointsToLife",  new Digit( 10000, null), 4, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PortalDelay",   new Digit( 0.01, null), 5, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PortalCooldown",new Digit( 1, null), 6, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/GhostSpeedScaling",   new Matrix(
+        new String[]{ "Level", "Speed" },new double[][]{ { 1, 0.75 }, { 2, 0.85 }, { 3, 1.00 }}), 7, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/GhostScatterPlan",   new Matrix(
+        //first occurrence is Chase, second is Scatter (in seconds)
+        new String[]{ "Level", "Duration" },new double[][]{ { 1, 0.75 }, { 5, 0.85 }, { 15, 1.00 }}), 8, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/GhostFrightenDuration",   new Matrix(
+        new String[]{ "Level", "Duration" },new double[][]{ { 1, 10 }}), 9, new String[]{"visible", "editable", "debug"});
 
     //graphics
-    newSetting("Graphics/General/Effects",      new Switch(true, true), 0, new String[]{"visible", "editable"});
+    newSetting("Graphics/General/Effects",      new Switch( true), 0, new String[]{"visible", "editable"});
 
-    newSetting("Graphics/Advanced/Antialiasing",new Switch(true, true), 1, new String[]{"visible", "editable"});
+    newSetting("Graphics/Advanced/Antialiasing",new Switch( true), 1, new String[]{"visible", "editable"});
 
     //music
-    newSetting("Audio/General/Enabled",         new Switch(true, true), 0, new String[]{"visible", "editable"});
+    newSetting("Audio/General/Enabled",         new Switch( true), 0, new String[]{"visible", "editable"});
     newSetting("Audio/General/MasterVolume",    new Range(100, 0, 100, 5), 1, new String[]{"visible", "editable"});
-    newSetting("Audio/General/Music",           new Switch(true, true), 2, new String[]{"visible", "editable"});
+    newSetting("Audio/General/Music",           new Switch( true), 2, new String[]{"visible", "editable"});
     newSetting("Audio/General/MusicVolume",     new Range(100, 0, 100, 5), 3, new String[]{"visible", "editable"});
-    newSetting("Audio/General/SFX",             new Switch(true, true), 4, new String[]{"visible", "editable"});
+    newSetting("Audio/General/SFX",             new Switch( true), 4, new String[]{"visible", "editable"});
     newSetting("Audio/General/SFXVolume",       new Range(100, 0, 100, 5), 5, new String[]{"visible", "editable"});
     //@formatter:on
   }
@@ -241,9 +264,11 @@ public class Config
     Switch toggle;
     Value  value;
     Digit  digit;
+    Table  table;
+    Matrix matrix;
 
     String[] tags;
-    int ordinal;
+    int      ordinal;
 
     public Leaf (int ordinal, SettingType type, String[] tags)
     {
@@ -255,6 +280,10 @@ public class Config
         value = (Value) type;
       else if (type instanceof Digit)
         digit = (Digit) type;
+      else if (type instanceof Table)
+        table = (Table) type;
+      else if (type instanceof Matrix)
+        matrix = (Matrix) type;
 
       this.tags = tags;
       this.ordinal = ordinal;
@@ -280,6 +309,11 @@ public class Config
         return value;
       else if (digit != null)
         return digit;
+      else if (table != null)
+        return table;
+      else if (matrix != null)
+        return matrix;
+      else
       return null;
     }
   }
@@ -309,12 +343,22 @@ public class Config
       return (Digit) this;
     }
 
+    public Table toTable ()
+    {
+      return (Table) this;
+    }
+
+    public Matrix toMatrix ()
+    {
+      return (Matrix) this;
+    }
+
     public Group toGroup ()
     {
       return (Group) this;
     }
 
-    public boolean equals(SettingType other)
+    public boolean equals (SettingType other)
     {
       if (this instanceof Range)
       {
@@ -340,9 +384,17 @@ public class Config
         Digit b = other.toDigit();
         return a.current == b.current;
       }
+      else if (this instanceof Table)
+      {
+        return other instanceof Table;
+      }
       else if (this instanceof Group)
       {
         return other instanceof Group;
+      }
+      else if (this instanceof Matrix)
+      {
+        return other instanceof Matrix;
       }
       return false;
     }
@@ -351,13 +403,15 @@ public class Config
   public class Range extends SettingType
   {
     double current;
+    double defaultVal;
     double min;
     double max;
     double stepSize;
 
-    public Range (double current, double min, double max, double stepSize)
+    public Range (double defaultVal, double min, double max, double stepSize)
     {
-      this.current = current;
+      this.current = defaultVal;
+      this.defaultVal = defaultVal;
       this.min = min;
       this.max = max;
       this.stepSize = stepSize;
@@ -369,9 +423,9 @@ public class Config
     boolean current;
     boolean defaultVal;
 
-    public Switch (boolean current, boolean defaultVal)
+    public Switch (boolean defaultVal)
     {
-      this.current = current;
+      this.current = defaultVal;
       this.defaultVal = defaultVal;
     }
   }
@@ -382,9 +436,9 @@ public class Config
     String   defaultVal;
     String[] possible;
 
-    public Value (String current, String defaultVal, String[] possible)
+    public Value (String defaultVal, String[] possible)
     {
-      this.current = current;
+      this.current = defaultVal;
       this.defaultVal = defaultVal;
       this.possible = possible;
     }
@@ -396,11 +450,39 @@ public class Config
     double   defaultVal;
     double[] possible;
 
-    public Digit (double current, double defaultVal, double[] possible)
+    public Digit (double defaultVal, double[] possible)
     {
-      this.current = current;
+      this.current = defaultVal;
       this.defaultVal = defaultVal;
       this.possible = possible;
+    }
+  }
+
+  public class Table extends SettingType
+  {
+    String[]   headers;
+    String[][] current;
+    String[][] defaultVal;
+
+    public Table (String[] headers, String[][] defaultVal)
+    {
+      this.headers = headers;
+      this.current = defaultVal;
+      this.defaultVal = defaultVal;
+    }
+  }
+
+  public class Matrix extends SettingType
+  {
+    String[]   headers;
+    double[][] current;
+    double[][] defaultVal;
+
+    public Matrix (String[] headers, double[][] defaultVal)
+    {
+      this.headers = headers;
+      this.current = defaultVal;
+      this.defaultVal = defaultVal;
     }
   }
 
