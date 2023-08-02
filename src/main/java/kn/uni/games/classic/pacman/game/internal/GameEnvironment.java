@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static kn.uni.util.Util.round;
@@ -126,11 +127,14 @@ public class GameEnvironment
     ticker = () ->
     {
       //tick all objects
-      IntStream.range(0, gameState.objects.list.size()-1)
-               .mapToObj(i -> gameState.objects.list.get(i))
+      IntStream.range(0, gameState.objects.list.size() - 1)
+               .mapToObj(i -> gameState.objects.get(i))
+               .filter(Objects::nonNull)
                .filter(gameObject -> gameObject instanceof AdvTicking)
                .filter(obj -> !obj.frozen)
                .forEachOrdered(gameObject -> ( (AdvTicking) gameObject ).tick());
+
+      gameState.objects.cleanUp();
 
       gameState.time += (long) prefTickDuration;
       gameScreen.setTime((long) ( gameState.time / 1_000_000.0 ));
@@ -375,9 +379,11 @@ public class GameEnvironment
       {
         AdvGameConst.ghostSpeedBase = AdvGameConst.pacmanSpeedBase * 0.85;
         PrettyPrint.bullet("Reached Lvl 5");
-        PrettyPrint.bullet("Increased ghost speed to "+0.85+"x Pacman");
+        PrettyPrint.bullet("Increased ghost speed to " + 0.85 + "x Pacman");
       }
-      default -> {}
+      default ->
+      {
+      }
     }
 
     loadObjects();

@@ -8,8 +8,8 @@ import kn.uni.games.classic.pacman.game.internal.objects.AdvGameObject;
 import kn.uni.games.classic.pacman.game.internal.objects.AdvPlacedObject;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
+import kn.uni.util.ConcurrentLayeredList;
 import kn.uni.util.Direction;
-import kn.uni.util.LayeredList;
 import kn.uni.util.fileRelated.Config.Config;
 
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class AdvGameState
     BACKGROUND, INTERNALS, MAP, OBJECTS, ITEMS, ENTITIES, VFX, PHYSICS, INFORMATIONAL
   }
 
-  public static class ObjList <AdvGameObject> extends LayeredList <AdvGameObject, Layer>
+  public static class ObjList <AdvGameObject> extends ConcurrentLayeredList <AdvGameObject, Layer>
   {
     public ObjList ()
     {

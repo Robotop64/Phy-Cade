@@ -56,7 +56,7 @@ public class LayeredList <T, E extends Enum <E>>
       layerEnd = offsets.get(layer.ordinal() + 1) - 1;
 
 
-    if (list.size() > 0)
+    if (!list.isEmpty())
       insertPosition = layerEnd + 1;
 
     list.add(insertPosition, obj);
