@@ -3,6 +3,7 @@ package kn.uni.games.classic.pacman.game.internal;
 import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.game.entities.Entity;
 import kn.uni.games.classic.pacman.game.entities.Spawner;
+import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostEntity;
 import kn.uni.games.classic.pacman.game.internal.graphics.AdvTicking;
 import kn.uni.games.classic.pacman.game.internal.graphics.GameDisplay;
 import kn.uni.games.classic.pacman.game.internal.graphics.GameLayer;
@@ -18,7 +19,6 @@ import kn.uni.util.PrettyPrint;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -138,6 +138,7 @@ public class GameEnvironment
       gameState.objects.cleanUp();
 
       gameState.time += (long) prefTickDuration;
+      gameState.timeSinceLastPellet += (long) prefTickDuration;
       gameScreen.setTime((long) ( gameState.time / 1_000_000.0 ));
     };
 
@@ -351,28 +352,24 @@ public class GameEnvironment
                      .forEach(Spawner::spawn);
   }
 
-  public void adjustScaling()
+  public void adjustScaling ()
   {
     //region ghost speed scaling
-    double[][] ghostSpeeds = AdvGameConst.ghostSpeedScaling;
+    double[][] ghostSpeeds = AdvGameConst.ghostSpeedScalingNormal;
+    double[][] pacSpeeds   = AdvGameConst.pacSpeedScalingNormal;
 
-    //extract the levels from the array
-    List<Integer> levels = Arrays.stream(ghostSpeeds)
-                                 .mapToInt(arr -> (int) arr[0])
-                                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+    double pacSpeedScaling = AdvGameConst.getScaling(pacSpeeds, gameState.level);
+    double ghostSpeedScaling = AdvGameConst.getScaling(ghostSpeeds, gameState.level);
 
-    if (levels.contains(gameState.level))
-    {
-      List<Double> speeds = Arrays.stream(ghostSpeeds)
-                                  .map(arr -> arr[1])
-                                  .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+    gameState.pacSpeed = pacSpeedScaling*AdvGameConst.speedBase;
 
-      double newScale = speeds.get(levels.indexOf(gameState.level));
-      AdvGameConst.ghostSpeedBase = AdvGameConst.pacmanSpeedBase * newScale;
-      PrettyPrint.bullet("Reached Lvl"+gameState.level);
-      PrettyPrint.bullet("Increased ghost speed to " + newScale + "x Pacman");
-    }
-    //endregion
+    gameState.objects.entities().stream()
+                     .filter(obj -> obj instanceof AdvGhostEntity)
+                      .map(obj -> (AdvGhostEntity) obj)
+                     .forEach(ghost -> ghost.speed = ghostSpeedScaling*AdvGameConst.speedBase);
+
+    PrettyPrint.bullet("Pac speed: " + pacSpeedScaling + "x Base Speed");
+    PrettyPrint.bullet("Ghost speed: " + ghostSpeedScaling + "x Base Speed");
   }
 
   public void reloadLevelContent ()
@@ -394,7 +391,7 @@ public class GameEnvironment
     {
       gameState.pelletCount = 0;
       gameState.pelletsEaten = 0;
-      gameState.fruitSpawned = false;
+      gameState.fruitSpawned = 0;
     }
     PrettyPrint.bullet("Reset players and trackers");
 

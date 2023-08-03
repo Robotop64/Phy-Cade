@@ -32,6 +32,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
 {
   public AdvGhostAi              ai;
   public AdvGameConst.GhostNames name;
+  public double                 speed;
 
   public AdvGhostEntity (AdvGameState gameState, Vector2d mapPos, AdvGameConst.GhostNames name)
   {
@@ -41,6 +42,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     this.stunned = false;
     this.name = name;
     this.ai = new AdvGhostAi(name, this);
+    this.speed = AdvGameConst.speedBase;
 
     tagManager = new TagManager();
   }
@@ -184,7 +186,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
 
     //region init movement variables
     //set initial velocity
-    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.ghostSpeedBase, 0).multiply(AdvGameConst.tileSize).divide(AdvGameConst.tps);
+    velocity = new Vector2d().cartesian(this.speed, 0).multiply(AdvGameConst.tileSize).divide(AdvGameConst.tps);
 
     double    stepSize      = velocity.rounded().x;
     Direction nextDir       = ai.getDirection(currentTile, possibleTiles);

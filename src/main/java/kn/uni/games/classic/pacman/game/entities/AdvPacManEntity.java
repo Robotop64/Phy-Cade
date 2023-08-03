@@ -11,6 +11,7 @@ import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.internal.tracker.TagManager;
 import kn.uni.games.classic.pacman.game.items.Item;
 import kn.uni.games.classic.pacman.game.items.PPelletItem;
+import kn.uni.games.classic.pacman.game.items.PelletItem;
 import kn.uni.games.classic.pacman.game.map.AdvPacManMap;
 import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
@@ -131,7 +132,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
 
     //region init movement variables
     //set velocity
-    if (velocity == null) velocity = new Vector2d().cartesian(AdvGameConst.pacmanSpeedBase, 0).multiply(map.tileSize).divide(AdvGameConst.tps);
+    velocity = new Vector2d().cartesian(gameState.pacSpeed, 0).multiply(map.tileSize).divide(AdvGameConst.tps);
 
     double    stepSize      = velocity.rounded().x;
     Direction nextDir       = gameState.requestedDirections.get(gameState.players.indexOf(this));
@@ -209,6 +210,12 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     if (collider instanceof Item item)
     {
       item.consumeAction();
+
+      if( item instanceof PelletItem || item instanceof PPelletItem )
+      {
+        gameState.timeSinceLastPellet = 0;
+      }
+
       if (item instanceof PPelletItem)
       {
         empowered = true;

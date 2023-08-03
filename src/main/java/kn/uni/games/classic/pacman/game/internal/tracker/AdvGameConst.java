@@ -3,6 +3,9 @@ package kn.uni.games.classic.pacman.game.internal.tracker;
 import kn.uni.util.fileRelated.Config.Config;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class AdvGameConst
@@ -17,38 +20,44 @@ public class AdvGameConst
       "PelletItem", 1 / 4.,
       "PPelletItem", 1 / 4.,
       "FruitItem", 2 / 5.,
-      "Blocker", 3/4.,
+      "Blocker", 3 / 4.,
       "Teleporter", 1 / 4.,
       "Waypoint", 1 / 10.
   );
 
-  public static double pacmanSpeedBase = 0;
-  public static double ghostSpeedBase  = 0;
-  public static int    playerHp        = 0;
-  public static int    ghostHp         = 0;
-  public static int    pointsToLife    = 0;
-  public static double portalDelay     = 0;
-  public static double portalCooldown  = 0;
-  public static double[][] ghostSpeedScaling;
-  public static double[][] ghostScatterPlan;
+  public static double     speedBase      = 0;
+  public static int        startLives     = 0;
+  public static int        playerHp       = 0;
+  public static int        ghostHp        = 0;
+  public static int        pointsToLife   = 0;
+  public static double     portalDelay    = 0;
+  public static double     portalCooldown = 0;
+  public static double[][] pacSpeedScalingNormal;
+  public static double[][] pacSpeedScalingFrightened;
+  public static double[][] ghostSpeedScalingNormal;
+  public static double[][] ghostSpeedScalingFrightened;
+  public static Object[][] ghostScatterPlan;
   public static double[][] ghostFrightenDuration;
-  public static int    tileSize        = 0;
-  public static int    tps             = 120;
-  public static int    fps             = 60;
+  public static int        tileSize       = 0;
+  public static int        tps            = 120;
+  public static int        fps            = 60;
   //endregion
 
   @SuppressWarnings("DataFlowIssue")
   public static void init ()
   {
-    pacmanSpeedBase = (double) Config.getCurrent("Gameplay/PacMan/StartSpeed");
-    ghostSpeedBase = pacmanSpeedBase* 0.75;
+    speedBase = (double) Config.getCurrent("Gameplay/PacMan/StartSpeed");
+    startLives = (int) (double) Config.getCurrent("Gameplay/PacMan/StartLives");
     playerHp = (int) (double) Config.getCurrent("Gameplay/PacMan/PlayerHP");
     ghostHp = (int) (double) Config.getCurrent("Gameplay/PacMan/GhostHP");
     pointsToLife = (int) (double) Config.getCurrent("Gameplay/PacMan/PointsToLife");
     portalDelay = (double) Config.getCurrent("Gameplay/PacMan/PortalDelay");
     portalCooldown = (double) Config.getCurrent("Gameplay/PacMan/PortalCooldown");
-    ghostSpeedScaling = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostSpeedScaling");
-    ghostScatterPlan = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostScatterPlan");
+    pacSpeedScalingNormal = (double[][]) Config.getCurrent("Gameplay/PacMan/PacSpeedScalingNormal");
+    pacSpeedScalingFrightened = (double[][]) Config.getCurrent("Gameplay/PacMan/PacSpeedScalingFrightened");
+    ghostSpeedScalingNormal = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostSpeedScalingNormal");
+    ghostSpeedScalingFrightened = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostSpeedScalingFrightened");
+    ghostScatterPlan = (Object[][]) Config.getCurrent("Gameplay/PacMan/GhostScatterPlan");
     ghostFrightenDuration = (double[][]) Config.getCurrent("Gameplay/PacMan/GhostFrightenDuration");
   }
 
@@ -93,4 +102,18 @@ public class AdvGameConst
       ItemType.FRUIT, 0
   );
   //endregion
+
+  public static double getScaling (double[][] matrix, int level)
+  {
+    List <Integer> levels = Arrays.stream(matrix)
+                                  .mapToInt(arr -> (int) arr[0])
+                                  .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+    if (!levels.contains(level)) return 1.0;
+
+    List<Double> speeds = Arrays.stream(matrix)
+                                .map(arr -> arr[1])
+                                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+
+    return speeds.get(levels.indexOf(level));
+  }
 }
