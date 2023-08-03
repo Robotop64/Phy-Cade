@@ -149,13 +149,54 @@ public class Config
     newSetting("Gameplay/PacMan/PointsToLife",  new Digit( 10000, null), 4, new String[]{"visible", "editable", "debug"});
     newSetting("Gameplay/PacMan/PortalDelay",   new Digit( 0.01, null), 5, new String[]{"visible", "editable", "debug"});
     newSetting("Gameplay/PacMan/PortalCooldown",new Digit( 1, null), 6, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/GhostSpeedScaling",   new Matrix(
-        new String[]{ "Level", "Speed" },new double[][]{ { 1, 0.75 }, { 2, 0.85 }, { 3, 1.00 }}), 7, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/GhostScatterPlan",   new Matrix(
-        //first occurrence is Chase, second is Scatter (in seconds)
-        new String[]{ "Level", "Duration" },new double[][]{ { 1, 0.75 }, { 5, 0.85 }, { 15, 1.00 }}), 8, new String[]{"visible", "editable", "debug"});
+
+    //pacman speed scaling while ghost are normal
+    newSetting("Gameplay/PacMan/PacSpeedScalingNormal",
+        new Matrix(new String[]{ "Level", "Speed" },
+        new double[][]{              { 1, 0.80 },
+                                                { 2, 0.90 },
+                                                { 5, 1.00 },
+                                                { 21, 0.90 }}), 7, new String[]{"visible", "editable", "debug"});
+
+    //pacman speed scaling while ghost are frightened
+    newSetting("Gameplay/PacMan/PacSpeedScalingFrightened",
+        new Matrix(new String[]{ "Level", "Speed" },
+            new double[][]{   { 1, 0.90 },
+                                         { 2, 0.95 },
+                                         { 5, 1.00 },
+                                         { 21, 0.90 }}), 8, new String[]{"visible", "editable", "debug"});
+
+    //ghost speed scaling while normal
+    newSetting("Gameplay/PacMan/GhostSpeedScalingNormal",
+        new Matrix(new String[]{ "Level", "Speed" },
+        new double[][]{              { 1, 0.75 },
+                                                { 2, 0.85 },
+                                                { 5, 0.95 },
+                                                { 21, 0.95 }}), 9, new String[]{"visible", "editable", "debug"});
+
+    //ghost speed scaling while frightened
+    newSetting("Gameplay/PacMan/GhostSpeedScalingFrightened",
+        new Matrix(new String[]{ "Level", "Speed" },
+            new double[][]{   { 1, 0.50 },
+                                         { 2, 0.55 },
+                                         { 5, 0.60 },
+                                         { 21, 0.60 }}), 10, new String[]{"visible", "editable", "debug"});
+
+    newSetting("Gameplay/PacMan/GhostScatterPlan",
+        new Table(
+        new Object[]{"Mode↓/Level→",1,2,5},
+        new Object[][]{             {"Scatter",7,7,5},
+                                               {"Chase",20,20,20},
+                                               {"Scatter",7,7,5},
+                                               {"Chase",20,20,20},
+                                               {"Scatter",5,5,5},
+                                               {"Chase",20,1033,1037},
+                                               {"Scatter",5,0,0},
+                                               {"Chase",-1,-1,-1}}), 11, new String[]{"visible", "editable", "debug"});
+
     newSetting("Gameplay/PacMan/GhostFrightenDuration",   new Matrix(
-        new String[]{ "Level", "Duration" },new double[][]{ { 1, 10 }}), 9, new String[]{"visible", "editable", "debug"});
+        new String[]{ "Level", "Duration" },
+        new double[][]{ { 1, 10 },{ 5, 7.5 },{ 10, 5 },{ 15, 2.5 },{20, 0 },}), 12, new String[]{"visible", "editable", "debug"});
 
     //graphics
     newSetting("Graphics/General/Effects",      new Switch( true), 0, new String[]{"visible", "editable"});
@@ -314,7 +355,7 @@ public class Config
       else if (matrix != null)
         return matrix;
       else
-      return null;
+        return null;
     }
   }
 
@@ -460,11 +501,11 @@ public class Config
 
   public class Table extends SettingType
   {
-    String[]   headers;
-    String[][] current;
-    String[][] defaultVal;
+    Object[]   headers;
+    Object[][] current;
+    Object[][] defaultVal;
 
-    public Table (String[] headers, String[][] defaultVal)
+    public Table (Object[] headers, Object[][] defaultVal)
     {
       this.headers = headers;
       this.current = defaultVal;
