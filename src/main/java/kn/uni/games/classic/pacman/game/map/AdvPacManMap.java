@@ -411,9 +411,9 @@ public class AdvPacManMap extends AdvGameObject implements AdvRendered
     map.addToPool(
         new Spawner(
             "BlinkySpawn", gameState,
-            new Vector2d().cartesian(14, 14.5),
+            new Vector2d().cartesian(14, 11.5),
             Spawner.SpawnerType.GHOST,
-            new Vector2d().cartesian(14, 14.5))
+            new Vector2d().cartesian(14, 11.5))
     );
     map.addToPool(
         new Spawner(

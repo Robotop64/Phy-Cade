@@ -4,6 +4,7 @@ import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostAi;
 import kn.uni.games.classic.pacman.game.entities.ghosts.AdvGhostEntity;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.games.classic.pacman.game.items.FruitItem;
 import kn.uni.games.classic.pacman.game.items.PPelletItem;
 import kn.uni.games.classic.pacman.game.items.PelletItem;
@@ -47,7 +48,16 @@ public class Spawner extends Entity
     else if (type == SpawnerType.PPELLET)
       gameState.addScaled(AdvGameState.Layer.ITEMS, new PPelletItem(gameState, spawnMapPos));
     else if (type == SpawnerType.FRUIT)
-      gameState.addScaled(AdvGameState.Layer.ITEMS, new FruitItem(gameState, spawnMapPos));
+    {
+      FruitItem fruitItem = new FruitItem(gameState, spawnMapPos);
+      gameState.addScaled(AdvGameState.Layer.ITEMS, fruitItem);
+
+      AdvTimer.getInstance(gameState).addTask(
+          new AdvTimer.TimerTask(
+              gameState.currentTick,
+              AdvGameConst.tps*10L,
+              ()-> gameState.objects.remove(AdvGameState.Layer.ITEMS, fruitItem),"spoilFruit"), "spoil Fruit");
+    }
     else if (type == SpawnerType.PLAYER)
     {
       AdvPacManEntity player = new AdvPacManEntity(gameState, spawnMapPos);
