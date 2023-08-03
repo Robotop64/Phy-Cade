@@ -140,10 +140,11 @@ public class Config
     //debugging
     newSetting("Debugging/-/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
     newSetting("Debugging/-/Immortal",          new Switch( false), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Debugging/-/ColorFloor",        new Switch( false), 2, new String[]{"visible", "editable", "debug"});
 
     //gameplay
     newSetting("Gameplay/PacMan/StartLives",    new Digit( 5, null), 0, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/StartSpeed",    new Digit( 20, null), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/StartSpeed",    new Digit( 6, null), 1, new String[]{"visible", "editable", "debug"});
     newSetting("Gameplay/PacMan/PlayerHP",      new Digit( 1, null), 2, new String[]{"visible", "editable", "debug"});
     newSetting("Gameplay/PacMan/GhostHP",       new Digit( 1, null), 3, new String[]{"visible", "editable", "debug"});
     newSetting("Gameplay/PacMan/PointsToLife",  new Digit( 10000, null), 4, new String[]{"visible", "editable", "debug"});
