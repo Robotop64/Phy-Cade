@@ -18,11 +18,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class AdvGhostAi extends Ai
 {
-  public AdvGameConst.GhostNames name;
-  public AdvGameConst.GhostMode  mode;
-  public static AdvGameConst.GhostMode defaultMode = AdvGameConst.GhostMode.EXIT;
-  public AdvGhostEntity          ghost;
-  public AdvPacManTile[]         memory;
+  public        AdvGameConst.GhostNames name;
+  public        AdvGameConst.GhostMode  mode;
+  public static AdvGameConst.GhostMode  defaultMode = AdvGameConst.GhostMode.EXIT;
+  public        AdvGhostEntity          ghost;
+  public        AdvPacManTile[]         memory;
 
   public AdvGhostAi (AdvGameConst.GhostNames name, AdvGhostEntity ghost)
   {
@@ -42,8 +42,20 @@ public class AdvGhostAi extends Ai
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Event, "Action");
     PrettyPrint.bullet("Ghost " + name + " changed mode from " + this.mode + " to " + mode);
-    PrettyPrint.endGroup();
+
     this.mode = mode;
+
+    double speedScale;
+    if (mode == AdvGameConst.GhostMode.FRIGHTENED)
+      speedScale = AdvGameConst.getScaling(AdvGameConst.ghostSpeedScalingFrightened, gameState.level);
+    else
+      speedScale = AdvGameConst.getScaling(AdvGameConst.ghostSpeedScalingNormal, gameState.level);
+
+    if (AdvGameConst.speedBase * speedScale != ghost.speed)
+      PrettyPrint.bullet("Ghost changed speed to " + speedScale + "x BaseSpeed");
+
+    ghost.speed = AdvGameConst.speedBase * speedScale;
+    PrettyPrint.endGroup();
   }
 
   public AdvGameConst.GhostNames getName ()
@@ -113,7 +125,7 @@ public class AdvGhostAi extends Ai
       }
       case INKY ->
       {
-        Vector2d offset = target.absPos.add(target.facing.toVector().multiply(3 * AdvGameConst.tileSize));
+        Vector2d offset         = target.absPos.add(target.facing.toVector().multiply(3 * AdvGameConst.tileSize));
         Vector2d targetToOffset = offset.subtract(getNextGhost(AdvGameConst.GhostNames.BLINKY).absPos);
         //target is 3 tiles in front of pacman, then mirrored to Blinky's position
         return offset.add(targetToOffset);

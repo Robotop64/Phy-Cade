@@ -30,7 +30,8 @@ public class Spawner extends Entity
   public void spawn ()
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Event, "Spawning");
-    PrettyPrint.bullet("Type: " + type);
+    String fruitNumber = (type == SpawnerType.FRUIT) ? " (" + Integer.toString(gameState.fruitSpawned+1) + ")" : "";
+    PrettyPrint.bullet("Type: " + type + fruitNumber);
 
     if (type == SpawnerType.GHOST)
     {
