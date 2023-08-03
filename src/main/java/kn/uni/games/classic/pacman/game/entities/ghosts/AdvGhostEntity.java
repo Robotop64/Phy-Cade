@@ -34,6 +34,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
   public AdvGhostAi              ai;
   public AdvGameConst.GhostNames name;
   public double                 speed;
+  public BufferedImage[]       cachedImgs;
 
   public AdvGhostEntity (AdvGameState gameState, Vector2d mapPos, AdvGameConst.GhostNames name)
   {
@@ -44,6 +45,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     this.name = name;
     this.ai = new AdvGhostAi(name, this);
     this.speed = AdvGameConst.speedBase;
+    cachedImgs = new BufferedImage[3];
 
     tagManager = new TagManager();
   }
@@ -156,6 +158,9 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
       {
         cachedImg = TextureEditor.getInstance().loadTexture(path, name.toString().toLowerCase()+".png");
         cachedImg = TextureEditor.getInstance().scale(cachedImg, iconSize, iconSize);
+        cachedImgs[0] = cachedImg;
+        cachedImgs[1] = TextureEditor.getInstance().loadTexture(path, "Frightened.png");
+        cachedImgs[1] = TextureEditor.getInstance().scale(cachedImgs[1], iconSize, iconSize);
       }
       catch (Exception e)
       {

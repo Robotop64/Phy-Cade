@@ -259,11 +259,11 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
     }
 
     if (collider instanceof AdvGhostEntity ghost)
-      if (ghost.edible && this.empowered)
+      if (ghost.ai.mode == AdvGameConst.GhostMode.FRIGHTENED)
       {
         ghost.die();
       }
-      else if (!dead && !this.empowered)
+      else if (!dead && (ghost.ai.mode == AdvGameConst.GhostMode.CHASE || ghost.ai.mode == AdvGameConst.GhostMode.SCATTER))
         die();
   }
   //endregion

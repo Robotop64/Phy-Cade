@@ -43,11 +43,24 @@ public class AdvGhostAi extends Ai
     PrettyPrint.startGroup(PrettyPrint.Type.Event, "Action");
     PrettyPrint.bullet("Ghost " + name + " changed mode from " + this.mode + " to " + mode);
 
-    if (!(this.mode == AdvGameConst.GhostMode.ENTER || this.mode == AdvGameConst.GhostMode.EXIT))
+    if (!(this.mode == AdvGameConst.GhostMode.ENTER || this.mode == AdvGameConst.GhostMode.EXIT || this.mode == AdvGameConst.GhostMode.RETREAT))
+    {
       ghost.facing = ghost.facing.opposite();
+      PrettyPrint.bullet("Ghost changed direction to " + ghost.facing);
+    }
 
     this.mode = mode;
 
+    int modeIndex;
+
+    if (mode == AdvGameConst.GhostMode.FRIGHTENED||
+        mode == AdvGameConst.GhostMode.RETREAT ||
+        mode == AdvGameConst.GhostMode.ENTER)
+      modeIndex = 1;
+    else
+      modeIndex = 0;
+
+    ghost.cachedImg = ghost.cachedImgs[modeIndex];
 
     double speedScale;
     if (mode == AdvGameConst.GhostMode.FRIGHTENED)
