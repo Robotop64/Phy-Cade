@@ -31,13 +31,13 @@ public class Spawner extends Entity
   public void spawn ()
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Event, "Spawning");
-    String fruitNumber = (type == SpawnerType.FRUIT) ? " (" + Integer.toString(gameState.fruitSpawned+1) + ")" : "";
+    String fruitNumber = ( type == SpawnerType.FRUIT ) ? " (" + Integer.toString(gameState.fruitSpawned + 1) + ")" : "";
     PrettyPrint.bullet("Type: " + type + fruitNumber);
 
     if (type == SpawnerType.GHOST)
     {
       PrettyPrint.bullet("SubType: " + name.replace("Spawn", ""));
-      PrettyPrint.bullet("Mode:"+ AdvGhostAi.defaultMode);
+      PrettyPrint.bullet("Mode:" + AdvGhostAi.defaultMode);
     }
 
     PrettyPrint.bullet("MapPos: " + mapPos);
@@ -55,8 +55,12 @@ public class Spawner extends Entity
       AdvTimer.getInstance(gameState).addTask(
           new AdvTimer.TimerTask(
               gameState.currentTick,
-              AdvGameConst.tps*10L,
-              ()-> gameState.objects.remove(AdvGameState.Layer.ITEMS, fruitItem),"spoilFruit"), "spoil Fruit");
+              AdvGameConst.tps * 10L,
+              () ->
+              {
+                gameState.objects.remove(AdvGameState.Layer.ITEMS, fruitItem);
+                gameState.env.updateLayer.set(AdvGameState.Layer.ITEMS.ordinal(), true);
+              }, "spoilFruit"), "spoil Fruit");
     }
     else if (type == SpawnerType.PLAYER)
     {

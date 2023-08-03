@@ -14,6 +14,7 @@ import kn.uni.games.classic.pacman.game.map.AdvPacManTile;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
+import kn.uni.util.fileRelated.TextureEditor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -137,16 +138,38 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
           RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
+    Color color;
+
     switch (name)
     {
-      case BLINKY -> g.setColor(Color.RED);
-      case PINKY -> g.setColor(Color.PINK);
-      case INKY -> g.setColor(Color.CYAN);
-      case CLYDE -> g.setColor(Color.ORANGE);
-      default -> g.setColor(Color.GRAY);
+      case BLINKY -> color = Color.RED;
+      case PINKY -> color = Color.PINK;
+      case INKY -> color = Color.CYAN;
+      case CLYDE -> color = Color.ORANGE;
+      default -> color = Color.WHITE;
     }
 
-    g.fillOval(iconSize / 2 - 10, iconSize / 2 - 10, 20, 20);
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), false))
+    {
+      String path = "ghosts/classic/";
+      try
+      {
+        cachedImg = TextureEditor.getInstance().loadTexture(path, name.toString().toLowerCase()+".png");
+        cachedImg = TextureEditor.getInstance().scale(cachedImg, iconSize, iconSize);
+      }
+      catch (Exception e)
+      {
+        g.setColor(color);
+        g.fillOval(iconSize / 2 - 10, iconSize / 2 - 10, 20, 20);
+      }
+    }
+
+
+    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
+    {
+      g.setColor(color);
+      g.fillOval(iconSize / 2 - 10, iconSize / 2 - 10, 20, 20);
+    }
     g.dispose();
   }
   //endregion

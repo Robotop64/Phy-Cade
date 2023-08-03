@@ -43,7 +43,11 @@ public class AdvGhostAi extends Ai
     PrettyPrint.startGroup(PrettyPrint.Type.Event, "Action");
     PrettyPrint.bullet("Ghost " + name + " changed mode from " + this.mode + " to " + mode);
 
+    if (!(this.mode == AdvGameConst.GhostMode.ENTER || this.mode == AdvGameConst.GhostMode.EXIT))
+      ghost.facing = ghost.facing.opposite();
+
     this.mode = mode;
+
 
     double speedScale;
     if (mode == AdvGameConst.GhostMode.FRIGHTENED)

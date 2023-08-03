@@ -4,6 +4,7 @@ import kn.uni.games.classic.pacman.game.internal.graphics.AdvRendered;
 import kn.uni.games.classic.pacman.game.internal.physics.AdvColliding;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameConst;
 import kn.uni.games.classic.pacman.game.internal.tracker.AdvGameState;
+import kn.uni.games.classic.pacman.game.internal.tracker.AdvTimer;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.TextureEditor;
@@ -68,6 +69,7 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
   public void consumeAction ()
   {
     gameState.addScore(worth);
+    AdvTimer.getInstance(gameState).removeTask("spoilFruit");
     //TODO: Spawn score number
     super.consumeAction();
   }
