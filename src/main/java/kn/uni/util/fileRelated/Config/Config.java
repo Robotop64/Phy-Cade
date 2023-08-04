@@ -11,7 +11,7 @@ import java.util.TreeMap;
 public class Config
 {
   private static Config instance;
-  private        Tree   root;
+  public        Tree   root;
 
   private Config ()
   {
@@ -35,7 +35,7 @@ public class Config
   public static void load ()
   {
     Config local = new Config();
-    local.root = (Tree) JsonEditor.load(new Tree(), "config" + PacPhi.GAME_BRANCH);
+    local.root = (Tree) JsonEditor.load(new Tree("root",0), "config" + PacPhi.GAME_BRANCH);
 
     if (Config.compareSetting(Config.getInstance(), local, "General/-/Version"))
     {
@@ -129,7 +129,7 @@ public class Config
 
   public void createDef ()
   {
-    root = new Tree();
+    root = new Tree("root",0);
 
     //@formatter:off
     //general
@@ -237,7 +237,8 @@ public class Config
 
       if (tree == null)
       {
-        current.addBranch(path[i]);
+        int lastOrdinal = current.getBranches().values().stream().mapToInt(Tree::getOrdinal).max().orElse(0);
+        current.addBranch(path[i],lastOrdinal+1);
         tree = current.getBranch(path[i]);
       }
     }
@@ -261,11 +262,15 @@ public class Config
   {
     TreeMap <String, Tree> branches;
     Map <String, Leaf>     leaves;
+    public String                 name;
+    public int ordinal;
 
-    public Tree ()
+    public Tree (String name, int ordinal)
     {
       branches = new TreeMap <>();
       leaves = new HashMap <>();
+      this.name = name;
+      this.ordinal = ordinal;
     }
 
     public Tree getBranch (String name)
@@ -288,9 +293,9 @@ public class Config
       return leaves;
     }
 
-    public void addBranch (String name)
+    public void addBranch (String name,int ordinal)
     {
-      branches.put(name, new Tree());
+      branches.put(name, new Tree(name, ordinal));
     }
 
     public void addLeaf (String name, Leaf leaf)
@@ -298,6 +303,10 @@ public class Config
       leaves.put(name, leaf);
     }
 
+    public int getOrdinal()
+    {
+      return ordinal;
+    }
   }
 
   public class Leaf

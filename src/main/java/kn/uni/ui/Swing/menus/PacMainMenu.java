@@ -60,10 +60,14 @@ public class PacMainMenu extends UIScreen
 
 
     //buttons
+    Vector2d center = new Vector2d().cartesian(Gui.frameWidth/2., Gui.frameHeight/2.);
+    Dimension listSize = new Dimension(400, 400);
+    int buttonBuffer = 40;
     list = new PacList(
-        new Vector2d().cartesian(390, 217),
-        new Dimension(500, 120 * 5 + 4 * 9));
-    list.vBuffer = 9;
+        center.subtract(new Vector2d().cartesian(listSize.width/2.,listSize.height/2.))
+              .add(new Vector2d().cartesian(0, 30)),
+        listSize);
+    list.vBuffer = buttonBuffer;
     list.alignment = PacList.Alignment.VERTICAL;
 
 
@@ -84,13 +88,19 @@ public class PacMainMenu extends UIScreen
     list.addObject(best);
 
     PacButton options = new PacButton("EINSTELLUNGEN");
+    options.addAction(() -> {
+      this.kill();
+      SettingMenu settingMenu = SettingMenu.getInstance(Gui.getInstance().content);
+      settingMenu.setBounds(defaultFrameBounds);
+      parent.add(settingMenu);
+    });
     list.addObject(options);
 
-    PacButton sound = new PacButton("TON - AN");
-    sound.addAction(() -> sound.setText(sound.getText().equals("TON - AN") ? "TON - AUS" : "TON - AN"));
-    list.addObject(sound);
+//    PacButton sound = new PacButton("TON - AN");
+//    sound.addAction(() -> sound.setText(sound.getText().equals("TON - AN") ? "TON - AUS" : "TON - AN"));
+//    list.addObject(sound);
 
-    list.unifyFontSize(54f);
+    list.unifyFontSize(40f);
 
     add(list);
     list.selectItem(0);
