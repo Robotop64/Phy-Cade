@@ -11,7 +11,7 @@ import java.util.TreeMap;
 public class Config
 {
   private static Config instance;
-  public        Tree   root;
+  public         Tree   root;
 
   private Config ()
   {
@@ -35,7 +35,7 @@ public class Config
   public static void load ()
   {
     Config local = new Config();
-    local.root = (Tree) JsonEditor.load(new Tree("root",0), "config" + PacPhi.GAME_BRANCH);
+    local.root = (Tree) JsonEditor.load(new Tree("root", 0), "config" + PacPhi.GAME_BRANCH);
 
     if (Config.compareSetting(Config.getInstance(), local, "General/-/Version"))
     {
@@ -129,7 +129,7 @@ public class Config
 
   public void createDef ()
   {
-    root = new Tree("root",0);
+    root = new Tree("root", 0);
 
     //@formatter:off
     //general
@@ -238,7 +238,7 @@ public class Config
       if (tree == null)
       {
         int lastOrdinal = current.getBranches().values().stream().mapToInt(Tree::getOrdinal).max().orElse(0);
-        current.addBranch(path[i],lastOrdinal+1);
+        current.addBranch(path[i], lastOrdinal + 1);
         tree = current.getBranch(path[i]);
       }
     }
@@ -262,8 +262,8 @@ public class Config
   {
     TreeMap <String, Tree> branches;
     Map <String, Leaf>     leaves;
-    public String                 name;
-    public int ordinal;
+    public String name;
+    public int    ordinal;
 
     public Tree (String name, int ordinal)
     {
@@ -293,7 +293,7 @@ public class Config
       return leaves;
     }
 
-    public void addBranch (String name,int ordinal)
+    public void addBranch (String name, int ordinal)
     {
       branches.put(name, new Tree(name, ordinal));
     }
@@ -303,7 +303,7 @@ public class Config
       leaves.put(name, leaf);
     }
 
-    public int getOrdinal()
+    public int getOrdinal ()
     {
       return ordinal;
     }

@@ -27,6 +27,7 @@ public class PacButton extends FlatButton
     useColorSet(Style.normal);
 
     addListeners();
+    putClientProperty( "JButton.buttonType", "roundRect" );
   }
 
   public PacButton (String text)
@@ -36,6 +37,7 @@ public class PacButton extends FlatButton
     useColorSet(Style.normal);
 
     addListeners();
+    putClientProperty( "JButton.buttonType", "roundRect" );
   }
 
   public void useColorSet (Style.ColorSet colorSet)

@@ -3,17 +3,12 @@ package kn.uni.ui.Swing.menus;
 import kn.uni.Gui;
 import kn.uni.ui.Swing.Style;
 import kn.uni.ui.Swing.components.PacLabel;
+import kn.uni.ui.Swing.components.PacTree;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
-import javax.swing.UIDefaults;
-import javax.swing.border.LineBorder;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Comparator;
@@ -27,7 +22,7 @@ public class SettingMenu extends UIScreen
   {
     super(parent);
     setLayout(null);
-    setBackground(Color.black);
+    setBackground(Color.BLACK);
     setVisible(true);
 
     addComponents();
@@ -55,46 +50,36 @@ public class SettingMenu extends UIScreen
     title.setHorizontalAlignment(PacLabel.CENTER);
     add(title);
 
+    PacTree tree = new PacTree(createTree(),
+    new Vector2d().cartesian(10, 110),
+    new Dimension(200, 700)
+    );
+    tree.setFont(tree.getFont().deriveFont(25f));
 
-    UIDefaults defaults = new UIDefaults();
-
-    JTree tree = new JTree(createTree());
-
-    //    FlatTree tree = new FlatTree();
-    //    tree.add(new JTree(createTree()));
-    //    System.out.println(tree.getRowCount());
-    //    IntStream.range(0, 3).forEach(tree::expandRow);
-    //    tree.setRootVisible(false);
-
-    Dimension   treeSize      = new Dimension(200, 700);
-    JScrollPane treeContainer = new JScrollPane(tree);
-    treeContainer.setLocation(10, 110);
-    treeContainer.setSize(treeSize);
-    treeContainer.setBorder(new LineBorder(Color.BLUE));
-    add(treeContainer);
+    add(tree);
   }
 
-  private TreeNode createTree ()
+  private PacTree.Node createTree ()
   {
     //create a node tree using depth first search
-    Config.Tree tree = Config.getInstance().root;
+    Config.Tree  tree = Config.getInstance().root;
+    PacTree.Node root = new PacTree.Node("Settings");
+    dfs(tree, root);
 
-    DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
-    root.add(dfs(tree, root));
-    return dfs(tree, root);
+    return root;
   }
 
-  private DefaultMutableTreeNode dfs (Config.Tree current, DefaultMutableTreeNode node)
+  private PacTree.Node dfs (Config.Tree current, PacTree.Node node)
   {
-    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(current.name);
-    node.add(newNode);
-
     //search for children sorted by ordinal
     current.getBranches().values().stream()
            .sorted(Comparator.comparingInt(o -> o.ordinal))
-           .forEach(branch -> dfs(branch, newNode));
+           .forEach(branch ->
+           {
+             node.add(dfs(branch, new PacTree.Node(branch.name)));
+           });
 
-    return newNode;
+    return node;
   }
 }
 
