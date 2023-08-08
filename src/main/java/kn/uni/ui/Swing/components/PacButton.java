@@ -2,6 +2,7 @@ package kn.uni.ui.Swing.components;
 
 import com.formdev.flatlaf.extras.components.FlatButton;
 import kn.uni.ui.Swing.Style;
+import kn.uni.ui.Swing.interfaces.Colored;
 import kn.uni.util.Vector2d;
 
 import java.awt.Dimension;
@@ -10,7 +11,7 @@ import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PacButton extends FlatButton
+public class PacButton extends FlatButton implements Colored
 {
 
   public  boolean        isSelected;
@@ -42,9 +43,8 @@ public class PacButton extends FlatButton
 
   public void useColorSet (Style.ColorSet colorSet)
   {
+    Colored.super.useColorSet(colorSet);
     this.setOutline(colorSet.border());
-    this.setBackground(colorSet.background());
-    this.setForeground(colorSet.foreground());
   }
 
   public void setSelected (boolean selected)

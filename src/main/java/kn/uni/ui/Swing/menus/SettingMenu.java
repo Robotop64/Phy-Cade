@@ -2,13 +2,18 @@ package kn.uni.ui.Swing.menus;
 
 import kn.uni.Gui;
 import kn.uni.ui.Swing.Style;
+import kn.uni.ui.Swing.components.PacButton;
 import kn.uni.ui.Swing.components.PacLabel;
+import kn.uni.ui.Swing.components.PacList;
 import kn.uni.ui.Swing.components.PacTree;
+import kn.uni.ui.Swing.components.RoundedPanel;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
 
 import javax.swing.JPanel;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Comparator;
@@ -39,9 +44,13 @@ public class SettingMenu extends UIScreen
 
   public void addComponents ()
   {
-    Dimension titleSize = new Dimension(500, 60);
+    int buffer = 20;
+    int lineHeight = 60;
+
+    //region title
+    Dimension titleSize = new Dimension(500, lineHeight);
     PacLabel title = new PacLabel(
-        new Vector2d().cartesian(Gui.frameWidth / 2. - titleSize.width / 2., 10),
+        new Vector2d().cartesian(Gui.frameWidth / 2. - titleSize.width / 2., buffer),
         titleSize,
         ">>- Einstellungen -<<");
     title.setFont(title.getFont().deriveFont(40f));
@@ -49,14 +58,108 @@ public class SettingMenu extends UIScreen
     title.useColorSet(Style.normal);
     title.setHorizontalAlignment(PacLabel.CENTER);
     add(title);
+    //endregion
 
+    Dimension infoSize = new Dimension(Gui.frameWidth-2*buffer, (int) (2*lineHeight*0.75+buffer));
+    Vector2d infoPos = new Vector2d().cartesian(buffer, Gui.frameHeight-infoSize.height-buffer);
+    //region info panel
+    RoundedPanel info = new RoundedPanel();
+    info.setLocation((int) infoPos.x, (int) infoPos.y);
+    info.setSize(infoSize);
+    info.setArc(30);
+    info.setBorderWidth(3);
+    info.useColorSet(Style.normal);
+    info.repaint();
+    add(info);
+    //endregion
+
+
+
+    Vector2d selectionPos = new Vector2d().cartesian(buffer, title.getLocation().y + title.getHeight() + buffer);
+    Dimension selectionSize = new Dimension(200, (int) (Gui.frameHeight - selectionPos.y - infoSize.height - 2*buffer));
+    //region selection tree
     PacTree tree = new PacTree(createTree(),
-    new Vector2d().cartesian(10, 110),
-    new Dimension(200, 700)
+        selectionPos,
+        selectionSize
     );
     tree.setFont(tree.getFont().deriveFont(25f));
 
+    tree.tree.addTreeSelectionListener(new TreeSelectionListener()
+    {
+      @Override
+      public void valueChanged (TreeSelectionEvent e)
+      {
+        if (e.getPath().getLastPathComponent().toString().equals("Settings"))
+          return;
+
+        String path = e.getPath().toString()
+                       .replace("[", "")
+                       .replace("]", "")
+                       .replace(",", "/")
+                       .replace(" ", "");
+
+        path = path.substring("Settings/".length());
+
+
+        System.out.println(path);
+      }
+    });
+
     add(tree);
+    //endregion
+
+    Vector2d editorPos = new Vector2d().cartesian(tree.getLocation().x+tree.getWidth()+buffer, tree.getLocation().y);
+    Dimension editorSize = new Dimension((int) (Gui.frameWidth-editorPos.x-buffer), selectionSize.height);
+    //region editor
+    RoundedPanel editor = new RoundedPanel();
+    editor.setLocation((int) editorPos.x, (int) editorPos.y);
+    editor.setSize(editorSize);
+    editor.setArc(30);
+    editor.setBorderWidth(3);
+    editor.useColorSet(Style.normal);
+    editor.repaint();
+    editor.setLayout(null);
+    add(editor);
+
+    PacLabel editorTitle = new PacLabel(
+        new Vector2d().cartesian(buffer, buffer),
+        new Dimension(editorSize.width-2*buffer, 25),
+        "Editor:");
+    editorTitle.setFont(editorTitle.getFont().deriveFont(25f));
+    editorTitle.useColorSet(Style.normal);
+    editorTitle.setBorder(null);
+    editorTitle.setHorizontalAlignment(PacLabel.LEFT);
+    editor.add(editorTitle);
+
+    RoundedPanel separator = new RoundedPanel();
+    separator.setLocation(buffer, (int) (editorTitle.getLocation().y+editorTitle.getHeight()+buffer/2));
+    separator.setSize(editorSize.width-2*buffer, 4);
+    separator.setArc(3);
+    separator.setBorderWidth(5);
+    separator.useColorSet(Style.normal);
+    separator.repaint();
+    editor.add(separator);
+
+    PacList editorList = new PacList(
+        new Vector2d().cartesian(buffer, separator.getLocation().y+separator.getHeight()+ (double) buffer /2),
+        new Dimension(editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2)
+    );
+    editorList.vBuffer = 10;
+    editorList.alignment = PacList.Alignment.VERTICAL;
+//    editorList.setBackground(Color.WHITE);
+    editor.add(editorList);
+
+    editorList.addObject(new PacButton("Test"));
+    editorList.addObject(new PacButton("Test"));
+    editorList.addObject(new PacButton("Test"));
+    editorList.addObject(new PacButton("Test"));
+
+    editorList.unifyFontSize(20f);
+
+    editor.add(editorList);
+
+
+    //endregion
   }
 
   private PacTree.Node createTree ()
@@ -78,6 +181,28 @@ public class SettingMenu extends UIScreen
            {
              node.add(dfs(branch, new PacTree.Node(branch.name)));
            });
+
+    //    IntStream.range(0, node.getChildCount())
+    //        .mapToObj(node::getChildAt)
+    //        .map(PacTree.Node.class::cast)
+    //        .forEachOrdered(child ->
+    //        {
+    //          child.parent = node;
+    //
+    //          ArrayList<String> path = new ArrayList<>();
+    //          path.add(child.toString());
+    //
+    //          PacTree.Node parent = (PacTree.Node) child.getParent();
+    //          while (parent != null)
+    //          {
+    //            path.add(parent.toString());
+    //            parent = (PacTree.Node) parent.getParent();
+    //          }
+    //          Collections.reverse(path);
+    //          child.path = path.toArray(new String[0]);
+    //          System.out.println(Arrays.toString(child.path));
+    //        });
+
 
     return node;
   }

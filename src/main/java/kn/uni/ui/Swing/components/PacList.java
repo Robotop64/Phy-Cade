@@ -38,7 +38,7 @@ public class PacList extends JPanel
     super();
     setBounds((int) position.x, (int) position.y, size.width, size.height);
     setLayout(null);
-    setBackground(Color.BLACK);
+    setBackground(null);
 
     collection = new ArrayList <>();
     buffers = new ArrayList <>();
