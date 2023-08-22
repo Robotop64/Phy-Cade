@@ -16,6 +16,7 @@ public class PacButton extends FlatButton implements Colored
 
   public  boolean        isSelected;
   public  boolean        isFocused;
+  public int buffer = 0;
   @SuppressWarnings("FieldMayBeFinal")
   private Set <Runnable> actions = new HashSet <>();
 
@@ -59,6 +60,17 @@ public class PacButton extends FlatButton implements Colored
     isFocused = focused;
     Style.ColorSet set = isFocused ? Style.focused : Style.normal;
     useColorSet(set);
+  }
+
+  public void setBuffer (int buffer)
+  {
+    this.buffer = buffer;
+    this.setText(getText());
+  }
+
+  public void setText (String text)
+  {
+    super.setText(" ".repeat(Math.max(0, buffer))+ text+" ".repeat(Math.max(0, buffer)));
   }
 
   public void press ()

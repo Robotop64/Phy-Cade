@@ -5,13 +5,16 @@ import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.JsonEditor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class Config
 {
   private static Config instance;
   public         Tree   root;
+  private int lastId = 0;
 
   private Config ()
   {
@@ -62,7 +65,7 @@ public class Config
     {
       tree = tree.getBranch(path[i]);
     }
-    SettingType setting = tree.getLeaf(path[path.length - 1]).getType();
+    Setting setting = tree.getLeaf(path[path.length - 1]).getType();
 
     if (setting instanceof Value v)
     {
@@ -98,7 +101,7 @@ public class Config
     {
       tree = tree.getBranch(path[i]);
     }
-    SettingType setting = tree.getLeaf(path[path.length - 1]).getType();
+    Setting setting = tree.getLeaf(path[path.length - 1]).getType();
 
     if (setting instanceof Value)
     {
@@ -214,7 +217,7 @@ public class Config
     //@formatter:on
   }
 
-  public SettingType getSetting (String root)
+  public Setting getSetting (String root)
   {
     String[] path = root.split("/");
     Tree     tree = this.root;
@@ -225,7 +228,7 @@ public class Config
     return tree.getLeaf(path[path.length - 1]).getType();
   }
 
-  private void newSetting (String root, SettingType setting, int ordinal, String[] tags)
+  private void newSetting (String root, Setting setting, int ordinal, String[] tags)
   {
     String[] path = root.split("/");
     Tree     tree = this.root;
@@ -242,17 +245,18 @@ public class Config
         tree = current.getBranch(path[i]);
       }
     }
+    setting.id = lastId++;
     tree.addLeaf(path[path.length - 1], new Leaf(ordinal, setting, tags));
   }
 
   private static boolean compareSetting (Config a, Config b, String root)
   {
-    SettingType settA = a.getSetting(root);
+    Setting settA = a.getSetting(root);
 
     if (b.root.branches.isEmpty())
       return false;
 
-    SettingType settB = b.getSetting(root);
+    Setting settB = b.getSetting(root);
 
     return settA.equals(settB);
   }
@@ -309,7 +313,7 @@ public class Config
     }
   }
 
-  public class Leaf
+  public static class Leaf
   {
     Range  range;
     Switch toggle;
@@ -318,23 +322,27 @@ public class Config
     Table  table;
     Matrix matrix;
 
-    String[] tags;
-    int      ordinal;
+    Setting.SubClass subType;
+    String[]         tags;
+    int              ordinal;
 
-    public Leaf (int ordinal, SettingType type, String[] tags)
+    public Leaf (int ordinal, Setting type, String[] tags)
     {
-      if (type instanceof Range)
-        range = (Range) type;
-      else if (type instanceof Switch)
-        toggle = (Switch) type;
-      else if (type instanceof Value)
-        value = (Value) type;
-      else if (type instanceof Digit)
-        digit = (Digit) type;
-      else if (type instanceof Table)
-        table = (Table) type;
-      else if (type instanceof Matrix)
-        matrix = (Matrix) type;
+      subType = Setting.SubClass.valueOf(type.asSubClass().getSimpleName());
+
+      switch (subType)
+      {
+        case Range -> range = type.toRange();
+        case Switch -> toggle = type.toSwitch();
+        case Value -> value = type.toValue();
+        case Digit -> digit = type.toDigit();
+        case Table -> table = type.toTable();
+        case Matrix -> matrix = type.toMatrix();
+        default ->
+        {
+          throw new RuntimeException("unknown setting type");
+        }
+      }
 
       this.tags = tags;
       this.ordinal = ordinal;
@@ -350,30 +358,31 @@ public class Config
       return false;
     }
 
-    public SettingType getType ()
+    public Setting getType ()
     {
-      if (range != null)
-        return range;
-      else if (toggle != null)
-        return toggle;
-      else if (value != null)
-        return value;
-      else if (digit != null)
-        return digit;
-      else if (table != null)
-        return table;
-      else if (matrix != null)
-        return matrix;
-      else
-        return null;
+      return switch (subType)
+      {
+        case Range -> range;
+        case Switch -> toggle;
+        case Value -> value;
+        case Digit -> digit;
+        case Table -> table;
+        case Matrix -> matrix;
+        default -> null;
+      };
     }
   }
-
   //endregion
 
   //region setting types classes
-  public class SettingType
+  public static class Setting
   {
+    public int id;
+    public enum SubClass
+    {
+      Range, Switch, Value, Digit, Table, Matrix, Group
+    }
+
     public Range toRange ()
     {
       return (Range) this;
@@ -409,55 +418,27 @@ public class Config
       return (Group) this;
     }
 
-    public boolean equals (SettingType other)
+    public boolean equals (Setting other)
     {
-      if (this instanceof Range)
-      {
-        Range a = (Range) this;
-        Range b = other.toRange();
-        return a.current == b.current;
-      }
-      else if (this instanceof Switch)
-      {
-        Switch a = (Switch) this;
-        Switch b = other.toSwitch();
-        return a.current == b.current;
-      }
-      else if (this instanceof Value)
-      {
-        Value a = (Value) this;
-        Value b = other.toValue();
-        return a.current.equals(b.current);
-      }
-      else if (this instanceof Digit)
-      {
-        Digit a = (Digit) this;
-        Digit b = other.toDigit();
-        return a.current == b.current;
-      }
-      else if (this instanceof Table)
-      {
-        return other instanceof Table;
-      }
-      else if (this instanceof Group)
-      {
-        return other instanceof Group;
-      }
-      else if (this instanceof Matrix)
-      {
-        return other instanceof Matrix;
-      }
-      return false;
+      Set <Class <?>> classTypes = new HashSet <>();
+      classTypes.add(this.getClass());
+      classTypes.add(other.getClass());
+      return classTypes.size() == 1;
+    }
+
+    public Class <? extends Setting> asSubClass ()
+    {
+      return this.getClass().asSubclass(Setting.class);
     }
   }
 
-  public class Range extends SettingType
+  public static class Range extends Setting
   {
-    double current;
-    double defaultVal;
-    double min;
-    double max;
-    double stepSize;
+    public double current;
+    public double defaultVal;
+    public double min;
+    public double max;
+    public double stepSize;
 
     public Range (double defaultVal, double min, double max, double stepSize)
     {
@@ -469,7 +450,7 @@ public class Config
     }
   }
 
-  public class Switch extends SettingType
+  public static class Switch extends Setting
   {
     boolean current;
     boolean defaultVal;
@@ -481,7 +462,7 @@ public class Config
     }
   }
 
-  public class Value extends SettingType
+  public static class Value extends Setting
   {
     String   current;
     String   defaultVal;
@@ -495,7 +476,7 @@ public class Config
     }
   }
 
-  public class Digit extends SettingType
+  public static class Digit extends Setting
   {
     double   current;
     double   defaultVal;
@@ -509,7 +490,7 @@ public class Config
     }
   }
 
-  public class Table extends SettingType
+  public static class Table extends Setting
   {
     Object[]   headers;
     Object[][] current;
@@ -523,7 +504,7 @@ public class Config
     }
   }
 
-  public class Matrix extends SettingType
+  public static class Matrix extends Setting
   {
     String[]   headers;
     double[][] current;
@@ -537,7 +518,7 @@ public class Config
     }
   }
 
-  public class Group extends SettingType
+  public static class Group extends Setting
   {
     int ordinal;
 

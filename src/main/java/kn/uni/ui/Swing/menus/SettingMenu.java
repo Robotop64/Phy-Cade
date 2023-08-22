@@ -2,11 +2,10 @@ package kn.uni.ui.Swing.menus;
 
 import kn.uni.Gui;
 import kn.uni.ui.Swing.Style;
-import kn.uni.ui.Swing.components.PacButton;
 import kn.uni.ui.Swing.components.PacLabel;
-import kn.uni.ui.Swing.components.PacList;
 import kn.uni.ui.Swing.components.PacTree;
 import kn.uni.ui.Swing.components.RoundedPanel;
+import kn.uni.ui.Swing.components.SettingEditor;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
@@ -140,23 +139,41 @@ public class SettingMenu extends UIScreen
     separator.repaint();
     editor.add(separator);
 
-    PacList editorList = new PacList(
+    SettingEditor settingEditor = new SettingEditor(
         new Vector2d().cartesian(buffer, separator.getLocation().y+separator.getHeight()+ (double) buffer /2),
-        new Dimension(editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2)
+        new Dimension(editorSize.width-2*buffer, 50),
+        0.6, 50,
+        new Config.Range(50, 0, 100,5)
     );
-    editorList.vBuffer = 10;
-    editorList.alignment = PacList.Alignment.VERTICAL;
-//    editorList.setBackground(Color.WHITE);
-    editor.add(editorList);
+    editor.add(settingEditor);
 
-    editorList.addObject(new PacButton("Test"));
-    editorList.addObject(new PacButton("Test"));
-    editorList.addObject(new PacButton("Test"));
-    editorList.addObject(new PacButton("Test"));
 
-    editorList.unifyFontSize(20f);
 
-    editor.add(editorList);
+//    JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 50, 25);
+//    slider.setBounds(buffer, (int) (separator.getLocation().y+separator.getHeight()+ (double) buffer /2), editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2);
+//    slider.setMinorTickSpacing(2);
+//    slider.setMajorTickSpacing(10);
+//    slider.setPaintTicks(true);
+//    slider.setPaintLabels(true);
+//    editor.add(slider);
+
+//    PacList editorList = new PacList(
+//        new Vector2d().cartesian(buffer, separator.getLocation().y+separator.getHeight()+ (double) buffer /2),
+//        new Dimension(editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2)
+//    );
+//    editorList.vBuffer = 10;
+//    editorList.alignment = PacList.Alignment.VERTICAL;
+////    editorList.setBackground(Color.WHITE);
+//    editor.add(editorList);
+//
+//    editorList.addObject(new PacButton("Test"));
+//    editorList.addObject(new PacButton("Test"));
+//    editorList.addObject(new PacButton("Test"));
+//    editorList.addObject(new PacButton("Test"));
+//
+//    editorList.unifyFontSize(20f);
+//
+//    editor.add(editorList);
 
 
     //endregion
