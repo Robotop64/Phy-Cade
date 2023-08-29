@@ -122,6 +122,31 @@ public class PrettyPrint
     System.out.println(out);
   }
 
+  public static void subBullet (int depth, String message)
+  {
+    String[] border = typeToBorder.get(currentType);
+
+    int messageLength    = message.length();
+    int decorationLength = 6;
+    int bufferLength     = lineLength - messageLength - decorationLength - ( hirarchy.size() - 1 ) * 2 * 2;
+
+    StringBuilder out = new StringBuilder();
+
+    if (hirarchy.size() > 1)
+      out.append(( border[0] + " " ).repeat(Math.max(0, hirarchy.size() - 1)));
+
+    out.append(border[0]);
+    out.append(" ").append("-".repeat(depth)).append("> ");
+    out.append(message);
+    out.append(" ".repeat(Math.max(0, bufferLength - depth)));
+    out.append(border[1]);
+
+    if (hirarchy.size() > 1)
+      out.append(( " " + border[1] ).repeat(Math.max(0, hirarchy.size() - 1)));
+
+    System.out.println(out);
+  }
+
   //region Message
   private static void startMessage (String message)
   {
