@@ -1,112 +1,188 @@
 package kn.uni.games.classic.pacman.persistence;
 
 
-import kn.uni.PacPhi;
 import kn.uni.games.classic.pacman.screens.LeaderboardMenu;
+import kn.uni.util.fileRelated.JsonEditor;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @SuppressWarnings("SpellCheckingInspection")
 public class PacmanDatabaseProvider
 {
-  private static final String url      = "jdbc:mysql://pacphidatabase/leaderboard";
-  private static final String username = "pacphi";
-  private static final String password = "pacmacbummbumm";
+  public static boolean silent = true;
 
-  private static List <LeaderboardMenu.LeaderboardEntry> getQuery (String command)
+  record Query(String command, Boolean expectResult) { }
+
+  private static List <List <String>> makeConnection (String database, List <Query> statements)
   {
-
-    System.out.println("Connecting database...");
-
-    try (Connection connection = DriverManager.getConnection(PacPhi.database.url, PacPhi.database.username, PacPhi.database.password))
+    if (!silent) System.out.println("Connecting database...");
+    Connection connection = null;
+    try
     {
+      //connect to database
+      String path = JsonEditor.getPath() + "databases/";
+      connection = DriverManager.getConnection("jdbc:sqlite:" + path + database);
+      if (!silent) System.out.println("Database connected!");
+      Statement statement = connection.createStatement();
+      statement.setQueryTimeout(30);
 
-      System.out.println("Database connected!");
-      Statement                               statement = connection.createStatement();
-      ResultSet                               resultSet = statement.executeQuery(command);
-      List <LeaderboardMenu.LeaderboardEntry> listOut   = new ArrayList <>();
-
-      while (resultSet.next())
+      //execute statements
+      List <ResultSet> results = new ArrayList <>();
+      for (Query s : statements)
       {
-        LeaderboardMenu.LeaderboardEntry out = new LeaderboardMenu.LeaderboardEntry(
-            resultSet.getInt("id"),
-            resultSet.getString("playerName"),
-            resultSet.getInt("level"),
-            resultSet.getLong("score"),
-            resultSet.getTime("duration").toLocalTime(),
-            resultSet.getDate("date").toLocalDate(),
-            resultSet.getString("version"),
-            resultSet.getString("comment"));
-        listOut.add(out);
+        if (s.expectResult)
+          results.add(statement.executeQuery(s.command));
+        else
+          statement.executeUpdate(s.command);
       }
-      return listOut;
+
+      //stringify results
+      //List containing a list of rows for each command
+      List <List <String>> out = new ArrayList <>();
+      //for each resultset (1 command -> 1 resultset)
+      results
+          .forEach(
+              //for each row (1 resultset -> n rows)
+              result -> {
+                //create a temporary list containing the rows
+                List<String> temp = new ArrayList<>();
+
+                try
+                {
+                  //while rows are available
+                  while (result.next())
+                  {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 1; i <= result.getMetaData().getColumnCount(); i++)
+                    {
+                      sb.append(result.getString(i));
+                      if (i < result.getMetaData().getColumnCount())
+                        sb.append(", ");
+                    }
+                    //add the row to the temporary list
+                    temp.add(sb.toString());
+                  }
+                }
+
+                catch (SQLException ignored){}
+                out.add(temp);
+              }
+          );
+
+      return out;
     }
     catch (SQLException e)
     {
-      throw new IllegalStateException("Cannot connect the database!");
+      // if the error message is "out of memory",
+      // it probably means no database file is found
+      if (!silent) System.err.println(e.getMessage());
+      if (!silent) System.out.println("Cannot connect the database!");
     }
-  }
-
-  private static void setQuery (String command, LeaderboardMenu.LeaderboardEntry in)
-  {
-
-    System.out.println("Connecting database...");
-
-    try (Connection connection = DriverManager.getConnection(PacPhi.database.url, PacPhi.database.username, PacPhi.database.password))
+    finally
     {
-
-      System.out.println("Database connected!");
-
-      PreparedStatement preparedStmt = connection.prepareStatement(command);
-      preparedStmt.setInt(1, 0);
-      preparedStmt.setString(2, in.name());
-      preparedStmt.setInt(3, in.level());
-      preparedStmt.setLong(4, in.highScore());
-      preparedStmt.setTime(5, new Time(in.time().getHour(), in.time().getMinute(), in.time().getSecond()));
-      preparedStmt.setDate(6, new Date(in.date().getYear() - 1900, in.date().getMonthValue() - 1, in.date().getDayOfMonth()));
-      preparedStmt.setString(7, in.version());
-      preparedStmt.setString(8, in.notes());
-
-      preparedStmt.execute();
-      System.out.println("Entry successfully added!");
-
+      try
+      {
+        if (connection != null)
+        {
+          connection.close();
+          if (!silent) System.out.println("Database connection closed!");
+        }
+      }
+      catch (SQLException e)
+      {
+        // connection close failed.
+        if (!silent) System.out.println("Cannot close connection!");
+      }
     }
-    catch (Exception e)
+    return null;
+  }
+
+  public static boolean testConnection (String database)
+  {
+    boolean    status     = false;
+    Connection connection = null;
+    try
     {
-      System.err.println("Got an exception!");
-      // printStackTrace method
-      // prints line numbers + call stack
-      //      e.printStackTrace();
-      // Prints what exception has been thrown
-      //      System.out.println(e);
+      //connect to database
+      String path = JsonEditor.getPath() + "databases/";
+      connection = DriverManager.getConnection("jdbc:sqlite:" + path + database);
+      status = true;
     }
+    catch (SQLException ignored)
+    {
+    }
+    finally
+    {
+      try
+      {
+        if (connection != null)
+        {
+          connection.close();
+        }
+      }
+      catch (SQLException ignored)
+      {
+      }
+    }
+
+    return status;
   }
 
-
-  public static List <LeaderboardMenu.LeaderboardEntry> dynLeaderboard (String game, long score, int end)
+  public static List <String> testTables (String database)
   {
-    return new ArrayList <>(getQuery("select * from " + game + " where score >" + score + " Order By  score asc LIMIT " + 0 + "," + end + ";"));
+    List <String>        out    = new ArrayList <>();
+    List <List <String>> result = makeConnection(database, List.of(new Query("select name from sqlite_master where type = 'table';", true)));
+    if (result != null)
+      result.forEach(out::addAll);
+    return out;
   }
 
-
-  public static List <LeaderboardMenu.LeaderboardEntry> getEntries (String game)
+  public static void addEntries (String database, String table, List <LeaderboardMenu.LeaderboardEntry> newEntries)
   {
-    return getQuery("select * from " + game + " Order By  score desc , duration asc");
+    List <Query> statements = new ArrayList <>();
+
+    for (LeaderboardMenu.LeaderboardEntry e : newEntries)
+    {
+      statements.add(new Query("insert into " + table + " (entryId,playerId,playername,level,score,time,date,version,comment) values ( " +
+          String.format("NULL,%d,\"%s\",%d,%f,\"%s\",\"%s\",\"%s\",\"%s\"", e.accNum(), e.name(), e.level(), (float) e.highScore(), e.time(), e.date(), e.version(), e.notes()) + ");", false));
+    }
+    makeConnection(database, statements);
   }
 
-  public static void setEntries (String game, LeaderboardMenu.LeaderboardEntry in)
+  public static List<LeaderboardMenu.LeaderboardEntry> getEntries (String database, String table)
   {
-    setQuery("insert into " + game + " (id,playername,level,score,duration,date,version,comment) values ( ?, ?, ?, ?, ?, ?, ?, ?);", in);
+    List <String> entryList = Objects.requireNonNull(makeConnection(database, List.of(new Query("select * from " + table + " Order By  score desc , time asc", true)))).get(0);
+    List <LeaderboardMenu.LeaderboardEntry> out = new ArrayList <>();
+    entryList.forEach(e ->
+        out.add(LeaderboardMenu.LeaderboardEntry.fromString(e))
+    );
+    return out;
+  }
+
+  public static List<LeaderboardMenu.LeaderboardEntry> getDynEntries(String database, String table, long score, int end)
+  {
+    List <String> entryList = Objects.requireNonNull(makeConnection(database,
+        List.of(new Query("select * from " + table + " where score >" + score + " Order By  score asc LIMIT " + 0 + "," + end + ";", true)))).get(0);
+    List <LeaderboardMenu.LeaderboardEntry> out = new ArrayList <>();
+    entryList.forEach(e ->
+        out.add(LeaderboardMenu.LeaderboardEntry.fromString(e))
+    );
+    return out;
+  }
+
+  public static void createTable (String database, String table, List <String> columns)
+  {
+    List <Query> statements = new ArrayList <>();
+    statements.add(new Query("CREATE TABLE " + table + " (" + columns.toString().replaceAll("[\\[\\]]", "") + ");", false));
+    makeConnection(database, statements);
   }
 }
 

@@ -1,7 +1,6 @@
 package kn.uni.games.classic.pacman.screens;
 
 import kn.uni.Gui;
-import kn.uni.games.classic.pacman.persistence.PacmanDatabaseProvider;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.pmButton;
 
@@ -89,8 +88,8 @@ public class LeaderboardMenu extends JPanel
     {
       try
       {
-        games.put(GameTitle.pacman, new Leaderboard("pacman", PacmanDatabaseProvider.getEntries("pacman")));
-        games.put(GameTitle.supermario, new Leaderboard("supermario", PacmanDatabaseProvider.getEntries("supermario")));
+//        games.put(GameTitle.pacman, new Leaderboard("pacman", PacmanDatabaseProvider.getEntries("Pacman.db","classic")));
+//        games.put(GameTitle.supermario, new Leaderboard("supermario", PacmanDatabaseProvider.getEntries("supermario")));
       }
       catch (Exception e)
       {
@@ -448,9 +447,22 @@ public class LeaderboardMenu extends JPanel
   private enum GameTitle
   { pacman, supermario, doom }
 
-  public record LeaderboardEntry(int accNum, String name, int level, long highScore, LocalTime time, LocalDate date,
+  public static record LeaderboardEntry(int accNum, String name, int level, long highScore, LocalTime time, LocalDate date,
                                  String version, String notes)
   {
+    public static LeaderboardEntry fromString(String s)
+    {
+      String[] split = s.split(",");
+      return new LeaderboardEntry(
+          Integer.parseInt(split[1].replace(" ", "")),
+          split[2],
+          Integer.parseInt(split[3].replace(" ", "")),
+          (long) Float.parseFloat(split[4].replace(" ", "")),
+          LocalTime.parse(split[5].replace(" ", "")),
+          LocalDate.parse(split[6].replace(" ", "")),
+          split[7],
+          split[8]);
+    }
   }
 
   public record Leaderboard(String name, List <LeaderboardEntry> entries)

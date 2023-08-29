@@ -1,12 +1,15 @@
 package kn.uni;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import kn.uni.games.classic.pacman.persistence.PacmanDatabaseProvider;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.Database;
-import kn.uni.util.fileRelated.DatabaseAccess;
-import kn.uni.util.fileRelated.JsonEditor;
 import kn.uni.util.fileRelated.Permission;
+import kn.uni.util.fileRelated.ResourceManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PacPhi
 {
@@ -24,10 +27,7 @@ public class PacPhi
     PrettyPrint.announce("Starting PacPhi");
     PrettyPrint.empty();
 
-
     getSettings();
-
-    getPermission();
 
     getDatabase();
 
@@ -59,38 +59,38 @@ public class PacPhi
   }
 
   /**
-   * Loads the current permission level from the permission file
-   */
-  private static void getPermission ()
-  {
-    PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Permission");
-
-    permissions = (Permission) JsonEditor.load(new Permission(), "Permission");
-    assert permissions != null;
-
-    PrettyPrint.bullet("Level: " + permissions.current);
-    PrettyPrint.endGroup();
-  }
-
-  /**
    * Loads the current database from the database file
    */
   private static void getDatabase ()
   {
     PrettyPrint.startGroup(PrettyPrint.Type.Message, "Init Database");
 
-    DatabaseAccess dba = (DatabaseAccess) JsonEditor.load(new DatabaseAccess(), "DatabaseAccess");
-    assert dba != null;
-    database = dba.getMatchingPermissionDatabase(permissions.current);
+    PrettyPrint.bullet("Testing available Databases");
 
-    if (database != null)
+    List <String> databases = new ArrayList <>();
+    ResourceManager.getFiles("databases").forEach(f ->
     {
-      PrettyPrint.bullet("found matching Database");
-      PrettyPrint.bullet("Database: " + dba.getDatabaseName(database));
-    }
-    else
-      PrettyPrint.bullet("no matching Database found");
+      PrettyPrint.subBullet(2, "found: " + f.getName());
+      databases.add(f.getName());
+    });
+    PrettyPrint.empty();
+    if (!databases.isEmpty())
+      PrettyPrint.bullet("Testing databases");
+    databases.forEach(d ->
+    {
+      PrettyPrint.subBullet(2, "Status(" + d + "):");
+      PrettyPrint.subBullet(3, "Connection: " + PacmanDatabaseProvider.testConnection(d));
+      PrettyPrint.subBullet(3, "Tables: " + PacmanDatabaseProvider.testTables(d));
+    });
 
+    if (databases.isEmpty())
+    {
+      PrettyPrint.bullet("No databases found");
+
+      PrettyPrint.bullet("Creating new database");
+      PacmanDatabaseProvider.createTable("Pacman.db", "classic", List.of("entryId INTEGER PRIMARY KEY", "playerId INTEGER", "playerName TEXT", "level INTEGER", "score REAL", "time TEXT", "date TEXT", "version TEXT", "comment TEXT"));
+      getDatabase();
+    }
     PrettyPrint.endGroup();
   }
 
