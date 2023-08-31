@@ -43,8 +43,10 @@ public class SettingMenu extends UIScreen
 
   public void addComponents ()
   {
-    int buffer = 20;
+    int buffer     = 20;
     int lineHeight = 60;
+    int lineWeight = 3;
+    int widgetArc  = 30;
 
     //region title
     Dimension titleSize = new Dimension(500, lineHeight);
@@ -59,28 +61,28 @@ public class SettingMenu extends UIScreen
     add(title);
     //endregion
 
-    Dimension infoSize = new Dimension(Gui.frameWidth-2*buffer, (int) (2*lineHeight*0.75+buffer));
-    Vector2d infoPos = new Vector2d().cartesian(buffer, Gui.frameHeight-infoSize.height-buffer);
+    Dimension infoSize = new Dimension(Gui.frameWidth - 2 * buffer, (int) ( 2 * lineHeight * 0.75 + buffer ));
+    Vector2d  infoPos  = new Vector2d().cartesian(buffer, Gui.frameHeight - infoSize.height - buffer);
     //region info panel
     RoundedPanel info = new RoundedPanel();
     info.setLocation((int) infoPos.x, (int) infoPos.y);
     info.setSize(infoSize);
-    info.setArc(30);
-    info.setBorderWidth(3);
+    info.setArc(widgetArc);
+    info.setBorderWidth(lineWeight);
     info.useColorSet(Style.normal);
-    info.repaint();
     add(info);
     //endregion
 
 
-
-    Vector2d selectionPos = new Vector2d().cartesian(buffer, title.getLocation().y + title.getHeight() + buffer);
-    Dimension selectionSize = new Dimension(200, (int) (Gui.frameHeight - selectionPos.y - infoSize.height - 2*buffer));
+    Vector2d  selectionPos  = new Vector2d().cartesian(buffer, title.getLocation().y + title.getHeight() + buffer);
+    Dimension selectionSize = new Dimension(200, (int) ( Gui.frameHeight - selectionPos.y - infoSize.height - 2 * buffer ));
     //region selection tree
     PacTree tree = new PacTree(createTree(),
         selectionPos,
         selectionSize
     );
+    tree.arc = widgetArc;
+    tree.borderWidth = lineWeight;
     tree.setFont(tree.getFont().deriveFont(25f));
 
     tree.tree.addTreeSelectionListener(new TreeSelectionListener()
@@ -107,78 +109,84 @@ public class SettingMenu extends UIScreen
     add(tree);
     //endregion
 
-    Vector2d editorPos = new Vector2d().cartesian(tree.getLocation().x+tree.getWidth()+buffer, tree.getLocation().y);
-    Dimension editorSize = new Dimension((int) (Gui.frameWidth-editorPos.x-buffer), selectionSize.height);
+
+    Vector2d  editorPos  = new Vector2d().cartesian(tree.getLocation().x + tree.getWidth() + buffer, tree.getLocation().y);
+    Dimension editorSize = new Dimension((int) ( Gui.frameWidth - editorPos.x - buffer ), selectionSize.height);
     //region editor
     RoundedPanel editor = new RoundedPanel();
     editor.setLocation((int) editorPos.x, (int) editorPos.y);
     editor.setSize(editorSize);
-    editor.setArc(30);
-    editor.setBorderWidth(3);
+    editor.setArc(widgetArc);
+    editor.setBorderWidth(lineWeight);
     editor.useColorSet(Style.normal);
-    editor.repaint();
     editor.setLayout(null);
     add(editor);
 
+    //region editor title
     PacLabel editorTitle = new PacLabel(
         new Vector2d().cartesian(buffer, buffer),
-        new Dimension(editorSize.width-2*buffer, 25),
+        new Dimension(editorSize.width - 2 * buffer, 25),
         "Editor:");
     editorTitle.setFont(editorTitle.getFont().deriveFont(25f));
     editorTitle.useColorSet(Style.normal);
     editorTitle.setBorder(null);
     editorTitle.setHorizontalAlignment(PacLabel.LEFT);
     editor.add(editorTitle);
+    //endregion
 
+    //region editor separator
     RoundedPanel separator = new RoundedPanel();
-    separator.setLocation(buffer, (int) (editorTitle.getLocation().y+editorTitle.getHeight()+buffer/2));
-    separator.setSize(editorSize.width-2*buffer, 4);
-    separator.setArc(3);
+    separator.setLocation(buffer, (int) ( editorTitle.getLocation().y + editorTitle.getHeight() + buffer / 2 ));
+    separator.setSize(editorSize.width - 2 * buffer, 4);
+    separator.setArc(2);
     separator.setBorderWidth(5);
     separator.useColorSet(Style.normal);
     separator.repaint();
     editor.add(separator);
+    //endregion
 
+    //region editor content
     SettingEditor settingEditor = new SettingEditor(
-        new Vector2d().cartesian(buffer, separator.getLocation().y+separator.getHeight()+ (double) buffer /2),
-        new Dimension(editorSize.width-2*buffer, 50),
+        new Vector2d().cartesian(buffer, separator.getLocation().y + separator.getHeight() + (double) buffer / 2),
+        new Dimension(editorSize.width - 2 * buffer, 50),
         0.6, 50,
-        new Config.Range(50, 0, 100,5)
+        new Config.Range(50, 0, 100, 5)
     );
     editor.add(settingEditor);
+    //endregion
 
 
+    //    JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 50, 25);
+    //    slider.setBounds(buffer, (int) (separator.getLocation().y+separator.getHeight()+ (double) buffer /2), editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2);
+    //    slider.setMinorTickSpacing(2);
+    //    slider.setMajorTickSpacing(10);
+    //    slider.setPaintTicks(true);
+    //    slider.setPaintLabels(true);
+    //    editor.add(slider);
 
-//    JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 50, 25);
-//    slider.setBounds(buffer, (int) (separator.getLocation().y+separator.getHeight()+ (double) buffer /2), editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2);
-//    slider.setMinorTickSpacing(2);
-//    slider.setMajorTickSpacing(10);
-//    slider.setPaintTicks(true);
-//    slider.setPaintLabels(true);
-//    editor.add(slider);
-
-//    PacList editorList = new PacList(
-//        new Vector2d().cartesian(buffer, separator.getLocation().y+separator.getHeight()+ (double) buffer /2),
-//        new Dimension(editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2)
-//    );
-//    editorList.vBuffer = 10;
-//    editorList.alignment = PacList.Alignment.VERTICAL;
-////    editorList.setBackground(Color.WHITE);
-//    editor.add(editorList);
-//
-//    editorList.addObject(new PacButton("Test"));
-//    editorList.addObject(new PacButton("Test"));
-//    editorList.addObject(new PacButton("Test"));
-//    editorList.addObject(new PacButton("Test"));
-//
-//    editorList.unifyFontSize(20f);
-//
-//    editor.add(editorList);
+    //    PacList editorList = new PacList(
+    //        new Vector2d().cartesian(buffer, separator.getLocation().y+separator.getHeight()+ (double) buffer /2),
+    //        new Dimension(editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2)
+    //    );
+    //    editorList.vBuffer = 10;
+    //    editorList.alignment = PacList.Alignment.VERTICAL;
+    ////    editorList.setBackground(Color.WHITE);
+    //    editor.add(editorList);
+    //
+    //    editorList.addObject(new PacButton("Test"));
+    //    editorList.addObject(new PacButton("Test"));
+    //    editorList.addObject(new PacButton("Test"));
+    //    editorList.addObject(new PacButton("Test"));
+    //
+    //    editorList.unifyFontSize(20f);
+    //
+    //    editor.add(editorList);
 
 
     //endregion
   }
 
+  //region tree
   private PacTree.Node createTree ()
   {
     //create a node tree using depth first search
@@ -223,6 +231,7 @@ public class SettingMenu extends UIScreen
 
     return node;
   }
+  //endregion
 }
 
 
