@@ -66,7 +66,7 @@ public class Blocker extends AdvPlacedObject implements AdvRendered, AdvCollidin
 
     g.drawImage(cachedImg, (int) ( absPos.x - size.getWidth() / 2. ), (int) ( absPos.y - size.getHeight() / 2. ), null);
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
     {
       g.setColor(Color.RED);
       int hitBox = (int) ( AdvGameConst.hitBoxes.get("Blocker") * AdvGameConst.tileSize ) * 2;

@@ -10,6 +10,8 @@ import java.io.FileWriter;
 
 public class JsonEditor
 {
+  public static boolean silent = false;
+
   public static Object load (Object obj, String name)
   {
     Gson gson = new Gson();
@@ -20,7 +22,7 @@ public class JsonEditor
     {
       save(obj, name);
 
-      PrettyPrint.bullet("Created " + name);
+      if (!silent) PrettyPrint.bullet("Created " + name);
 
       return obj;
     }
@@ -31,14 +33,14 @@ public class JsonEditor
       {
         obj = gson.fromJson(new FileReader(getPath() + name + ".json"), obj.getClass());
 
-        PrettyPrint.bullet("Loaded " + name);
+        if (!silent) PrettyPrint.bullet("Loaded " + name);
 
         return obj;
       }
       catch (FileNotFoundException e)
       {
         e.printStackTrace();
-        PrettyPrint.bullet("Failed to load " + name);
+        if (!silent) PrettyPrint.bullet("Failed to load " + name);
       }
     }
     return null;
@@ -63,12 +65,12 @@ public class JsonEditor
       gson.toJson(obj, b);
       b.flush();
 
-      PrettyPrint.bullet("Saved " + name);
+      if (!silent)  PrettyPrint.bullet("Saved " + name);
     }
     catch (Exception e)
     {
       e.printStackTrace();
-      PrettyPrint.bullet("Failed to save " + name);
+      if (!silent) PrettyPrint.bullet("Failed to save " + name);
     }
   }
 

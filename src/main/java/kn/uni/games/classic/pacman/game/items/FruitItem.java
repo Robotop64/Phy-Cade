@@ -41,7 +41,7 @@ public class FruitItem extends Item implements AdvRendered, AdvColliding
 
     g.drawImage(cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
     {
       g.setColor(Color.GREEN);
       g.drawOval(

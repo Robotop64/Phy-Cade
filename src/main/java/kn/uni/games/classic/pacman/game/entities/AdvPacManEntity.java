@@ -54,7 +54,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
     {
       g.setColor(Color.RED);
       g.drawOval(

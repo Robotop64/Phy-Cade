@@ -3,13 +3,14 @@ package kn.uni.ui;
 import kn.uni.Gui;
 import kn.uni.ui.InputListener.Input;
 import kn.uni.ui.InputListener.Player;
+import kn.uni.ui.Swing.interfaces.Controllable;
 
 import javax.swing.JPanel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class UIScreen extends JPanel
+public class UIScreen extends JPanel implements Controllable
 {
   private Map <Player, Consumer <Input>> handlers   = new HashMap <>();
   public int                            listenerId = -1;
@@ -42,6 +43,9 @@ public class UIScreen extends JPanel
     getParent().remove(this);
     Gui.getInstance().frame.repaint();
   }
+
+  @Override
+  public void enableControls (){}
 
   public void disableControls ()
   {

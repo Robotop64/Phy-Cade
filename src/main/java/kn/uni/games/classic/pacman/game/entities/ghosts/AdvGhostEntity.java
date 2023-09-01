@@ -59,7 +59,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
     {
       g.setColor(Color.RED);
       g.drawOval(
@@ -151,7 +151,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
       default -> color = Color.WHITE;
     }
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), false))
+    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), false))
     {
       String path = "ghosts/classic/";
       try
@@ -170,7 +170,7 @@ public class AdvGhostEntity extends Entity implements AdvTicking, AdvRendered, A
     }
 
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
     {
       g.setColor(color);
       g.fillOval(iconSize / 2 - 10, iconSize / 2 - 10, 20, 20);

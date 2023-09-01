@@ -4,6 +4,7 @@ import kn.uni.PacPhi;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.JsonEditor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,7 +15,9 @@ public class Config
 {
   private static Config instance;
   public         Tree   root;
-  private int lastId = 0;
+  private       int               lastId      = 0;
+  public ArrayList<String> optionNames = new ArrayList<>();
+  public ArrayList<Leaf> optionLeaves = new ArrayList<>();
 
   private Config ()
   {
@@ -40,7 +43,7 @@ public class Config
     Config local = new Config();
     local.root = (Tree) JsonEditor.load(new Tree("root", 0), "config" + PacPhi.GAME_BRANCH);
 
-    if (Config.compareSetting(Config.getInstance(), local, "General/-/Version"))
+    if (Config.compareSetting(Config.getInstance(), local, "General/Version"))
     {
       Config.getInstance().root = local.root;
       PrettyPrint.bullet("Local Config version is up to date");
@@ -136,14 +139,14 @@ public class Config
 
     //@formatter:off
     //general
-    newSetting("General/-/Version",             new Value(PacPhi.GAME_VERSION,  null), 0, new String[]{"visible"});
-    newSetting("General/-/Branch",              new Value( "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, new String[]{"visible", "editable"});
-    newSetting("General/-/AccessLevel",         new Value( "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
+    newSetting("General/Version",             new Value(PacPhi.GAME_VERSION,  new String[]{ "???" }), 0, new String[]{"visible"});
+    newSetting("General/Branch",              new Value( "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, new String[]{"visible", "editable"});
+    newSetting("General/AccessLevel",         new Value( "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
 
     //debugging
-    newSetting("Debugging/-/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
-    newSetting("Debugging/-/Immortal",          new Switch( false), 1, new String[]{"visible", "editable", "debug"});
-    newSetting("Debugging/-/ColorFloor",        new Switch( false), 2, new String[]{"visible", "editable", "debug"});
+    newSetting("Debugging/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
+    newSetting("Debugging/Immortal",          new Switch( false), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Debugging/ColorFloor",        new Switch( false), 2, new String[]{"visible", "editable", "debug"});
 
     //gameplay
     newSetting("Gameplay/PacMan/StartLives",    new Digit( 5, null), 0, new String[]{"visible", "editable", "debug"});
@@ -208,12 +211,12 @@ public class Config
     newSetting("Graphics/Advanced/Antialiasing",new Switch( true), 1, new String[]{"visible", "editable"});
 
     //music
-    newSetting("Audio/General/Enabled",         new Switch( true), 0, new String[]{"visible", "editable"});
-    newSetting("Audio/General/MasterVolume",    new Range(100, 0, 100, 5), 1, new String[]{"visible", "editable"});
-    newSetting("Audio/General/Music",           new Switch( true), 2, new String[]{"visible", "editable"});
-    newSetting("Audio/General/MusicVolume",     new Range(100, 0, 100, 5), 3, new String[]{"visible", "editable"});
-    newSetting("Audio/General/SFX",             new Switch( true), 4, new String[]{"visible", "editable"});
-    newSetting("Audio/General/SFXVolume",       new Range(100, 0, 100, 5), 5, new String[]{"visible", "editable"});
+    newSetting("Audio/Enabled",         new Switch( true), 0, new String[]{"visible", "editable"});
+    newSetting("Audio/MasterVolume",    new Range(100, 0, 100, 5), 1, new String[]{"visible", "editable"});
+    newSetting("Audio/Music",           new Switch( true), 2, new String[]{"visible", "editable"});
+    newSetting("Audio/MusicVolume",     new Range(100, 0, 100, 5), 3, new String[]{"visible", "editable"});
+    newSetting("Audio/SFX",             new Switch( true), 4, new String[]{"visible", "editable"});
+    newSetting("Audio/SFXVolume",       new Range(100, 0, 100, 5), 5, new String[]{"visible", "editable"});
     //@formatter:on
   }
 
@@ -246,7 +249,10 @@ public class Config
       }
     }
     setting.id = lastId++;
-    tree.addLeaf(path[path.length - 1], new Leaf(ordinal, setting, tags));
+    Leaf leaf = new Leaf(ordinal, setting, tags);
+    tree.addLeaf(path[path.length - 1], leaf);
+    optionNames.add(path[path.length - 1]);
+    optionLeaves.add(leaf);
   }
 
   private static boolean compareSetting (Config a, Config b, String root)
@@ -258,7 +264,7 @@ public class Config
 
     Setting settB = b.getSetting(root);
 
-    return settA.equals(settB);
+    return settA.hasSameType(settB);
   }
 
   //region tree classes
@@ -282,6 +288,17 @@ public class Config
       return branches.get(name);
     }
 
+    public Tree getBranchedTree(String path)
+    {
+      String[] split = path.split("/");
+      Tree tree = this;
+      for (int i = 0; i < split.length - 1; i++)
+      {
+        tree = tree.getBranch(split[i]);
+      }
+      return tree.getBranch(split[split.length - 1]);
+    }
+
     public Map <String, Tree> getBranches ()
     {
       return branches;
@@ -290,6 +307,17 @@ public class Config
     public Leaf getLeaf (String name)
     {
       return leaves.get(name);
+    }
+
+    public Leaf getBranchedLeaf(String path)
+    {
+      String[] split = path.split("/");
+      Tree tree = this;
+      for (int i = 0; i < split.length - 1; i++)
+      {
+        tree = tree.getBranch(split[i]);
+      }
+      return tree.getLeaf(split[split.length - 1]);
     }
 
     public Map <String, Leaf> getLeaves ()
@@ -322,9 +350,9 @@ public class Config
     Table  table;
     Matrix matrix;
 
-    Setting.SubClass subType;
-    String[]         tags;
-    int              ordinal;
+    public Setting.SubClass subType;
+    public String[]         tags;
+    public int              ordinal;
 
     public Leaf (int ordinal, Setting type, String[] tags)
     {
@@ -418,7 +446,7 @@ public class Config
       return (Group) this;
     }
 
-    public boolean equals (Setting other)
+    public boolean hasSameType (Setting other)
     {
       Set <Class <?>> classTypes = new HashSet <>();
       classTypes.add(this.getClass());
@@ -452,8 +480,8 @@ public class Config
 
   public static class Switch extends Setting
   {
-    boolean current;
-    boolean defaultVal;
+    public boolean current;
+    public boolean defaultVal;
 
     public Switch (boolean defaultVal)
     {
@@ -464,9 +492,9 @@ public class Config
 
   public static class Value extends Setting
   {
-    String   current;
-    String   defaultVal;
-    String[] possible;
+    public String current;
+    public String   defaultVal;
+    public String[] possible;
 
     public Value (String defaultVal, String[] possible)
     {
@@ -478,9 +506,9 @@ public class Config
 
   public static class Digit extends Setting
   {
-    double   current;
-    double   defaultVal;
-    double[] possible;
+    public double current;
+    public double   defaultVal;
+    public double[] possible;
 
     public Digit (double defaultVal, double[] possible)
     {
