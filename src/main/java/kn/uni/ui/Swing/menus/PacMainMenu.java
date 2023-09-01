@@ -7,6 +7,7 @@ import kn.uni.ui.Swing.Style;
 import kn.uni.ui.Swing.components.PacButton;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacList;
+import kn.uni.ui.Swing.interfaces.Controllable;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
@@ -17,7 +18,7 @@ import java.awt.Dimension;
 
 import static kn.uni.Gui.defaultFrameBounds;
 
-public class PacMainMenu extends UIScreen
+public class PacMainMenu extends UIScreen implements Controllable
 {
   PacList list;
 
@@ -47,7 +48,7 @@ public class PacMainMenu extends UIScreen
 
   public void addComponents ()
   {
-    //title
+    //region title
     PacLabel title = new PacLabel(
         new Vector2d().cartesian(390, 100),
         new Dimension(500, 120),
@@ -57,9 +58,10 @@ public class PacMainMenu extends UIScreen
     title.useColorSet(Style.focused);
     title.setHorizontalAlignment(PacLabel.CENTER);
     add(title);
+    //endregion
 
 
-    //buttons
+    //region buttons
     Vector2d center = new Vector2d().cartesian(Gui.frameWidth/2., Gui.frameHeight/2.);
     Dimension listSize = new Dimension(400, 400);
     int buttonBuffer = 40;
@@ -73,11 +75,9 @@ public class PacMainMenu extends UIScreen
 
     PacButton sp = new PacButton("EIN SPIELER");
     sp.addAction(() -> {
-      this.kill();
       AdvGameScreen.clearInstance();
       AdvGameScreen advGameScreen = AdvGameScreen.getInstance(Gui.getInstance().content);
-      advGameScreen.setBounds(defaultFrameBounds);
-      parent.add(advGameScreen);
+      Gui.getInstance().setContent(advGameScreen);
     });
     list.addObject(sp);
 
@@ -89,21 +89,15 @@ public class PacMainMenu extends UIScreen
 
     PacButton options = new PacButton("EINSTELLUNGEN");
     options.addAction(() -> {
-      this.kill();
-      SettingMenu settingMenu = SettingMenu.getInstance(Gui.getInstance().content);
-      settingMenu.setBounds(defaultFrameBounds);
-      parent.add(settingMenu);
+      Gui.getInstance().setContent(SettingMenu.getInstance(Gui.getInstance().content));
     });
     list.addObject(options);
-
-//    PacButton sound = new PacButton("TON - AN");
-//    sound.addAction(() -> sound.setText(sound.getText().equals("TON - AN") ? "TON - AUS" : "TON - AN"));
-//    list.addObject(sound);
 
     list.unifyFontSize(40f);
 
     add(list);
     list.selectItem(0);
+    //endregion
   }
 
   public void enableControls()

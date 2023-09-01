@@ -1,26 +1,34 @@
 package kn.uni.ui.Swing.menus;
 
 import kn.uni.Gui;
+import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.Style;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.components.PacTree;
 import kn.uni.ui.Swing.components.RoundedPanel;
 import kn.uni.ui.Swing.components.SettingEditor;
+import kn.uni.ui.Swing.interfaces.Controllable;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Comparator;
 
-public class SettingMenu extends UIScreen
+public class SettingMenu extends UIScreen implements Controllable
 {
 
   public static SettingMenu instance;
+  Config.Tree currentSettingGroup;
+  public JPanel      editors;
+  public JScrollPane scroll;
 
   public SettingMenu (JPanel parent)
   {
@@ -84,6 +92,11 @@ public class SettingMenu extends UIScreen
     tree.arc = widgetArc;
     tree.borderWidth = lineWeight;
     tree.setFont(tree.getFont().deriveFont(25f));
+    tree.tree.setToggleClickCount(1);
+
+    for (int i = 0; i < tree.tree.getRowCount(); i++) {
+      tree.tree.expandRow(i);
+    }
 
     tree.tree.addTreeSelectionListener(new TreeSelectionListener()
     {
@@ -100,9 +113,8 @@ public class SettingMenu extends UIScreen
                        .replace(" ", "");
 
         path = path.substring("Settings/".length());
-
-
-        System.out.println(path);
+        currentSettingGroup = Config.getInstance().root.getBranchedTree(path);
+        fillEditor();
       }
     });
 
@@ -146,44 +158,47 @@ public class SettingMenu extends UIScreen
     //endregion
 
     //region editor content
-    SettingEditor settingEditor = new SettingEditor(
-        new Vector2d().cartesian(buffer, separator.getLocation().y + separator.getHeight() + (double) buffer / 2),
-        new Dimension(editorSize.width - 2 * buffer, 50),
-        0.6, 50,
-        new Config.Range(50, 0, 100, 5)
-    );
-    editor.add(settingEditor);
+    editors = new JPanel();
+    editors.setLayout(new BoxLayout(editors, BoxLayout.Y_AXIS));
+    editors.setBackground(null);
+    editors.setForeground(null);
+    editors.setOpaque(false);
+
+    scroll = new JScrollPane(editors,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scroll.setLocation(buffer, (int) ( separator.getLocation().y + separator.getHeight() + buffer / 2 ));
+    scroll.setSize(editorSize.width - 2 * buffer, editorSize.height - scroll.getLocation().y - buffer);
+    scroll.setBackground(null);
+    scroll.setForeground(null);
+    scroll.getViewport().setBackground(null);
+    scroll.setOpaque(false);
+    scroll.setBorder(null);
+    editor.add(scroll);
     //endregion
 
-
-    //    JSlider slider = new JSlider(JSlider.HORIZONTAL, 0, 50, 25);
-    //    slider.setBounds(buffer, (int) (separator.getLocation().y+separator.getHeight()+ (double) buffer /2), editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2);
-    //    slider.setMinorTickSpacing(2);
-    //    slider.setMajorTickSpacing(10);
-    //    slider.setPaintTicks(true);
-    //    slider.setPaintLabels(true);
-    //    editor.add(slider);
-
-    //    PacList editorList = new PacList(
-    //        new Vector2d().cartesian(buffer, separator.getLocation().y+separator.getHeight()+ (double) buffer /2),
-    //        new Dimension(editorSize.width-2*buffer, editorSize.height-separator.getLocation().y-separator.getHeight()- 3*buffer/2)
-    //    );
-    //    editorList.vBuffer = 10;
-    //    editorList.alignment = PacList.Alignment.VERTICAL;
-    ////    editorList.setBackground(Color.WHITE);
-    //    editor.add(editorList);
-    //
-    //    editorList.addObject(new PacButton("Test"));
-    //    editorList.addObject(new PacButton("Test"));
-    //    editorList.addObject(new PacButton("Test"));
-    //    editorList.addObject(new PacButton("Test"));
-    //
-    //    editorList.unifyFontSize(20f);
-    //
-    //    editor.add(editorList);
-
-
     //endregion
+  }
+
+  public void fillEditor ()
+  {
+    editors.removeAll();
+    editors.repaint();
+    if (!currentSettingGroup.getLeaves().isEmpty())
+    {
+      currentSettingGroup.getLeaves().values().stream()
+                         .sorted(Comparator.comparingInt(o -> o.ordinal))
+                         .forEach( leaf ->
+                         {
+                           SettingEditor sEditor = new SettingEditor(
+                               0.7,
+                               0.05,
+                               leaf
+                           );
+                           sEditor.setMaximumSize(new Dimension(Short.MAX_VALUE, 50));
+                           editors.add(sEditor);
+                           editors.add(Box.createRigidArea(new Dimension(0, 10)));
+                         });
+    }
+    editors.revalidate();
   }
 
   //region tree
@@ -232,6 +247,17 @@ public class SettingMenu extends UIScreen
     return node;
   }
   //endregion
+
+  public void enableControls ()
+  {
+    bindPlayer(InputListener.Player.playerOne, input ->
+    {
+     if (input.key() == InputListener.Key.B)
+      {
+        Gui.getInstance().setContent(PacMainMenu.getInstance(Gui.getInstance().content));
+      }
+    });
+  }
 }
 
 

@@ -4,6 +4,7 @@ import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.Style;
 import kn.uni.ui.Swing.components.PacLabel;
 import kn.uni.ui.Swing.menus.PacMainMenu;
+import kn.uni.ui.UIScreen;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
@@ -26,6 +27,7 @@ public class Gui
 
   public JFrame frame;
   public JPanel content;
+  public UIScreen currentContent;
   PacLabel debug;
 
   private Gui () { }
@@ -72,7 +74,7 @@ public class Gui
     debug.useColorSet(new Style.ColorSet(Color.RED, null, null));
     debug.setFontSize(14);
 
-    if (Objects.equals(Config.getCurrent("Debugging/-/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
       debug.setVisible(true);
     else
       debug.setVisible(false);
@@ -90,14 +92,28 @@ public class Gui
     PrettyPrint.empty();
     PrettyPrint.announce("Starting Game");
 
-    PacMainMenu mainMenu = PacMainMenu.getInstance(content);
-    mainMenu.setBounds(defaultFrameBounds);
-    content.add(mainMenu);
+    setContent(PacMainMenu.getInstance(content));
 
     //    frame.getGraphicsConfiguration().getDevice().setFullScreenWindow(frame);
     //    frame.setAlwaysOnTop(true);
 
     frame.setVisible(true);
     frame.createBufferStrategy(3);
+  }
+
+  public void setContent (UIScreen screen)
+  {
+    //old content
+    if (currentContent != null)
+    {
+      currentContent.disableControls();
+      content.remove(currentContent);
+    }
+    //new content
+    currentContent = screen;
+    currentContent.setBounds(defaultFrameBounds);
+    currentContent.enableControls();
+    content.add(currentContent);
+    Gui.getInstance().frame.repaint();
   }
 }
