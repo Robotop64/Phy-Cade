@@ -1,19 +1,21 @@
 package kn.uni.ui.Swing.components;
 
-import javax.swing.JComboBox;
+import kn.uni.ui.Swing.interfaces.Action;
+
+import javax.swing.JCheckBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacComboBox<T> extends JComboBox<T> implements Runnable
+public class PacToggle extends JCheckBox implements Action
 {
   List <Runnable> action = new ArrayList <>();
 
-  public PacComboBox (T[] items)
+  public PacToggle ()
   {
-    super(items);
+    super();
   }
 
-  public void setAction (Runnable action)
+  public void addAction (Runnable action)
   {
     this.action.add(action);
   }
@@ -21,7 +23,7 @@ public class PacComboBox<T> extends JComboBox<T> implements Runnable
   @Override
   public void run ()
   {
-    if (action != null)
+    if (!action.isEmpty())
     {
       action.forEach(Runnable::run);
     }

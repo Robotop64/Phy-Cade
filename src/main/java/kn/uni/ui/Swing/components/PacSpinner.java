@@ -1,19 +1,22 @@
 package kn.uni.ui.Swing.components;
 
-import javax.swing.JComboBox;
+import kn.uni.ui.Swing.interfaces.Action;
+
+import javax.swing.JSpinner;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacComboBox<T> extends JComboBox<T> implements Runnable
+public class PacSpinner extends JSpinner implements Action
 {
   List <Runnable> action = new ArrayList <>();
 
-  public PacComboBox (T[] items)
+  public PacSpinner ()
   {
-    super(items);
+    super();
   }
 
-  public void setAction (Runnable action)
+  @Override
+  public void addAction (Runnable action)
   {
     this.action.add(action);
   }
@@ -21,7 +24,7 @@ public class PacComboBox<T> extends JComboBox<T> implements Runnable
   @Override
   public void run ()
   {
-    if (action != null)
+    if (!action.isEmpty())
     {
       action.forEach(Runnable::run);
     }

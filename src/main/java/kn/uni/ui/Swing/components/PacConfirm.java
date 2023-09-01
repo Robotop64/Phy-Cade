@@ -1,22 +1,27 @@
 package kn.uni.ui.Swing.components;
 
+import kn.uni.Gui;
 import kn.uni.ui.InputListener;
 import kn.uni.ui.Swing.Style;
 import kn.uni.ui.UIScreen;
 import kn.uni.util.Direction;
 import kn.uni.util.Vector2d;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 public class PacConfirm extends UIScreen
 {
-  public String[] text;
-  private PacList buttons;
-  public Runnable confirmAction;
-  public Runnable cancelAction;
+  public  String[] text;
+  private PacList  buttons;
+  public  Runnable confirmAction;
+  public  Runnable cancelAction;
 
   public PacConfirm (JPanel parent, Vector2d position, Dimension size, String[] text)
   {
@@ -27,57 +32,76 @@ public class PacConfirm extends UIScreen
     this.text = text;
   }
 
+  public PacConfirm (JPanel parent, String[] text)
+  {
+    super(parent);
+    useColorSet(Style.normal);
+    this.setLayout(null);
+    this.text = text;
+  }
+
   public void initComponents ()
   {
-    int innerBuffer = 75;
-    Dimension innerBounds = new Dimension(this.getWidth()-2*innerBuffer, this.getHeight()-2*innerBuffer);
+    RoundedPanel content = new RoundedPanel();
+    int          buffer  = 200;
+    content.setBounds(buffer, buffer, Gui.frameWidth - 2 * buffer, Gui.frameHeight - 2 * buffer);
+    content.setLayout(new BorderLayout());
+    content.setArc(30);
+    content.setBorderWidth(3);
+    content.useColorSet(Style.normal);
+    add(content);
 
-    int buttonHeight = 100;
-    int textHeight = innerBounds.height - buttonHeight-25;
+    int innerBuffer = 40;
+    content.add(Box.createVerticalStrut(innerBuffer), BorderLayout.NORTH);
+    content.add(Box.createVerticalStrut(innerBuffer), BorderLayout.SOUTH);
+    content.add(Box.createHorizontalStrut(innerBuffer), BorderLayout.WEST);
+    content.add(Box.createHorizontalStrut(innerBuffer), BorderLayout.EAST);
 
-    PacLabel text = new PacLabel(new Vector2d().cartesian(innerBuffer, innerBuffer), new Dimension(innerBounds.width, textHeight), "");
+
+    JPanel innerContent = new JPanel();
+    innerContent.setLayout(new BoxLayout(innerContent, BoxLayout.Y_AXIS));
+    innerContent.setBackground(Color.BLACK);
+    content.add(innerContent, BorderLayout.CENTER);
+
+
+    //region text
     String[] lines = this.text[0].split("\n");
-    text.setText("<html><center>" + lines[0] + "<br>" + "<br>"+ lines[1] + "</center></html>");
+    PacLabel text  = new PacLabel("<html><center>" + lines[0] + "<br>" + "<br>" + lines[1] + "</center></html>");
     text.setFontSize(45);
+    text.setBorder(new LineBorder(Style.normal.border(), 3));
     text.setHorizontalAlignment(SwingConstants.CENTER);
     text.setVerticalAlignment(SwingConstants.CENTER);
-    add(text);
+    text.setMinimumSize(new Dimension(innerContent.getWidth(), innerContent.getHeight()-25-100));
+    text.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+    innerContent.add(text);
+    //endregion
 
-    buttons = new PacList(new Vector2d().cartesian(innerBuffer, innerBuffer+textHeight+25), new Dimension(innerBounds.width, buttonHeight));
-    buttons.hBuffer = 50;
-    buttons.alignment = PacList.Alignment.HORIZONTAL;
-    buttons.selectionRollAround = false;
+    innerContent.add(Box.createVerticalStrut(25));
 
-    PacButton confirm = new PacButton(new Vector2d(), new Dimension(buttons.getWidth()/2-buttons.hBuffer/2, buttons.getHeight()), this.text[1]);
+    //region buttons
+    int    buttonHeight = 100;
+    JPanel buttonPanel  = new JPanel();
+    buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+    buttonPanel.setBackground(Color.BLACK);
+    buttonPanel.setMinimumSize(new Dimension(innerContent.getWidth(), buttonHeight));
+    buttonPanel.setPreferredSize(new Dimension(innerContent.getWidth(), buttonHeight));
+    buttonPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, buttonHeight));
+    innerContent.add(buttonPanel);
+
+    PacButton confirm = new PacButton(this.text[1]);
+    confirm.setMinimumSize(new Dimension(innerContent.getWidth(), buttonHeight));
+    confirm.setMaximumSize(new Dimension(Short.MAX_VALUE, buttonHeight));
     confirm.addAction(confirmAction);
-    buttons.addObject(confirm);
+    buttonPanel.add(confirm);
 
-    PacButton cancel = new PacButton(new Vector2d(), new Dimension(buttons.getWidth()/2-buttons.hBuffer/2, buttons.getHeight()), this.text[2]);
+    buttonPanel.add(Box.createHorizontalStrut(40));
+
+    PacButton cancel = new PacButton(this.text[2]);
+    cancel.setMinimumSize(new Dimension(innerContent.getWidth(), buttonHeight));
+    cancel.setMaximumSize(new Dimension(Short.MAX_VALUE, buttonHeight));
     cancel.addAction(cancelAction);
-    buttons.addObject(cancel);
-
-    buttons.unifyFontSize(30f);
-
-    buttons.selectItem(1);
-
-    add(buttons);
-
-    bindPlayer(InputListener.Player.playerOne,input -> {
-      if (input.key() == InputListener.Key.A && input.state() == InputListener.State.down)
-      {
-        InputListener.getInstance().clearInput();
-        buttons.fireSelectedAction();
-      }
-
-      Direction dir = input.toDirection();
-      if (dir == null) return;
-      switch (dir)
-      {
-        case left -> buttons.selectNext(-1);
-        case right -> buttons.selectNext(1);
-        default -> {}
-      }
-    });
+    buttonPanel.add(cancel);
+    //endregion
   }
 
   public void useColorSet (Style.ColorSet colorSet)
@@ -86,4 +110,28 @@ public class PacConfirm extends UIScreen
     this.setBackground(colorSet.background());
     this.setForeground(colorSet.foreground());
   }
+
+  public void enableControls ()
+  {
+        bindPlayer(InputListener.Player.playerOne, input ->
+        {
+          if (input.key() == InputListener.Key.A && input.state() == InputListener.State.down)
+          {
+            InputListener.getInstance().clearInput();
+            buttons.fireSelectedAction();
+          }
+
+          Direction dir = input.toDirection();
+          if (dir == null) return;
+          switch (dir)
+          {
+            case left -> buttons.selectNext(-1);
+            case right -> buttons.selectNext(1);
+            default ->
+            {
+            }
+          }
+        });
+  }
+
 }
