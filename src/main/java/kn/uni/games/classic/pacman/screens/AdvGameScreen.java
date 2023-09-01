@@ -69,8 +69,6 @@ public class AdvGameScreen extends UIScreen
     createReadyPopup();
 
     loadGame();
-
-    enableControls();
   }
 
   public static AdvGameScreen getInstance (JPanel parent)
@@ -343,8 +341,6 @@ public class AdvGameScreen extends UIScreen
     int buffer = 200;
 
     PacConfirm confirm = new PacConfirm(Gui.getInstance().content,
-        new Vector2d().cartesian(buffer, buffer),
-        new Dimension(Gui.frameWidth - 2 * buffer, Gui.frameHeight - 2 * buffer),
         new String[]{ "You are about to quit the game!\n Are you sure?", "Confirm", "Resume" });
     PrettyPrint.bullet("Created confirm dialog");
 
@@ -352,11 +348,8 @@ public class AdvGameScreen extends UIScreen
     {
       PrettyPrint.bullet("Confirm action triggered");
       env.stopGame();
-      confirm.kill();
-      Gui.getInstance().content.remove(AdvGameScreen.getInstance(Gui.getInstance().content));
+      Gui.getInstance().setContent(PacMainMenu.getInstance(Gui.getInstance().content));
 
-      Gui.getInstance().content.add(PacMainMenu.getInstance(Gui.getInstance().content));
-      PacMainMenu.getInstance(Gui.getInstance().content).enableControls();
       PrettyPrint.bullet("Switched to Main Menu");
       PrettyPrint.endGroup();
     };
@@ -364,9 +357,7 @@ public class AdvGameScreen extends UIScreen
     confirm.cancelAction = () ->
     {
       PrettyPrint.bullet("Cancel action triggered");
-      confirm.kill();
-      AdvGameScreen.getInstance(Gui.getInstance().content).setVisible(true);
-      AdvGameScreen.getInstance(Gui.getInstance().content).enableControls();
+      Gui.getInstance().setContent(AdvGameScreen.getInstance(Gui.getInstance().content));
       env.resumeGame();
       PrettyPrint.bullet("Resumed game");
       PrettyPrint.endGroup();
@@ -616,15 +607,8 @@ public class AdvGameScreen extends UIScreen
 
         PrettyPrint.startGroup(PrettyPrint.Type.Message, "Game Paused");
         PrettyPrint.bullet("Disables game controls");
-        //hide AdvGameScreen and disable inputs
-        instance.disableControls();
-        instance.setVisible(false);
 
-        //create the confirm dialog
-        PacConfirm confirm = createExitDialog();
-
-        Gui.getInstance().content.add(confirm);
-        Gui.getInstance().content.setComponentZOrder(confirm, 1);
+        Gui.getInstance().setContent(createExitDialog());
       }
     });
   }
