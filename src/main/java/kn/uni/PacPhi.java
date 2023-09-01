@@ -5,6 +5,7 @@ import kn.uni.games.classic.pacman.persistence.PacmanDatabaseProvider;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.Database;
+import kn.uni.util.fileRelated.JsonEditor;
 import kn.uni.util.fileRelated.Permission;
 import kn.uni.util.fileRelated.ResourceManager;
 
@@ -33,6 +34,8 @@ public class PacPhi
 
     benchmark();
 
+    silence();
+
     FlatDarculaLaf.setup();
 
     Gui.getInstance().initialize();
@@ -47,9 +50,9 @@ public class PacPhi
 
     Config.init();
 
-    Config.load();
+//    Config.load();
 
-    Config.setCurrent("Debugging/-/Enabled", false);
+    Config.setCurrent("Debugging/Enabled", false);
     Config.setCurrent("Graphics/Advanced/Antialiasing", true);
     PrettyPrint.bullet("changed startup settings");
 
@@ -136,6 +139,11 @@ public class PacPhi
       });
       benchmarkThread.start();
     }
+  }
+
+  private static void silence ()
+  {
+    JsonEditor.silent = true;
   }
 }
 
