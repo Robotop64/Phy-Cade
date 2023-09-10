@@ -47,7 +47,7 @@ public class Teleporter extends AdvPlacedObject implements AdvRendered, AdvColli
 
     g.drawImage(cachedImg, (int) ( absPos.x - cachedImg.getWidth() / 2. + cachedImg.getWidth() / 4. ), (int) ( absPos.y - cachedImg.getHeight() / 2. ), null);
 
-    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/DebugView"), true))
     {
       g.setColor(Color.RED);
       int radius = (int) ( AdvGameConst.hitBoxes.get("Teleporter") * AdvGameConst.tileSize );

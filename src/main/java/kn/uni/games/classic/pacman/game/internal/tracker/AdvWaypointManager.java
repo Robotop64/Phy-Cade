@@ -79,7 +79,7 @@ public class AdvWaypointManager extends AdvGameObject
     @Override
     public void paintComponent (Graphics2D g)
     {
-      if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
+      if (Objects.equals(Config.getCurrent("Debugging/DebugView"), true))
       {
         if (cachedImg == null)
           render();

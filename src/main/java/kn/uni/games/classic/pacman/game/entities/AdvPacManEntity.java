@@ -54,7 +54,7 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
 
     g.drawImage(cachedImg, (int) absPos.x - iconSize / 2, (int) absPos.y - iconSize / 2, null);
 
-    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/DebugView"), true))
     {
       g.setColor(Color.RED);
       g.drawOval(
@@ -264,7 +264,10 @@ public class AdvPacManEntity extends Entity implements AdvRendered, AdvTicking, 
         ghost.die();
       }
       else if (!dead && (ghost.ai.mode == AdvGameConst.GhostMode.CHASE || ghost.ai.mode == AdvGameConst.GhostMode.SCATTER))
-        die();
+      {
+        if (Objects.equals(Config.getCurrent("Debugging/Immortal"), false))
+          die();
+      }
   }
   //endregion
 }

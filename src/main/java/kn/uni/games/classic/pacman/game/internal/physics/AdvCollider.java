@@ -130,14 +130,14 @@ public class AdvCollider extends AdvGameObject implements AdvTicking, AdvRendere
   public void tick ()
   {
     checkCollisions();
-    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/DebugView"), true))
       gameState.env.updateLayer.set(AdvGameState.Layer.PHYSICS.ordinal(), true);
   }
 
   @Override
   public void paintComponent (Graphics2D g)
   {
-    if (Objects.equals(Config.getCurrent("Debugging/Enabled"), true))
+    if (Objects.equals(Config.getCurrent("Debugging/DebugView"), true))
     {
       filteredColliders.forEach(
           l -> l.forEach(o ->

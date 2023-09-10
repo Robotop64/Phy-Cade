@@ -150,12 +150,16 @@ public class SettingEditor extends JPanel implements Colored
 
       case Table ->
       {
-        Config.Table table = setting.toTable();
+        PacButton table = new PacButton("->");
+
+        editComp = table;
       }
 
       case Matrix ->
       {
+        PacButton matrix = new PacButton("->");
 
+        editComp = matrix;
       }
     }
 

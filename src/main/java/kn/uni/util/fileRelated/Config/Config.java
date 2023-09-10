@@ -13,11 +13,11 @@ import java.util.TreeMap;
 
 public class Config
 {
-  private static Config instance;
-  public         Tree   root;
-  private       int               lastId      = 0;
-  public ArrayList<String> optionNames = new ArrayList<>();
-  public ArrayList<Leaf> optionLeaves = new ArrayList<>();
+  private static Config             instance;
+  public         Tree               root;
+  private        int                lastId       = 0;
+  public         ArrayList <String> optionNames  = new ArrayList <>();
+  public         ArrayList <Leaf>   optionLeaves = new ArrayList <>();
 
   private Config ()
   {
@@ -145,8 +145,9 @@ public class Config
 
     //debugging
     newSetting("Debugging/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
-    newSetting("Debugging/Immortal",          new Switch( false), 1, new String[]{"visible", "editable", "debug"});
-    newSetting("Debugging/ColorFloor",        new Switch( false), 2, new String[]{"visible", "editable", "debug"});
+    newSetting("Debugging/DebugView",         new Switch( false), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Debugging/Immortal",          new Switch( false), 2, new String[]{"visible", "editable", "debug"});
+    newSetting("Debugging/ColorFloor",        new Switch( false), 3, new String[]{"visible", "editable", "debug"});
 
     //gameplay
     newSetting("Gameplay/PacMan/StartLives",    new Digit( 5, null), 0, new String[]{"visible", "editable", "debug"});
@@ -288,10 +289,10 @@ public class Config
       return branches.get(name);
     }
 
-    public Tree getBranchedTree(String path)
+    public Tree getBranchedTree (String path)
     {
       String[] split = path.split("/");
-      Tree tree = this;
+      Tree     tree  = this;
       for (int i = 0; i < split.length - 1; i++)
       {
         tree = tree.getBranch(split[i]);
@@ -309,10 +310,10 @@ public class Config
       return leaves.get(name);
     }
 
-    public Leaf getBranchedLeaf(String path)
+    public Leaf getBranchedLeaf (String path)
     {
       String[] split = path.split("/");
-      Tree tree = this;
+      Tree     tree  = this;
       for (int i = 0; i < split.length - 1; i++)
       {
         tree = tree.getBranch(split[i]);
@@ -406,6 +407,7 @@ public class Config
   public static class Setting
   {
     public int id;
+
     public enum SubClass
     {
       Range, Switch, Value, Digit, Table, Matrix, Group
@@ -492,7 +494,7 @@ public class Config
 
   public static class Value extends Setting
   {
-    public String current;
+    public String   current;
     public String   defaultVal;
     public String[] possible;
 
@@ -506,7 +508,7 @@ public class Config
 
   public static class Digit extends Setting
   {
-    public double current;
+    public double   current;
     public double   defaultVal;
     public double[] possible;
 
