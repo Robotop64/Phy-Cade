@@ -7,6 +7,7 @@ import kn.uni.ui.Swing.menus.SettingMenu;
 import kn.uni.util.fileRelated.Config.Config;
 
 import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -137,6 +138,9 @@ public class SettingEditor extends JPanel implements Colored
         Config.Value         value  = setting.toValue();
         PacComboBox <String> editor = new PacComboBox <>(value.possible);
         editor.setSelectedItem(value.current);
+
+        JLabel renderer = (JLabel) editor.getRenderer();
+        renderer.setHorizontalAlignment(JLabel.CENTER);
 
         editComp = editor;
 
