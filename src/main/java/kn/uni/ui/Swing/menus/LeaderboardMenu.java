@@ -13,6 +13,8 @@ import kn.uni.util.Vector2d;
 import kn.uni.util.fileRelated.Config.Config;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import java.awt.Color;
@@ -80,7 +82,7 @@ public class LeaderboardMenu extends UIScreen implements Controllable
 
 
     Vector2d  gameInfoPos  = new Vector2d().cartesian(buffer, title.getLocation().y + title.getHeight() + buffer);
-    Dimension gameInfoSize = new Dimension(200, (int) ( Gui.frameHeight - gameInfoPos.y - infoSize.height - 2 * buffer ));
+    Dimension gameInfoSize = new Dimension(350, (int) ( Gui.frameHeight - gameInfoPos.y - infoSize.height - 2 * buffer ));
 
     //region game info panel
     RoundedPanel gameInfo = new RoundedPanel();
@@ -91,6 +93,26 @@ public class LeaderboardMenu extends UIScreen implements Controllable
     gameInfo.useColorSet(Style.normal);
     gameInfo.setLayout(null);
     add(gameInfo);
+
+    //region game info content
+    JPanel gameInfoContent = new JPanel();
+    int cBuffer = buffer*2/3;
+    gameInfoContent.setLocation(cBuffer, cBuffer);
+    gameInfoContent.setSize(gameInfoSize.width - 2 * cBuffer, gameInfoSize.height - 2 * cBuffer);
+    gameInfoContent.setLayout(new BoxLayout(gameInfoContent, BoxLayout.Y_AXIS));
+    gameInfoContent.setBackground(null);
+    gameInfoContent.setForeground(null);
+    gameInfo.add(gameInfoContent);
+
+    JComboBox <String> gameSelector = new JComboBox<>(Config.getInstance().getSetting("General/Games").toValue().possible);
+    gameSelector.setMaximumSize(new Dimension(Short.MAX_VALUE, lineHeight));
+
+    gameInfoContent.add(gameSelector);
+
+
+    gameInfoContent.revalidate();
+    //endregion
+
     //endregion
 
 
@@ -105,9 +127,6 @@ public class LeaderboardMenu extends UIScreen implements Controllable
     editor.useColorSet(Style.normal);
     editor.setLayout(null);
     add(editor);
-
-
-
     //endregion
   }
 

@@ -85,6 +85,9 @@ public class PacMainMenu extends UIScreen implements Controllable
     list.addObject(mp);
 
     PacButton best = new PacButton("BESTENLISTE");
+    best.addAction(() -> {
+      Gui.getInstance().setContent(LeaderboardMenu.getInstance(Gui.getInstance().content));
+    });
     list.addObject(best);
 
     PacButton options = new PacButton("EINSTELLUNGEN");

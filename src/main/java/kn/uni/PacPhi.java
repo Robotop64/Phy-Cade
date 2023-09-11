@@ -36,6 +36,7 @@ public class PacPhi
 
     silence();
 
+    FlatDarculaLaf.registerCustomDefaultsSource("Swing");
     FlatDarculaLaf.setup();
 
     Gui.getInstance().initialize();

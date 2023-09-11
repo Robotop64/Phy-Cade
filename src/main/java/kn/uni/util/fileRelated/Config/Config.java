@@ -142,6 +142,7 @@ public class Config
     newSetting("General/Version",             new Value(PacPhi.GAME_VERSION,  new String[]{ "???" }), 0, new String[]{"visible"});
     newSetting("General/Branch",              new Value( "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, new String[]{"visible", "editable"});
     newSetting("General/AccessLevel",         new Value( "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
+    newSetting("General/Games",               new Value( "PacPhi", new String[]{ "PacMan" }), 3, new String[]{"visible"});
 
     //debugging
     newSetting("Debugging/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
