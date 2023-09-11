@@ -3,12 +3,13 @@ package kn.uni.ui.Swing.components;
 import kn.uni.ui.Swing.Style;
 import kn.uni.util.Vector2d;
 
+import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 
 public class PacTree extends RoundedPanel
 {
@@ -24,39 +25,15 @@ public class PacTree extends RoundedPanel
     tree = new JTree(root);
     style();
     add(tree);
+    revalidate();
   }
 
   private void style ()
   {
-    tree.setLocation(this.arc/2, this.arc/2);
-    tree.setSize(new Dimension(this.getWidth() - this.arc, this.getHeight() - this.arc));
-    tree.setBackground(null);
-    tree.setOpaque(false);
-
-    this.setBackground(Style.normal.background());
-    this.setForeground(Style.normal.foreground());
-
-    tree.setCellRenderer(
-        new DefaultTreeCellRenderer(){
-          public Color getTextNonSelectionColor() {
-            return Style.normal.foreground();
-          }
-          public Color getBackgroundNonSelectionColor() {
-            return Style.normal.background();
-          }
-
-          public Color getTextSelectionColor() {
-            return Style.focused.foreground();
-          }
-          public Color getBackgroundSelectionColor() {
-            return Style.focused.background();
-          }
-
-          public Color getBorderSelectionColor() {
-            return Style.focused.foreground();
-          }
-        }
-    );
+    setBackground(null);
+    setForeground(Style.normal.border());
+    tree.setLocation(this.arc /3, this.arc/3);
+    tree.setSize(new Dimension(this.getWidth() - this.arc*2/3, this.getHeight() - this.arc*2/3));
   }
 
   public void setFont (Font font)
@@ -76,6 +53,30 @@ public class PacTree extends RoundedPanel
     public Node (String name)
     {
       super(name);
+    }
+  }
+
+  public static class TreeIcon implements Icon
+  {
+
+    private static int SIZE = 0;
+
+    public TreeIcon(int size) {
+      SIZE = size;
+    }
+
+
+    public int getIconWidth() {
+      return SIZE;
+    }
+
+    public int getIconHeight() {
+      return SIZE;
+    }
+
+    public void paintIcon(Component c, Graphics g, int x, int y) {
+      g.setColor(Style.normal.foreground());
+      g.fillOval(x, y, SIZE - 1, SIZE - 1);
     }
   }
 }
