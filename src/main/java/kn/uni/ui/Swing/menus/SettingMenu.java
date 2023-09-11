@@ -16,8 +16,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.ExpandVetoException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Comparator;
@@ -98,24 +99,34 @@ public class SettingMenu extends UIScreen implements Controllable
       tree.tree.expandRow(i);
     }
 
-    tree.tree.addTreeSelectionListener(new TreeSelectionListener()
-    {
+    tree.tree.addTreeWillExpandListener(new TreeWillExpandListener() {
       @Override
-      public void valueChanged (TreeSelectionEvent e)
+      public void treeWillExpand (TreeExpansionEvent event) throws ExpandVetoException
       {
-        if (e.getPath().getLastPathComponent().toString().equals("Settings"))
-          return;
 
-        String path = e.getPath().toString()
-                       .replace("[", "")
-                       .replace("]", "")
-                       .replace(",", "/")
-                       .replace(" ", "");
-
-        path = path.substring("Settings/".length());
-        currentSettingGroup = Config.getInstance().root.getBranchedTree(path);
-        fillEditor();
       }
+
+      @Override
+      public void treeWillCollapse (TreeExpansionEvent event) throws ExpandVetoException
+      {
+        throw new ExpandVetoException(event);
+      }
+    });
+
+    tree.tree.addTreeSelectionListener(e ->
+    {
+      if (e.getPath().getLastPathComponent().toString().equals("Settings"))
+        return;
+
+      String path = e.getPath().toString()
+                     .replace("[", "")
+                     .replace("]", "")
+                     .replace(",", "/")
+                     .replace(" ", "");
+
+      path = path.substring("Settings/".length());
+      currentSettingGroup = Config.getInstance().root.getBranchedTree(path);
+      fillEditor();
     });
 
     add(tree);
