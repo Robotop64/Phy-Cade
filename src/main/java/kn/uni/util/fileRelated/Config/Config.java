@@ -142,7 +142,8 @@ public class Config
     newSetting("General/Version",             new Value(PacPhi.GAME_VERSION,  new String[]{ "???" }), 0, new String[]{"visible"});
     newSetting("General/Branch",              new Value( "STABLE", new String[]{ "STABLE", "UNSTABLE", "ENTROPIC" }), 1, new String[]{"visible", "editable"});
     newSetting("General/AccessLevel",         new Value( "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
-    newSetting("General/Games",               new Value( "PacPhi", new String[]{ "PacMan" }), 3, new String[]{"visible"});
+    newSetting("General/Games",               new Value( "PacMan", new String[]{ "PacMan" }), 3, new String[]{"visible"});
+    newSetting("General/Leaderboard/SortBy",  new Value( "Score", new String[]{ "Score", "Level", "Time","Score, Time" }), 0, new String[]{"visible"});
 
     //debugging
     newSetting("Debugging/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
@@ -151,13 +152,15 @@ public class Config
     newSetting("Debugging/ColorFloor",        new Switch( false), 3, new String[]{"visible", "editable", "debug"});
 
     //gameplay
-    newSetting("Gameplay/PacMan/StartLives",    new Digit( 5, null), 0, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/StartSpeed",    new Digit( 6, null), 1, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PlayerHP",      new Digit( 1, null), 2, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/GhostHP",       new Digit( 1, null), 3, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PointsToLife",  new Digit( 10000, null), 4, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PortalDelay",   new Digit( 0.01, null), 5, new String[]{"visible", "editable", "debug"});
-    newSetting("Gameplay/PacMan/PortalCooldown",new Digit( 1, null), 6, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/GameMode",            new Value( "classic", new String[]{ "classic" }), 0, new String[]{"visible", "editable"});
+    newSetting("Gameplay/PacMan/StartLives",          new Digit( 5, null), 1, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/StartSpeed",          new Digit( 6, null), 2, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PlayerHP",            new Digit( 1, null), 3, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/GhostHP",             new Digit( 1, null), 4, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PointsToLife",        new Digit( 10000, null), 5, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PortalDelay",         new Digit( 0.01, null), 6, new String[]{"visible", "editable", "debug"});
+    newSetting("Gameplay/PacMan/PortalCooldown",      new Digit( 1, null), 7, new String[]{"visible", "editable", "debug"});
+
 
     //pacman speed scaling while ghost are normal
     newSetting("Gameplay/PacMan/PacSpeedScalingNormal",
@@ -165,7 +168,7 @@ public class Config
         new double[][]{              { 1, 0.80 },
                                                 { 2, 0.90 },
                                                 { 5, 1.00 },
-                                                { 21, 0.90 }}), 7, new String[]{"visible", "editable", "debug"});
+                                                { 21, 0.90 }}), 8, new String[]{"visible", "editable", "debug"});
 
     //pacman speed scaling while ghost are frightened
     newSetting("Gameplay/PacMan/PacSpeedScalingFrightened",
@@ -173,7 +176,7 @@ public class Config
             new double[][]{   { 1, 0.90 },
                                          { 2, 0.95 },
                                          { 5, 1.00 },
-                                         { 21, 0.90 }}), 8, new String[]{"visible", "editable", "debug"});
+                                         { 21, 0.90 }}), 9, new String[]{"visible", "editable", "debug"});
 
     //ghost speed scaling while normal
     newSetting("Gameplay/PacMan/GhostSpeedScalingNormal",
@@ -181,7 +184,7 @@ public class Config
         new double[][]{              { 1, 0.75 },
                                                 { 2, 0.85 },
                                                 { 5, 0.95 },
-                                                { 21, 0.95 }}), 9, new String[]{"visible", "editable", "debug"});
+                                                { 21, 0.95 }}), 10, new String[]{"visible", "editable", "debug"});
 
     //ghost speed scaling while frightened
     newSetting("Gameplay/PacMan/GhostSpeedScalingFrightened",
@@ -189,7 +192,7 @@ public class Config
             new double[][]{   { 1, 0.50 },
                                          { 2, 0.55 },
                                          { 5, 0.60 },
-                                         { 21, 0.60 }}), 10, new String[]{"visible", "editable", "debug"});
+                                         { 21, 0.60 }}), 11, new String[]{"visible", "editable", "debug"});
 
     newSetting("Gameplay/PacMan/GhostScatterPlan",
         new Table(
@@ -201,11 +204,11 @@ public class Config
                                                {"Scatter",5,5,5},
                                                {"Chase",20,1033,1037},
                                                {"Scatter",5,0,0},
-                                               {"Chase",-1,-1,-1}}), 11, new String[]{"visible", "editable", "debug"});
+                                               {"Chase",-1,-1,-1}}), 12, new String[]{"visible", "editable", "debug"});
 
     newSetting("Gameplay/PacMan/GhostFrightenDuration",   new Matrix(
         new String[]{ "Level", "Duration" },
-        new double[][]{ { 1, 10 },{ 5, 7.5 },{ 10, 5 },{ 15, 2.5 },{20, 0 },}), 12, new String[]{"visible", "editable", "debug"});
+        new double[][]{ { 1, 10 },{ 5, 7.5 },{ 10, 5 },{ 15, 2.5 },{20, 0 },}), 13, new String[]{"visible", "editable", "debug"});
 
     //graphics
     newSetting("Graphics/General/Effects",      new Switch( true), 0, new String[]{"visible", "editable"});
@@ -231,6 +234,19 @@ public class Config
       tree = tree.getBranch(path[i]);
     }
     return tree.getLeaf(path[path.length - 1]).getType();
+  }
+
+  public boolean hasSetting (String root)
+  {
+    String[] path = root.split("/");
+    Tree     tree = this.root;
+    for (int i = 0; i < path.length - 1; i++)
+    {
+      tree = tree.getBranch(path[i]);
+      if (tree == null)
+        return false;
+    }
+    return tree.getLeaf(path[path.length - 1]) != null;
   }
 
   private void newSetting (String root, Setting setting, int ordinal, String[] tags)
