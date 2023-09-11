@@ -2,6 +2,7 @@ package kn.uni;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import kn.uni.games.classic.pacman.persistence.PacmanDatabaseProvider;
+import kn.uni.ui.Swing.components.PacTree;
 import kn.uni.util.PrettyPrint;
 import kn.uni.util.fileRelated.Config.Config;
 import kn.uni.util.fileRelated.Database;
@@ -9,6 +10,7 @@ import kn.uni.util.fileRelated.JsonEditor;
 import kn.uni.util.fileRelated.Permission;
 import kn.uni.util.fileRelated.ResourceManager;
 
+import javax.swing.UIManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,7 @@ public class PacPhi
 
     FlatDarculaLaf.registerCustomDefaultsSource("Swing");
     FlatDarculaLaf.setup();
+    editStyle();
 
     Gui.getInstance().initialize();
   }
@@ -145,6 +148,11 @@ public class PacPhi
   private static void silence ()
   {
     JsonEditor.silent = true;
+  }
+
+  private static void editStyle(){
+    UIManager.put("Tree.collapsedIcon", new PacTree.TreeIcon(0));
+    UIManager.put("Tree.expandedIcon", new PacTree.TreeIcon(0));
   }
 }
 
