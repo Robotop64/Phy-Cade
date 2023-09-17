@@ -157,9 +157,10 @@ public class PacmanDatabaseProvider
     makeConnection(database, statements);
   }
 
-  public static List<LeaderboardMenu.LeaderboardEntry> getEntries (String database, String table)
+  public static List<LeaderboardMenu.LeaderboardEntry> getEntries (String database, String table, String filter, String sort)
   {
-    List <String> entryList = Objects.requireNonNull(makeConnection(database, List.of(new Query("select * from " + table + " Order By  score desc , time asc", true)))).get(0);
+    List <String> entryList =
+        Objects.requireNonNull(makeConnection(database, List.of(new Query("select * from \"" + table+"\" " + filter+ sort, true)))).get(0);
     List <LeaderboardMenu.LeaderboardEntry> out = new ArrayList <>();
     entryList.forEach(e ->
         out.add(LeaderboardMenu.LeaderboardEntry.fromString(e))
