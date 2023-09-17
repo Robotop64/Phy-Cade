@@ -144,6 +144,7 @@ public class Config
     newSetting("General/AccessLevel",         new Value( "User", new String[]{ "User", "Developer" }), 2, new String[]{"visible"});
     newSetting("General/Games",               new Value( "PacMan", new String[]{ "PacMan" }), 3, new String[]{"visible"});
     newSetting("General/Leaderboard/SortBy",  new Value( "Score", new String[]{ "Score", "Level", "Time","Score, Time" }), 0, new String[]{"visible"});
+    newSetting("General/Leaderboard/Fields", new Value( "Rank,Name,Score,Time,Date", new String[]{"Rank", "Name", "Score", "Time", "Level", "Date", "Version", "Notes" }), 1, new String[]{"visible"});
 
     //debugging
     newSetting("Debugging/Enabled",           new Switch( false), 0, new String[]{"visible", "editable"});
