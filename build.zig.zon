@@ -27,6 +27,10 @@
             .url = "https://github.com/Not-Nik/raylib-zig/archive/devel.tar.gz",
             .hash = "12202f8c415153088be8df39a51e0a4c9d402afd403422a0dcc9afdd417e437a6fdb",
         },
+        .sqlite = .{
+            .url = "https://github.com/vrischmann/zig-sqlite/archive/7d50331972777727d0a22f5e4a51e8a06c410bad.tar.gz",
+            .hash = "1220f01a534f84839a66b127b88183bd81f6ab3778289150aa79f83ae126e4a8e0df",
+        },
     },
     .paths = .{
         "build.zig",

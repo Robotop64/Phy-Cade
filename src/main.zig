@@ -1,32 +1,17 @@
 const rl = @import("raylib");
 
+const window = @import("window.zig");
+const menu = @import("Menus/menu.zig");
+
 pub fn main() anyerror!void {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const screenWidth = 800;
-    const screenHeight = 450;
+    window.dimension = .{
+        .width = 800,
+        .height = 450,
+    };
 
-    rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
-    defer rl.closeWindow(); // Close window and OpenGL context
+    rl.initWindow(window.dimension.width, window.dimension.height, "raylib-zig [core] example - basic window");
+    rl.setWindowState(rl.ConfigFlags{ .window_resizable = true });
+    defer rl.closeWindow();
 
-    rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
-
-    // Main game loop
-    while (!rl.windowShouldClose()) { // Detect window close button or ESC key
-        // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
-
-        // Draw
-        //----------------------------------------------------------------------------------
-        rl.beginDrawing();
-        defer rl.endDrawing();
-
-        rl.clearBackground(rl.Color.white);
-
-        rl.drawText("Congrats! You created your first window!", 190, 200, 20, rl.Color.light_gray);
-        //----------------------------------------------------------------------------------
-    }
+    menu.selectMenu(menu.menus.Main);
 }

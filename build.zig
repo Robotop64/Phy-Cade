@@ -2,7 +2,6 @@ const std = @import("std");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
-
     const optimize = b.standardOptimizeOption(.{});
 
     const exe = b.addExecutable(.{
@@ -20,6 +19,14 @@ pub fn build(b: *std.Build) void {
     exe.linkLibrary(raylib.artifact("raylib"));
     exe.root_module.addImport("raylib", raylib.module("raylib"));
     exe.root_module.addImport("raygui", raylib.module("raygui"));
+    //-----------------------------------------------------------------------
+    // SQlite3
+    const sqlite = b.dependency("sqlite", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    exe.linkLibrary(sqlite.artifact("sqlite"));
+    exe.root_module.addImport("sqlite", sqlite.module("sqlite"));
     //-----------------------------------------------------------------------
 
     b.installArtifact(exe);
