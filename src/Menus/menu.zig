@@ -1,6 +1,6 @@
 const main_menu = @import("main_menu.zig");
 
-pub const menus = enum { Main, Game, Ranking, Settings, Credits };
+pub const menus = enum { Main, Game, Ranking, Settings, Credits, Updates, Quit };
 
 pub fn selectMenu(m: menus) void {
     switch (m) {
@@ -11,5 +11,7 @@ pub fn selectMenu(m: menus) void {
         .Ranking => {},
         .Settings => {},
         .Credits => {},
+        .Updates => {},
+        .Quit => {},
     }
 }
