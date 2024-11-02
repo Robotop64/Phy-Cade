@@ -9,9 +9,10 @@ pub fn main() anyerror!void {
         .height = 450,
     };
 
-    rl.initWindow(window.dimension.width, window.dimension.height, "raylib-zig [core] example - basic window");
-    rl.setWindowState(rl.ConfigFlags{ .window_resizable = true });
+    rl.initWindow(window.dimension.width, window.dimension.height, "PacPhycade");
     defer rl.closeWindow();
 
-    menu.selectMenu(menu.menus.Main);
+    rl.setWindowState(rl.ConfigFlags{ .window_resizable = true });
+
+    menu.selectMenu(.Main);
 }

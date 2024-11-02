@@ -1,6 +1,9 @@
 const std = @import("std");
 const rl = @import("raylib");
 const win = @import("../window.zig");
+const menu = @import("menu.zig");
+
+//=================================================================================================
 
 const Layout = struct {
     title: @Vector(4, u16) = undefined,
@@ -12,6 +15,14 @@ const Layout = struct {
     quit: @Vector(4, u16) = undefined,
 };
 var layout: Layout = .{};
+
+const State = struct {
+    switchMenu: bool = false,
+    nextMenu: menu.menus = .Quit,
+};
+var state: State = .{};
+
+//=================================================================================================
 
 pub fn init() void {
     rl.setTargetFPS(60);
@@ -31,6 +42,9 @@ pub fn init() void {
 
         draw();
     }
+
+    defer menu.selectMenu(state.nextMenu);
+    state = .{};
 }
 
 fn draw() void {
