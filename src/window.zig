@@ -112,5 +112,36 @@ pub const Transform = struct {
 
     // Constraint function, prevent over scaling
 
-    //  Tabelize function, divide the parent rectangle into n columns / rows
+    /// Returns a Vector
+    /// Tabelizes the parent rectangle into a grid of columns and rows with and optional buffer in between
+    /// The columns and rows are given by an array of u16 values
+    /// The buffer is an array of 2 u16 values, the first value is the buffer between columns, the second value is the buffer between rows
+    pub fn tabelize(parent: *const @Vector(4, u16), col_row: []const u16, buffers: []const u16) []@Vector(4, u16) {
+        const px = parent[0];
+        const py = parent[1];
+        const pw = parent[2];
+        const ph = parent[3];
+
+        const col: u16 = col_row[0];
+        const row: u16 = col_row[1];
+
+        const colBuffer: u16 = buffers[0];
+        const rowBuffer: u16 = buffers[1];
+
+        const colWidth = (pw - (col - 1) * colBuffer) / col;
+        const rowHeight = (ph - (row - 1) * rowBuffer) / row;
+
+        // create a table of columns and rows
+        var table: []@Vector(4, u16) = std.heap.allocSlice(@Vector(4, u16), col * row);
+
+        for (0..col) |c| {
+            for (0..row) |r| {
+                const xShift: u16 = px + c * (colWidth + colBuffer);
+                const yShift: u16 = py + r * (rowHeight + rowBuffer);
+                table[c * row + r] = .{ xShift, yShift, @as(u16, @intFromFloat(colWidth)), @as(u16, @intFromFloat(rowHeight)) };
+            }
+        }
+
+        return table;
+    }
 };
