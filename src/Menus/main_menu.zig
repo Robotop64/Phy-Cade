@@ -55,6 +55,6 @@ fn calcLayout() void {
     const window: @Vector(4, u16) = .{ 0, 0, win.dimension.width, win.dimension.height };
     const outerBorder: @Vector(4, u16) = win.Transform.absBuffer(&window, &.{ 10, 10, 10, 10 });
     layout.title = win.Transform.relBuffer(&outerBorder, &.{ 0.20, 0.20, 0.05, 0.85 });
-    const buttonList: @Vector(4, u16) = win.Transform.relBuffer(&outerBorder, &.{ 0.0, 0.60, 0.25, 0.35 });
-    const buttonListItems = win.Transform.tabelize(&buttonList, []u16{ 1, 6 }, []u16{ 0, 15 });
+    // const buttonList: @Vector(4, u16) = win.Transform.relBuffer(&outerBorder, &.{ 0.0, 0.60, 0.25, 0.35 });
+    // const buttonListItems = win.Transform.tabelize(&buttonList, []u16{ 1, 6 }, []u16{ 0, 15 });
 }

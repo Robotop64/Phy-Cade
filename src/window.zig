@@ -131,17 +131,19 @@ pub const Transform = struct {
         const colWidth = (pw - (col - 1) * colBuffer) / col;
         const rowHeight = (ph - (row - 1) * rowBuffer) / row;
 
-        // create a table of columns and rows
-        var table: []@Vector(4, u16) = std.heap.allocSlice(@Vector(4, u16), col * row);
-
+        var table: [col][row]@Vector(4, u16) = undefined;
+        comptime for (0..col) |c| {
+            for (0..row) |r| {
+                table[c][r] = .{ 0, 0, 0, 0 };
+            }
+        };
         for (0..col) |c| {
             for (0..row) |r| {
                 const xShift: u16 = px + c * (colWidth + colBuffer);
                 const yShift: u16 = py + r * (rowHeight + rowBuffer);
-                table[c * row + r] = .{ xShift, yShift, @as(u16, @intFromFloat(colWidth)), @as(u16, @intFromFloat(rowHeight)) };
+                table[c][r] = .{ xShift, yShift, @as(u16, @intFromFloat(colWidth)), @as(u16, @intFromFloat(rowHeight)) };
             }
         }
-
         return table;
     }
 };
