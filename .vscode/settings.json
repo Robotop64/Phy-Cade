@@ -1,3 +1,4 @@
 {
-    "zig.path": "zig"
+  "zig.path": "zig",
+  "editor.mouseWheelZoom": true
 }

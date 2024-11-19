@@ -116,14 +116,14 @@ pub const Transform = struct {
     /// Tabelizes the parent rectangle into a grid of columns and rows with and optional buffer in between
     /// The columns and rows are given by an array of u16 values
     /// The buffer is an array of 2 u16 values, the first value is the buffer between columns, the second value is the buffer between rows
-    pub fn tabelize(parent: *const @Vector(4, u16), col_row: []const u16, buffers: []const u16) []@Vector(4, u16) {
+    pub fn tabelize(parent: *const @Vector(4, u16), row_col: [2]usize, buffers: [2]u16) [][]@Vector(4, u16) {
         const px = parent[0];
         const py = parent[1];
         const pw = parent[2];
         const ph = parent[3];
 
-        const col: u16 = col_row[0];
-        const row: u16 = col_row[1];
+        const row = row_col[0];
+        const col = row_col[1];
 
         const colBuffer: u16 = buffers[0];
         const rowBuffer: u16 = buffers[1];
@@ -131,12 +131,14 @@ pub const Transform = struct {
         const colWidth = (pw - (col - 1) * colBuffer) / col;
         const rowHeight = (ph - (row - 1) * rowBuffer) / row;
 
-        var table: [col][row]@Vector(4, u16) = undefined;
-        comptime for (0..col) |c| {
-            for (0..row) |r| {
-                table[c][r] = .{ 0, 0, 0, 0 };
-            }
-        };
+        // var table: [row][col]@Vector(4, u16) = undefined;
+        // comptime for (0..col) |c| {
+        //     for (0..row) |r| {
+        //         table[c][r] = .{ 0, 0, 0, 0 };
+        //     }
+        // };
+        var table = [_][col]@Vector(4, u16){ 0, 0, 0, 0 } ** col;
+
         for (0..col) |c| {
             for (0..row) |r| {
                 const xShift: u16 = px + c * (colWidth + colBuffer);

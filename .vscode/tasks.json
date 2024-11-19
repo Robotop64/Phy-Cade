@@ -16,6 +16,21 @@
             "problemMatcher": []
         },
         {
+            "label": "build&run file",
+            "type": "shell",
+            "command": "zig",
+            "args": [
+                "build",
+                "${file}",
+                "run"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "build&run",
             "type": "shell",
             "command": "zig",
