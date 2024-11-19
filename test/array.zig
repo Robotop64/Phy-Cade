@@ -12,6 +12,10 @@ pub fn main() anyerror!void {
     editTable(&table, rows, cols);
 
     printTable(&table, rows, cols);
+
+    destroyTable(allocator, table, rows, cols);
+
+    _ = gpa.detectLeaks();
 }
 
 fn createTable(allocator: std.mem.Allocator, rows: usize, cols: usize) ![][]@Vector(4, u16) {
@@ -24,10 +28,8 @@ fn createTable(allocator: std.mem.Allocator, rows: usize, cols: usize) ![][]@Vec
 }
 
 fn destroyTable(allocator: std.mem.Allocator, table: [][]@Vector(4, u16), rows: usize, cols: usize) void {
+    _ = cols;
     for (0..rows) |row| {
-        for (0..cols) |col| {
-            allocator.free(table[row][col]);
-        }
         allocator.free(table[row]);
     }
     allocator.free(table);
