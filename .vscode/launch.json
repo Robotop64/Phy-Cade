@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+    // requires another install option where the dlls are in the bin / edit path to include /lib
     {
       "name": "(lldb) Launch",
       "type": "cppdbg",

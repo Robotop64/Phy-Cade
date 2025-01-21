@@ -10,28 +10,53 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE MY_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
 
-# Third-party libraries
-#--------------------------------
+# Libraries
+#===============================================================================
+set(DLLs "")
+#-------------------------------------------------------------------------------
 # RAYLIB
 set(RAYLIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/raylib")
-include_directories(${RAYLIB_DIR})
-if (OS STREQUAL "Windows")
-    set(RAYLIB_DLL "${RAYLIB_DIR}/raylib.dll")
-elseif (OS STREQUAL "Linux")
-    set(RAYLIB_DLL "${RAYLIB_DIR}/libraylib.so")
+include_directories(${RAYLIB_DIR}) # include all headers in /lib/raylib
+if (WIN32)
+    set(RAYLIB_LIB "${RAYLIB_DIR}/raylib.dll")
+elseif (UNIX)
+    set(RAYLIB_LIB "${RAYLIB_DIR}/libraylib.so")
 endif()
-#--------------------------------
+list(APPEND DLLs ${RAYLIB_LIB})
+#-------------------------------------------------------------------------------
+#===============================================================================
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/bin)
 add_executable("${CMAKE_PROJECT_NAME}" src/main.cpp ${MY_SOURCES})
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${RAYLIB_DLL})
+# Linking
+#===============================================================================
+foreach(DLL ${DLLs})
+    target_link_libraries(${CMAKE_PROJECT_NAME} ${DLL})
+    message(STATUS "Linked ${DLL}")
+endforeach()
+
+# Find DLLs in /lib instead of /bin
+if (WIN32)
+    install(CODE "
+        file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/out/start.bat
+            \"SET PATH=%~dp0lib;%PATH%\n\"
+            \"start %~dp0bin\\\\${CMAKE_PROJECT_NAME}.exe\n\"
+        )
+    ")
+endif()
+# TODO Linux
+#===============================================================================
 
 # Install
+#===============================================================================
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/resources
-        DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/out/)
+    DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/out/)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/build/${CMAKE_PROJECT_NAME}.exe
-        DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/out/bin)
-file(GLOB_RECURSE MY_DLLS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/lib/*.dll")
-install(FILES ${MY_DLLS}
+    DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/out/bin)
+# Only install linked DLLs
+foreach(DLL ${DLLs})
+    install(FILES ${DLL}
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/out/lib)
+endforeach()
+#===============================================================================

@@ -1,3 +1,5 @@
 {
-    "cmake.buildTask": true
+    "cmake.buildTask": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false
 }
