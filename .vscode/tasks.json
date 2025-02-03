@@ -6,7 +6,7 @@
         //     "type": "shell",
         //     "command": "powershell",
         //     "args": [
-        //         "${workspaceFolder}/out/bin/Test.exe"
+        //         "${workspaceFolder}/out/bin/PacPhi.exe"
         //     ],
         //     "options": {
         //         "cwd": "${workspaceFolder}/out/"
@@ -17,7 +17,7 @@
             "type": "shell",
             "command": "powershell",
             "args": [
-                "${workspaceFolder}/out/start.bat"
+                "${workspaceFolder}/out/bin/PacPhi.exe"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/out/"

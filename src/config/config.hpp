@@ -1,23 +1,8 @@
 #include "toml.hpp"
 #include <iostream>
 
-static int instance;
+#define Config toml::parse_result
 
-class Config
-{
-    auto instance;
-};
+void saveConfig(Config config);
 
-auto loadConfig()
-{
-    try 
-    {
-        return toml::parse_file("userdata/config.toml");
-    }
-    catch (const std::exception& e)
-    {
-        std::cout << "User configuration not found\n";
-        std::cout << "Using default\n";
-        return toml::parse("resources/default.toml");
-    };
-};
+Config getConfig();

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31.0)
-project(Test VERSION 0.1.0 LANGUAGES C CXX)
+project(PacPhi VERSION 0.1.0 LANGUAGES C CXX)
 
 option(PRODUCTION_BUILD "Make this a production build" OFF)
 set(OS "Windows")
@@ -52,6 +52,7 @@ if (WIN32)
         file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/out/start.bat
             \"SET PATH=%~dp0lib;%PATH%\n\"
             \"start %~dp0bin\\\\${CMAKE_PROJECT_NAME}.exe\n\"
+            \"pause\n\"
         )
     ")
 endif()
@@ -71,6 +72,6 @@ foreach(DLL ${DLLs})
 endforeach()
 # Create user data folder
 install(CODE "
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/usrdata)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/userdata)
 ")
 #===============================================================================

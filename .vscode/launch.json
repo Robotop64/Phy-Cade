@@ -6,7 +6,7 @@
       "name": "(lldb) Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/out/bin/Test.exe",
+      "program": "${workspaceFolder}/out/bin/PacPhi.exe",
       "cwd": "${workspaceFolder}/out"
     }
   ]

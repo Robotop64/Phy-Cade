@@ -1,0 +1,11 @@
+[Display]
+Resolutions = [
+    [1920, 1080], 
+    [1280, 720], 
+    [1024, 768], 
+    [800, 600], 
+    [640, 480]
+]
+PrefResolution = [1920, 1080]
+Fullscreen = false
+Borderless = false
