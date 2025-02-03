@@ -8,7 +8,13 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE MY_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
+file(GLOB HEADER_DIRS LIST_DIRECTORIES true "src/*")
+foreach(HEADER_DIR ${HEADER_DIRS})
+message(STATUS "Included subdirectory ${HEADER_DIR}")
+    include_directories(${HEADER_DIR})
+endforeach()
+
 
 # Libraries
 #===============================================================================
@@ -24,6 +30,10 @@ elseif (UNIX)
 endif()
 list(APPEND DLLs ${RAYLIB_LIB})
 #-------------------------------------------------------------------------------
+# Toml++
+#-------------------------------------------------------------------------------
+set(TOMLPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/tomlplusplus")
+include_directories(${TOMLPP_DIR})
 #===============================================================================
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/bin)
@@ -59,4 +69,8 @@ foreach(DLL ${DLLs})
     install(FILES ${DLL}
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/out/lib)
 endforeach()
+# Create user data folder
+install(CODE "
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/usrdata)
+")
 #===============================================================================
