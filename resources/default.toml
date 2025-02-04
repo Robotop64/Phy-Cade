@@ -1,11 +1,17 @@
-[Display]
-Resolutions = [
+[[Display]]
+resolutions = [
     [1920, 1080], 
     [1280, 720], 
     [1024, 768], 
     [800, 600], 
     [640, 480]
 ]
-PrefResolution = [1920, 1080]
-Fullscreen = false
-Borderless = false
+pref_resolution = [1920, 1080]
+fullscreen = false
+borderless = false
+target_fps = 60
+
+[[Debug]]
+enabled = false
+logging = false
+display = false
