@@ -6,7 +6,8 @@ int main(void)
 {
     // load config
     Config config = getConfig();
-    std::cout << config["Display"]["target_fps"] << "\n";
+    std::cout << "Config:\n"
+              << config << "\n";
     // manage screens
 
     return 0;

@@ -1,4 +1,4 @@
-[Display]
+[Display.Basic]
 resolutions = [
     [1920, 1080], 
     [1280, 720], 
@@ -11,7 +11,10 @@ fullscreen = false
 borderless = false
 target_fps = 60
 
-[[Debug]]
+[Display.Advanced]
+
+
+[Debug]
 enabled = false
 logging = false
 display = false
