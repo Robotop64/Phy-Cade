@@ -18,3 +18,4 @@ target_fps = 60
 enabled = false
 logging = false
 display = false
+hot_swap_config = false

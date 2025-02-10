@@ -2,19 +2,32 @@
 #include <iostream>
 #include <string>
 
-#define Config toml::parse_result
+using native = toml::parse_result;
+using result = std::optional<toml::node_view<toml::node>>;
 
-void saveConfig(Config config);
-
-Config getConfig();
-
-namespace config
+class Config
 {
+public:
     enum type
     {
         User,
         Default
     };
+    static Config &instance();
+    result get(Config::type type, std::string key);
+
     void save();
-    Config load(type config);
-}
+
+    ~Config()
+    {
+        save();
+    };
+
+private:
+    Config();
+
+    native defaultConfig;
+    native userConfig;
+
+    bool hot_swap_enabled = false;
+};
