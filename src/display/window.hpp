@@ -1,4 +1,6 @@
-namespace window
+class Window 
 {
-    void setup();
+public:
+    static void create();
+    static void destroy();
 };

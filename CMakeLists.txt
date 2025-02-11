@@ -52,7 +52,6 @@ if (WIN32)
         file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/out/start.bat
             \"SET PATH=%~dp0lib;%PATH%\n\"
             \"start %~dp0bin\\\\${CMAKE_PROJECT_NAME}.exe\n\"
-            \"pause\n\"
         )
     ")
 endif()

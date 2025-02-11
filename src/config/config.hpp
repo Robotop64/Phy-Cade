@@ -3,7 +3,7 @@
 #include <string>
 
 using native = toml::parse_result;
-using result = std::optional<toml::node_view<toml::node>>;
+using result = toml::node_view<toml::node>;
 
 class Config
 {
@@ -20,7 +20,7 @@ public:
 
     ~Config()
     {
-        save();
+        // save();
     };
 
 private:

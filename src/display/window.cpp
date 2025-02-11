@@ -1,12 +1,27 @@
 #include "raylib.h"
+
+#include "window.hpp"
 #include "config.hpp"
 
-namespace window
+#include <iostream>
+#include <tuple>
+
+
+void Window::create()
 {
-    void setup()
-    {
-        // Config config = getConfig();
-        // auto resolution = config.at_path("Display.pref_resolution").as_array().;
-        // InitWindow(resolution[0], resolution[1], "raylib [core] example - basic window");
-    }
+    // std::cout << "Creating window\n";
+
+    auto handle = Config::instance().get(Config::User, "Display.Basic.pref_resolution");
+    int resolution[2] = {handle[0].value_or(0), handle[1].value_or(0)};
+
+    InitWindow(resolution[0], resolution[1], "PacPhi"); 
+    SetTargetFPS(Config::instance().get(Config::User, "Display.Basic.target_fps").value_or(60));
+    
+    std::cout << "Window created\n";
+}
+
+void Window::destroy()
+{
+    // CloseWindow();
+    std::cout << "Window destroyed\n";
 }

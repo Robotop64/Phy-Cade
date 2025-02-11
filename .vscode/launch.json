@@ -7,7 +7,11 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/bin/PacPhi.exe",
-      "cwd": "${workspaceFolder}/out"
+      "cwd": "${workspaceFolder}/out",
+      "args": [
+        // add dir to path
+        "-I${workspaceFolder}/out/lib",
+      ]
     }
   ]
 }

@@ -1,17 +1,6 @@
 {
     "version": "2.0.0",
     "tasks": [
-        // {
-        //     "label": "Launch",
-        //     "type": "shell",
-        //     "command": "powershell",
-        //     "args": [
-        //         "${workspaceFolder}/out/bin/PacPhi.exe"
-        //     ],
-        //     "options": {
-        //         "cwd": "${workspaceFolder}/out/"
-        //     }
-        // },
         {
             "label": "Launch",
             "type": "shell",
@@ -20,8 +9,11 @@
                 "${workspaceFolder}/out/bin/PacPhi.exe"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/out/"
-            }
+                "cwd": "${workspaceFolder}/out/",
+                "env": {
+                    "PATH": "${env:PATH};${workspaceFolder}/out/lib/"
+                }
+            },
         },
         {
             "label": "Clean Out",

@@ -1,11 +1,27 @@
+#include "raylib.h"
+
 #include "config.hpp"
+#include "window.hpp"
+
 #include <iostream>
-#include <filesystem>
+
+namespace win {
+    #include "windows.h"
+}
+
 
 int main(void)
 {
     // load config
     Config config = Config::instance();
-    std::cout << "Hot swap enabled: " << config.get(Config::User, "Display.Basic.target_fps").value() << "\n";
+
+    // create window
+    Window::create();
+
+    //sleep
+    win::Sleep(2000);
+
+    Window::destroy();
+
     return 0;
 }
