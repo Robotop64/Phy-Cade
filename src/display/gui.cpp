@@ -1,23 +1,26 @@
 #include "gui.hpp"
+#include "logging.hpp"
 
-#define CLAY_IMPLEMENTATION
-#include "clay.h"
+#include "raylib.h"
 #include "clay_renderer_raylib.c"
 
-void Gui::init()
+ClayMan subinit()
 {
-    uint64_t totalMemorySize = Clay_MinMemorySize();
-    void *memory = malloc(totalMemorySize);
-    Clay_Arena arena = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, memory);
-    // Clay_Initialize(arena, (Clay_Dimensions){GetScreenWidth(), GetScreenHeight()}, (Clay_ErrorHandler){HandleClayErrors});
+    Log::msg("Gui", "Initializing.");
 
     Font fonts[1];
-    fonts[0] = LoadFontEx("resources/Roboto-Regular.ttf", 48, 0, 400);
-    SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
-    Clay_SetMeasureTextFunction(Raylib_MeasureText, fonts);
+    fonts[0] = LoadFontEx("resources/fonts/Array-Regular.otf", 48, 0, 400);
+    return ClayMan(GetScreenWidth(), GetScreenHeight(), Raylib_MeasureText, fonts);
 }
 
-void HandleClayErrors(Clay_ErrorData errorData)
+ClayMan Gui::init()
 {
-    printf("%s", errorData.errorText.chars);
+    static ClayMan clayMan = subinit();
+
+    return clayMan;
 }
+
+// void HandleClayErrors(Clay_ErrorData errorData)
+// {
+//     printf("%s", errorData.errorText.chars);
+// }

@@ -2,34 +2,33 @@
 
 #include "window.hpp"
 #include "config.hpp"
-
-#include <iostream>
+#include "logging.hpp"
 
 Window::Context Window::current = nullptr;
 
 void Window::create()
 {
-    // std::cout << "Creating window\n";
-
     auto handle = Config::instance().get(Config::User, "Display.Basic.pref_resolution");
     int resolution[2] = {handle[0].value_or(0), handle[1].value_or(0)};
 
+    SetTraceLogLevel(LOG_WARNING);
     InitWindow(resolution[0], resolution[1], "PacPhi");
     SetTargetFPS(Config::instance().get(Config::User, "Display.Basic.target_fps").value_or(60));
 
-    std::cout << "Window created\n";
+    Log::msg("Window", "Created.");
 }
 
 void Window::destroy()
 {
     CloseWindow();
-    std::cout << "Window destroyed\n";
+    Log::msg("Window", "Destroyed.");
 }
 
 void Window::updateContext()
 {
-    while (Window::current != nullptr)
+    while (Window::current != nullptr && !WindowShouldClose())
     {
+        Log::msg("Window", "Updating Context.");
         Window::current();
     }
 }
@@ -37,4 +36,5 @@ void Window::updateContext()
 void Window::queueContext(Context context)
 {
     Window::current = context;
+    Log::msg("Window", "Context queued.");
 }

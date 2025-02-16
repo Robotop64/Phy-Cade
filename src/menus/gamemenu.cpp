@@ -1,12 +1,13 @@
 #include "window.hpp"
 #include "menu.hpp"
+#include "logging.hpp"
 
 #include "raylib.h"
 
-#include <iostream>
-
 void Menu::GameMenu()
 {
+    Log::msg("Window", "Swap to Context: Game-Menu");
+
     bool close = false;
     while (!WindowShouldClose() && !close)
     {
@@ -17,7 +18,6 @@ void Menu::GameMenu()
 
         if (IsKeyPressed(KEY_E))
         {
-            std::cout << "Game menu\n";
             close = true;
             Window::queueContext([]()
                                  { Menu::MainMenu(); });

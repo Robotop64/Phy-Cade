@@ -1,7 +1,8 @@
 #pragma once
-struct Menu
+
+namespace Menu
 {
-    static void MainMenu();
-    static void GameMenu();
-    static void OptionMenu();
+    void MainMenu();
+    void GameMenu();
+    void OptionMenu();
 };

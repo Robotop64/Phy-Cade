@@ -1,20 +1,21 @@
 #include "config.hpp"
+#include "logging.hpp"
 
 Config::Config()
 {
-    std::cout << "Initializing config.\n";
+    Log::msg("Config", "Initializing.");
 
     defaultConfig = toml::parse_file("resources\\default.toml");
 
     try
     {
         userConfig = toml::parse_file("userdata\\config.toml");
-        std::cout << "User-config loaded!\n";
+        Log::msg("Config", "User-config loaded.");
     }
     catch (const std::exception &e)
     {
-        std::cout << "Err: User-config not found!\n";
-        std::cout << "     Using defaults!\n";
+        Log::msg("Config", "Err: User-config not found!");
+        Log::msg("Config", "     Using defaults.");
         userConfig = defaultConfig;
         save();
     };
@@ -40,9 +41,9 @@ result Config::get(Config::type type, std::string key)
             }
             catch (const std::exception &e)
             {
-                std::cout << "Err: Config not found or invalid value in user-config!\n";
-                std::cout << "Config: " << key << "\n";
-                std::cout << "Using default!\n";
+                Log::msg("Config", "Err: Config not found or invalid value in user-config!");
+                Log::msg("Config", "Config: {}", key);
+                Log::msg("Config", "     Using default!");
                 return defaultConfig.at_path(key);
             }
         }
@@ -53,9 +54,9 @@ result Config::get(Config::type type, std::string key)
         }
         catch (const std::exception &e)
         {
-            std::cout << "Err: Config not found or invalid value in user-config!\n";
-            std::cout << "Config: " << key << "\n";
-            std::cout << "Using default!\n";
+            Log::msg("Config", "Err: Config not found or invalid value in user-config!");
+            Log::msg("Config", "Config: {}", key);
+            Log::msg("Config", "     Using default!");
             return defaultConfig.at_path(key);
         }
     }
@@ -70,5 +71,5 @@ void Config::save()
     std::ofstream file("userdata\\config.toml");
     file << userConfig;
     file.close();
-    std::cout << "User-config saved!\n";
+    Log::msg("Config", "User-config saved.");
 };

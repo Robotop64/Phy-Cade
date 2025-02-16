@@ -39,6 +39,7 @@ include_directories(${TOMLPP_DIR})
 #-------------------------------------------------------------------------------
 set(CLAY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/clay")
 include_directories(${CLAY_DIR})
+list(APPEND MY_SOURCES "${CLAY_DIR}/clayman.cpp")
 #===============================================================================
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/bin)

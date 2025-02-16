@@ -15,8 +15,6 @@ int main(void)
     // create window
     Window::create();
 
-    Gui::init();
-
     Window::queueContext(Menu::MainMenu);
     Window::updateContext();
 

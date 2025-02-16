@@ -1,5 +1,7 @@
 #include "window.hpp"
 #include "menu.hpp"
+#include "gui.hpp"
+#include "logging.hpp"
 
 #include "raylib.h"
 
@@ -7,6 +9,10 @@
 
 void Menu::MainMenu()
 {
+    Log::msg("Window", "Swap to Context: Main-Menu");
+
+    ClayMan handle = Gui::init();
+
     bool close = false;
     while (!WindowShouldClose() && !close)
     {
@@ -17,13 +23,12 @@ void Menu::MainMenu()
 
         if (IsKeyPressed(KEY_E))
         {
-            std::cout << "Exiting Main\n";
             close = true;
             Window::queueContext(nullptr);
+            Log::msg("Window", "Swap to Context: None");
         }
         if (IsKeyPressed(KEY_G))
         {
-            std::cout << "Main menu\n";
             close = true;
             Window::queueContext([]()
                                  { Menu::GameMenu(); });

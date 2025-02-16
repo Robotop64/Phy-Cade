@@ -1,6 +1,8 @@
 #pragma once
 
-struct Gui
+#include "clayman.hpp"
+
+namespace Gui
 {
-    static void init();
+    ClayMan init();
 };
