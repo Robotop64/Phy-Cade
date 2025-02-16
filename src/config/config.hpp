@@ -1,3 +1,4 @@
+#pragma once
 #include "toml.hpp"
 #include <iostream>
 #include <string>
@@ -18,8 +19,7 @@ public:
 
     void save();
 
-    ~Config()
-    {
+    ~Config() {
         // save();
     };
 

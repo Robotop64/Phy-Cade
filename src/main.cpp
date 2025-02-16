@@ -2,13 +2,10 @@
 
 #include "config.hpp"
 #include "window.hpp"
+#include "menu.hpp"
+#include "gui.hpp"
 
 #include <iostream>
-
-namespace win {
-    #include "windows.h"
-}
-
 
 int main(void)
 {
@@ -18,8 +15,10 @@ int main(void)
     // create window
     Window::create();
 
-    //sleep
-    win::Sleep(2000);
+    Gui::init();
+
+    Window::queueContext(Menu::MainMenu);
+    Window::updateContext();
 
     Window::destroy();
 

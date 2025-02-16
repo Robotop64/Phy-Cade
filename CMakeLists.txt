@@ -34,6 +34,11 @@ list(APPEND DLLs ${RAYLIB_LIB})
 #-------------------------------------------------------------------------------
 set(TOMLPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/tomlplusplus")
 include_directories(${TOMLPP_DIR})
+#-------------------------------------------------------------------------------
+# Clay
+#-------------------------------------------------------------------------------
+set(CLAY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/clay")
+include_directories(${CLAY_DIR})
 #===============================================================================
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/bin)
