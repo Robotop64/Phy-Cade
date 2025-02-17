@@ -1,26 +1,23 @@
 #include "gui.hpp"
 #include "logging.hpp"
 
-#include "raylib.h"
-#include "clay_renderer_raylib.c"
+Gui::Handle subinit()
+{
+    Font fonts[1];
+    fonts[0] = LoadFontEx("resources/fonts/Array-Regular.otf", 48, 0, 400);
+    SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
+    Gui::Handle handle = {ClayMan(GetScreenWidth(), GetScreenHeight(), Raylib_MeasureText, fonts), {fonts[0]}};
 
-ClayMan subinit()
+    return handle;
+}
+
+Gui::Handle Gui::init()
 {
     Log::msg("Gui", "Initializing.");
 
-    Font fonts[1];
-    fonts[0] = LoadFontEx("resources/fonts/Array-Regular.otf", 48, 0, 400);
-    return ClayMan(GetScreenWidth(), GetScreenHeight(), Raylib_MeasureText, fonts);
+    static Gui::Handle handle = subinit();
+
+    Log::msg("Gui", "Initialized.");
+
+    return handle;
 }
-
-ClayMan Gui::init()
-{
-    static ClayMan clayMan = subinit();
-
-    return clayMan;
-}
-
-// void HandleClayErrors(Clay_ErrorData errorData)
-// {
-//     printf("%s", errorData.errorText.chars);
-// }
