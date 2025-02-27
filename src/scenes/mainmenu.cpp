@@ -1,11 +1,11 @@
 #include "window.hpp"
-#include "menu.hpp"
+#include "scene.hpp"
 #include "gui.hpp"
 #include "logging.hpp"
 
 void myLayout(ClayMan &clayMan);
 
-void Menu::MainMenu()
+void Scene::MainMenu()
 {
     Log::msg("Window", "Swap to Context: Main-Menu");
 
@@ -25,7 +25,7 @@ void Menu::MainMenu()
         {
             close = true;
             Window::queueContext([]()
-                                 { Menu::GameMenu(); });
+                                 { Scene::Game(); });
         }
 
         // Get mouse info from Raylib

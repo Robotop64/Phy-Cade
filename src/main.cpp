@@ -1,17 +1,17 @@
 #include "config.hpp"
 #include "window.hpp"
-#include "menu.hpp"
+#include "scene.hpp"
 #include "gui.hpp"
 
 int main(void)
 {
     // load config
-    Config config = Config::instance();
+    Config::instance();
 
     // create window
     Window::create();
 
-    Window::queueContext(Menu::MainMenu);
+    Window::queueContext(Scene::MainMenu);
     Window::updateContext();
 
     Window::destroy();

@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Menu
+namespace Scene
 {
     void MainMenu();
-    void GameMenu();
+    void Game();
     void OptionMenu();
 };

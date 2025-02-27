@@ -1,10 +1,10 @@
 #include "window.hpp"
-#include "menu.hpp"
+#include "scene.hpp"
 #include "logging.hpp"
 
 #include "raylib.h"
 
-void Menu::GameMenu()
+void Scene::Game()
 {
     Log::msg("Window", "Swap to Context: Game-Menu");
 
@@ -20,7 +20,7 @@ void Menu::GameMenu()
         {
             close = true;
             Window::queueContext([]()
-                                 { Menu::MainMenu(); });
+                                 { Scene::MainMenu(); });
         }
     }
 }
