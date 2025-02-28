@@ -6,7 +6,8 @@ Gui::Handle subinit()
     Font fonts[1];
     fonts[0] = LoadFontEx("resources/fonts/Array-Regular.otf", 48, 0, 400);
     SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
-    Gui::Handle handle = {ClayMan(GetScreenWidth(), GetScreenHeight(), Raylib_MeasureText, fonts), {fonts[0]}};
+    ClayMan clayMan = ClayMan(GetScreenWidth(), GetScreenHeight(), Raylib_MeasureText, fonts);
+    Gui::Handle handle = {&clayMan, {fonts[0]}};
 
     return handle;
 }
@@ -20,4 +21,31 @@ Gui::Handle Gui::init()
     Log::msg("Gui", "Initialized.");
 
     return handle;
+}
+
+void Gui::updateMouse(Handle& handle)
+{
+    ClayMan* clayMan = handle.clayMan;
+
+    Vector2 mousePosition = GetMousePosition();
+    Vector2 scrollDelta = GetMouseWheelMoveV();
+
+    clayMan->updateClayState(
+        GetScreenWidth(),
+        GetScreenHeight(),
+        mousePosition.x,
+        mousePosition.y,
+        scrollDelta.x,
+        scrollDelta.y,
+        GetFrameTime(),
+        IsMouseButtonDown(0));
+}
+
+void Gui::draw(Handle& handle, std::function<void()> layout)
+{
+    ClayMan* clayMan = handle.clayMan;
+
+    clayMan->beginLayout();
+    layout();
+    Clay_Raylib_Render(clayMan->endLayout(), handle.fonts);
 }
