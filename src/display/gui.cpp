@@ -23,9 +23,9 @@ Gui::Handle Gui::init()
     return handle;
 }
 
-void Gui::updateMouse(Handle& handle)
+void Gui::updateMouse(Handle &handle)
 {
-    ClayMan* clayMan = handle.clayMan;
+    ClayMan *clayMan = handle.clayMan;
 
     Vector2 mousePosition = GetMousePosition();
     Vector2 scrollDelta = GetMouseWheelMoveV();
@@ -41,11 +41,7 @@ void Gui::updateMouse(Handle& handle)
         IsMouseButtonDown(0));
 }
 
-void Gui::draw(Handle& handle, std::function<void()> layout)
+void Gui::draw(Handle &handle)
 {
-    ClayMan* clayMan = handle.clayMan;
-
-    clayMan->beginLayout();
-    layout();
-    Clay_Raylib_Render(clayMan->endLayout(), handle.fonts);
-}
+    Clay_Raylib_Render(handle.commands, handle.fonts);
+};

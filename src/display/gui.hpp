@@ -9,14 +9,14 @@ namespace Gui
 {
     struct Handle
     {
-        ClayMan* clayMan;
+        ClayMan *clayMan;
         Font fonts[1];
-        // std::array<Font, 1> fonts;
+        Clay_RenderCommandArray commands;
     };
 
     Handle init();
 
-    void updateMouse(Handle& handle);
+    void updateMouse(Handle &handle);
 
-    void draw(Handle& handle,std::function<void()> layout);
+    void draw(Handle &handle);
 };
