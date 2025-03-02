@@ -13,6 +13,7 @@ void Window::create()
 
     SetTraceLogLevel(LOG_WARNING);
     InitWindow(resolution[0], resolution[1], "PacPhi");
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(Config::instance().get(Config::User, "Display.Basic.target_fps").value_or(60));
 
     Log::msg("Window", "Created.");
