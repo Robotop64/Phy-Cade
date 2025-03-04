@@ -5,10 +5,9 @@
 
 int main(void)
 {
-    // load config
+    // init config
     Config::instance();
 
-    // create window
     Window::create();
 
     Window::queueContext(Scene::MainMenu);

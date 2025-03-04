@@ -3,11 +3,13 @@
 #include "gui.hpp"
 #include "logging.hpp"
 #include "profiler.hpp"
+#include "config.hpp"
 
 struct State
 {
     bool close = false;
     bool gui_lock = false;
+    bool rebuild_layout = false;
 };
 static State state;
 
@@ -29,11 +31,12 @@ void Scene::MainMenu()
     {
         processInput();
 
-        if (IsWindowResized()) //|| GetKeyPressed() != 0
+        if (state.rebuild_layout)
         {
             Gui::updateMouse(handle);
             calcLayout(handle);
-            Log::msg("MainMenu", "Recalculating Layout.");
+            state.rebuild_layout = false;
+            // Log::msg("MainMenu", "Rebuilt Layout.");
         }
 
         BeginDrawing();
@@ -63,6 +66,15 @@ void processInput()
         Window::queueContext([]()
                              { Scene::Game(); });
     }
+
+    if (IsWindowResized() || GetKeyPressed() != 0 || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    {
+        // Clear input buffer
+        while (GetKeyPressed() != 0)
+        {
+        }
+        state.rebuild_layout = true;
+    }
 }
 
 void calcLayout(Gui::Handle &handle)
@@ -71,7 +83,7 @@ void calcLayout(Gui::Handle &handle)
     clayMan.beginLayout();
     clayMan.element(
         {
-            // .id = clayMan.hashID("Main-Container"),
+            .id = CLAY_ID("Main-Container"),
             .layout = {
                 .sizing = clayMan.expandXY(),
                 .padding = {16, 16, 16, 16},
@@ -82,7 +94,7 @@ void calcLayout(Gui::Handle &handle)
         {
             clayMan.element(
                 {
-                    // .id = clayMan.hashID("Box-A"),
+                    .id = CLAY_ID("Box-A"),
                     .layout = {
                         .sizing = clayMan.expandYfixedX(200),
                     },

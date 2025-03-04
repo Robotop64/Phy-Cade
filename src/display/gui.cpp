@@ -38,7 +38,7 @@ void Gui::updateMouse(Handle &handle)
         scrollDelta.x,
         scrollDelta.y,
         GetFrameTime(),
-        IsMouseButtonDown(0));
+        IsMouseButtonDown(MOUSE_BUTTON_LEFT));
 }
 
 void Gui::draw(Handle &handle)
