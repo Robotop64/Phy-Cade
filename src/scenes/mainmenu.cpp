@@ -5,6 +5,8 @@
 #include "profiler.hpp"
 #include "config.hpp"
 
+#include <string>
+
 struct State
 {
     bool close = false;
@@ -77,48 +79,77 @@ void processInput()
     }
 }
 
+const Clay_Color gray_0 = {35, 35, 35, 255};
+const Clay_Color gray_1 = {70, 70, 70, 255};
+const Clay_Color gray_2 = {105, 105, 105, 255};
+const Clay_Color gray_3 = {140, 140, 140, 255};
+const Clay_Color gray_4 = {175, 175, 175, 255};
+const Clay_Color gray_5 = {210, 210, 210, 255};
+const Clay_Color gray_6 = {245, 245, 245, 255};
+
+const Clay_TextElementConfig infoText = {
+    // Configure text
+    .textColor = {255, 255, 255, 255},
+    .fontId = 0,
+    .fontSize = 16,
+};
+
 void calcLayout(Gui::Handle &handle)
 {
     ClayMan &clayMan = *handle.clayMan;
     clayMan.beginLayout();
+
+    // Main Container
     clayMan.element(
         {
-            .id = CLAY_ID("Main-Container"),
+            // .id = CLAY_ID("Main-Container"),
             .layout = {
                 .sizing = clayMan.expandXY(),
                 .padding = {16, 16, 16, 16},
                 .childGap = 16,
             },
+            .backgroundColor = gray_0,
         },
         [&]()
         {
+            // Left Column
             clayMan.element(
                 {
-                    .id = CLAY_ID("Box-A"),
                     .layout = {
-                        .sizing = clayMan.expandYfixedX(200),
+                        .sizing = clayMan.expandXY(),
+                        .childGap = 8,
+                        .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_BOTTOM},
+                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
                     },
-                    .backgroundColor = {255, 0, 0, 255},
+                    .backgroundColor = gray_1,
+                },
+                [&]()
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        std::string text = "Button " + std::to_string(i);
+                        clayMan.textElement(text, infoText);
+                    }
+                });
+            // Center Column
+            clayMan.element(
+                {
+                    .layout = {
+                        .sizing = clayMan.expandYfixedX(GetScreenWidth() * 3 / 7),
+                    },
+                    .backgroundColor = gray_1,
                 },
                 [&]() {});
+            // Right Column
             clayMan.element(
                 {
-                    // .id = clayMan.hashID("Box-B"),
                     .layout = {
                         .sizing = clayMan.expandXY(),
                     },
-                    .backgroundColor = {0, 255, 0, 255},
-                },
-                [&]() {});
-            clayMan.element(
-                {
-                    // .id = clayMan.hashID("Box-C"),
-                    .layout = {
-                        .sizing = clayMan.expandYfixedX(200),
-                    },
-                    .backgroundColor = {0, 0, 255, 255},
+                    .backgroundColor = gray_1,
                 },
                 [&]() {});
         });
+
     handle.commands = clayMan.endLayout();
 }
