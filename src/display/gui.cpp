@@ -46,3 +46,27 @@ void Gui::draw(Handle &handle)
 {
     Clay_Raylib_Render(handle.commands, handle.fonts);
 };
+
+bool Gui::updatedInput()
+{
+    static Vector2 lastMousePosition = GetMousePosition();
+    static Vector2 lastScrollDelta = GetMouseWheelMoveV();
+
+    bool mouseUpdate = !(lastMousePosition == GetMousePosition());
+    bool scrollUpdate = !(lastScrollDelta == GetMouseWheelMoveV());
+    bool mouseButtonUpdate = (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT));
+    bool keyUpdate = (GetKeyPressed() != 0);
+    bool windowUpdate = IsWindowResized();
+
+    lastMousePosition = GetMousePosition();
+    lastScrollDelta = GetMouseWheelMoveV();
+
+    return mouseUpdate || scrollUpdate || mouseButtonUpdate || keyUpdate || windowUpdate;
+}
+
+void Gui::clearInput()
+{
+    while (GetKeyPressed() != 0)
+    {
+    }
+}

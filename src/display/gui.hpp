@@ -19,4 +19,7 @@ namespace Gui
     void updateMouse(Handle &handle);
 
     void draw(Handle &handle);
+
+    bool updatedInput();
+    void clearInput();
 };

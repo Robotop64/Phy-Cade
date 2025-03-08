@@ -47,7 +47,7 @@ void Scene::MainMenu()
             Gui::updateMouse(handle);
             calcLayout(handle);
             state.rebuild_layout = false;
-            // Log::msg("MainMenu", "Rebuilt Layout.");
+            // Log::msg("MainMenu", "Rebuilt Layout on Frame {}.", (GetTime() / GetFPS()));
         }
 
         BeginDrawing();
@@ -78,14 +78,12 @@ void processInput()
                              { Scene::Game(); });
     }
 
-    if (IsWindowResized() || GetKeyPressed() != 0 || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+    if (Gui::updatedInput())
     {
-        // Clear input buffer
-        while (GetKeyPressed() != 0)
-        {
-        }
         state.rebuild_layout = true;
     }
+
+    Gui::clearInput();
 }
 
 #pragma region Styling
