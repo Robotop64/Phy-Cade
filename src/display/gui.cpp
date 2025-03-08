@@ -4,8 +4,9 @@
 Gui::Handle subinit()
 {
     Font fonts[1];
-    fonts[0] = LoadFontEx("resources/fonts/Roboto-Regular.ttf", 48, 0, 400);
+    fonts[0] = LoadFontEx("resources/fonts/Roboto-Regular.ttf", 64, 0, 400);
     SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
+
     ClayMan clayMan = ClayMan(GetScreenWidth(), GetScreenHeight(), Raylib_MeasureText, fonts);
     Gui::Handle handle = {&clayMan, {fonts[0]}};
 
