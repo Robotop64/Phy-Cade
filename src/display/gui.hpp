@@ -4,6 +4,7 @@
 #include "clay_renderer_raylib.h"
 
 #include <functional>
+#include <vector>
 
 namespace Gui
 {

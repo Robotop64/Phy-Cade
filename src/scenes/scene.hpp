@@ -4,5 +4,5 @@ namespace Scene
 {
     void MainMenu();
     void Game();
-    void OptionMenu();
+    void SettingMenu();
 };
