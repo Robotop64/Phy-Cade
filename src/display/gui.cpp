@@ -70,3 +70,8 @@ void Gui::clearInput()
     {
     }
 }
+
+void Gui::cleanup()
+{
+    Clay_Raylib_Close();
+}

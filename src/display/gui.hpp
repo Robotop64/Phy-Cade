@@ -22,4 +22,6 @@ namespace Gui
 
     bool updatedInput();
     void clearInput();
+
+    void cleanup();
 };
