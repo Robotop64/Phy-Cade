@@ -13,6 +13,8 @@ int main(void)
     Window::queueContext(Scene::MainMenu);
     Window::updateContext();
 
+    Gui::cleanup();
+
     Window::destroy();
 
     return 0;
