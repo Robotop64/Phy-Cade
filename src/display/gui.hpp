@@ -1,28 +1,55 @@
 #pragma once
 
-#include "clayman.hpp"
+#include "clay.h"
 #include "clay_renderer_raylib.h"
 
 #include <functional>
 #include <vector>
+#include <string>
+#include <map>
 
-namespace Gui
+class Gui
 {
-    struct Handle
-    {
-        ClayMan *clayMan;
-        Font fonts[1];
-        Clay_RenderCommandArray commands;
-    };
+public:
+    static Font fonts[];
+    static Clay_RenderCommandArray current_Commands;
+    
+    static void init();
+    static void setContext(const std::string& name);
+    
+    static void updateState();
+    static bool isInputUpdated();
+    static void clearInput();
+    static bool componentClicked(const std::string& id, const int button);
+    
+    static void BeginLayout();
+    static Clay_RenderCommandArray EndLayout();
 
-    Handle init();
+    static void draw();
+    static void updateRenderCommands(const Clay_RenderCommandArray& commands);
+    
+    static void cleanup();
 
-    void updateMouse(Handle &handle);
+    static void EnableDebug(const bool enable) {
+        Clay_SetDebugModeEnabled(enable);
+    }
+    static Clay_Context* CreateContext();
+    static Clay_String ClayString(const std::string& text);
+private:    
+    static Clay_Context* current_Context;
+    static std::map<std::string, Clay_Context*> contexts;
+    
+    static char stringArena[];
+    static size_t nextStringArenaIndex;
 
-    void draw(Handle &handle);
+    
+    
+    static void handleErrors(Clay_ErrorData errorData) {
+        printf("%s", errorData.errorText.chars);
+    }
 
-    bool updatedInput();
-    void clearInput();
-
-    void cleanup();
+    static const char* insertStringIntoArena(const std::string& str);
+    static void resetStringArenaIndex() {
+        nextStringArenaIndex = 0;
+    }
 };
