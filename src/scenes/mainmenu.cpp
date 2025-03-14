@@ -23,34 +23,37 @@ static Resources resources;
 
 namespace
 {
-    void calcLayout(Gui::Handle &handle);
-    void processInput(Gui::Handle &handle);
-    void Button(std::string label, ClayMan &clayMan);
+    const std::string menu = "MainMenu";
+    void calcLayout();
+    void processInput();
+    void Button(std::string);
     void cleanup();
 }
 
 void Scene::MainMenu()
 {
-    Log::msg("Window", "Swap to Context: Main-Menu");
+    Log::msg("Window", "Swap to Context: {}", menu);
 
     state = State{};
     resources = Resources{.QR = LoadTexture("resources/GitQR-Inverted.png")};
 
-    Gui::Handle handle = Gui::init();
-    calcLayout(handle);
+    Gui::init();
+    Gui::setContext(menu);
 
-    Log::msg("MainMenu", "Starting Loop.");
+    calcLayout();
 
-    // Clay_SetDebugModeEnabled(true);
+    Log::msg(menu, "Starting Loop.");
+
+    Gui::EnableDebug(false);
 
     while (!WindowShouldClose() && !state.close)
     {
-        processInput(handle);
+        processInput();
 
         if (state.rebuild_layout)
         {
-            Gui::updateMouse(handle);
-            calcLayout(handle);
+            Gui::updateState();
+            calcLayout();
             state.rebuild_layout = false;
             // Log::msg("MainMenu", "Rebuilt Layout on Frame {}.", (GetTime() / GetFPS()));
         }
@@ -58,60 +61,59 @@ void Scene::MainMenu()
         BeginDrawing();
         ClearBackground(BLACK);
 
-        Gui::draw(handle);
+        Gui::draw();
 
         EndDrawing();
     }
 
     cleanup();
-    Gui::cleanup();
+    // Gui::cleanup();
 
-    Log::msg("MainMenu", "Ending Loop.");
+    Log::msg(menu, "Ending Loop.");
 
-    Log::msg("MainMenu", "Leaving Current Context.");
+    Log::msg(menu, "Leaving Current Context.");
 }
 
 #pragma region local
-    #pragma region Styling
-    const Clay_Color gray_0 = {35, 35, 35, 255};
-    const Clay_Color gray_1 = {70, 70, 70, 255};
-    const Clay_Color gray_2 = {105, 105, 105, 255};
-    const Clay_Color gray_3 = {140, 140, 140, 255};
-    const Clay_Color gray_4 = {175, 175, 175, 255};
-    const Clay_Color gray_5 = {210, 210, 210, 255};
-    const Clay_Color gray_6 = {245, 245, 245, 255};
-
-    const Clay_TextElementConfig infoText = {
-        .textColor = {255, 255, 255, 255},
-        .fontId = 0,
-        .fontSize = 16,
-        .letterSpacing = 2,
-    };
-    const Clay_TextElementConfig buttonText = {
-        .textColor = {255, 255, 255, 255},
-        .fontId = 0,
-        .fontSize = 32,
-        .letterSpacing = 2,
-    };
-    const Clay_TextElementConfig titleText = {
-        .textColor = {255, 255, 255, 255},
-        .fontId = 0,
-        .fontSize = 48,
-        .letterSpacing = 2,
-    };
-    #pragma endregion Styling
-
     namespace
     {
-        void processInput(Gui::Handle &handle)
+        #pragma region Styling
+        const Clay_Color gray_0 = {35, 35, 35, 255};
+        const Clay_Color gray_1 = {70, 70, 70, 255};
+        const Clay_Color gray_2 = {105, 105, 105, 255};
+        const Clay_Color gray_3 = {140, 140, 140, 255};
+        const Clay_Color gray_4 = {175, 175, 175, 255};
+        const Clay_Color gray_5 = {210, 210, 210, 255};
+        const Clay_Color gray_6 = {245, 245, 245, 255};
+
+        Clay_TextElementConfig infoText = {
+            .textColor = {255, 255, 255, 255},
+            .fontId = 0,
+            .fontSize = 16,
+            .letterSpacing = 2,
+        };
+        Clay_TextElementConfig buttonText = {
+            .textColor = {255, 255, 255, 255},
+            .fontId = 0,
+            .fontSize = 32,
+            .letterSpacing = 2,
+        };
+        Clay_TextElementConfig titleText = {
+            .textColor = {255, 255, 255, 255},
+            .fontId = 0,
+            .fontSize = 48,
+            .letterSpacing = 2,
+        };
+        #pragma endregion Styling
+
+        void processInput()
         {
-            ClayMan &clayMan = *handle.clayMan;
             
-            if (Clay_PointerOver(CLAY_ID("Play-Button")) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-            {
-                state.close = true;
-                Window::queueContext([](){ Scene::Game(); });
-            }
+            // if (Gui::componentClicked("Play-Button", MOUSE_BUTTON_LEFT))
+            // {
+            //     state.close = true;
+            //     Window::queueContext([](){ Scene::Game(); });
+            // }
         
             // if (Clay_PointerOver(CLAY_ID("Leaderboard-Button")) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
             // {
@@ -119,13 +121,13 @@ void Scene::MainMenu()
             //     Window::queueContext([](){ Scene::Leaderboard(); });
             // }
         
-            if (Clay_PointerOver(CLAY_ID("Settings-Button")) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            if (Gui::componentClicked("Settings-Button", MOUSE_BUTTON_LEFT))
             {
                 state.close = true;
                 Window::queueContext([](){ Scene::SettingMenu(); });
             }
         
-            if (Clay_PointerOver(CLAY_ID("Quit-Button")) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            if (Gui::componentClicked("Quit-Button", MOUSE_BUTTON_LEFT))
             {
                 state.close = true;
                 Window::queueContext(nullptr);
@@ -133,7 +135,7 @@ void Scene::MainMenu()
             }
             
         
-            if (Gui::updatedInput())
+            if (Gui::isInputUpdated())
             {
                 state.rebuild_layout = true;
             }
@@ -141,141 +143,156 @@ void Scene::MainMenu()
             Gui::clearInput();
         }
 
-        void Button(std::string label, ClayMan &clayMan)
+        void Button(std::string label)
         {
-            clayMan.element(
-                {
-                    .id = clayMan.hashID(label+"-Button"),
-                    .layout = {
-                        .sizing = clayMan.fixedSize(250, 50),
-                        .padding = {8, 8, 8, 8},
-                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+            Clay_ElementId button_id = CLAY_SID(Gui::ClayString(label+"-Button"));
+            CLAY({
+                .id = button_id,
+                .layout = {
+                    .sizing = {
+                        .width = CLAY_SIZING_FIXED(250),
+                        .height = CLAY_SIZING_FIXED(50),
                     },
-                    .backgroundColor = Clay_PointerOver(clayMan.hashID(label+"-Button")) ? gray_4 : gray_2,
-                    .border = {.color = gray_3, .width = {5, 5, 5, 5, 5}},
+                    .padding = {8, 8, 8, 8},
+                    .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
                 },
-                [&]()
-                {
-                    clayMan.textElement(label, buttonText);
-                });
+                .backgroundColor = Clay_PointerOver(button_id) ? gray_4 : gray_2,
+                .border = {.color = gray_3, .width = {5, 5, 5, 5, 5}},
+            }){
+                CLAY_TEXT(Gui::ClayString(label), &buttonText);
+            };
         }
 
-        void calcLayout(Gui::Handle &handle)
+        void calcLayout()
         {
-            ClayMan &clayMan = *handle.clayMan;
-            clayMan.beginLayout();
+            Gui::BeginLayout();
 
-            // Main Container
-            clayMan.element(
-                {
-                    .layout = {
-                        .sizing = clayMan.expandXY(),
-                        .padding = {16, 16, 16, 16},
-                        .childGap = 16,
+            //empty Main container
+            CLAY({
+                .layout = {
+                    .sizing = {
+                        .width = CLAY_SIZING_GROW(),
+                        .height = CLAY_SIZING_GROW(),
                     },
-                    .backgroundColor = gray_0,
+                    .padding = {16, 16, 16, 16},
+                    .childGap = 16,
                 },
-                [&]()
-                {
-        #pragma region LeftColumn
-                    clayMan.element(
-                        {
-                            .layout = {
-                                .sizing = clayMan.expandXY(),
-                                .childGap = 8,
-                                .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_BOTTOM},
-                                .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                            },
+                .backgroundColor = gray_0,
+            }){
+            #pragma region LeftColumn
+                CLAY({
+                    .layout = {
+                        .sizing = {
+                            .width = CLAY_SIZING_GROW(),
+                            .height = CLAY_SIZING_GROW(),
                         },
-                        [&]()
-                        {
-                            clayMan.textElement(std::string("Build Version: " + std::string("VERSION")), infoText);
-                        });
-        #pragma endregion LeftColumn
-        #pragma region CenterColumn
-                    clayMan.element(
-                        {
-                            .layout = {
-                                .sizing = {.width = CLAY_SIZING_PERCENT(0.4), .height = CLAY_SIZING_GROW()},
-                                .childGap = 32,
-                                .childAlignment = {.x = CLAY_ALIGN_X_CENTER},
-                                .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                            },
-                        },
-                        [&]()
-                        {
-                            // Buffer
-                            clayMan.element({.layout = {.sizing = {.width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_PERCENT(0.05)}}},
-                                            [&]() {});
-                            // Title
-                            clayMan.element(
-                                {
-                                    .layout = {
-                                        .sizing = clayMan.expandXfixedY(50),
-                                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                                    },
-                                },
-                                [&]()
-                                {
-                                    clayMan.textElement("PacMan: Phi-cade Edition", titleText);
-                                });
-                            // Buffer
-                            clayMan.element({.layout = {.sizing = {.width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_PERCENT(0.10)}}},
-                                            [&]() {});
-                            // Buttons
-                            clayMan.element(
-                                {
-                                    .layout = {
-                                        .sizing = CLAY_SIZING_FIT(),
-                                        .childGap = 32,
-                                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                                    },
-                                },
-                                [&]()
-                                {
-                                    Button("Play", clayMan);
-                                    Button("Leaderboard", clayMan);
-                                    Button("Settings", clayMan);
-                                    Button("Quit", clayMan);
-                                });
-                        });
-        #pragma endregion CenterColumn
-        #pragma region RightColumn
-                    clayMan.element(
-                        {
-                            .layout = {
-                                .sizing = clayMan.expandXY(),
-                                .childGap = 8,
-                                .childAlignment = {.x = CLAY_ALIGN_X_RIGHT, .y = CLAY_ALIGN_Y_BOTTOM},
-                                .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                            },
-                        },
-                        [&]()
-                        {
-                            clayMan.element(
-                                {
-                                    .layout = {
-                                        .sizing = clayMan.fixedSize(250, 30),
-                                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                                    },
-                                },
-                                [&]()
-                                { clayMan.textElement("Problems & Suggestions to:", infoText); });
-                            clayMan.element(
-                                {
-                                    .layout = {
-                                        .sizing = clayMan.fixedSize(200, 200),
-                                    },
-                                    .image = {.imageData = &resources.QR, .sourceDimensions = {1000, 1000}},
-                                },
-                                [&]() {});
-                        });
-        #pragma endregion RightColumn
-                });
+                        .childGap = 8,
+                        .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_BOTTOM},
+                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                    },
+                }){
+                    CLAY_TEXT(Gui::ClayString("Build Version: " + std::string("VERSION")), &infoText);
+                };
+            #pragma endregion LeftColumn
 
-            handle.commands = clayMan.endLayout();
-        }
+            #pragma region CenterColumn
+                CLAY({
+                    .layout = {
+                        .sizing = {
+                            .width = CLAY_SIZING_PERCENT(0.4),
+                            .height = CLAY_SIZING_GROW(),
+                        },
+                        .childGap = 32,
+                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER},
+                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                    },
+                }){
+                    //Buffer
+                    CLAY({
+                        .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_GROW(),
+                                .height = CLAY_SIZING_PERCENT(0.05),
+                            },
+                        },
+                    }){};
+                    //Title
+                    CLAY({
+                        .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_GROW(),
+                                .height = CLAY_SIZING_FIXED(50),
+                            },
+                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                        },
+                    }){
+                        CLAY_TEXT(Gui::ClayString("PacMan: Phi-cade Edition"), &titleText);
+                    };
+                    //Buffer
+                    CLAY({
+                        .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_GROW(),
+                                .height = CLAY_SIZING_PERCENT(0.10),
+                            },
+                        },
+                    }){};
+                    //Buttons
+                    CLAY({
+                        .layout = {
+                            .sizing = CLAY_SIZING_FIT(),
+                            .childGap = 32,
+                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                            .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                        },
+                    }){
+                        Button("Play");
+                        Button("Leaderboard");
+                        Button("Settings");
+                        Button("Quit");
+                    };
+                };
+            #pragma endregion CenterColumn
+
+            #pragma region RightColumn
+                CLAY({
+                    .layout = {
+                        .sizing = {
+                            .width = CLAY_SIZING_GROW(),
+                            .height = CLAY_SIZING_GROW(),
+                        },
+                        .childGap = 8,
+                        .childAlignment = {.x = CLAY_ALIGN_X_RIGHT, .y = CLAY_ALIGN_Y_BOTTOM},
+                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                    },
+                }){
+                    CLAY({
+                        .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_FIXED(200),
+                                .height = CLAY_SIZING_FIXED(30),
+                            },
+                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                        },
+                    }){
+                        CLAY_TEXT(Gui::ClayString("Problems & Suggestions to:"), &infoText);
+                    };
+                    CLAY({
+                        .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_FIXED(200),
+                                .height = CLAY_SIZING_FIXED(200),
+                            },
+                        },
+                        .image = {.imageData = &resources.QR, .sourceDimensions = {1000, 1000}},
+                    }){};
+                };
+            #pragma endregion RightColumn
+            };
+
+            Clay_RenderCommandArray commands = Gui::EndLayout();
+            Gui::updateRenderCommands(commands);
+        };
 
         void cleanup()
         {
