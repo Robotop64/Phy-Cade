@@ -63,6 +63,7 @@
         "ratio": "cpp",
         "cinttypes": "cpp",
         "clay_renderer_raylib.c": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "any": "cpp"
     }
 }

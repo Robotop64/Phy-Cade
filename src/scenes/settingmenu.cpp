@@ -6,6 +6,7 @@
 #include "config.hpp"
 
 #include <string>
+#include <vector>
 
 struct State
 {
@@ -27,6 +28,9 @@ namespace
     void processInput();
     void Button(std::string);
     void cleanup();
+    std::vector<std::string> getMajorGroups();
+    std::vector<std::string> getMinorGroups(std::string major);
+    std::vector<std::string> getSettings(std::string major);
 }
 
 void Scene::SettingMenu()
@@ -161,79 +165,36 @@ void Scene::SettingMenu()
                 },
                 .backgroundColor = gray_0,
             }){
-            #pragma region LeftColumn
+            #pragma region SideBar
                 CLAY({
                     .layout = {
                         .sizing = {
-                            .width = CLAY_SIZING_GROW(),
+                            .width = CLAY_SIZING_PERCENT(0.2),
                             .height = CLAY_SIZING_GROW(),
                         },
-                        .childGap = 8,
-                        .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_BOTTOM},
+                        .childGap = 16,
+                        // .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_BOTTOM},
                         .layoutDirection = CLAY_TOP_TO_BOTTOM,
                     },
+                    .backgroundColor = gray_1,
                 }){
-                    // CLAY_TEXT(Gui::ClayString("Build Version: " + std::string("VERSION")), &infoText);
-                };
-            #pragma endregion LeftColumn
-
-            #pragma region CenterColumn
-                CLAY({
-                    .layout = {
-                        .sizing = {
-                            .width = CLAY_SIZING_PERCENT(0.4),
-                            .height = CLAY_SIZING_GROW(),
-                        },
-                        .childGap = 32,
-                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER},
-                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                    },
-                }){
-                    //Buffer
                     CLAY({
                         .layout = {
                             .sizing = {
                                 .width = CLAY_SIZING_GROW(),
-                                .height = CLAY_SIZING_PERCENT(0.05),
+                                .height = CLAY_SIZING_FIXED(70),
                             },
-                        },
-                    }){};
-                    //Title
-                    CLAY({
-                        .layout = {
-                            .sizing = {
-                                .width = CLAY_SIZING_GROW(),
-                                .height = CLAY_SIZING_FIXED(50),
-                            },
+                            .padding = {8, 8, 8, 8},
                             .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
                         },
+                        .backgroundColor = gray_2,
                     }){
-                        // CLAY_TEXT(Gui::ClayString("PacMan: Phi-cade Edition"), &titleText);
-                    };
-                    //Buffer
-                    CLAY({
-                        .layout = {
-                            .sizing = {
-                                .width = CLAY_SIZING_GROW(),
-                                .height = CLAY_SIZING_PERCENT(0.10),
-                            },
-                        },
-                    }){};
-                    //Buttons
-                    CLAY({
-                        .layout = {
-                            .sizing = CLAY_SIZING_FIT(),
-                            .childGap = 32,
-                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                            .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                        },
-                    }){
-                        Button("MainMenu");
+                        CLAY_TEXT(Gui::ClayString("Settings"), &titleText);
                     };
                 };
-            #pragma endregion CenterColumn
+            #pragma endregion SideBar
 
-            #pragma region RightColumn
+            #pragma region Content
                 CLAY({
                     .layout = {
                         .sizing = {
@@ -244,20 +205,11 @@ void Scene::SettingMenu()
                         .childAlignment = {.x = CLAY_ALIGN_X_RIGHT, .y = CLAY_ALIGN_Y_BOTTOM},
                         .layoutDirection = CLAY_TOP_TO_BOTTOM,
                     },
+                    .backgroundColor = gray_1,
                 }){
-                    CLAY({
-                        .layout = {
-                            .sizing = {
-                                .width = CLAY_SIZING_FIXED(200),
-                                .height = CLAY_SIZING_FIXED(30),
-                            },
-                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                        },
-                    }){
-                        // CLAY_TEXT(Gui::ClayString("Problems & Suggestions to:"), &infoText);
-                    };
+                    
                 };
-            #pragma endregion RightColumn
+            #pragma endregion Content
             };
 
             Clay_RenderCommandArray commands = Gui::EndLayout();
