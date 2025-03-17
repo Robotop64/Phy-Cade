@@ -6,7 +6,6 @@
 #include "config.hpp"
 
 #include <string>
-#include <vector>
 
 struct State
 {
@@ -18,6 +17,7 @@ static State state;
 
 struct Resources
 {
+    Node configTree = Config::instance().parseTree();
 };
 static Resources resources;
 
@@ -26,11 +26,9 @@ namespace
     const std::string menu = "SettingMenu";
     void calcLayout();
     void processInput();
-    void Button(std::string);
+    void ActionButton(std::string);
     void cleanup();
-    std::vector<std::string> getMajorGroups();
-    std::vector<std::string> getMinorGroups(std::string major);
-    std::vector<std::string> getSettings(std::string major);
+    void unfoldTree(Node node, int depth = 0);
 }
 
 void Scene::SettingMenu()
@@ -77,149 +75,253 @@ void Scene::SettingMenu()
 }
 
 #pragma region local
-    namespace
+namespace
+{
+#pragma region Styling
+    const Clay_Color gray_0 = {35, 35, 35, 255};
+    const Clay_Color gray_1 = {70, 70, 70, 255};
+    const Clay_Color gray_2 = {105, 105, 105, 255};
+    const Clay_Color gray_3 = {140, 140, 140, 255};
+    const Clay_Color gray_4 = {175, 175, 175, 255};
+    const Clay_Color gray_5 = {210, 210, 210, 255};
+    const Clay_Color gray_6 = {245, 245, 245, 255};
+
+    Clay_TextElementConfig infoText = {
+        .textColor = {255, 255, 255, 255},
+        .fontId = 0,
+        .fontSize = 16,
+        .letterSpacing = 2,
+        .hashStringContents = true,
+    };
+    Clay_TextElementConfig buttonText = {
+        .textColor = {255, 255, 255, 255},
+        .fontId = 0,
+        .fontSize = 32,
+        .letterSpacing = 2,
+        .hashStringContents = true,
+    };
+    Clay_TextElementConfig titleText = {
+        .textColor = {255, 255, 255, 255},
+        .fontId = 0,
+        .fontSize = 48,
+        .letterSpacing = 2,
+        .hashStringContents = true,
+    };
+#pragma endregion Styling
+
+    void processInput()
     {
-        #pragma region Styling
-        const Clay_Color gray_0 = {35, 35, 35, 255};
-        const Clay_Color gray_1 = {70, 70, 70, 255};
-        const Clay_Color gray_2 = {105, 105, 105, 255};
-        const Clay_Color gray_3 = {140, 140, 140, 255};
-        const Clay_Color gray_4 = {175, 175, 175, 255};
-        const Clay_Color gray_5 = {210, 210, 210, 255};
-        const Clay_Color gray_6 = {245, 245, 245, 255};
 
-        Clay_TextElementConfig infoText = {
-            .textColor = {255, 255, 255, 255},
-            .fontId = 0,
-            .fontSize = 16,
-            .letterSpacing = 2,
-            .hashStringContents = true,
-        };
-        Clay_TextElementConfig buttonText = {
-            .textColor = {255, 255, 255, 255},
-            .fontId = 0,
-            .fontSize = 32,
-            .letterSpacing = 2,
-            .hashStringContents = true,
-        };
-        Clay_TextElementConfig titleText = {
-            .textColor = {255, 255, 255, 255},
-            .fontId = 0,
-            .fontSize = 48,
-            .letterSpacing = 2,
-            .hashStringContents = true,
-        };
-        #pragma endregion Styling
-
-        void processInput()
+        if (Gui::componentClicked("X-Button", MOUSE_BUTTON_LEFT))
         {
-            
-            if (Gui::componentClicked("MainMenu-Button", MOUSE_BUTTON_LEFT))
-            {
-                state.close = true;
-                Window::queueContext([](){ Scene::MainMenu(); });
-            }
-            
-        
-            if (Gui::isInputUpdated())
-            {
-                state.rebuild_layout = true;
-            }
-        
-            Gui::clearInput();
+            state.close = true;
+            Window::queueContext([]()
+                                 { Scene::MainMenu(); });
         }
 
-        void Button(std::string label)
+        if (Gui::isInputUpdated())
         {
-            Clay_ElementId button_id = CLAY_SID(Gui::ClayString(label+"-Button"));
-            CLAY({
-                .id = button_id,
-                .layout = {
-                    .sizing = {
-                        .width = CLAY_SIZING_FIXED(250),
-                        .height = CLAY_SIZING_FIXED(50),
-                    },
-                    .padding = {8, 8, 8, 8},
-                    .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+            state.rebuild_layout = true;
+        }
+
+        Gui::clearInput();
+    }
+
+    void ActionButton(std::string label)
+    {
+        Clay_ElementId button_id = CLAY_SID(Gui::ClayString(label + "-Button"));
+        CLAY({
+            .id = button_id,
+            .layout = {
+                .sizing = {
+                    .width = CLAY_SIZING_FIXED(50),
+                    .height = CLAY_SIZING_FIXED(50),
                 },
-                .backgroundColor = Clay_PointerOver(button_id) ? gray_4 : gray_2,
-                .border = {.color = gray_3, .width = {5, 5, 5, 5, 5}},
-            }){
-                CLAY_TEXT(Gui::ClayString(label), &buttonText);
-            };
-        }
-
-        void calcLayout()
+                .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+            },
+            .backgroundColor = Clay_PointerOver(button_id) ? gray_4 : gray_2,
+            .cornerRadius = CLAY_CORNER_RADIUS(15),
+            // .border = {.color = gray_3, .width = {5, 5, 5, 5, 5}},
+        })
         {
-            Gui::BeginLayout();
+            CLAY_TEXT(Gui::ClayString(label), &buttonText);
+        };
+    }
 
-            //empty Main container
+    void calcLayout()
+    {
+        Gui::BeginLayout();
+
+        // empty Main container
+        CLAY({
+            .layout = {
+                .sizing = {
+                    .width = CLAY_SIZING_GROW(),
+                    .height = CLAY_SIZING_GROW(),
+                },
+                .padding = {16, 16, 16, 16},
+                .childGap = 16,
+            },
+            .backgroundColor = gray_0,
+        })
+        {
+#pragma region SideBar
             CLAY({
                 .layout = {
                     .sizing = {
-                        .width = CLAY_SIZING_GROW(),
+                        .width = CLAY_SIZING_PERCENT(0.125),
                         .height = CLAY_SIZING_GROW(),
                     },
-                    .padding = {16, 16, 16, 16},
                     .childGap = 16,
+                    // .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_BOTTOM},
+                    .layoutDirection = CLAY_TOP_TO_BOTTOM,
                 },
-                .backgroundColor = gray_0,
-            }){
-            #pragma region SideBar
+                // .backgroundColor = gray_1,
+            })
+            {
                 CLAY({
                     .layout = {
                         .sizing = {
-                            .width = CLAY_SIZING_PERCENT(0.2),
-                            .height = CLAY_SIZING_GROW(),
+                            .width = CLAY_SIZING_GROW(),
+                            .height = CLAY_SIZING_FIXED(70),
                         },
-                        .childGap = 16,
-                        // .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_BOTTOM},
-                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                        .padding = {8, 8, 8, 8},
+                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
                     },
-                    .backgroundColor = gray_1,
-                }){
-                    CLAY({
-                        .layout = {
-                            .sizing = {
-                                .width = CLAY_SIZING_GROW(),
-                                .height = CLAY_SIZING_FIXED(70),
-                            },
-                            .padding = {8, 8, 8, 8},
-                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                        },
-                        .backgroundColor = gray_2,
-                    }){
-                        CLAY_TEXT(Gui::ClayString("Settings"), &titleText);
-                    };
+                    .backgroundColor = gray_2,
+                    .cornerRadius = CLAY_CORNER_RADIUS(15),
+                })
+                {
+                    CLAY_TEXT(Gui::ClayString("Settings  "), &titleText);
                 };
-            #pragma endregion SideBar
 
-            #pragma region Content
                 CLAY({
                     .layout = {
                         .sizing = {
                             .width = CLAY_SIZING_GROW(),
                             .height = CLAY_SIZING_GROW(),
                         },
+                        .padding = {8, 8, 8, 8},
                         .childGap = 8,
-                        .childAlignment = {.x = CLAY_ALIGN_X_RIGHT, .y = CLAY_ALIGN_Y_BOTTOM},
+                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP},
                         .layoutDirection = CLAY_TOP_TO_BOTTOM,
                     },
                     .backgroundColor = gray_1,
-                }){
-                    
+                    .cornerRadius = CLAY_CORNER_RADIUS(15),
+                })
+                {
+                    unfoldTree(resources.configTree);
                 };
-            #pragma endregion Content
             };
+#pragma endregion SideBar
 
-            Clay_RenderCommandArray commands = Gui::EndLayout();
-            Gui::updateRenderCommands(commands);
+#pragma region Content
+            CLAY({
+                .layout = {
+                    .sizing = {
+                        .width = CLAY_SIZING_GROW(),
+                        .height = CLAY_SIZING_GROW(),
+                    },
+                    .childGap = 8,
+                    .childAlignment = {.x = CLAY_ALIGN_X_RIGHT, .y = CLAY_ALIGN_Y_BOTTOM},
+                    .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                },
+                .backgroundColor = gray_1,
+                .cornerRadius = CLAY_CORNER_RADIUS(15),
+            }){
+
+            };
+#pragma endregion Content
+
+#pragma region Actions
+            CLAY({
+                .layout = {
+                    .sizing = {
+                        .width = CLAY_SIZING_PERCENT(0.025),
+                        .height = CLAY_SIZING_GROW(),
+                    },
+                    .childGap = 8,
+                    .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP},
+                },
+                // .backgroundColor = gray_2,
+            })
+            {
+                ActionButton("X");
+            };
+#pragma endregion Actions
         };
 
-        void cleanup()
+        Clay_RenderCommandArray commands = Gui::EndLayout();
+        Gui::updateRenderCommands(commands);
+    };
+
+    void cleanup()
+    {
+    }
+
+    void unfoldTree(Node node, int depth)
+    {
+        bool has_subgroups = false;
+        for (auto child : node.children)
         {
+            if (child.node_type == Node::Group)
+            {
+                has_subgroups = true;
+                break;
+            }
+        }
+
+        if (node.name != "root")
+        {
+            Clay_ElementId SettingGroup_id = CLAY_SID(Gui::ClayString(node.name + "-Button"));
+
+            CLAY({
+                .id = SettingGroup_id,
+                .layout = {
+                    .sizing = {
+                        .width = CLAY_SIZING_GROW(),
+                        .height = CLAY_SIZING_FIT(),
+                    },
+                    .padding = {8, 8, 8, 8},
+                    .childGap = 4,
+                    .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_CENTER},
+                    .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                },
+                .backgroundColor = !has_subgroups ? (Clay_PointerOver(SettingGroup_id) ? gray_4 : gray_3) : gray_2,
+                .cornerRadius = CLAY_CORNER_RADIUS(5),
+            })
+            {
+                std::string label;
+                // for (int i = 0; i < depth; i++)
+                // {
+                //     label += "|\t";
+                // }
+                label += node.name;
+                if (has_subgroups)
+                    label += ":";
+
+                CLAY_TEXT(Gui::ClayString(label), &buttonText);
+
+                // iterate in reverse so Base / General is above Advanced
+                for (auto child = node.children.rbegin(); child != node.children.rend(); child++)
+                {
+                    if (child->node_type == Node::Group)
+                    {
+                        unfoldTree(*child, depth + 1);
+                    }
+                }
+            };
+        }
+        else
+        {
+            for (auto child : node.children)
+            {
+                if (child.node_type == Node::Group)
+                {
+                    unfoldTree(child, depth);
+                }
+            }
         }
     }
 #pragma endregion local
-
-
+}
