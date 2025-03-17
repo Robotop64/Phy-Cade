@@ -7,20 +7,6 @@
 
 #include <string>
 
-struct State
-{
-    bool close = false;
-    bool gui_lock = false;
-    bool rebuild_layout = false;
-};
-static State state;
-
-struct Resources
-{
-    Node configTree = Config::instance().parseTree();
-};
-static Resources resources;
-
 namespace
 {
     const std::string menu = "SettingMenu";
@@ -29,7 +15,25 @@ namespace
     void ActionButton(std::string);
     void cleanup();
     void unfoldTree(Node node, int depth = 0);
+    void prep_configGroups(std::vector<Node *> &groups);
 }
+
+struct State
+{
+    bool close = false;
+    bool gui_lock = false;
+    bool rebuild_layout = false;
+
+    std::optional<Node *> selected_group = std::nullopt;
+};
+static State state;
+
+struct Resources
+{
+    Node configTree = Config::instance().parseTree();
+    std::vector<Node *> sidebar_groups = {};
+};
+static Resources resources;
 
 void Scene::SettingMenu()
 {
@@ -37,6 +41,7 @@ void Scene::SettingMenu()
 
     state = State{};
     resources = Resources{};
+    prep_configGroups(resources.sidebar_groups);
 
     Gui::init();
     Gui::setContext(menu);
@@ -111,6 +116,18 @@ namespace
 
     void processInput()
     {
+        bool process_input = false;
+
+        if (Gui::isInputUpdated())
+        {
+            state.rebuild_layout = true;
+            process_input = true;
+        }
+
+        Gui::clearInput();
+
+        if (!process_input)
+            return;
 
         if (Gui::componentClicked("X-Button", MOUSE_BUTTON_LEFT))
         {
@@ -119,12 +136,14 @@ namespace
                                  { Scene::MainMenu(); });
         }
 
-        if (Gui::isInputUpdated())
+        for (Node *group : resources.sidebar_groups)
         {
-            state.rebuild_layout = true;
+            if (Gui::componentClicked(group->path() + "-SideButton", MOUSE_BUTTON_LEFT))
+            {
+                state.selected_group = group;
+                Log::msg(menu, "Selected SettingGroup: {}", group->name);
+            }
         }
-
-        Gui::clearInput();
     }
 
     void ActionButton(std::string label)
@@ -271,9 +290,10 @@ namespace
             }
         }
 
-        if (node.name != "root")
+        if (node.name != "root" && node.node_type == Node::Group)
         {
-            Clay_ElementId SettingGroup_id = CLAY_SID(Gui::ClayString(node.name + "-Button"));
+            std::string id = node.path() + "-SideButton";
+            Clay_ElementId SettingGroup_id = CLAY_SID(Gui::ClayString(id));
 
             CLAY({
                 .id = SettingGroup_id,
@@ -323,5 +343,50 @@ namespace
             }
         }
     }
+
+    void prep_configGroups(std::vector<Node *> &groups)
+    {
+        std::vector<Node *> stack = {};
+        Node *root = &resources.configTree;
+        stack.push_back(root); // add root as start point
+
+        while (!stack.empty())
+        {
+            Node *node = stack.back();
+            stack.pop_back();
+
+            // Log::msg(menu,
+            //          "Node: {}, Is a {}, Has {} children.", node->name, node->node_type == Node::Group ? "Group" : "Leaf", node->children.size());
+
+            bool has_subgroups = false;
+
+            for (auto child : node->children)
+            {
+                // Log::msg(menu, "->Checking Child: {}", child.name);
+                if (child.node_type == Node::Group)
+                {
+                    has_subgroups = true;
+                    // Log::msg(menu, "-->Child is Groups.");
+                    break;
+                }
+            }
+
+            if (!has_subgroups)
+            {
+                groups.push_back(node);
+                // Log::msg(menu, "Added Group: {}", node->name);
+            }
+
+            for (Node &child : node->children)
+            {
+                if (child.node_type == Node::Group)
+                {
+                    stack.push_back(&child);
+                    // Log::msg(menu, "->Pushed Child: {}", child.name);
+                }
+            }
+        }
+    }
+
 #pragma endregion local
 }
