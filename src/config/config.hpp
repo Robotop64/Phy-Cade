@@ -34,7 +34,7 @@ private:
     native userConfig;
     native defaultConfig;
 
-    Node parseTree(Node node, const toml::v3::table table);
+    void parseTree(Node &node, const toml::v3::table table);
 
     bool hot_swap_enabled = false;
 };

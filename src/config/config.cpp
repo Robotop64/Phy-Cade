@@ -74,22 +74,20 @@ void Config::save()
     Log::msg("Config", "User-config saved.");
 };
 
-Node Config::parseTree(Node node, const toml::v3::table table)
+void Config::parseTree(Node &node, const toml::v3::table table)
 {
     for (auto &&[k, v] : table)
     {
         if (v.is_table())
         {
-            Node child = Node(k.str().data());
-            node.addChild(parseTree(child, *v.as_table()));
+            Node *child = node.addChild(Node(k.str().data())); // move child to parent
+            parseTree(*child, *v.as_table());                  // parse tree content into child
         }
         else
         {
             node.addChild(Node(k.str().data(), "Setting"));
         }
     }
-
-    return node;
 };
 
 Node Config::parseTree()
@@ -97,5 +95,6 @@ Node Config::parseTree()
     Node root = Node("root");
     toml::v3::table source = *userConfig.as_table();
 
-    return parseTree(root, source);
+    parseTree(root, source);
+    return root;
 };
