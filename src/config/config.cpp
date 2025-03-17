@@ -28,7 +28,7 @@ Config &Config::instance()
     return instance;
 }
 
-result Config::get(Config::type type, std::string key)
+result Config::get(const Config::type type, const std::string key)
 {
     if (type == User)
     {
@@ -72,4 +72,30 @@ void Config::save()
     file << userConfig;
     file.close();
     Log::msg("Config", "User-config saved.");
+};
+
+Node Config::parseTree(Node node, const toml::v3::table table)
+{
+    for (auto &&[k, v] : table)
+    {
+        if (v.is_table())
+        {
+            Node child = Node(k.str().data());
+            node.addChild(parseTree(child, *v.as_table()));
+        }
+        else
+        {
+            node.addChild(Node(k.str().data(), "Setting"));
+        }
+    }
+
+    return node;
+};
+
+Node Config::parseTree()
+{
+    Node root = Node("root");
+    toml::v3::table source = *userConfig.as_table();
+
+    return parseTree(root, source);
 };

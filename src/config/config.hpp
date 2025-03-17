@@ -1,5 +1,9 @@
 #pragma once
+
 #include "toml.hpp"
+
+#include "node.hpp"
+
 #include <string>
 
 using native = toml::parse_result;
@@ -14,19 +18,23 @@ public:
         Default
     };
     static Config &instance();
-    result get(Config::type type, std::string key);
-
-    void save();
 
     ~Config() {
         // save();
     };
 
+    result get(const Config::type type, const std::string key);
+
+    void save();
+
+    Node parseTree();
+
 private:
     Config();
-
-    native defaultConfig;
     native userConfig;
+    native defaultConfig;
+
+    Node parseTree(Node node, const toml::v3::table table);
 
     bool hot_swap_enabled = false;
 };

@@ -3,8 +3,6 @@
 #include <any>
 #include <vector>
 #include <optional>
-#include <map>
-#include <string>
 
 class Node
 {
@@ -15,10 +13,10 @@ public:
         Leaf
     };
 
-    Node(std::string name, std::any value = std::nullopt) 
-    : name(name), value(value), node_type(setType(value)) {}
-        
-    std::map<std::string, Node> children;
+    Node(std::string name, std::any value = std::nullopt)
+        : name(name), value(value), node_type(setType(value)) {}
+
+    std::vector<Node> children;
 
     type node_type;
     std::string name;
@@ -26,27 +24,38 @@ public:
 
     std::optional<std::vector<std::string>> getChildrenNames()
     {
-        if (node_type == Leaf) return std::nullopt;
+        if (node_type == Leaf)
+            return std::nullopt;
 
         std::vector<std::string> names = std::vector<std::string>(children.size());
 
-        //map names to vector and assign with index
-        int i = 0;
-        for (auto it = children.begin(); it != children.end(); it++, i++)
+        for (int i = 0; i < children.size(); i++)
         {
-            names[i] = it->first;
+            names[i] = children[i].name;
         }
+
+        return names;
     };
-    
+
     std::optional<std::any> getValue()
     {
-        if (node_type == Group) return std::nullopt;
+        if (node_type == Group)
+            return std::nullopt;
         return value;
     };
+
+    void addChild(Node child)
+    {
+        children.push_back(child);
+        if (node_type == Leaf)
+            node_type = Group;
+    };
+
 private:
     type setType(std::any value)
     {
-        if (value.has_value()) return Leaf;
+        if (value.has_value())
+            return Leaf;
         return Group;
     };
 };
