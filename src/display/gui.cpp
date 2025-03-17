@@ -2,9 +2,9 @@
 #include "logging.hpp"
 
 Clay_RenderCommandArray Gui::current_Commands = Clay_RenderCommandArray{};
-Clay_Context* Gui::current_Context = nullptr;
+Clay_Context *Gui::current_Context = nullptr;
 Font Gui::fonts[1] = {0};
-std::map<std::string, Clay_Context*> Gui::contexts = std::map<std::string, Clay_Context*>();
+std::map<std::string, Clay_Context *> Gui::contexts = std::map<std::string, Clay_Context *>();
 size_t Gui::nextStringArenaIndex = 0;
 char Gui::stringArena[100000] = {0};
 
@@ -20,7 +20,7 @@ void Gui::init()
     }
 }
 
-void Gui::setContext(const std::string& name)
+void Gui::setContext(const std::string &name)
 {
     bool contextExists = Gui::contexts.find(name) != Gui::contexts.end();
     if (!contextExists)
@@ -34,47 +34,41 @@ void Gui::setContext(const std::string& name)
     Log::msg("Gui", "Set Current Context: {}", name);
 }
 
-Clay_Context* Gui::CreateContext()
+Clay_Context *Gui::CreateContext()
 {
     uint64_t clayRequiredMemory = Clay_MinMemorySize();
     Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(clayRequiredMemory, malloc(clayRequiredMemory));
 
-    Clay_Context* new_context = Clay_Initialize(
-        clayMemory, 
-        (Clay_Dimensions) {
-            .width = (float) GetScreenWidth(),
-            .height = (float) GetScreenHeight()
-        }, 
-        (Clay_ErrorHandler) handleErrors
-    );
+    Clay_Context *new_context = Clay_Initialize(
+        clayMemory,
+        (Clay_Dimensions){
+            .width = (float)GetScreenWidth(),
+            .height = (float)GetScreenHeight()},
+        (Clay_ErrorHandler)handleErrors);
 
     Clay_SetMeasureTextFunction(Raylib_MeasureText, Gui::fonts);
 
     return new_context;
 }
 
-
 void Gui::updateState()
 {
-    Clay_SetLayoutDimensions((Clay_Dimensions) {
-        .width = (float) GetScreenWidth(),
-        .height = (float) GetScreenHeight()
-    });
+    Clay_SetLayoutDimensions((Clay_Dimensions){
+        .width = (float)GetScreenWidth(),
+        .height = (float)GetScreenHeight()});
 
     Vector2 mousePosition = GetMousePosition();
 
     Clay_SetPointerState(
-        (Clay_Vector2) { mousePosition.x, mousePosition.y },
-        IsMouseButtonDown(MOUSE_BUTTON_LEFT)
-    );
+        (Clay_Vector2){mousePosition.x, mousePosition.y},
+        IsMouseButtonDown(MOUSE_BUTTON_LEFT));
 
     Vector2 scrollDelta = GetMouseWheelMoveV();
 
     Clay_UpdateScrollContainers(
         true,
-        (Clay_Vector2) { scrollDelta.x, scrollDelta.y },
-        GetFrameTime()
-    );
+        (Clay_Vector2){scrollDelta.x, scrollDelta.y},
+        GetFrameTime());
 }
 
 bool Gui::isInputUpdated()
@@ -101,14 +95,13 @@ void Gui::clearInput()
     }
 }
 
-bool Gui::componentClicked(const std::string& id, int button)
+bool Gui::componentClicked(const std::string &id, int button)
 {
     bool hover = Clay_PointerOver(CLAY_SID(Gui::ClayString(id)));
     bool clicked = IsMouseButtonPressed(button);
-    
+
     return hover && clicked;
 }
-
 
 void Gui::BeginLayout()
 {
@@ -121,26 +114,22 @@ Clay_RenderCommandArray Gui::EndLayout()
     return Clay_EndLayout();
 }
 
-
 void Gui::draw()
 {
     Clay_Raylib_Render(Gui::current_Commands, Gui::fonts);
 };
 
-void Gui::updateRenderCommands(const Clay_RenderCommandArray& commands)
+void Gui::updateRenderCommands(const Clay_RenderCommandArray &commands)
 {
     Gui::current_Commands = commands;
 }
-
 
 void Gui::cleanup()
 {
     Clay_Raylib_Close();
 }
 
-
-
-const char* Gui::insertStringIntoArena(const std::string& str)
+const char *Gui::insertStringIntoArena(const std::string &str)
 {
     size_t strSize = str.size();
     if (nextStringArenaIndex + strSize + 1 > sizeof(stringArena))
@@ -148,20 +137,21 @@ const char* Gui::insertStringIntoArena(const std::string& str)
         throw std::overflow_error("StringArena: Not enough space to insert the string.");
     }
 
-    char* startPtr = &stringArena[nextStringArenaIndex];
+    char *startPtr = &stringArena[nextStringArenaIndex];
 
-    for (size_t i = 0; i<strSize; i++) {
+    for (size_t i = 0; i < strSize; i++)
+    {
         stringArena[nextStringArenaIndex++] = str[i];
     }
     stringArena[nextStringArenaIndex++] = ' ';
-    
+
     return startPtr;
 }
 
-Clay_String Gui::ClayString(const std::string& text)
+Clay_String Gui::ClayString(const std::string &text)
 {
-    int32_t length = (int32_t) text.size();
-    const char* textchars = insertStringIntoArena(text);
-    Clay_String cs = { .length = length, .chars = textchars};
+    int32_t length = (int32_t)text.size();
+    const char *textchars = insertStringIntoArena(text);
+    Clay_String cs = {.length = length, .chars = textchars};
     return cs;
 }
