@@ -429,22 +429,18 @@ namespace
         if (node.is_boolean())
         {
             bool value = node.value<bool>().value();
-            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
         }
         else if (node.is_integer())
         {
             int value = node.value<int>().value();
-            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
         }
         else if (node.is_floating_point())
         {
             float value = node.value<float>().value();
-            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
         }
         else if (node.is_string())
         {
             std::string value = node.value<std::string>().value();
-            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
         }
         // else if (node.is_array())
         // {
