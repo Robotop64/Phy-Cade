@@ -1,0 +1,20 @@
+options = [
+    pref_resolution = Resolution
+    fullscreen = Fullscreen
+    borderless = Borderless
+    target_fps = FPS Limit
+    anti_aliasing = Anti-Aliasing
+    enabled = Enabled
+    logging = Logging
+    display = Display
+    hot_swap_config = Enable Config Runtime Changes
+]
+main_menu = [
+    title = PacMan: Phi-cade Edition
+    build = Build Version
+    qr_hint = Problems and Suggestions to:
+    button_play = Play
+    button_leaderboard = Leaderboard
+    button_settings = Settings
+    button_exit = Quit
+]
