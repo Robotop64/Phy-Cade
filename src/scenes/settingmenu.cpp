@@ -16,6 +16,9 @@ namespace
     void cleanup();
     void unfoldTree(Node node, int depth = 0);
     void prep_configGroups(std::vector<Node *> &groups);
+    void SettingButton(Node* setting);
+    enum Direction {Vertical, Horizontal};
+    void ClaySpring(Direction direction);
 }
 
 struct State
@@ -241,14 +244,45 @@ namespace
                         .width = CLAY_SIZING_GROW(),
                         .height = CLAY_SIZING_GROW(),
                     },
-                    .childGap = 8,
-                    .childAlignment = {.x = CLAY_ALIGN_X_RIGHT, .y = CLAY_ALIGN_Y_BOTTOM},
+                    .padding = {16, 16, 16, 16},
+                    .childGap = 16,
+                    .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_TOP},
                     .layoutDirection = CLAY_TOP_TO_BOTTOM,
                 },
                 .backgroundColor = gray_1,
                 .cornerRadius = CLAY_CORNER_RADIUS(15),
             }){
+                if (state.selected_group)
+                {
+                    Node *group = state.selected_group.value();
 
+                    for (Node &child : group->children)
+                    {
+                        Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(child.name + "-Setting")); 
+                        CLAY({
+                            .id = setting_id,
+                            .layout = {
+                                .sizing = {
+                                    .width = CLAY_SIZING_GROW(),
+                                    .height = CLAY_SIZING_FIXED(50),
+                                },
+                                .padding = {32, 8, 8, 32},
+                                .childGap = 8,
+                                .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_CENTER},
+                                .layoutDirection = CLAY_LEFT_TO_RIGHT,
+                            },
+                            .backgroundColor = Clay_PointerOver(setting_id) ? gray_4 : gray_2,
+                            .cornerRadius = CLAY_CORNER_RADIUS(15),
+                        }){
+                            CLAY_TEXT(Gui::ClayString(child.name), &buttonText);
+                            ClaySpring(Horizontal);
+
+                            SettingButton(&child);
+
+                            // CLAY_TEXT(Gui::ClayString(value), &buttonText);
+                        };
+                    }   
+                }               
             };
 #pragma endregion Content
 
@@ -386,6 +420,52 @@ namespace
                 }
             }
         }
+    }
+
+    void SettingButton(Node* setting)
+    {
+        result node = Config::instance().get(Config::User, setting->path());
+        
+        if (node.is_boolean())
+        {
+            bool value = node.value<bool>().value();
+            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
+        }
+        else if (node.is_integer())
+        {
+            int value = node.value<int>().value();
+            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
+        }
+        else if (node.is_floating_point())
+        {
+            float value = node.value<float>().value();
+            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
+        }
+        else if (node.is_string())
+        {
+            std::string value = node.value<std::string>().value();
+            Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
+        }
+        // else if (node.is_array())
+        // {
+        //     std::vector<toml::node> value = node.value<std::vector<toml::node>>().value();
+        //     Log::msg(menu, "Setting: {}, Value: {}", setting->path(), value);
+        // }
+
+    }
+
+    void ClaySpring(Direction direction)
+    {
+        CLAY({
+            .layout = {
+                .sizing = {
+                    .width = direction == Vertical ? CLAY_SIZING_FIXED(0) : CLAY_SIZING_GROW(),
+                    .height = direction == Vertical ? CLAY_SIZING_GROW() : CLAY_SIZING_FIXED(0),
+                },
+            },
+        })
+        {
+        };
     }
 
 #pragma endregion local
