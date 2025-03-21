@@ -5,6 +5,8 @@
 #include <any>
 #include <vector>
 #include <optional>
+#include <string>
+#include <numeric>
 
 class Node
 {
@@ -15,7 +17,11 @@ public:
         Leaf
     };
 
-    Node(std::string name, std::any value = std::nullopt, Node *parent = nullptr)
+    Node(std::string name) 
+        : name(std::move(name)), value(std::nullopt), node_type(Group), parent(nullptr) {}
+    Node(std::string name, std::any value)
+        : name(std::move(name)), value(std::move(value)), node_type(setType(value)), parent(nullptr) {}
+    Node(std::string name, std::any value, Node *parent)
         : name(std::move(name)), value(std::move(value)), node_type(setType(value)), parent(parent) {}
 
     std::vector<Node> children;
@@ -93,13 +99,26 @@ public:
     std::string path()
     {
         std::string path = "";
-        Node *current = this;
-        while (current->parent != nullptr)
+
+        Node* next = this;
+        
+        while (next->parent != nullptr)
         {
-            path = current->name + (path == "" ? "" : ".") + path;
-            current = current->parent;
+            if (path.empty()) 
+                path = next->name;
+            else
+                path = next->name + "." + path;
+            
+            next = next->parent;
         }
+
         return path;
+    };
+
+    void setValue(std::any value)
+    {
+        this->value = value;
+        node_type = Leaf;
     };
 
 private:
