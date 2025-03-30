@@ -85,7 +85,28 @@ void Config::parseTree(Node &node, const toml::v3::table table)
         }
         else
         {
-            node.addChild(Node(k.str().data(), "Setting"));
+            std::any value = "ERROR";
+
+            result node_res = Config::instance().get(Config::User, node.path() + "." + k.str().data());
+
+            if (node_res.is_boolean())
+            {
+                value = node_res.value<bool>().value();
+            }
+            else if (node_res.is_integer())
+            {
+                value = node_res.value<int>().value();
+            }
+            else if (node_res.is_floating_point())
+            {
+                value = node_res.value<float>().value();
+            }
+            else if (node_res.is_string())
+            {
+                value = node_res.value<std::string>().value();
+            }
+
+            node.addChild(Node(k.str().data(), value));
         }
     }
 };

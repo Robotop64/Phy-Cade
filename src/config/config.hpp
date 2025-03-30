@@ -25,6 +25,14 @@ public:
 
     result get(const Config::type type, const std::string key);
 
+    template <typename T>
+    void set(const Config::type type, const std::string key, T value)
+    {
+        assert(type == User && "Config::set() only works for user-config.");
+
+        userConfig.insert_or_assign(key, value);
+    };
+
     void save();
 
     Node parseTree();
