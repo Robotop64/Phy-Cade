@@ -54,6 +54,9 @@ const std::string Node::path() const
 {
     if (auto next = parent.lock())
     {
+        if (next->name == "root")
+            return name;
+
         return next->path() + "." + name;
     }
 

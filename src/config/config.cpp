@@ -79,6 +79,7 @@ void Config::parseTree(std::shared_ptr<Node> node, const toml::v3::table table)
     for (auto &&[k, v] : table)
     {
         std::shared_ptr<Node> child = node->addChild(std::make_shared<Node>(Node(k.str().data())));
+        // Log::msg("Config", "Parsing setting: {}", child->path());
 
         if (v.is_table())
         {
@@ -88,7 +89,7 @@ void Config::parseTree(std::shared_ptr<Node> node, const toml::v3::table table)
         {
             std::any value = "ERROR";
 
-            result node_res = Config::instance().get(Config::User, node.get()->path() + "." + k.str().data());
+            result node_res = Config::instance().get(Config::User, child->path());
 
             if (node_res.is_boolean())
             {
@@ -105,6 +106,12 @@ void Config::parseTree(std::shared_ptr<Node> node, const toml::v3::table table)
             else if (node_res.is_string())
             {
                 value = node_res.value<std::string>().value();
+            }
+
+            // check error
+            if (value.type() == typeid(std::string) && std::any_cast<std::string>(value) == "ERROR")
+            {
+                Log::msg("Config", "Err: Parsing setting: {} was unsuccessful!", child->path());
             }
 
             child->setValue(value);

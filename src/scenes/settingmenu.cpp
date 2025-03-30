@@ -404,6 +404,7 @@ namespace
 
     void SettingButton(std::shared_ptr<Node> setting)
     {
+
         std::any value = setting->getValue();
         if (!value.has_value())
         {
