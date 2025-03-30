@@ -8,8 +8,10 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-#define CLAY_RECTANGLE_TO_RAYLIB_RECTANGLE(rectangle) (Rectangle) { .x = rectangle.x, .y = rectangle.y, .width = rectangle.width, .height = rectangle.height }
-#define CLAY_COLOR_TO_RAYLIB_COLOR(color) (Color) { .r = (unsigned char)roundf(color.r), .g = (unsigned char)roundf(color.g), .b = (unsigned char)roundf(color.b), .a = (unsigned char)roundf(color.a) }
+#define CLAY_RECTANGLE_TO_RAYLIB_RECTANGLE(rectangle) \
+    (Rectangle) { .x = rectangle.x, .y = rectangle.y, .width = rectangle.width, .height = rectangle.height }
+#define CLAY_COLOR_TO_RAYLIB_COLOR(color) \
+    (Color) { .r = (unsigned char)roundf(color.r), .g = (unsigned char)roundf(color.g), .b = (unsigned char)roundf(color.b), .a = (unsigned char)roundf(color.a) }
 
 typedef enum
 {
@@ -27,7 +29,8 @@ typedef struct
 typedef struct
 {
     CustomLayoutElementType type;
-    union {
+    union
+    {
         CustomLayoutElement_3DModel model;
     } customData;
 } CustomLayoutElement;
@@ -45,4 +48,4 @@ static int temp_render_buffer_len = 0;
 
 void Clay_Raylib_Close();
 
-void Clay_Raylib_Render(Clay_RenderCommandArray renderCommands, Font* fonts);
+void Clay_Raylib_Render(Clay_RenderCommandArray renderCommands, Font *fonts);
