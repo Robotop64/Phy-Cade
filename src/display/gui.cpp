@@ -3,7 +3,7 @@
 
 Clay_RenderCommandArray Gui::current_Commands = Clay_RenderCommandArray{};
 Clay_Context *Gui::current_Context = nullptr;
-Font Gui::fonts[1] = {0};
+Font Gui::fonts[4] = {0, 0, 0, 0};
 std::map<std::string, Clay_Context *> Gui::contexts = std::map<std::string, Clay_Context *>();
 size_t Gui::nextStringArenaIndex = 0;
 char Gui::stringArena[100000] = {0};
@@ -15,8 +15,14 @@ void Gui::init()
     {
         initialized = true;
 
-        Gui::fonts[0] = LoadFontEx("resources/fonts/Roboto-Regular.ttf", 64, 0, 400);
+        Gui::fonts[0] = LoadFontEx("resources/fonts/Roboto-Regular.ttf", 16, 0, 400);
+        Gui::fonts[1] = LoadFontEx("resources/fonts/Roboto-Regular.ttf", 32, 0, 400);
+        Gui::fonts[2] = LoadFontEx("resources/fonts/Roboto-Regular.ttf", 48, 0, 400);
+        Gui::fonts[3] = LoadFontEx("resources/fonts/Roboto-Regular.ttf", 64, 0, 400);
         SetTextureFilter(Gui::fonts[0].texture, TEXTURE_FILTER_BILINEAR);
+        SetTextureFilter(Gui::fonts[1].texture, TEXTURE_FILTER_BILINEAR);
+        SetTextureFilter(Gui::fonts[2].texture, TEXTURE_FILTER_BILINEAR);
+        SetTextureFilter(Gui::fonts[3].texture, TEXTURE_FILTER_BILINEAR);
     }
 }
 
