@@ -17,7 +17,7 @@ public:
         Leaf
     };
 
-    Node(std::string name) 
+    Node(std::string name)
         : name(std::move(name)), value(std::nullopt), node_type(Group), parent(nullptr) {}
     Node(std::string name, std::any value)
         : name(std::move(name)), value(std::move(value)), node_type(setType(value)), parent(nullptr) {}
@@ -100,15 +100,15 @@ public:
     {
         std::string path = "";
 
-        Node* next = this;
-        
+        Node *next = this;
+
         while (next->parent != nullptr)
         {
-            if (path.empty()) 
+            if (path.empty())
                 path = next->name;
             else
                 path = next->name + "." + path;
-            
+
             next = next->parent;
         }
 

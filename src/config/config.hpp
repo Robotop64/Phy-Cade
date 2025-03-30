@@ -3,6 +3,7 @@
 #include "toml.hpp"
 
 #include "node.hpp"
+#include "node2.hpp"
 
 #include <string>
 
@@ -36,6 +37,7 @@ public:
     void save();
 
     Node parseTree();
+    std::shared_ptr<Node2> parseTree2();
 
 private:
     Config();
@@ -43,6 +45,7 @@ private:
     native defaultConfig;
 
     void parseTree(Node &node, const toml::v3::table table);
+    void parseTree2(std::shared_ptr<Node2> node, const toml::v3::table table);
 
     bool hot_swap_enabled = false;
 };
