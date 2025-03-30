@@ -2,8 +2,8 @@
 #include "scene.hpp"
 #include "gui.hpp"
 #include "logging.hpp"
-#include "profiler.hpp"
 #include "config.hpp"
+#include "style.hpp"
 
 #include <string>
 
@@ -24,10 +24,12 @@ static Resources resources;
 namespace
 {
     const std::string menu = "MainMenu";
+
     void calcLayout();
     void processInput();
-    void Button(std::string);
     void cleanup();
+
+    void Button(std::string);
 }
 
 void Scene::MainMenu()
@@ -77,35 +79,6 @@ void Scene::MainMenu()
 #pragma region local
 namespace
 {
-#pragma region Styling
-    const Clay_Color gray_0 = {35, 35, 35, 255};
-    const Clay_Color gray_1 = {70, 70, 70, 255};
-    const Clay_Color gray_2 = {105, 105, 105, 255};
-    const Clay_Color gray_3 = {140, 140, 140, 255};
-    const Clay_Color gray_4 = {175, 175, 175, 255};
-    const Clay_Color gray_5 = {210, 210, 210, 255};
-    const Clay_Color gray_6 = {245, 245, 245, 255};
-
-    Clay_TextElementConfig infoText = {
-        .textColor = {255, 255, 255, 255},
-        .fontId = 0,
-        .fontSize = 16,
-        .letterSpacing = 2,
-    };
-    Clay_TextElementConfig buttonText = {
-        .textColor = {255, 255, 255, 255},
-        .fontId = 0,
-        .fontSize = 32,
-        .letterSpacing = 2,
-    };
-    Clay_TextElementConfig titleText = {
-        .textColor = {255, 255, 255, 255},
-        .fontId = 0,
-        .fontSize = 48,
-        .letterSpacing = 2,
-    };
-#pragma endregion Styling
-
     void processInput()
     {
 
@@ -143,28 +116,6 @@ namespace
         Gui::clearInput();
     }
 
-    void Button(std::string label)
-    {
-        Clay_ElementId button_id = CLAY_SID(Gui::ClayString(label + "-Button"));
-        CLAY({
-            .id = button_id,
-            .layout = {
-                .sizing = {
-                    .width = CLAY_SIZING_FIXED(250),
-                    .height = CLAY_SIZING_FIXED(50),
-                },
-                .padding = {8, 8, 8, 8},
-                .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-            },
-            .backgroundColor = Clay_PointerOver(button_id) ? gray_4 : gray_2,
-            // .border = {.color = gray_3, .width = {5, 5, 5, 5, 5}},
-            .cornerRadius = CLAY_CORNER_RADIUS(15),
-        })
-        {
-            CLAY_TEXT(Gui::ClayString(label), &buttonText);
-        };
-    }
-
     void calcLayout()
     {
         Gui::BeginLayout();
@@ -179,7 +130,7 @@ namespace
                 .padding = {16, 16, 16, 16},
                 .childGap = 16,
             },
-            .backgroundColor = gray_0,
+            .backgroundColor = Style::Dark::gray_0,
         })
         {
 #pragma region LeftColumn
@@ -195,7 +146,7 @@ namespace
                 },
             })
             {
-                CLAY_TEXT(Gui::ClayString("Build Version: " + std::string("VERSION")), &infoText);
+                CLAY_TEXT(Gui::ClayString("Build Version: " + std::string("VERSION")), &Style::Text::infoText);
             };
 #pragma endregion LeftColumn
 
@@ -232,7 +183,7 @@ namespace
                     },
                 })
                 {
-                    CLAY_TEXT(Gui::ClayString("PacMan: Phi-cade Edition"), &titleText);
+                    CLAY_TEXT(Gui::ClayString("PacMan: Phi-cade Edition"), &Style::Text::titleText);
                 };
                 // Buffer
                 CLAY({
@@ -284,7 +235,7 @@ namespace
                     },
                 })
                 {
-                    CLAY_TEXT(Gui::ClayString("Problems & Suggestions to:"), &infoText);
+                    CLAY_TEXT(Gui::ClayString("Problems & Suggestions to:"), &Style::Text::infoText);
                 };
                 CLAY({
                     .layout = {
@@ -306,6 +257,27 @@ namespace
     void cleanup()
     {
         UnloadTexture(resources.QR);
+    }
+
+    void Button(std::string label)
+    {
+        Clay_ElementId button_id = CLAY_SID(Gui::ClayString(label + "-Button"));
+        CLAY({
+            .id = button_id,
+            .layout = {
+                .sizing = {
+                    .width = CLAY_SIZING_FIXED(250),
+                    .height = CLAY_SIZING_FIXED(50),
+                },
+                .padding = {8, 8, 8, 8},
+                .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+            },
+            .backgroundColor = Clay_PointerOver(button_id) ? Style::Dark::gray_4 : Style::Dark::gray_2,
+            .cornerRadius = CLAY_CORNER_RADIUS(15),
+        })
+        {
+            CLAY_TEXT(Gui::ClayString(label), &Style::Text::buttonText);
+        };
     }
 }
 #pragma endregion local
