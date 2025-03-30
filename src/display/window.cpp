@@ -12,6 +12,8 @@ void Window::create()
     int resolution[2] = {handle[0].value_or(0), handle[1].value_or(0)};
 
     SetTraceLogLevel(LOG_WARNING);
+    if (Config::instance().get(Config::User, "Display.Advanced.anti_aliasing").value<bool>())
+        SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI);
     InitWindow(resolution[0], resolution[1], "PacPhi");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(Config::instance().get(Config::User, "Display.Basic.target_fps").value_or(60));
