@@ -1,14 +1,14 @@
 #pragma once
 #include <functional>
 
-struct Window
+namespace Window
 {
     using Context = std::function<void()>;
-    static Context current;
+    static Context current = nullptr;
 
-    static void create();
-    static void destroy();
+    void create();
+    void destroy();
 
-    static void updateContext();
-    static void queueContext(Context context);
+    void updateContext();
+    void queueContext(Context context);
 };

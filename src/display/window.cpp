@@ -4,8 +4,6 @@
 #include "config.hpp"
 #include "logging.hpp"
 
-Window::Context Window::current = nullptr;
-
 void Window::create()
 {
     auto handle = Config::instance().get(Config::User, "Display.Basic.pref_resolution");
@@ -13,7 +11,7 @@ void Window::create()
 
     SetTraceLogLevel(LOG_WARNING);
     if (Config::instance().get(Config::User, "Display.Advanced.anti_aliasing").value<bool>())
-        SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI);
+        SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI); // significantly increases memory usage
     InitWindow(resolution[0], resolution[1], "PacPhi");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(Config::instance().get(Config::User, "Display.Basic.target_fps").value_or(60));
