@@ -78,7 +78,7 @@ void Config::parseTree(std::shared_ptr<Node> node, const toml::v3::table table)
 {
     for (auto &&[k, v] : table)
     {
-        std::shared_ptr<Node> child = node->addChild(Node(k.str().data()));
+        std::shared_ptr<Node> child = node->addChild(std::make_shared<Node>(Node(k.str().data())));
 
         if (v.is_table())
         {

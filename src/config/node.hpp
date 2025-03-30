@@ -8,37 +8,44 @@
 #include <memory>
 #include <optional>
 
-class Node
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <any>
+#include <optional>
+
+class Node : public std::enable_shared_from_this<Node>
 {
 public:
-    enum type
+    enum Type
     {
         Group,
         Leaf
     };
 
-    Node(const std::string name) : name(name), value(std::nullopt), node_type(Group), parent() {}
-    Node(const std::string name, const std::any value) : name(name), value(value), node_type(Leaf), parent() {}
+    Node(const std::string &name) : name(name), value(std::nullopt), node_type(Group) {}
+    Node(const std::string &name, const std::any &value) : name(name), value(value), node_type(Leaf) {}
 
-    const Node *getParent();
-    const std::vector<std::shared_ptr<Node>> getChildren();
+    std::shared_ptr<Node> getParent() const;
+    const std::vector<std::shared_ptr<Node>> &getChildren() const;
 
-    void setValue(const std::any value);
-    const std::optional<std::any> getValue();
+    void setValue(const std::any &value);
+    std::optional<std::any> getValue() const;
 
-    const std::string getName() { return name; };
-    const type getType() { return node_type; };
+    std::string getName() const { return name; }
+    Type getType() const { return node_type; }
 
-    const std::shared_ptr<Node> addChild(const Node child);
+    std::shared_ptr<Node> addChild(std::shared_ptr<Node> child);
 
-    void printTree();
-    const std::string path();
+    void printTree() const;
+
+    const std::string path() const;
 
 private:
-    Node *parent;
+    std::weak_ptr<Node> parent;
     std::vector<std::shared_ptr<Node>> children;
 
-    type node_type;
+    Type node_type;
     std::string name;
     std::optional<std::any> value;
 };
