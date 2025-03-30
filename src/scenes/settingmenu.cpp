@@ -16,9 +16,9 @@ namespace
     void cleanup();
 
     void ActionButton(std::string);
-    void unfoldTree(Node node, int depth = 0);
-    void prep_configGroups(std::vector<Node *> &groups);
-    void SettingButton(Node *setting);
+    void unfoldTree(std::shared_ptr<Node> node, int depth = 0);
+    void prep_configGroups(std::vector<std::shared_ptr<Node>> &groups);
+    void SettingButton(std::shared_ptr<Node> setting);
 
     enum Direction
     {
@@ -26,24 +26,24 @@ namespace
         Horizontal
     };
     void ClaySpring(Direction direction);
+
+    struct State
+    {
+        bool close = false;
+        bool gui_lock = false;
+        bool rebuild_layout = false;
+
+        std::optional<std::shared_ptr<Node>> selected_group = std::nullopt;
+    };
+    State state;
+
+    struct Resources
+    {
+        std::shared_ptr<Node> configTree = Config::instance().parseTree();
+        std::vector<std::shared_ptr<Node>> sidebar_groups = {};
+    };
+    Resources resources;
 }
-
-struct State
-{
-    bool close = false;
-    bool gui_lock = false;
-    bool rebuild_layout = false;
-
-    std::optional<Node *> selected_group = std::nullopt;
-};
-State state;
-
-struct Resources
-{
-    Node configTree = Config::instance().parseTree();
-    std::vector<Node *> sidebar_groups = {};
-};
-Resources resources;
 
 void Scene::SettingMenu()
 {
@@ -113,13 +113,13 @@ namespace
                                  { Scene::MainMenu(); });
         }
 
-        for (Node *group : resources.sidebar_groups)
+        for (const auto &group : resources.sidebar_groups)
         {
             if (Gui::componentClicked(group->path() + "-SideButton", MOUSE_BUTTON_LEFT))
             {
                 state.selected_group = group;
-                Log::msg(menu, "Selected SettingGroup: {}", group->name);
-                state.rebuild_layout = true;
+                Log::msg(menu, "Selected SettingGroup: {}", group->getName());
+                // state.rebuild_layout = true;
             }
         }
 
@@ -220,13 +220,9 @@ namespace
             {
                 if (state.selected_group)
                 {
-                    Node *group = state.selected_group.value();
-
-                    for (Node &child : group->children)
+                    for (const auto &child : state.selected_group.value()->getChildren())
                     {
-                        // BUG: node.parent not valid
-
-                        Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(child.name + "-Setting"));
+                        Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(child->getName() + "-Setting"));
                         CLAY({
                             .id = setting_id,
                             .layout = {
@@ -243,11 +239,11 @@ namespace
                             .cornerRadius = CLAY_CORNER_RADIUS(15),
                         })
                         {
-                            CLAY_TEXT(Gui::ClayString(child.name), &Style::Text::buttonText);
+                            CLAY_TEXT(Gui::ClayString(child->getName()), &Style::Text::buttonText);
 
                             ClaySpring(Horizontal);
 
-                            SettingButton(&child);
+                            SettingButton(child);
                         };
                     }
                 }
@@ -299,21 +295,21 @@ namespace
         };
     }
 
-    void unfoldTree(Node node, int depth)
+    void unfoldTree(std::shared_ptr<Node> node, int depth)
     {
         bool has_subgroups = false;
-        for (auto child : node.children)
+        for (const auto &child : node->getChildren())
         {
-            if (child.node_type == Node::Group)
+            if (child->getType() == Node::Group)
             {
                 has_subgroups = true;
                 break;
             }
         }
 
-        if (node.name != "root" && node.node_type == Node::Group)
+        if (node->getName() != "root" && node->getType() == Node::Group)
         {
-            std::string id = node.path() + "-SideButton";
+            std::string id = node->path() + "-SideButton";
             Clay_ElementId SettingGroup_id = CLAY_SID(Gui::ClayString(id));
 
             CLAY({
@@ -334,27 +330,27 @@ namespace
             {
                 std::string label;
 
-                label += node.name;
+                label += node->getName();
                 if (has_subgroups)
                     label += ":";
 
                 CLAY_TEXT(Gui::ClayString(label), &Style::Text::buttonText);
 
                 // iterate in reverse so Base / General is above Advanced
-                for (auto child = node.children.rbegin(); child != node.children.rend(); child++)
+                for (const auto &child : node->getChildren())
                 {
-                    if (child->node_type == Node::Group)
+                    if (child->getType() == Node::Group)
                     {
-                        unfoldTree(*child, depth + 1);
+                        unfoldTree(child, depth + 1);
                     }
                 }
             };
         }
         else
         {
-            for (auto child : node.children)
+            for (const auto &child : node->getChildren())
             {
-                if (child.node_type == Node::Group)
+                if (child->getType() == Node::Group)
                 {
                     unfoldTree(child, depth);
                 }
@@ -362,15 +358,15 @@ namespace
         }
     }
 
-    void prep_configGroups(std::vector<Node *> &groups)
+    void prep_configGroups(std::vector<std::shared_ptr<Node>> &groups)
     {
-        std::vector<Node *> stack = {};
-        Node *root = &resources.configTree;
+        std::vector<std::shared_ptr<Node>> stack = {};
+        std::shared_ptr<Node> root = resources.configTree;
         stack.push_back(root); // add root as start point
 
         while (!stack.empty())
         {
-            Node *node = stack.back();
+            std::shared_ptr<Node> node = stack.back();
             stack.pop_back();
 
             // Log::msg(menu,
@@ -378,10 +374,10 @@ namespace
 
             bool has_subgroups = false;
 
-            for (auto child : node->children)
+            for (const auto &child : node->getChildren())
             {
                 // Log::msg(menu, "->Checking Child: {}", child.name);
-                if (child.node_type == Node::Group)
+                if (child->getType() == Node::Group)
                 {
                     has_subgroups = true;
                     // Log::msg(menu, "-->Child is Groups.");
@@ -395,23 +391,19 @@ namespace
                 // Log::msg(menu, "Added Group: {}", node->name);
             }
 
-            for (Node &child : node->children)
+            for (const auto &child : node->getChildren())
             {
-                if (child.node_type == Node::Group)
+                if (child->getType() == Node::Group)
                 {
-                    stack.push_back(&child);
+                    stack.push_back(child);
                     // Log::msg(menu, "->Pushed Child: {}", child.name);
                 }
             }
         }
     }
 
-    void SettingButton(Node *setting)
+    void SettingButton(std::shared_ptr<Node> setting)
     {
-        // BUG: node.parent not valid
-
-        Log::msg(menu, "Button of Setting: {}", setting->name);
-
         std::any value = setting->getValue();
         if (!value.has_value())
         {
@@ -426,12 +418,10 @@ namespace
         {
             bool bool_value = std::any_cast<bool>(value);
 
-            // std::cout << setting->path() << "\n";
-
-            // Clay_ElementId setting_id = CLAY_SID_LOCAL(Gui::ClayString(setting->path() + "-SettingButton"));
+            Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(setting->path() + "-SettingButton"));
 
             CLAY({
-                // .id = setting_id,
+                .id = setting_id,
                 .layout = {
                     .sizing = {
                         .width = CLAY_SIZING_FIXED(30),
@@ -441,15 +431,15 @@ namespace
                 .backgroundColor = bool_value ? Style::Dark::gray_5 : Style::Dark::none,
                 .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
             }){};
-            // if (Gui::componentClicked(setting->path() + "-SettingButton", MOUSE_BUTTON_LEFT))
-            // {
-            //     bool_value = !bool_value;
+            if (Gui::componentClicked(setting->path() + "-SettingButton", MOUSE_BUTTON_LEFT))
+            {
+                bool_value = !bool_value;
 
-            //     setting->setValue(bool_value);
-            //     Config::instance().set(Config::User, setting->path(), bool_value);
+                setting->setValue(bool_value);
+                Config::instance().set(Config::User, setting->path(), bool_value);
 
-            //     Log::msg(menu, "Set {} to {}", setting->path(), bool_value ? "true" : "false");
-            // }
+                Log::msg(menu, "Set {} to {}", setting->path(), bool_value ? "true" : "false");
+            }
         }
     }
 

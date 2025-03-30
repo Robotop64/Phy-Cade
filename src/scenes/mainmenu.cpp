@@ -7,20 +7,6 @@
 
 #include <string>
 
-struct State
-{
-    bool close = false;
-    bool gui_lock = false;
-    bool rebuild_layout = false;
-};
-static State state;
-
-struct Resources
-{
-    Texture2D QR;
-};
-static Resources resources;
-
 namespace
 {
     const std::string menu = "MainMenu";
@@ -30,6 +16,20 @@ namespace
     void cleanup();
 
     void Button(std::string);
+
+    struct State
+    {
+        bool close = false;
+        bool gui_lock = false;
+        bool rebuild_layout = false;
+    };
+    State state;
+
+    struct Resources
+    {
+        Texture2D QR;
+    };
+    Resources resources;
 }
 
 void Scene::MainMenu()
@@ -57,7 +57,6 @@ void Scene::MainMenu()
             Gui::updateState();
             calcLayout();
             state.rebuild_layout = false;
-            // Log::msg("MainMenu", "Rebuilt Layout on Frame {}.", (GetTime() / GetFPS()));
         }
 
         BeginDrawing();
@@ -69,7 +68,6 @@ void Scene::MainMenu()
     }
 
     cleanup();
-    // Gui::cleanup();
 
     Log::msg(menu, "Ending Loop.");
 
