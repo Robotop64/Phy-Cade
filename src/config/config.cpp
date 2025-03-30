@@ -74,61 +74,15 @@ void Config::save()
     Log::msg("Config", "User-config saved.");
 };
 
-void Config::parseTree(Node &node, const toml::v3::table table)
+void Config::parseTree(std::shared_ptr<Node> node, const toml::v3::table table)
 {
     for (auto &&[k, v] : table)
     {
-        if (v.is_table())
-        {
-            Node *child = node.addChild(Node(k.str().data())); // move child to parent
-            parseTree(*child, *v.as_table());                  // parse tree content into child
-        }
-        else
-        {
-            std::any value = "ERROR";
-
-            result node_res = Config::instance().get(Config::User, node.path() + "." + k.str().data());
-
-            if (node_res.is_boolean())
-            {
-                value = node_res.value<bool>().value();
-            }
-            else if (node_res.is_integer())
-            {
-                value = node_res.value<int>().value();
-            }
-            else if (node_res.is_floating_point())
-            {
-                value = node_res.value<float>().value();
-            }
-            else if (node_res.is_string())
-            {
-                value = node_res.value<std::string>().value();
-            }
-
-            node.addChild(Node(k.str().data(), value));
-        }
-    }
-};
-
-Node Config::parseTree()
-{
-    Node root = Node("root");
-    toml::v3::table source = *userConfig.as_table();
-
-    parseTree(root, source);
-    return root;
-};
-
-void Config::parseTree2(std::shared_ptr<Node2> node, const toml::v3::table table)
-{
-    for (auto &&[k, v] : table)
-    {
-        std::shared_ptr<Node2> child = node->addChild(Node2(k.str().data()));
+        std::shared_ptr<Node> child = node->addChild(Node(k.str().data()));
 
         if (v.is_table())
         {
-            parseTree2(child, *v.as_table());
+            parseTree(child, *v.as_table());
         }
         else
         {
@@ -158,12 +112,12 @@ void Config::parseTree2(std::shared_ptr<Node2> node, const toml::v3::table table
     }
 };
 
-std::shared_ptr<Node2> Config::parseTree2()
+std::shared_ptr<Node> Config::parseTree()
 {
     toml::v3::table source = *userConfig.as_table();
 
-    std::shared_ptr<Node2> root = std::make_shared<Node2>(Node2("root"));
+    std::shared_ptr<Node> root = std::make_shared<Node>(Node("root"));
 
-    parseTree2(root, source);
+    parseTree(root, source);
     return root;
 }

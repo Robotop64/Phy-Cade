@@ -1,43 +1,43 @@
-#include "node2.hpp"
+#include "Node.hpp"
 
-const Node2 *Node2::getParent()
+const Node *Node::getParent()
 {
     return parent;
 }
 
-const std::vector<std::shared_ptr<Node2>> Node2::getChildren()
+const std::vector<std::shared_ptr<Node>> Node::getChildren()
 {
     return children;
 }
 
-void Node2::setValue(const std::any value)
+void Node::setValue(const std::any value)
 {
     this->value = value;
     node_type = Leaf;
 }
 
-const std::optional<std::any> Node2::getValue()
+const std::optional<std::any> Node::getValue()
 {
     if (node_type == Group)
         return std::nullopt;
     return value;
 }
 
-const std::shared_ptr<Node2> Node2::addChild(const Node2 child)
+const std::shared_ptr<Node> Node::addChild(const Node child)
 {
     if (node_type == Leaf)
     {
         node_type = Group;
     }
 
-    std::shared_ptr<Node2> child_ptr = std::make_shared<Node2>(child);
+    std::shared_ptr<Node> child_ptr = std::make_shared<Node>(child);
 
     children.push_back(child_ptr);
     child_ptr->parent = this;
     return child_ptr;
 }
 
-void Node2::printTree()
+void Node::printTree()
 {
     Log::msg("Node", "Name: {}, Parent: {}, Children: {}",
              name,
@@ -58,11 +58,11 @@ void Node2::printTree()
     }
 }
 
-const std::string Node2::path()
+const std::string Node::path()
 {
     std::string path = "";
 
-    Node2 *next = this;
+    Node *next = this;
 
     while (next->parent != nullptr)
     {
