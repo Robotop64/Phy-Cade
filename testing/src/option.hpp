@@ -51,3 +51,14 @@ struct OptionChoice : Option
     OptionChoice(std::string name, T value, std::vector<T> choices) : Option{true, true, name}, value(value), choices(choices){};
     OptionChoice(std::string name, T value, std::vector<T> choices, bool editable, bool visible) : Option{visible, editable, name}, value(value), choices(choices){};
 };
+
+template <typename T>
+struct OptionRange : Option
+{
+    T min;
+    T max;
+    T value;
+
+    OptionRange(std::string name, T value, T min, T max) : Option{true, true, name}, value(value), min(min), max(max){};
+    OptionRange(std::string name, T value, T min, T max, bool editable, bool visible) : Option{visible, editable, name}, value(value), min(min), max(max){};
+};
