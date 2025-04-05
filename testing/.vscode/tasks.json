@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Launch",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "${workspaceFolder}/out/bin/PacPhi.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/out/",
+                "env": {
+                    "PATH": "${env:PATH};${workspaceFolder}/out/lib/"
+                }
+            },
+        },
+        {
+            "label": "Clean Out",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "Remove-Item -Path ${workspaceFolder}/out/* -Recurse -Force"
+            ]
+        },
+        {
+            "label": "Clean Build",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "Remove-Item -Path ${workspaceFolder}/build/* -Recurse -Force"
+            ]
+        }
+    ]
+}
