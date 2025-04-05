@@ -34,6 +34,7 @@ namespace
         bool rebuild_layout = false;
 
         std::optional<std::shared_ptr<Node>> selected_group = std::nullopt;
+        std::optional<Node> selected_setting = std::nullopt;
     };
     State state;
 
@@ -101,8 +102,6 @@ namespace
             process_input = true;
         }
 
-        Gui::clearInput();
-
         if (!process_input)
             return;
 
@@ -123,18 +122,31 @@ namespace
             }
         }
 
-        // if (state.selected_group)
-        // {
-        //     Node *group = state.selected_group.value();
+        if (state.selected_group)
+        {
+            for (const auto &setting : state.selected_group.value()->getChildren())
+            {
+                if (Gui::componentClicked(setting->path() + "-SettingButton", MOUSE_BUTTON_LEFT))
+                {
+                    if (!setting->getValue().has_value()) return;
 
-        //     for (Node &child : group->children)
-        //     {
-        //         if (Gui::componentClicked(child.name + "-Setting", MOUSE_BUTTON_LEFT))
-        //         {
-        //             Log::msg(menu, "Selected Setting: {}", child.path());
-        //         }
-        //     }
-        // }
+                    const std::any value = setting->getValue().value();
+
+                    if (value.type() == typeid(bool))
+                    {
+                        bool bool_value = std::any_cast<bool>(value);
+                        bool_value = !bool_value;
+
+                        setting->setValue(bool_value);
+                        Config::instance().set(Config::User, setting->path(), bool_value);
+
+                        Log::msg(menu, "Set {} to {}", setting->path(), bool_value ? "true" : "false");
+                    }
+
+
+                }
+            }
+        }
     }
 
     void calcLayout()
@@ -404,22 +416,15 @@ namespace
 
     void SettingButton(std::shared_ptr<Node> setting)
     {
+        if (!setting->getValue().has_value()) return;
 
-        std::any value = setting->getValue();
-        if (!value.has_value())
-        {
-            return;
-        }
-        else
-        {
-            value = setting->getValue().value();
-        }
+        std::string id = setting->path() + "-SettingButton";
+        Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(id));
+        const std::any value = setting->getValue().value();
 
         if (value.type() == typeid(bool))
         {
             bool bool_value = std::any_cast<bool>(value);
-
-            Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(setting->path() + "-SettingButton"));
 
             CLAY({
                 .id = setting_id,
@@ -432,15 +437,81 @@ namespace
                 .backgroundColor = bool_value ? Style::Dark::gray_5 : Style::Dark::none,
                 .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
             }){};
-            if (Gui::componentClicked(setting->path() + "-SettingButton", MOUSE_BUTTON_LEFT))
-            {
-                bool_value = !bool_value;
+        }
 
-                setting->setValue(bool_value);
-                Config::instance().set(Config::User, setting->path(), bool_value);
+        if (value.type() == typeid(int))
+        {
+            int int_value = std::any_cast<int>(value);
 
-                Log::msg(menu, "Set {} to {}", setting->path(), bool_value ? "true" : "false");
-            }
+            CLAY({
+                .layout = {
+                    .sizing = {
+                        .width = CLAY_SIZING_FIT(),
+                        .height = CLAY_SIZING_FIT(),
+                    },
+                },
+                .backgroundColor = Style::Dark::none,
+            }){
+                int change = 1;
+                if (IsKeyDown(KEY_LEFT_SHIFT))  change = 10;
+                if (IsKeyDown(KEY_LEFT_CONTROL)) change = 100;
+                if (IsKeyDown(KEY_LEFT_SHIFT) && IsKeyDown(KEY_LEFT_CONTROL)) change = 1000;
+
+                if (Clay_PointerOver(CLAY_SID(Gui::ClayString(id + "-Reduce")))) change = -1 * change;
+                if (Clay_PointerOver(CLAY_SID(Gui::ClayString(id + "-Increase")))) change = 1 * change;
+                if (Gui::componentClicked(id + "-Reduce", MOUSE_BUTTON_LEFT) || Gui::componentClicked(id + "-Increase", MOUSE_BUTTON_LEFT))
+                {
+                    int_value += change;
+                    setting->setValue(int_value);
+                    Config::instance().set(Config::User, setting->path(), int_value);
+                    Log::msg(menu, "Set {} to {}", setting->path(), int_value);
+                }
+
+                CLAY({
+                    .id = CLAY_SID(Gui::ClayString(id + "-Reduce")),
+                    .layout = {
+                        .sizing = {
+                            .width = CLAY_SIZING_FIXED(30),
+                            .height = CLAY_SIZING_GROW(),
+                        },
+                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                    },
+                    .backgroundColor = Style::Dark::none,
+                    .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
+                }){
+                    CLAY_TEXT(Gui::ClayString("<"), &Style::Text::buttonText);
+                };
+    
+                CLAY({
+                    .layout = {
+                        .sizing = {
+                            .width = CLAY_SIZING_FIT(),
+                            .height = CLAY_SIZING_GROW(),
+                        },
+                        .padding = {10, 10, 0, 0},
+                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                    },
+                    .backgroundColor = Style::Dark::none,
+                    .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
+                }){
+                    CLAY_TEXT(Gui::ClayString(std::to_string(int_value)), &Style::Text::buttonText);
+                };
+    
+                CLAY({
+                    .id = CLAY_SID(Gui::ClayString(id + "-Increase")),
+                    .layout = {
+                        .sizing = {
+                            .width = CLAY_SIZING_FIXED(30),
+                            .height = CLAY_SIZING_GROW(),
+                        },
+                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                    },
+                    .backgroundColor = Style::Dark::none,
+                    .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
+                }){
+                    CLAY_TEXT(Gui::ClayString(">"), &Style::Text::buttonText);
+                };
+            };
         }
     }
 

@@ -65,5 +65,8 @@
         "clay_renderer_raylib.c": "cpp",
         "chrono": "cpp",
         "any": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "borderless"
+    ]
 }
