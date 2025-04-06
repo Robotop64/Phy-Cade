@@ -152,3 +152,61 @@ std::shared_ptr<Node> Node::at(const std::string &path)
 
     return currentNode->getChild(currentPath);
 }
+
+void Node::to_json(json &j) const
+
+{
+    j = json{};
+    j["name"] = name;
+    j["type"] = (type == NodeType::Group) ? "group" : "leaf";
+
+    j["children"] = json::array();
+
+    if (type == NodeType::Group)
+    {
+        for (const auto &child : getChildren())
+        {
+            json childJson;
+            child->to_json(childJson);
+            j["children"].push_back(childJson);
+        }
+    }
+    else if (type == NodeType::Leaf)
+    {
+        for (const auto &option : getOptions())
+        {
+            json optionJson;
+            option->to_json(optionJson);
+            j["children"].push_back(optionJson);
+        }
+    }
+};
+
+std::shared_ptr<Node> Node::from_json(const json &j)
+{
+    std::shared_ptr<Node> node = [&]()
+    {
+        assert(j["type"] == "group" || j["type"] == "leaf" && "Invalid node type.");
+        
+        if (j["type"] == "group")
+            return createNodeGroup(j["name"]);
+        else if (j["type"] == "leaf")
+            return createOptionList(j["name"]);
+    }();
+
+    for (const auto &child : j["children"])
+    {
+        assert(child["type"] == "group" || child["type"] == "leaf" && "Invalid child type.");
+
+        if (child["type"] == "group")
+        {
+            node->addNode(from_json(child));
+        }
+        else if (child["type"]== "leaf")
+        {
+            node->addOption(Option::from_json(child));
+        }
+    }
+
+    return node;
+}

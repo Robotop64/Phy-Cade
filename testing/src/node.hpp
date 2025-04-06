@@ -9,6 +9,8 @@
 #include <memory>
 #include <variant>
 
+using json = nlohmann::ordered_json;
+
 class Node;
 using NodeList = std::vector<std::shared_ptr<Node>>;
 using OptionList = std::vector<std::shared_ptr<Option>>;
@@ -46,6 +48,10 @@ public:
     std::shared_ptr<Option> getOption(const std::string &optionname);
 
     std::shared_ptr<Node> at(const std::string &path);
+
+    void to_json(json &j) const;
+
+    static std::shared_ptr<Node> from_json(const json &j);
 
 private:
     std::weak_ptr<Node> parent;

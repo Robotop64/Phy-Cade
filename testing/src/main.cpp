@@ -6,7 +6,7 @@ int main(void)
 {
     NodePtr root = Config::gen_default_config();
 
-    root->printTree();
+    Config::save_config("config.json", root);
     
     return 0;
 };
