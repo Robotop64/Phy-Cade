@@ -11,8 +11,10 @@ file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 file(GLOB HEADER_DIRS LIST_DIRECTORIES true "src/*")
 foreach(HEADER_DIR ${HEADER_DIRS})
-message(STATUS "Included subdirectory ${HEADER_DIR}")
-    include_directories(${HEADER_DIR})
+    if(IS_DIRECTORY ${HEADER_DIR})
+        message(STATUS "Included subdirectory ${HEADER_DIR}")
+        include_directories(${HEADER_DIR})
+    endif()
 endforeach()
 
 
