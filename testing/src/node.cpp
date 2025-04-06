@@ -53,46 +53,56 @@ const OptionList &Node::getOptions() const
     return std::get<OptionList>(children);
 }
 
-void Node::printTree()
+void Node::printTree(bool path)
 {
-    Log::msg("Node", "Name: {}, Parent: {}, Children: {}",
-             name,
-             parent.lock() ? parent.lock()->name : "null",
-             [&]()
-             {
-                 std::string names = "[";
-                 if (type == NodeType::Group)
-                 {
-                     for (const auto &child : getChildren())
-                     {
-                         names += child->name;
-                         if (child != getChildren().back())
-                         {
-                             names += ", ";
-                         }
-                     }
-                 }
-                 else if (type == NodeType::Leaf)
-                 {
-                     for (const auto &option : getOptions())
-                     {
-                         names += option->name;
-                         if (option != getOptions().back())
-                         {
-                             names += ", ";
-                         }
-                     }
-                 }
-                 names += "]";
-                 return names;
-             }());
+    std::string children = [&]()
+    {
+        std::string names = "[";
+        if (type == NodeType::Group)
+        {
+            for (const auto &child : getChildren())
+            {
+                names += child->name;
+                if (child != getChildren().back())
+                {
+                    names += ", ";
+                }
+            }
+        }
+        else if (type == NodeType::Leaf)
+        {
+            for (const auto &option : getOptions())
+            {
+                names += option->name;
+                if (option != getOptions().back())
+                {
+                    names += ", ";
+                }
+            }
+        }
+        names += "]";
+        return names;
+    }();
+
+    if (path)
+    {
+        Log::msg("Node", "Path: {}, Children: {}", Node::path(), children);
+    }
+    else
+    {
+        Log::msg(
+            "Node", "Name: {}, Parent: {}, Children: {}",
+            name,
+            parent.lock() ? parent.lock()->name : "null",
+            children);
+    }
 
     if (type == NodeType::Leaf)
         return;
 
     for (const auto &child : getChildren())
     {
-        child->printTree();
+        child->printTree(path);
     }
 }
 
@@ -186,25 +196,30 @@ std::shared_ptr<Node> Node::from_json(const json &j)
 {
     std::shared_ptr<Node> node = [&]()
     {
+        assert(j.contains("name") && "Node name is missing in JSON.");
+        assert(j.contains("type") && "Node type is missing in JSON.");
         assert(j["type"] == "group" || j["type"] == "leaf" && "Invalid node type.");
-        
+
         if (j["type"] == "group")
             return createNodeGroup(j["name"]);
         else if (j["type"] == "leaf")
             return createOptionList(j["name"]);
+
+        throw std::runtime_error("Invalid node type in JSON");
     }();
 
-    for (const auto &child : j["children"])
+    if (node->type == NodeType::Group)
     {
-        assert(child["type"] == "group" || child["type"] == "leaf" && "Invalid child type.");
-
-        if (child["type"] == "group")
+        for (const auto &child : j["children"])
         {
-            node->addNode(from_json(child));
+            node->addNode(Node::from_json(child));
         }
-        else if (child["type"]== "leaf")
+    }
+    else if (node->type == NodeType::Leaf)
+    {
+        for (const auto &option : j["children"])
         {
-            node->addOption(Option::from_json(child));
+            node->addOption(std::make_shared<Option>(Option::from_json(option)));
         }
     }
 

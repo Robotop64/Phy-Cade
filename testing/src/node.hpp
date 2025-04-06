@@ -13,9 +13,9 @@ using json = nlohmann::ordered_json;
 
 class Node;
 using NodeList = std::vector<std::shared_ptr<Node>>;
-using OptionList = std::vector<std::shared_ptr<Option>>;
-
 using NodePtr = std::shared_ptr<Node>;
+
+using OptionList = std::vector<std::shared_ptr<Option>>;
 using OptionPtr = std::shared_ptr<Option>;
 
 enum NodeType
@@ -39,8 +39,9 @@ public:
 
     const OptionList &getOptions() const;
 
-    void printTree();
+    void printTree(bool path = false);
 
+    //the root node is omitted from the path
     const std::string path() const;
 
     std::shared_ptr<Node> getChild(const std::string &childname);

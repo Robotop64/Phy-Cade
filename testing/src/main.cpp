@@ -4,9 +4,12 @@
 
 int main(void)
 {
-    NodePtr root = Config::gen_default_config();
+    NodePtr def = Config::gen_default_config();
 
-    Config::save_config("config.json", root);
+    Config::save_config("config.json", def);
     
+    NodePtr par = Config::load_config("config.json");
+    par->printTree(true);
+
     return 0;
 };
