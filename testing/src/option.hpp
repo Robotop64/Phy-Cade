@@ -2,13 +2,26 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 struct Option
 {
     bool visible;
     bool editable;
     std::string name;
+
+    Option(bool visible, bool editable, std::string name) : visible(visible), editable(editable), name(std::move(name)) {}
+
+    virtual ~Option() = default;
+
+    template <typename T>
+    static std::shared_ptr<T> to(std::shared_ptr<Option> option)
+    {
+        return std::dynamic_pointer_cast<T>(option);
+    }
 };
+
+    
 
 struct OptionBool : Option
 {

@@ -1,32 +1,41 @@
 #include "Node.hpp"
 
+#include <iostream>
+
 int main(void)
 {
-    std::shared_ptr<Node> root = Node::createNodeGroup("root");
+    using NodePtr = std::shared_ptr<Node>;
+    using OptionPtr = std::shared_ptr<Option>;
 
-    std::shared_ptr<Node> display = Node::createNodeGroup("display");
-    std::shared_ptr<Node> basic = Node::createOptionList("basic");
-    std::shared_ptr<Node> advanced = Node::createNodeGroup("advanced");
+    NodePtr root = Node::createNodeGroup("root");
+
+    NodePtr display = Node::createNodeGroup("display");
+    NodePtr basic = Node::createOptionList("basic");
+    NodePtr advanced = Node::createNodeGroup("advanced");
     display->addNode(basic);
     display->addNode(advanced);
 
-    std::shared_ptr<Node> secret = Node::createNodeGroup("secret");
+    NodePtr secret = Node::createNodeGroup("secret");
     advanced->addNode(secret);
 
-    std::shared_ptr<Node> audio = Node::createOptionList("audio");
+    NodePtr audio = Node::createOptionList("audio");
 
     root->addNode(display);
     root->addNode(audio);
 
-    std::shared_ptr<Option> master_volume = std::make_shared<OptionRange<int>>("master_volume", 0, 100, 50);
+    OptionPtr master_volume = std::make_shared<OptionRange<int>>("master_volume", 50, 0, 100);
     audio->addOption(master_volume);
-
+    OptionPtr music_volume = std::make_shared<OptionRange<int>>("music_volume", 50, 0, 100);
+    audio->addOption(music_volume);
+    OptionPtr sfx_volume = std::make_shared<OptionRange<int>>("sfx_volume", 69, 0, 100);
+    audio->addOption(sfx_volume);
 
     root->printTree();
 
-    std::shared_ptr<Node> secretX = root->at("display.advanced.secret");
+    //print sfx volume value
+    auto sfx_volume_option_range = Option::to<OptionRange<int>>(root->at("audio")->getOption("sfx_volume"));
 
-    std::cout << "Path to secret: " << secretX->path() << "\n";
+    std::cout << "sfx_volume: " << sfx_volume_option_range->value << "\n";
     
     return 0;
 };
