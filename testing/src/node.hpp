@@ -1,5 +1,7 @@
 #pragma once
 
+#include "json.hpp"
+
 #include "option.hpp"
 
 #include <string>
@@ -10,6 +12,9 @@
 class Node;
 using NodeList = std::vector<std::shared_ptr<Node>>;
 using OptionList = std::vector<std::shared_ptr<Option>>;
+
+using NodePtr = std::shared_ptr<Node>;
+using OptionPtr = std::shared_ptr<Option>;
 
 enum NodeType
 {
