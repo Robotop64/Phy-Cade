@@ -53,6 +53,11 @@ const OptionList &Node::getOptions() const
     return std::get<OptionList>(children);
 }
 
+const NodeType &Node::getType() const
+{
+    return type;
+}
+
 void Node::printTree(bool path)
 {
     std::string children = [&]()

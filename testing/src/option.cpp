@@ -1,7 +1,5 @@
 #include "option.hpp"
 
-
-
 Option Option::from_json(const json &j)
 {
     std::string name = j["name"].get<std::string>();
@@ -35,6 +33,10 @@ Option Option::from_json(const json &j)
         assert(j.contains("innerType") && "Inner type not found in JSON");
         
         OptionType inner_opt_type = from_string(j["innerType"].get<std::string>());
+        
+        assert(inner_opt_type != OptionType::CHOICE && "Inner type cannot be a choice");
+        assert(inner_opt_type != OptionType::RANGE && "Inner type cannot be a range");
+
         switch (inner_opt_type)
         {
         case OptionType::BOOL:
@@ -54,6 +56,10 @@ Option Option::from_json(const json &j)
         assert(j.contains("innerType") && "Inner type not found in JSON");
         
         OptionType inner_opt_type = from_string(j["innerType"].get<std::string>());
+
+        assert(inner_opt_type != OptionType::CHOICE && "Inner type cannot be a choice");
+        assert(inner_opt_type != OptionType::RANGE && "Inner type cannot be a range");
+
         switch (inner_opt_type)
         {
         case OptionType::INT:

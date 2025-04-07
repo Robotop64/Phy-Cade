@@ -39,6 +39,8 @@ public:
 
     const OptionList &getOptions() const;
 
+    const NodeType &getType() const;
+
     void printTree(bool path = false);
 
     //the root node is omitted from the path

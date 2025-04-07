@@ -28,6 +28,36 @@ NodePtr Config::gen_default_config()
     return root;
 };
 
+Config::ConfigMap Config::gen_config_map(NodePtr &root)
+{
+    ConfigMap config_map;
+
+    std::vector<NodePtr> stack = {root};
+
+    while (!stack.empty())
+    {
+        NodePtr current = stack.back();
+        stack.pop_back();
+
+        if (current->getType() == NodeType::Group)
+        {
+            for (const auto &child : current->getChildren())
+            {
+                stack.push_back(child);
+            }
+        } 
+        else if (current->getType() == NodeType::Leaf)
+        {
+            for (const auto &option : current->getOptions())
+            {
+                config_map[Config::config(current->path()+"-"+option->name)] = option;
+            }
+        }
+    }
+
+    return config_map;
+};
+
 void Config::save_config(const std::string &filename, const NodePtr &config)
 {
     json j;
