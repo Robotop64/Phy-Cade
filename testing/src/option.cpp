@@ -1,5 +1,7 @@
 #include "option.hpp"
 
+
+
 Option Option::from_json(const json &j)
 {
     std::string name = j["name"].get<std::string>();
@@ -30,7 +32,9 @@ Option Option::from_json(const json &j)
         return OptionExtended<std::string>(name, j["value"].get<std::string>(), visible, editable);
     case OptionType::CHOICE:
     {
-        OptionType inner_opt_type = from_string(j["inner_type"].get<std::string>());
+        assert(j.contains("innerType") && "Inner type not found in JSON");
+        
+        OptionType inner_opt_type = from_string(j["innerType"].get<std::string>());
         switch (inner_opt_type)
         {
         case OptionType::BOOL:
@@ -47,7 +51,9 @@ Option Option::from_json(const json &j)
     }
     case OptionType::RANGE:
     {
-        OptionType inner_opt_type = from_string(j["inner_type"].get<std::string>());
+        assert(j.contains("innerType") && "Inner type not found in JSON");
+        
+        OptionType inner_opt_type = from_string(j["innerType"].get<std::string>());
         switch (inner_opt_type)
         {
         case OptionType::INT:

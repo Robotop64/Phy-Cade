@@ -2,6 +2,8 @@
 
 #include "json.hpp"
 
+#include "logging.hpp"
+
 #include <string>
 #include <vector>
 #include <memory>
@@ -107,8 +109,9 @@ struct OptionExtended : Option
 {
     T value;
 
-    OptionExtended(std::string name, T value, bool visible = true, bool editable = true)
-        : Option(std::move(name), visible, editable, inferOptionType<T>()), value(value) {};
+    OptionExtended(std::string name, T value, bool visible = true, bool editable = true, 
+                   OptionType type = inferOptionType<T>())
+        : Option(std::move(name), visible, editable, type), value(value) {};
 
     void to_json(json &j) const override
     {
@@ -124,7 +127,9 @@ struct OptionChoice : OptionExtended<T>
     OptionType innerType;
 
     OptionChoice(std::string name, T value, std::vector<T> choices, bool visible = true, bool editable = true)
-        : OptionExtended<T>(std::move(name), value, visible, editable), choices(std::move(choices)), innerType(inferOptionType<T>()) {};
+        : OptionExtended<T>(std::move(name), value, visible, editable), choices(std::move(choices)), innerType(inferOptionType<T>()) {
+            this->type = OptionType::CHOICE;
+        };
 
     void to_json(json &j) const override
     {
@@ -142,7 +147,9 @@ struct OptionRange : OptionExtended<T>
     OptionType innerType;
 
     OptionRange(std::string name, T value, T min, T max, bool visible = true, bool editable = true)
-        : OptionExtended<T>(std::move(name), value, visible, editable), min(min), max(max), innerType(inferOptionType<T>()) {};
+        : OptionExtended<T>(std::move(name), value, visible, editable), min(min), max(max), innerType(inferOptionType<T>()) {
+            this->type = OptionType::RANGE;
+        };
 
     void to_json(json &j) const override
     {
