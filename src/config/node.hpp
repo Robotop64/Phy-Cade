@@ -1,51 +1,70 @@
 #pragma once
 
-#include "logging.hpp"
+#include "json.hpp"
+
+#include "option.hpp"
 
 #include <string>
 #include <vector>
-#include <any>
 #include <memory>
-#include <optional>
+#include <variant>
 
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <any>
-#include <optional>
+using json = nlohmann::ordered_json;
+
+class Node;
+using NodeList = std::vector<std::shared_ptr<Node>>;
+using NodePtr = std::shared_ptr<Node>;
+
+using OptionList = std::vector<std::shared_ptr<Option>>;
+using OptionPtr = std::shared_ptr<Option>;
+
+enum NodeType
+{
+    Group,
+    Leaf
+};
 
 class Node : public std::enable_shared_from_this<Node>
 {
 public:
-    enum Type
-    {
-        Group,
-        Leaf
-    };
+    static std::shared_ptr<Node> createNodeGroup(const std::string name);
 
-    Node(const std::string &name) : name(name), value(std::nullopt), node_type(Group) {}
-    Node(const std::string &name, const std::any &value) : name(name), value(value), node_type(Leaf) {}
+    static std::shared_ptr<Node> createOptionList(const std::string name);
 
-    std::shared_ptr<Node> getParent() const;
-    const std::vector<std::shared_ptr<Node>> &getChildren() const;
+    void addNode(std::shared_ptr<Node> child);
 
-    void setValue(const std::any &value);
-    std::optional<std::any> getValue() const;
+    void addOption(std::shared_ptr<Option> option);
 
-    std::string getName() const { return name; }
-    Type getType() const { return node_type; }
+    const NodeList &getChildren() const;
 
-    std::shared_ptr<Node> addChild(std::shared_ptr<Node> child);
+    const OptionList &getOptions() const;
 
-    void printTree() const;
+    const NodeType &getType() const;
 
+    const std::string &getName() const;
+
+    void printTree(bool path = false);
+
+    // the root node is omitted from the path
     const std::string path() const;
+
+    std::shared_ptr<Node> getChild(const std::string &childname);
+
+    std::shared_ptr<Option> getOption(const std::string &optionname);
+
+    std::shared_ptr<Node> at(const std::string &path);
+
+    void to_json(json &j) const;
+
+    static std::shared_ptr<Node> from_json(const json &j);
 
 private:
     std::weak_ptr<Node> parent;
-    std::vector<std::shared_ptr<Node>> children;
-
-    Type node_type;
+    NodeType type;
     std::string name;
-    std::optional<std::any> value;
+
+    std::variant<
+        NodeList,
+        OptionList>
+        children;
 };

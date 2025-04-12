@@ -6,15 +6,23 @@
 
 void Window::create()
 {
-    auto handle = Config::instance().get(Config::User, "Display.Basic.pref_resolution");
-    int resolution[2] = {handle[0].value_or(0), handle[1].value_or(0)};
-
     SetTraceLogLevel(LOG_WARNING);
-    if (Config::instance().get(Config::User, "Display.Advanced.anti_aliasing").value<bool>())
+    if (Option::as<OptionExtended<bool>>(Config::instance().map().get("display.advanced-anti_aliasing").value())->value)
         SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI); // significantly increases memory usage
+
+    auto resolution_opt = Option::as<OptionChoice<std::string>>(Config::instance().map().get("display.general-resolution").value());
+    auto resolution = [&]()
+    {
+        int delimiter = resolution_opt->value.find("x");
+        int width = std::stoi(resolution_opt->value.substr(0, delimiter));
+        int height = std::stoi(resolution_opt->value.substr(delimiter + 1));
+
+        return std::array<int, 2>{width, height};
+    }();
+
     InitWindow(resolution[0], resolution[1], "PacPhi");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetTargetFPS(Config::instance().get(Config::User, "Display.Basic.target_fps").value_or(60));
+    SetTargetFPS(Option::as<OptionExtended<int>>(Config::instance().map().get("display.general-fps").value())->value);
 
     Log::msg("Window", "Created.");
 }

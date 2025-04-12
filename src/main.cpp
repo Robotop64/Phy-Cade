@@ -5,7 +5,6 @@
 
 int main(void)
 {
-    // init config
     Config::instance();
 
     Window::create();

@@ -1,49 +1,68 @@
 #pragma once
 
-#include "toml.hpp"
-
-#include "node.hpp"
 #include "node.hpp"
 
-#include <string>
+#include <map>
+#include <optional>
 
-using native = toml::parse_result;
-using result = toml::node_view<toml::node>;
+namespace ConfigUtil
+{
+    NodePtr gen_default();
+
+    void save(const std::string &filename, const NodePtr &config);
+
+    NodePtr load(const std::string &filename);
+};
 
 class Config
 {
 public:
-    enum type
+    Config()
+        : user_tree(std::nullopt), user_map(std::nullopt) {};
+    // Config(const Config &) = delete;
+    ~Config() = default;
+
+    class Map
     {
-        User,
-        Default
+    public:
+        Map(const NodePtr &root);
+
+        std::optional<OptionPtr> get(const std::string &key) const;
+
+        void print() const;
+
+        void validate() const;
+
+        static size_t hash(const std::string &key);
+
+    private:
+        std::map<size_t, OptionPtr> map;
     };
-    static Config &instance();
 
-    ~Config() {
-        // save();
-    };
-
-    result get(const Config::type type, const std::string key);
-
-    template <typename T>
-    void set(const Config::type type, const std::string key, T value)
+    static Config &instance()
     {
-        assert(type == User && "Config::set() only works for user-config.");
+        static Config instance = []()
+        {
+            Config config = Config();
+            config.init();
+            return config;
+        }();
+        return instance;
+    }
 
-        userConfig.insert_or_assign(key, value);
-    };
+    void init();
 
-    void save();
+    void load(const std::string &filename);
+    void save(const std::string &filename) const;
 
-    std::shared_ptr<Node> parseTree();
+    Map &map();
+
+    NodePtr &tree();
 
 private:
-    Config();
-    native userConfig;
-    native defaultConfig;
+    const NodePtr default_tree = ConfigUtil::gen_default();
+    std::optional<NodePtr> user_tree = std::nullopt;
 
-    void parseTree(std::shared_ptr<Node> node, const toml::v3::table table);
-
-    bool hot_swap_enabled = false;
+    const Map default_map = Map(default_tree);
+    std::optional<Map> user_map = std::nullopt;
 };

@@ -16,9 +16,9 @@ namespace
     void cleanup();
 
     void ActionButton(std::string);
-    void unfoldTree(std::shared_ptr<Node> node, int depth = 0);
-    void prep_configGroups(std::vector<std::shared_ptr<Node>> &groups);
-    void SettingButton(std::shared_ptr<Node> setting);
+    void unfoldTree(NodePtr node, int depth = 0);
+    void prep_configGroups(std::vector<NodePtr> &groups);
+    void SettingButton(NodePtr setting);
 
     enum Direction
     {
@@ -33,15 +33,14 @@ namespace
         bool gui_lock = false;
         bool rebuild_layout = false;
 
-        std::optional<std::shared_ptr<Node>> selected_group = std::nullopt;
-        std::optional<Node> selected_setting = std::nullopt;
+        std::optional<NodePtr> selected_group = std::nullopt;
+        std::optional<OptionPtr> selected_setting = std::nullopt;
     };
     State state;
 
     struct Resources
     {
-        std::shared_ptr<Node> configTree = Config::instance().parseTree();
-        std::vector<std::shared_ptr<Node>> sidebar_groups = {};
+        std::vector<NodePtr> sidebar_groups = {};
     };
     Resources resources;
 }
@@ -122,31 +121,33 @@ namespace
             }
         }
 
-        if (state.selected_group)
-        {
-            for (const auto &setting : state.selected_group.value()->getChildren())
-            {
-                if (Gui::componentClicked(setting->path() + "-SettingButton", MOUSE_BUTTON_LEFT))
-                {
-                    if (!setting->getValue().has_value()) return;
+        // if (state.selected_group)
+        // {
+        //     std::string group_path = state.selected_group.value()->path() + "-SideButton";
+        //     for (const auto &setting : state.selected_group.value()->getOptions())
+        //     {
+        //         if (Gui::componentClicked(state.selected_group.value()->path() + "-SettingButton", MOUSE_BUTTON_LEFT))
+        //         // {
+        //         //     if (!setting->getValue().has_value())
+        //         //         return;
 
-                    const std::any value = setting->getValue().value();
+        //             if(setting->getType() ==)
 
-                    if (value.type() == typeid(bool))
-                    {
-                        bool bool_value = std::any_cast<bool>(value);
-                        bool_value = !bool_value;
+        //             const std::any value = setting->getValue().value();
 
-                        setting->setValue(bool_value);
-                        Config::instance().set(Config::User, setting->path(), bool_value);
+        //             if (value.type() == typeid(bool))
+        //             {
+        //                 bool bool_value = std::any_cast<bool>(value);
+        //                 bool_value = !bool_value;
 
-                        Log::msg(menu, "Set {} to {}", setting->path(), bool_value ? "true" : "false");
-                    }
+        //                 setting->setValue(bool_value);
+        //                 Config::instance().set(Config::User, setting->path(), bool_value);
 
-
-                }
-            }
-        }
+        //                 Log::msg(menu, "Set {} to {}", setting->path(), bool_value ? "true" : "false");
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     void calcLayout()
@@ -209,7 +210,7 @@ namespace
                     .cornerRadius = CLAY_CORNER_RADIUS(15),
                 })
                 {
-                    unfoldTree(resources.configTree);
+                    unfoldTree(Config::instance().tree());
                 };
             };
 #pragma endregion SideBar
@@ -228,37 +229,36 @@ namespace
                 },
                 .backgroundColor = Style::Dark::gray_1,
                 .cornerRadius = CLAY_CORNER_RADIUS(15),
-            })
-            {
-                if (state.selected_group)
-                {
-                    for (const auto &child : state.selected_group.value()->getChildren())
-                    {
-                        Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(child->getName() + "-Setting"));
-                        CLAY({
-                            .id = setting_id,
-                            .layout = {
-                                .sizing = {
-                                    .width = CLAY_SIZING_GROW(),
-                                    .height = CLAY_SIZING_FIXED(50),
-                                },
-                                .padding = {32, 32, 8, 8},
-                                .childGap = 8,
-                                .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_CENTER},
-                                .layoutDirection = CLAY_LEFT_TO_RIGHT,
-                            },
-                            .backgroundColor = Clay_PointerOver(setting_id) ? Style::Dark::gray_4 : Style::Dark::gray_2,
-                            .cornerRadius = CLAY_CORNER_RADIUS(15),
-                        })
-                        {
-                            CLAY_TEXT(Gui::ClayString(child->getName()), &Style::Text::buttonText);
+            }){
+                // if (state.selected_group)
+                // {
+                //     for (const auto &child : state.selected_group.value()->getChildren())
+                //     {
+                //         Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(child->getName() + "-Setting"));
+                //         CLAY({
+                //             .id = setting_id,
+                //             .layout = {
+                //                 .sizing = {
+                //                     .width = CLAY_SIZING_GROW(),
+                //                     .height = CLAY_SIZING_FIXED(50),
+                //                 },
+                //                 .padding = {32, 32, 8, 8},
+                //                 .childGap = 8,
+                //                 .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_CENTER},
+                //                 .layoutDirection = CLAY_LEFT_TO_RIGHT,
+                //             },
+                //             .backgroundColor = Clay_PointerOver(setting_id) ? Style::Dark::gray_4 : Style::Dark::gray_2,
+                //             .cornerRadius = CLAY_CORNER_RADIUS(15),
+                //         })
+                //         {
+                //             CLAY_TEXT(Gui::ClayString(child->getName()), &Style::Text::buttonText);
 
-                            ClaySpring(Horizontal);
+                //             ClaySpring(Horizontal);
 
-                            SettingButton(child);
-                        };
-                    }
-                }
+                //             SettingButton(child);
+                //         };
+                //     }
+                // }
             };
 #pragma endregion Content
 
@@ -307,19 +307,20 @@ namespace
         };
     }
 
-    void unfoldTree(std::shared_ptr<Node> node, int depth)
+    void unfoldTree(NodePtr node, int depth)
     {
-        bool has_subgroups = false;
-        for (const auto &child : node->getChildren())
-        {
-            if (child->getType() == Node::Group)
-            {
-                has_subgroups = true;
-                break;
-            }
-        }
+        bool is_leaf = node->getType() == NodeType::Leaf ? true : false;
 
-        if (node->getName() != "root" && node->getType() == Node::Group)
+        auto mapChildren = [](NodePtr node, int depth) -> void
+        {
+            // iterate in reverse so Base / General is above Advanced
+            for (auto it = node->getChildren().rbegin(); it != node->getChildren().rend(); ++it)
+            {
+                unfoldTree(*it, depth + 1);
+            }
+        };
+
+        if (node->getName() != "root")
         {
             std::string id = node->path() + "-SideButton";
             Clay_ElementId SettingGroup_id = CLAY_SID(Gui::ClayString(id));
@@ -336,183 +337,153 @@ namespace
                     .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_CENTER},
                     .layoutDirection = CLAY_TOP_TO_BOTTOM,
                 },
-                .backgroundColor = !has_subgroups ? (Clay_PointerOver(SettingGroup_id) ? Style::Dark::gray_4 : Style::Dark::gray_3) : Style::Dark::gray_2,
+                .backgroundColor = is_leaf ? (Clay_PointerOver(SettingGroup_id) ? Style::Dark::gray_4 : Style::Dark::gray_3) : Style::Dark::gray_2,
                 .cornerRadius = CLAY_CORNER_RADIUS(5),
             })
             {
-                std::string label;
+                CLAY_TEXT(Gui::ClayString(node->getName() + ":"), &Style::Text::buttonText);
 
-                label += node->getName();
-                if (has_subgroups)
-                    label += ":";
-
-                CLAY_TEXT(Gui::ClayString(label), &Style::Text::buttonText);
-
-                // iterate in reverse so Base / General is above Advanced
-                for (const auto &child : node->getChildren())
-                {
-                    if (child->getType() == Node::Group)
-                    {
-                        unfoldTree(child, depth + 1);
-                    }
-                }
+                if (!is_leaf)
+                    mapChildren(node, depth);
             };
         }
         else
         {
-            for (const auto &child : node->getChildren())
-            {
-                if (child->getType() == Node::Group)
-                {
-                    unfoldTree(child, depth);
-                }
-            }
+            mapChildren(node, depth);
         }
     }
 
     void prep_configGroups(std::vector<std::shared_ptr<Node>> &groups)
     {
-        std::vector<std::shared_ptr<Node>> stack = {};
-        std::shared_ptr<Node> root = resources.configTree;
+        std::vector<NodePtr> stack = {};
+        NodePtr root = Config::instance().tree();
         stack.push_back(root); // add root as start point
 
         while (!stack.empty())
         {
-            std::shared_ptr<Node> node = stack.back();
+            NodePtr node = stack.back();
             stack.pop_back();
 
             // Log::msg(menu,
             //          "Node: {}, Is a {}, Has {} children.", node->name, node->node_type == Node::Group ? "Group" : "Leaf", node->children.size());
 
-            bool has_subgroups = false;
-
-            for (const auto &child : node->getChildren())
-            {
-                // Log::msg(menu, "->Checking Child: {}", child.name);
-                if (child->getType() == Node::Group)
-                {
-                    has_subgroups = true;
-                    // Log::msg(menu, "-->Child is Groups.");
-                    break;
-                }
-            }
-
-            if (!has_subgroups)
+            if (node->getType() == NodeType::Leaf)
             {
                 groups.push_back(node);
-                // Log::msg(menu, "Added Group: {}", node->name);
             }
-
-            for (const auto &child : node->getChildren())
+            else if (node->getType() == NodeType::Group)
             {
-                if (child->getType() == Node::Group)
-                {
-                    stack.push_back(child);
-                    // Log::msg(menu, "->Pushed Child: {}", child.name);
-                }
+                stack.insert(stack.end(), node->getChildren().begin(), node->getChildren().end());
             }
         }
     }
 
     void SettingButton(std::shared_ptr<Node> setting)
     {
-        if (!setting->getValue().has_value()) return;
+        // std::string id = setting->path() + "-SettingButton";
+        // Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(id));
+        // const std::any value = setting->getValue().value();
 
-        std::string id = setting->path() + "-SettingButton";
-        Clay_ElementId setting_id = CLAY_SID(Gui::ClayString(id));
-        const std::any value = setting->getValue().value();
+        // if (value.type() == typeid(bool))
+        // {
+        //     bool bool_value = std::any_cast<bool>(value);
 
-        if (value.type() == typeid(bool))
-        {
-            bool bool_value = std::any_cast<bool>(value);
+        //     CLAY({
+        //         .id = setting_id,
+        //         .layout = {
+        //             .sizing = {
+        //                 .width = CLAY_SIZING_FIXED(30),
+        //                 .height = CLAY_SIZING_FIXED(30),
+        //             },
+        //         },
+        //         .backgroundColor = bool_value ? Style::Dark::gray_5 : Style::Dark::none,
+        //         .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
+        //     }){};
+        // }
 
-            CLAY({
-                .id = setting_id,
-                .layout = {
-                    .sizing = {
-                        .width = CLAY_SIZING_FIXED(30),
-                        .height = CLAY_SIZING_FIXED(30),
-                    },
-                },
-                .backgroundColor = bool_value ? Style::Dark::gray_5 : Style::Dark::none,
-                .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
-            }){};
-        }
+        // if (value.type() == typeid(int))
+        // {
+        //     int int_value = std::any_cast<int>(value);
 
-        if (value.type() == typeid(int))
-        {
-            int int_value = std::any_cast<int>(value);
+        //     CLAY({
+        //         .layout = {
+        //             .sizing = {
+        //                 .width = CLAY_SIZING_FIT(),
+        //                 .height = CLAY_SIZING_FIT(),
+        //             },
+        //         },
+        //         .backgroundColor = Style::Dark::none,
+        //     })
+        //     {
+        //         int change = 1;
+        //         if (IsKeyDown(KEY_LEFT_SHIFT))
+        //             change = 10;
+        //         if (IsKeyDown(KEY_LEFT_CONTROL))
+        //             change = 100;
+        //         if (IsKeyDown(KEY_LEFT_SHIFT) && IsKeyDown(KEY_LEFT_CONTROL))
+        //             change = 1000;
 
-            CLAY({
-                .layout = {
-                    .sizing = {
-                        .width = CLAY_SIZING_FIT(),
-                        .height = CLAY_SIZING_FIT(),
-                    },
-                },
-                .backgroundColor = Style::Dark::none,
-            }){
-                int change = 1;
-                if (IsKeyDown(KEY_LEFT_SHIFT))  change = 10;
-                if (IsKeyDown(KEY_LEFT_CONTROL)) change = 100;
-                if (IsKeyDown(KEY_LEFT_SHIFT) && IsKeyDown(KEY_LEFT_CONTROL)) change = 1000;
+        //         if (Clay_PointerOver(CLAY_SID(Gui::ClayString(id + "-Reduce"))))
+        //             change = -1 * change;
+        //         if (Clay_PointerOver(CLAY_SID(Gui::ClayString(id + "-Increase"))))
+        //             change = 1 * change;
+        //         if (Gui::componentClicked(id + "-Reduce", MOUSE_BUTTON_LEFT) || Gui::componentClicked(id + "-Increase", MOUSE_BUTTON_LEFT))
+        //         {
+        //             int_value += change;
+        //             setting->setValue(int_value);
+        //             Config::instance().set(Config::User, setting->path(), int_value);
+        //             Log::msg(menu, "Set {} to {}", setting->path(), int_value);
+        //         }
 
-                if (Clay_PointerOver(CLAY_SID(Gui::ClayString(id + "-Reduce")))) change = -1 * change;
-                if (Clay_PointerOver(CLAY_SID(Gui::ClayString(id + "-Increase")))) change = 1 * change;
-                if (Gui::componentClicked(id + "-Reduce", MOUSE_BUTTON_LEFT) || Gui::componentClicked(id + "-Increase", MOUSE_BUTTON_LEFT))
-                {
-                    int_value += change;
-                    setting->setValue(int_value);
-                    Config::instance().set(Config::User, setting->path(), int_value);
-                    Log::msg(menu, "Set {} to {}", setting->path(), int_value);
-                }
+        //         CLAY({
+        //             .id = CLAY_SID(Gui::ClayString(id + "-Reduce")),
+        //             .layout = {
+        //                 .sizing = {
+        //                     .width = CLAY_SIZING_FIXED(30),
+        //                     .height = CLAY_SIZING_GROW(),
+        //                 },
+        //                 .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+        //             },
+        //             .backgroundColor = Style::Dark::none,
+        //             .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
+        //         })
+        //         {
+        //             CLAY_TEXT(Gui::ClayString("<"), &Style::Text::buttonText);
+        //         };
 
-                CLAY({
-                    .id = CLAY_SID(Gui::ClayString(id + "-Reduce")),
-                    .layout = {
-                        .sizing = {
-                            .width = CLAY_SIZING_FIXED(30),
-                            .height = CLAY_SIZING_GROW(),
-                        },
-                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                    },
-                    .backgroundColor = Style::Dark::none,
-                    .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
-                }){
-                    CLAY_TEXT(Gui::ClayString("<"), &Style::Text::buttonText);
-                };
-    
-                CLAY({
-                    .layout = {
-                        .sizing = {
-                            .width = CLAY_SIZING_FIT(),
-                            .height = CLAY_SIZING_GROW(),
-                        },
-                        .padding = {10, 10, 0, 0},
-                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                    },
-                    .backgroundColor = Style::Dark::none,
-                    .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
-                }){
-                    CLAY_TEXT(Gui::ClayString(std::to_string(int_value)), &Style::Text::buttonText);
-                };
-    
-                CLAY({
-                    .id = CLAY_SID(Gui::ClayString(id + "-Increase")),
-                    .layout = {
-                        .sizing = {
-                            .width = CLAY_SIZING_FIXED(30),
-                            .height = CLAY_SIZING_GROW(),
-                        },
-                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                    },
-                    .backgroundColor = Style::Dark::none,
-                    .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
-                }){
-                    CLAY_TEXT(Gui::ClayString(">"), &Style::Text::buttonText);
-                };
-            };
-        }
+        //         CLAY({
+        //             .layout = {
+        //                 .sizing = {
+        //                     .width = CLAY_SIZING_FIT(),
+        //                     .height = CLAY_SIZING_GROW(),
+        //                 },
+        //                 .padding = {10, 10, 0, 0},
+        //                 .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+        //             },
+        //             .backgroundColor = Style::Dark::none,
+        //             .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
+        //         })
+        //         {
+        //             CLAY_TEXT(Gui::ClayString(std::to_string(int_value)), &Style::Text::buttonText);
+        //         };
+
+        //         CLAY({
+        //             .id = CLAY_SID(Gui::ClayString(id + "-Increase")),
+        //             .layout = {
+        //                 .sizing = {
+        //                     .width = CLAY_SIZING_FIXED(30),
+        //                     .height = CLAY_SIZING_GROW(),
+        //                 },
+        //                 .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+        //             },
+        //             .backgroundColor = Style::Dark::none,
+        //             .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
+        //         })
+        //         {
+        //             CLAY_TEXT(Gui::ClayString(">"), &Style::Text::buttonText);
+        //         };
+        //     };
+        // }
     }
 
     void ClaySpring(Direction direction)
