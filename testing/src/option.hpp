@@ -99,7 +99,13 @@ struct Option
 
     virtual void to_json(json &j) const;
 
-    static Option from_json(const json &j);
+    static std::shared_ptr<Option> from_json(const json &j);
+
+    template <typename T>
+    static std::shared_ptr<T> as(std::shared_ptr<Option> option)
+    {
+        return std::dynamic_pointer_cast<T>(option);
+    }
 };
 
 #pragma region Derivative Classes
@@ -109,7 +115,7 @@ struct OptionExtended : Option
 {
     T value;
 
-    OptionExtended(std::string name, T value, bool visible = true, bool editable = true, 
+    OptionExtended(std::string name, T value, bool visible = true, bool editable = true,
                    OptionType type = inferOptionType<T>())
         : Option(std::move(name), visible, editable, type), value(value) {};
 
@@ -127,9 +133,10 @@ struct OptionChoice : OptionExtended<T>
     OptionType innerType;
 
     OptionChoice(std::string name, T value, std::vector<T> choices, bool visible = true, bool editable = true)
-        : OptionExtended<T>(std::move(name), value, visible, editable), choices(std::move(choices)), innerType(inferOptionType<T>()) {
-            this->type = OptionType::CHOICE;
-        };
+        : OptionExtended<T>(std::move(name), value, visible, editable), choices(std::move(choices)), innerType(inferOptionType<T>())
+    {
+        this->type = OptionType::CHOICE;
+    };
 
     void to_json(json &j) const override
     {
@@ -147,9 +154,10 @@ struct OptionRange : OptionExtended<T>
     OptionType innerType;
 
     OptionRange(std::string name, T value, T min, T max, bool visible = true, bool editable = true)
-        : OptionExtended<T>(std::move(name), value, visible, editable), min(min), max(max), innerType(inferOptionType<T>()) {
-            this->type = OptionType::RANGE;
-        };
+        : OptionExtended<T>(std::move(name), value, visible, editable), min(min), max(max), innerType(inferOptionType<T>())
+    {
+        this->type = OptionType::RANGE;
+    };
 
     void to_json(json &j) const override
     {

@@ -197,6 +197,7 @@ void Node::to_json(json &j) const
     }
 };
 
+// BUG parsing of child classes is not working eg parsing OptionChoice yield Option instead of OptionChoice
 std::shared_ptr<Node> Node::from_json(const json &j)
 {
     std::shared_ptr<Node> node = [&]()
@@ -224,7 +225,7 @@ std::shared_ptr<Node> Node::from_json(const json &j)
     {
         for (const auto &option : j["children"])
         {
-            node->addOption(std::make_shared<Option>(Option::from_json(option)));
+            node->addOption(Option::from_json(option));
         }
     }
 
