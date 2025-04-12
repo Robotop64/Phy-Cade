@@ -109,6 +109,14 @@ bool Gui::componentClicked(const std::string &id, int button)
     return hover && clicked;
 }
 
+bool Gui::componentClicked(const Clay_ElementId &id, int button)
+{
+    bool hover = Clay_PointerOver(id);
+    bool clicked = IsMouseButtonPressed(button);
+
+    return hover && clicked;
+}
+
 void Gui::BeginLayout()
 {
     Gui::resetStringArenaIndex();

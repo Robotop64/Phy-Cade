@@ -52,8 +52,8 @@ public:
 
     void init();
 
-    void load(const std::string &filename);
-    void save(const std::string &filename) const;
+    void load(const std::string &filename = "userData\\config.json");
+    void save(const std::string &filename = "userData\\config.json") const;
 
     Map &map();
 

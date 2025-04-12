@@ -56,6 +56,12 @@ std::shared_ptr<Option> Option::from_json(const json &j)
     }();
 
     OptionType opt_type = OptionUtils::from_string(j["type"].get<std::string>());
+    std::optional<OptionType> inner_opt_type = [&]() -> std::optional<OptionType>
+    {
+        if (j.contains("innerType"))
+            return OptionUtils::from_string(j["innerType"].get<std::string>());
+        return std::nullopt;
+    }();
 
     switch (opt_type)
     {
@@ -69,14 +75,11 @@ std::shared_ptr<Option> Option::from_json(const json &j)
         return std::make_shared<OptionExtended<std::string>>(name, j["value"].get<std::string>(), visible, editable);
     case OptionType::CHOICE:
     {
-        assert(j.contains("innerType") && "Inner type not found in JSON");
-
-        OptionType inner_opt_type = OptionUtils::from_string(j["innerType"].get<std::string>());
-
+        assert(inner_opt_type.has_value() && "Inner type not found in JSON");
         assert(inner_opt_type != OptionType::CHOICE && "Inner type cannot be a choice");
         assert(inner_opt_type != OptionType::RANGE && "Inner type cannot be a range");
 
-        switch (inner_opt_type)
+        switch (inner_opt_type.value())
         {
         case OptionType::BOOL:
             return std::make_shared<OptionChoice<bool>>(name, j["value"].get<bool>(), j["choices"].get<std::vector<bool>>(), visible, editable);
@@ -92,14 +95,11 @@ std::shared_ptr<Option> Option::from_json(const json &j)
     }
     case OptionType::RANGE:
     {
-        assert(j.contains("innerType") && "Inner type not found in JSON");
-
-        OptionType inner_opt_type = OptionUtils::from_string(j["innerType"].get<std::string>());
-
+        assert(inner_opt_type.has_value() && "Inner type not found in JSON");
         assert(inner_opt_type != OptionType::CHOICE && "Inner type cannot be a choice");
         assert(inner_opt_type != OptionType::RANGE && "Inner type cannot be a range");
 
-        switch (inner_opt_type)
+        switch (inner_opt_type.value())
         {
         case OptionType::INT:
             return std::make_shared<OptionRange<int>>(name, j["value"].get<int>(), j["min"].get<int>(), j["max"].get<int>(), visible, editable);
@@ -126,4 +126,6 @@ void Option::to_json(json &j) const
         j["editable"] = editable;
 
     j["type"] = OptionUtils::to_string(type);
+    if (innerType.has_value())
+        j["innerType"] = OptionUtils::to_string(innerType.value());
 }

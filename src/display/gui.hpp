@@ -19,6 +19,7 @@ public:
     static bool isInputUpdated();
     static void clearInput();
     static bool componentClicked(const std::string &id, const int button);
+    static bool componentClicked(const Clay_ElementId &id, int button);
 
     static void BeginLayout();
     static Clay_RenderCommandArray EndLayout();
