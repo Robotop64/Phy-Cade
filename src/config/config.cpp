@@ -81,7 +81,7 @@ void Config::init()
 {
     Log::updated("Config", "Initializing...");
 
-    load("config.json");
+    load("userData\\config.json");
 
     Log::updated("Config", "Initialized!\n");
 }

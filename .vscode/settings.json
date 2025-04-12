@@ -64,7 +64,10 @@
         "cinttypes": "cpp",
         "clay_renderer_raylib.c": "cpp",
         "chrono": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "forward_list": "cpp",
+        "ranges": "cpp",
+        "valarray": "cpp"
     },
     "cSpell.words": [
         "borderless"
