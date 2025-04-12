@@ -2,25 +2,60 @@
 
 #include "node.hpp"
 
-#include <fstream>
 #include <map>
+#include <optional>
+
+namespace ConfigUtil
+{
+    NodePtr gen_default();
+
+    void save(const std::string &filename, const NodePtr &config);
+
+    NodePtr load(const std::string &filename);
+};
 
 class Config
 {
 public:
-    enum class ConfigOptions : uint8_t {};
-    // Literal operator moved outside the class definition
-    static constexpr Config::ConfigOptions config(std::string str)
+    Config()
+        : user_tree(std::nullopt), user_map(std::nullopt) {};
+    Config(const Config &) = delete;
+    ~Config() = default;
+
+    class Map
     {
-        return static_cast<Config::ConfigOptions>(std::hash<std::string>{}(str));
+    public:
+        Map(const NodePtr &root);
+
+        std::optional<OptionPtr> get(const std::string &key) const;
+
+        void print() const;
+
+        void validate() const;
+
+        static size_t hash(const std::string &key);
+
+    private:
+        std::map<size_t, OptionPtr> map;
+    };
+
+    static Config &instance()
+    {
+        static Config instance = Config();
+        return instance;
     }
 
-    using ConfigMap = std::map<ConfigOptions, OptionPtr>;    
+    void init();
 
-    static NodePtr gen_default_config();
-    static ConfigMap gen_config_map(NodePtr &root);
+    void load(const std::string &filename);
+    void save(const std::string &filename) const;
 
-    static void save_config(const std::string &filename, const NodePtr &config);
+    Map &map();
 
-    static NodePtr load_config(const std::string &filename);   
+    const NodePtr default_tree = ConfigUtil::gen_default();
+    std::optional<NodePtr> user_tree = std::nullopt;
+
+private:
+    const Map default_map = Map(default_tree);
+    std::optional<Map> user_map = std::nullopt;
 };

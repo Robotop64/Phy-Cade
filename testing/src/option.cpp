@@ -16,7 +16,7 @@ std::shared_ptr<Option> Option::from_json(const json &j)
         return true;
     }();
 
-    OptionType opt_type = from_string(j["type"].get<std::string>());
+    OptionType opt_type = OptionUtils::from_string(j["type"].get<std::string>());
 
     switch (opt_type)
     {
@@ -32,7 +32,7 @@ std::shared_ptr<Option> Option::from_json(const json &j)
     {
         assert(j.contains("innerType") && "Inner type not found in JSON");
 
-        OptionType inner_opt_type = from_string(j["innerType"].get<std::string>());
+        OptionType inner_opt_type = OptionUtils::from_string(j["innerType"].get<std::string>());
 
         assert(inner_opt_type != OptionType::CHOICE && "Inner type cannot be a choice");
         assert(inner_opt_type != OptionType::RANGE && "Inner type cannot be a range");
@@ -55,7 +55,7 @@ std::shared_ptr<Option> Option::from_json(const json &j)
     {
         assert(j.contains("innerType") && "Inner type not found in JSON");
 
-        OptionType inner_opt_type = from_string(j["innerType"].get<std::string>());
+        OptionType inner_opt_type = OptionUtils::from_string(j["innerType"].get<std::string>());
 
         assert(inner_opt_type != OptionType::CHOICE && "Inner type cannot be a choice");
         assert(inner_opt_type != OptionType::RANGE && "Inner type cannot be a range");
@@ -86,5 +86,5 @@ void Option::to_json(json &j) const
     if (!editable)
         j["editable"] = editable;
 
-    j["type"] = to_string(type);
+    j["type"] = OptionUtils::to_string(type);
 }

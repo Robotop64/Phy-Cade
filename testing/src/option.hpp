@@ -24,7 +24,7 @@ enum class OptionType
     RANGE
 };
 
-namespace
+namespace OptionUtils
 {
     std::string to_string(const OptionType type)
     {
