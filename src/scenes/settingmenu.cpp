@@ -32,6 +32,8 @@ namespace
         // bool gui_lock = false;
         bool rebuild_layout = false;
 
+        bool open_selector = false;
+        bool close_active_dropdown = false;
         bool show_info = false;
 
         std::optional<NodePtr> selected_group = std::nullopt;
@@ -242,7 +244,7 @@ namespace
                                         .width = CLAY_SIZING_GROW(),
                                         .height = CLAY_SIZING_FIXED(50),
                                     },
-                                    .padding = {32, 32, 8, 8},
+                                    .padding = {32, 0, 8, 8},
                                     .childGap = 8,
                                     .childAlignment = {.x = CLAY_ALIGN_X_LEFT, .y = CLAY_ALIGN_Y_CENTER},
                                     .layoutDirection = CLAY_LEFT_TO_RIGHT,
@@ -390,203 +392,256 @@ namespace
         std::string id = option->name + "-SettingButton";
         Clay_ElementId setting_id = CLAY_SID_LOCAL(Gui::ClayString(id));
 
-        switch (type)
-        {
-        case OptionType::BOOL:
-        {
-            auto setting = Option::as<OptionExtended<bool>>(option);
-            bool value = setting->value;
-
-            if (Gui::componentClicked(setting_id, MOUSE_BUTTON_LEFT))
-            {
-                value = !value;
-                setting->value = value;
-                Log::msg("Config", "Set {} to {}", setting->name, value ? "true" : "false");
-            }
-
-            CLAY({
-                .id = setting_id,
-                .layout = {
-                    .sizing = {
-                        .width = CLAY_SIZING_FIXED(30),
-                        .height = CLAY_SIZING_FIXED(30),
-                    },
+        CLAY({
+            .layout = {
+                .sizing = {
+                    .width = state.show_info ? CLAY_SIZING_PERCENT(0.4) : CLAY_SIZING_PERCENT(0.2),
+                    .height = CLAY_SIZING_GROW(),
                 },
-                .backgroundColor = value ? Style::Dark::gray_5 : Style::Dark::none,
-                .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
-            }){};
-        }
-        break;
-        case OptionType::CHOICE:
+                .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                .layoutDirection = CLAY_LEFT_TO_RIGHT,
+            },
+            .backgroundColor = Style::Dark::none,
+            .border = {.color = Style::Dark::gray_4, .width = {3, 0, 0, 0, 0}},
+        })
         {
-            Clay_ElementId selector = CLAY_SID_LOCAL(Gui::ClayString(id + "-Selector"));
+            switch (type)
+            {
+            case OptionType::BOOL:
+            {
+                auto setting = Option::as<OptionExtended<bool>>(option);
+                bool value = setting->value;
 
-            bool is_open = false;
-            if (Gui::componentClicked(setting_id, MOUSE_BUTTON_LEFT))
-            {
-                is_open = !is_open;
-                Log::msg(menu, "Activated Choice selector: {}", option->name);
-            }
-
-            switch (option->innerType.value())
-            {
-            case OptionType::STRING:
-            {
-                auto setting = Option::as<OptionChoice<std::string>>(option);
-                std::string value = setting->value;
-                std::vector<std::string> choices = setting->choices;
+                if (Gui::componentClicked(setting_id, MOUSE_BUTTON_LEFT))
+                {
+                    value = !value;
+                    setting->value = value;
+                    Log::msg("Config", "Set {} to {}", setting->name, value ? "true" : "false");
+                }
 
                 CLAY({
                     .id = setting_id,
                     .layout = {
                         .sizing = {
-                            .width = CLAY_SIZING_FIT(),
+                            .width = CLAY_SIZING_FIXED(30),
                             .height = CLAY_SIZING_FIXED(30),
                         },
-                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
                     },
-                    .backgroundColor = Style::Dark::none,
-                })
-                {
-                    CLAY_TEXT(Gui::ClayString(value), &Style::Text::buttonText);
-                };
+                    .backgroundColor = value ? Style::Dark::gray_5 : Style::Dark::none,
+                    .cornerRadius = CLAY_CORNER_RADIUS(5),
+                    .border = {.color = Style::Dark::gray_5, .width = {2, 2, 2, 2, 0}},
+                }){};
+            }
+            break;
+            case OptionType::CHOICE:
+            {
+                Clay_ElementId selector_bounds = CLAY_SID_LOCAL(Gui::ClayString(id + "-Selector"));
+                Clay_ElementId selector = CLAY_SID_LOCAL(Gui::ClayString(id + "-Selector-Box"));
 
-                if (!(state.selected_setting == option && (Clay_PointerOver(setting_id) || Clay_PointerOver(selector))))
-                    return;
-
-                CLAY({
-                    .id = selector,
-                    .layout = {
-                        .sizing = {
-                            .width = CLAY_SIZING_FIT(),
-                            .height = CLAY_SIZING_FIXED(150),
-                        },
-                        .padding = {10, 10, 0, 0},
-                        .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                        .layoutDirection = CLAY_TOP_TO_BOTTOM,
-                    },
-                    .backgroundColor = Style::Dark::gray_2,
-                    .floating = {
-                        // .offset = {-10, 33},
-                        .parentId = setting_id.id,
-                        .attachPoints = {
-                            .element = CLAY_ATTACH_POINT_RIGHT_TOP,
-                            .parent = CLAY_ATTACH_POINT_RIGHT_BOTTOM,
-                        },
-                        .attachTo = CLAY_ATTACH_TO_ELEMENT_WITH_ID,
-                    },
-                })
+                if (Gui::componentClicked(setting_id, MOUSE_BUTTON_LEFT))
                 {
+                    state.open_selector = true;
+                    state.close_active_dropdown = false;
+                    Log::msg(menu, "Activated Choice selector: {}", option->name);
+                }
+
+                switch (option->innerType.value())
+                {
+                case OptionType::STRING:
+                {
+                    auto setting = Option::as<OptionChoice<std::string>>(option);
+                    std::string value = setting->value;
+                    std::vector<std::string> choices = setting->choices;
+
                     for (const auto &choice : choices)
                     {
+                        Clay_ElementId choice_id = CLAY_SID(Gui::ClayString(choice + "-Choice"));
+
+                        if (Clay_PointerOver(selector_bounds) && !Clay_PointerOver(selector) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && state.open_selector)
+                        {
+                            state.close_active_dropdown = true;
+                            Log::msg(menu, "Canceled Selector");
+                            break;
+                        }
+
+                        if (Gui::componentClicked(choice_id, MOUSE_BUTTON_LEFT))
+                        {
+                            setting->value = choice;
+                            value = choice;
+                            state.close_active_dropdown = true;
+                            Log::msg(menu, "Set {} to {}", setting->name, value);
+                        }
+                    }
+
+                    CLAY({
+                        .id = setting_id,
+                        .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_GROW(),
+                                .height = CLAY_SIZING_FIXED(30),
+                            },
+                            .padding = {5, 5, 0, 0},
+                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                        },
+                        .backgroundColor = Style::Dark::none,
+                    })
+                    {
+                        CLAY_TEXT(Gui::ClayString(value), &Style::Text::buttonText);
+                    };
+
+                    if (state.open_selector && !state.close_active_dropdown && state.selected_setting == option)
+                    {
+
                         CLAY({
-                            .id = CLAY_SID_LOCAL(Gui::ClayString(choice + "-Choice")),
+                            .id = selector_bounds,
                             .layout = {
                                 .sizing = {
                                     .width = CLAY_SIZING_GROW(),
-                                    .height = CLAY_SIZING_FIXED(30),
+                                    .height = CLAY_SIZING_GROW(),
                                 },
-                                .padding = {10, 10, 0, 0},
-                                .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
                             },
                             .backgroundColor = Style::Dark::none,
+                            .floating = {.attachTo = CLAY_ATTACH_TO_ROOT},
                         })
                         {
-                            CLAY_TEXT(Gui::ClayString(choice), &Style::Text::buttonText);
+                            CLAY({
+                                .id = selector,
+                                .layout = {
+                                    .sizing = {
+                                        .width = CLAY_SIZING_FIT(),
+                                        .height = CLAY_SIZING_FIT(),
+                                    },
+                                    .childGap = 8,
+                                    .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP},
+                                    .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                                },
+                                .backgroundColor = Style::Dark::gray_2,
+                                .floating = {
+                                    .parentId = setting_id.id,
+                                    .attachPoints = {
+                                        .element = CLAY_ATTACH_POINT_CENTER_TOP,
+                                        .parent = CLAY_ATTACH_POINT_CENTER_BOTTOM,
+                                    },
+                                    .attachTo = CLAY_ATTACH_TO_ELEMENT_WITH_ID,
+                                },
+                            })
+                            {
+                                for (const auto &choice : choices)
+                                {
+                                    Clay_ElementId choice_id = CLAY_SID(Gui::ClayString(choice + "-Choice"));
+
+                                    CLAY({
+                                        .id = choice_id,
+                                        .layout = {
+                                            .sizing = {
+                                                .width = CLAY_SIZING_GROW(),
+                                                .height = CLAY_SIZING_FIXED(30),
+                                            },
+                                            .padding = {10, 10, 0, 0},
+                                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                                        },
+                                        .backgroundColor = Clay_Hovered() ? Style::Dark::gray_4 : Style::Dark::none,
+                                    })
+                                    {
+                                        CLAY_TEXT(Gui::ClayString(choice), &Style::Text::buttonText);
+                                    };
+                                }
+                            };
                         };
                     }
-                };
+                }
+                break;
+                }
             }
             break;
-            }
-        }
-        break;
-        case OptionType::RANGE:
-        {
-            Clay_ElementId setting_inc = CLAY_SID_LOCAL(Gui::ClayString(id + "-Increase"));
-            Clay_ElementId setting_dec = CLAY_SID_LOCAL(Gui::ClayString(id + "-Reduce"));
-
-            int mode = 0;
-            if (Gui::componentClicked(setting_inc, MOUSE_BUTTON_LEFT))
+            case OptionType::RANGE:
             {
-                mode = 1;
-            }
-            else if (Gui::componentClicked(setting_dec, MOUSE_BUTTON_LEFT))
-            {
-                mode = -1;
-            }
+                Clay_ElementId setting_inc = CLAY_SID_LOCAL(Gui::ClayString(id + "-Increase"));
+                Clay_ElementId setting_dec = CLAY_SID_LOCAL(Gui::ClayString(id + "-Reduce"));
 
-            Clay_ElementDeclaration change_button = {
-                .layout = {
-                    .sizing = {
-                        .width = CLAY_SIZING_FIXED(30),
-                        .height = CLAY_SIZING_FIXED(30),
-                    },
-                    .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
-                },
-                .backgroundColor = Style::Dark::none,
-                .border = {.color = Style::Dark::gray_5, .width = {3, 3, 3, 3, 0}},
-            };
-
-            switch (option->innerType.value())
-            {
-            case OptionType::INT:
-            {
-                auto setting = Option::as<OptionRange<int>>(option);
-                int value = setting->value;
-                const int min = setting->min;
-                const int max = setting->max;
-
-                int change = 1;
-                if (IsKeyDown(KEY_LEFT_SHIFT))
-                    change = 10;
-                if (IsKeyDown(KEY_LEFT_CONTROL))
-                    change = 100;
-                if (IsKeyDown(KEY_LEFT_SHIFT) && IsKeyDown(KEY_LEFT_CONTROL))
-                    change = 1000;
-
-                if (!mode == 0 && (min <= value + change * mode && value + change * mode <= max))
+                int mode = 0;
+                if (Gui::componentClicked(setting_inc, MOUSE_BUTTON_LEFT))
                 {
-                    value = value + change * mode;
-                    setting->value = value;
-                    Log::msg(menu, "Set {} to {}", setting->name, value);
+                    mode = 1;
+                }
+                else if (Gui::componentClicked(setting_dec, MOUSE_BUTTON_LEFT))
+                {
+                    mode = -1;
                 }
 
-                change_button.id = setting_dec;
-
-                CLAY(change_button)
-                {
-                    CLAY_TEXT(Gui::ClayString("<"), &Style::Text::buttonText);
-                };
-
-                CLAY({
-                    .id = setting_id,
+                Clay_ElementDeclaration change_button = {
                     .layout = {
                         .sizing = {
-                            .width = CLAY_SIZING_FIT(),
+                            .width = CLAY_SIZING_FIXED(30),
                             .height = CLAY_SIZING_FIXED(30),
                         },
-                        .padding = {10, 10, 0, 0},
                         .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
                     },
                     .backgroundColor = Style::Dark::none,
-                })
-                {
-                    CLAY_TEXT(Gui::ClayString(std::to_string(value)), &Style::Text::buttonText);
+                    .cornerRadius = CLAY_CORNER_RADIUS(5),
+                    .border = {.color = Style::Dark::gray_5, .width = {2, 2, 2, 2, 0}},
                 };
 
-                change_button.id = setting_inc;
-
-                CLAY(change_button)
+                switch (option->innerType.value())
                 {
-                    CLAY_TEXT(Gui::ClayString(">"), &Style::Text::buttonText);
-                };
+                case OptionType::INT:
+                {
+                    auto setting = Option::as<OptionRange<int>>(option);
+                    int value = setting->value;
+                    const int min = setting->min;
+                    const int max = setting->max;
+
+                    int change = 1;
+                    if (IsKeyDown(KEY_LEFT_SHIFT))
+                        change = 10;
+                    if (IsKeyDown(KEY_LEFT_CONTROL))
+                        change = 100;
+                    if (IsKeyDown(KEY_LEFT_SHIFT) && IsKeyDown(KEY_LEFT_CONTROL))
+                        change = 1000;
+
+                    if (!mode == 0 && (min <= value + change * mode && value + change * mode <= max))
+                    {
+                        value = value + change * mode;
+                        setting->value = value;
+                        Log::msg(menu, "Set {} to {}", setting->name, value);
+                    }
+
+                    change_button.id = setting_dec;
+
+                    CLAY(change_button)
+                    {
+                        CLAY_TEXT(Gui::ClayString("<"), &Style::Text::buttonText);
+                    };
+
+                    CLAY({
+                        .id = setting_id,
+                        .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_FIT(),
+                                .height = CLAY_SIZING_FIXED(30),
+                            },
+                            .padding = {10, 10, 0, 0},
+                            .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
+                        },
+                        .backgroundColor = Style::Dark::none,
+                    })
+                    {
+                        CLAY_TEXT(Gui::ClayString(std::to_string(value)), &Style::Text::buttonText);
+                    };
+
+                    change_button.id = setting_inc;
+
+                    CLAY(change_button)
+                    {
+                        CLAY_TEXT(Gui::ClayString(">"), &Style::Text::buttonText);
+                    };
+                }
+                break;
+                }
             }
             break;
-            }
+            };
         }
-        break;
-        };
     }
 
     void ClaySpring(Direction direction)
