@@ -1,132 +1,147 @@
-// #pragma once
+#pragma once
 
-// #include <chrono>
-// #include <vector>
-// #include <cstring>
+#include <cstddef>
+#include <chrono>
+#include <vector>
+#include <variant>
+#include <optional>
+#include <cassert>
 
-// namespace Profiler
-// {
-//     using Time = std::chrono::time_point<std::chrono::high_resolution_clock>;
-//     using Duration = std::chrono::duration<double>;
+#include "logging.hpp"
 
-//     struct TimeStamp
-//     {
-//         Time time;
-//         TimeStampConfig config;
-//     };
+namespace Profiler
+{
+    using Value = std::variant<int, float, bool>;
+    using Link = std::variant<size_t, std::string>; // size_t: other id, std::string: name
 
-//     struct TimeStampConfig
-//     {
-//         char *id;
-//         char *target_id; // who the TimeStamp should be relative to
-//     };
+    using Duration = std::chrono::duration<float>;
+    using Time = std::chrono::high_resolution_clock::time_point;
 
-//     struct Data
-//     {
-//         std::vector<TimeStamp> time_stamps;
-//         std::vector<size_t> target_indices;
-//         std::vector<Duration> time_deltas;
-//         bool can_grow;
-//         size_t time_stamp_index;
-//     };
-//     static Data data;
+    struct Tracker
+    {
+        std::vector<size_t> ids = {};
+        std::vector<std::string_view> names = {};
+        std::vector<Time> times = {};
+        std::vector<std::optional<Link>> links = {};
+        std::vector<std::optional<Value>> values = {};
+        size_t last_id = 0;
+        size_t capacity = 0;
 
-//     static void Init()
-//     {
-//         data.time_stamps = std::vector<TimeStamp>();
-//         data.can_grow = true;
-//         data.time_stamp_index = 0;
-//     };
+        bool is_init = false;
 
-//     static void SetTimeStamp(TimeStampConfig config)
-//     {
-//         Time t = std::chrono::high_resolution_clock::now();
-//         TimeStamp ts = {t, config};
+        size_t stamp(std::string_view name, std::optional<Link> link = std::nullopt, std::optional<Value> value = std::nullopt)
+        {
+            size_t next_id = last_id++;
 
-//         if (data.can_grow)
-//         {
-//             data.time_stamps.push_back(ts);
-//         }
-//         else
-//         {
-//             data.time_stamps[data.time_stamp_index].time = t;
-//             data.time_stamp_index++;
-//         }
-//     };
+            if (!is_init && last_id < capacity)
+            {
+                ids[next_id] = next_id;
+                names[next_id] = name;
+                times[next_id] = std::chrono::high_resolution_clock::now();
+                links[next_id] = link;
+                values[next_id] = value;
+            }
+            else if (!is_init)
+            {
+                ids.push_back(next_id);
+                names.push_back(name);
+                times.push_back(std::chrono::high_resolution_clock::now());
+                links.push_back(link);
+                values.push_back(value);
+                capacity = last_id;
+            }
+            else
+            {
+                ids[next_id] = next_id;
+                names[next_id] = name;
+                times[next_id] = std::chrono::high_resolution_clock::now();
+                links[next_id] = link;
+                values[next_id] = value;
+            }
 
-//     void calc_indices()
-//     {
-//         data.target_indices = std::vector<size_t>(data.time_stamps.size());
-//         data.time_deltas = std::vector<Duration>(data.time_stamps.size());
+            last_id = next_id;
 
-//         for (size_t i = 0; i < data.time_stamps.size(); i++)
-//         {
-//             TimeStamp ts = data.time_stamps[i];
-//             TimeStampConfig config = ts.config;
+            return next_id;
+        };
 
-//             if (config.target_id != nullptr)
-//             {
-//                 for (size_t j = 0; j < data.time_stamps.size(); j++)
-//                 {
-//                     TimeStamp ts2 = data.time_stamps[j];
-//                     TimeStampConfig config2 = ts2.config;
+        size_t getId(std::string_view name)
+        {
+            for (size_t i = 0; i <= last_id; i++)
+            {
+                if (names[i] == name)
+                {
+                    size_t id = ids[i];
+                    if (id > last_id)
+                        Log::msg("Profiler", "Accessing out of bounds id: {}, name: {}", id, name);
+                    return ids[i];
+                }
+            }
+            throw std::runtime_error("Event:" + std::string(name) + " not found");
+        };
 
-//                     if (strcmp(config.target_id, config2.id) == 0)
-//                     {
-//                         data.target_indices[i] = j;
-//                     }
-//                 }
-//             }
-//             else
-//             {
-//                 data.target_indices[i] = 0;
-//             }
-//         }
-//     }
+        Duration calculate(size_t id_a, size_t id_b)
+        {
+            auto start = times[id_a];
+            auto end = times[id_b];
 
-//     static void close()
-//     {
-//         if (data.can_grow)
-//         {
-//             calc_indices();
-//             data.can_grow = false;
-//         }
-//         deltas();
-//     };
+            std::chrono::duration<float> duration = end - start;
+            return duration;
+        };
 
-//     void deltas()
-//     {
-//         for (size_t i = 0; i < data.time_stamps.size(); i++)
-//         {
-//             TimeStamp ts = data.time_stamps[i];
-//             TimeStampConfig config = ts.config;
+        Duration calculate(std::string_view name_a, std::string_view name_b)
+        {
+            size_t id_a = getId(name_a);
+            size_t id_b = getId(name_b);
 
-//             if (config.target_id != nullptr)
-//             {
-//                 size_t target_index = data.target_indices[i];
-//                 TimeStamp target_ts = data.time_stamps[target_index];
+            return calculate(id_a, id_b);
+        };
 
-//                 std::chrono::duration<double> delta = ts.time - target_ts.time;
-//                 data.time_deltas[i] = delta;
-//             }
-//         }
+        void clear()
+        {
+            last_id = 0;
+        };
 
-//         data.time_stamp_index = 0;
-//     };
+        void pin()
+        {
+            is_init = true;
+        };
+    };
 
-//     static Duration get_delta(char *id)
-//     {
-//         for (size_t i = 0; i < data.time_stamps.size(); i++)
-//         {
-//             TimeStamp ts = data.time_stamps[i];
-//             TimeStampConfig config = ts.config;
+    struct Telemetry
+    {
+    };
+}
 
-//             if (strcmp(config.id, id) == 0)
-//             {
-//                 return data.time_deltas[i];
-//             }
-//         }
+#define PROFILER Profiler::Tracker local_tracker;
+#define BEGIN_PROFILER local_tracker.clear();
+#define STAMP(name) local_tracker.stamp(name);
+#define END_PROFILER local_tracker.pin();
+#define EVAL(linkA, linkB) local_tracker.calculate(linkA, linkB);
 
-//         return Duration(0);
-//     };
-// };
+void example()
+{
+    assert(false && "This is an example of how to use the Profiler::Tracker class. It should not be used!");
+
+    PROFILER;
+
+    while (true)
+    {
+        BEGIN_PROFILER;
+
+        STAMP("Start");
+        STAMP("Input-Start");
+        STAMP("Input-End");
+
+        STAMP("State-Start");
+        STAMP("State-End");
+
+        STAMP("Render-Start");
+        STAMP("Render-End");
+
+        STAMP("End");
+
+        END_PROFILER;
+
+        Profiler::Duration t = EVAL("Start", "End");
+    }
+}
