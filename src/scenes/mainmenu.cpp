@@ -20,7 +20,6 @@ namespace
     struct State
     {
         bool close = false;
-        bool gui_lock = false;
         bool rebuild_layout = false;
     };
     State state;
@@ -79,6 +78,10 @@ namespace
 {
     void processInput()
     {
+        if (!Gui::isInputUpdated())
+            return;
+
+        state.rebuild_layout = true;
 
         // if (Gui::componentClicked("Play-Button", MOUSE_BUTTON_LEFT))
         // {
@@ -104,11 +107,6 @@ namespace
             state.close = true;
             Window::queueContext(nullptr);
             Log::msg("Window", "Swap to Context: None");
-        }
-
-        if (Gui::isInputUpdated())
-        {
-            state.rebuild_layout = true;
         }
 
         Gui::clearInput();

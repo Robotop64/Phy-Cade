@@ -94,16 +94,10 @@ namespace
 {
     void processInput()
     {
-        bool process_input = false;
-
-        if (Gui::isInputUpdated())
-        {
-            state.rebuild_layout = true;
-            process_input = true;
-        }
-
-        if (!process_input)
+        if (!Gui::isInputUpdated())
             return;
+
+        state.rebuild_layout = true;
 
         if (Gui::componentClicked("X-Button", MOUSE_BUTTON_LEFT))
         {
