@@ -1,147 +1,138 @@
 #pragma once
 
-#include <cstddef>
 #include <chrono>
 #include <vector>
+#include <unordered_map>
 #include <variant>
 #include <optional>
 #include <cassert>
+
+#include "unordered_dense.h"
 
 #include "logging.hpp"
 
 namespace Profiler
 {
+#pragma region defs
     using Value = std::variant<int, float, bool>;
-    using Link = std::variant<size_t, std::string>; // size_t: other id, std::string: name
+    using Id = int;
+    using Link = std::variant<Id, std::string>; // Id: other id, std::string: name
 
     using Duration = std::chrono::duration<float>;
     using Time = std::chrono::high_resolution_clock::time_point;
+#pragma endregion
 
     struct Tracker
     {
-        std::vector<size_t> ids = {};
-        std::vector<std::string_view> names = {};
-        std::vector<Time> times = {};
-        std::vector<std::optional<Link>> links = {};
-        std::vector<std::optional<Value>> values = {};
-        size_t last_id = 0;
-        size_t capacity = 0;
+        std::vector<Id> ids;
+        std::vector<std::string> names;
+        ankerl::unordered_dense::map<std::string, Id> name_to_id;
+        std::vector<Time> times;
+        std::vector<std::optional<Link>> links;
+        std::vector<std::optional<Value>> values;
+        Id last_id;
+        Id capacity;
 
-        bool is_init = false;
+        // grow until this pin is reached, reset/clear to the pinned index
+        bool clear_pinned = false;
+        int pin_idx = 0;
 
-        size_t stamp(std::string_view name, std::optional<Link> link = std::nullopt, std::optional<Value> value = std::nullopt)
-        {
-            size_t next_id = last_id++;
+        Tracker();
 
-            if (!is_init && last_id < capacity)
-            {
-                ids[next_id] = next_id;
-                names[next_id] = name;
-                times[next_id] = std::chrono::high_resolution_clock::now();
-                links[next_id] = link;
-                values[next_id] = value;
-            }
-            else if (!is_init)
-            {
-                ids.push_back(next_id);
-                names.push_back(name);
-                times.push_back(std::chrono::high_resolution_clock::now());
-                links.push_back(link);
-                values.push_back(value);
-                capacity = last_id;
-            }
-            else
-            {
-                ids[next_id] = next_id;
-                names[next_id] = name;
-                times[next_id] = std::chrono::high_resolution_clock::now();
-                links[next_id] = link;
-                values[next_id] = value;
-            }
+        Id stamp(std::string_view name, std::optional<Link> link = std::nullopt, std::optional<Value> value = std::nullopt);
 
-            last_id = next_id;
+        Id getId(std::string_view name);
 
-            return next_id;
-        };
+        Duration calculate(Id id_a, Id id_b);
+        Duration calculate(std::string_view name_a, std::string_view name_b);
 
-        size_t getId(std::string_view name)
-        {
-            for (size_t i = 0; i <= last_id; i++)
-            {
-                if (names[i] == name)
-                {
-                    size_t id = ids[i];
-                    if (id > last_id)
-                        Log::msg("Profiler", "Accessing out of bounds id: {}, name: {}", id, name);
-                    return ids[i];
-                }
-            }
-            throw std::runtime_error("Event:" + std::string(name) + " not found");
-        };
+        Value getValue(Id id);
+        Value getValue(std::string_view name);
 
-        Duration calculate(size_t id_a, size_t id_b)
-        {
-            auto start = times[id_a];
-            auto end = times[id_b];
-
-            std::chrono::duration<float> duration = end - start;
-            return duration;
-        };
-
-        Duration calculate(std::string_view name_a, std::string_view name_b)
-        {
-            size_t id_a = getId(name_a);
-            size_t id_b = getId(name_b);
-
-            return calculate(id_a, id_b);
-        };
-
-        void clear()
-        {
-            last_id = 0;
-        };
-
-        void pin()
-        {
-            is_init = true;
-        };
+        void clear();
+        void pin();
+        void unpin();
     };
 
-    struct Telemetry
+    Tracker &Get();
+
+    inline void Setup()
     {
-    };
-}
-
-#define PROFILER Profiler::Tracker local_tracker;
-#define BEGIN_PROFILER local_tracker.clear();
-#define STAMP(name) local_tracker.stamp(name);
-#define END_PROFILER local_tracker.pin();
-#define EVAL(linkA, linkB) local_tracker.calculate(linkA, linkB);
-
-void example()
-{
-    assert(false && "This is an example of how to use the Profiler::Tracker class. It should not be used!");
-
-    PROFILER;
-
-    while (true)
+        Get();
+    }
+    // inline void BeginLoop()
+    // {
+    //     Get().clear();
+    // }
+    // inline void EndLoop()
+    // {
+    //     Get().pin();
+    // }
+    // inline void Continue()
+    // {
+    //     Get().unpin();
+    // }
+    inline Id Stamp(std::string_view name, std::optional<Link> link = std::nullopt, std::optional<Value> value = std::nullopt)
     {
-        BEGIN_PROFILER;
-
-        STAMP("Start");
-        STAMP("Input-Start");
-        STAMP("Input-End");
-
-        STAMP("State-Start");
-        STAMP("State-End");
-
-        STAMP("Render-Start");
-        STAMP("Render-End");
-
-        STAMP("End");
-
-        END_PROFILER;
-
-        Profiler::Duration t = EVAL("Start", "End");
+        return Get().stamp(name, link, value);
+    }
+    inline Id StampS(std::string_view name, std::optional<Link> link = std::nullopt, std::optional<Value> value = std::nullopt)
+    {
+        auto _name = std::string(name);
+        return Get().stamp(_name + "-Start", link, value);
+    }
+    inline Id StampE(std::string_view name, std::optional<Link> link = std::nullopt, std::optional<Value> value = std::nullopt)
+    {
+        auto _name = std::string(name);
+        return Get().stamp(_name + "-End", link, value);
+    }
+    inline Duration Eval(std::string_view nameA, std::string_view nameB)
+    {
+        return Get().calculate(nameA, nameB);
+    }
+    inline Duration Eval(Id idA, Id idB)
+    {
+        return Get().calculate(idA, idB);
+    }
+    inline Duration EvalScope(std::string_view name)
+    {
+        auto _name = std::string(name);
+        return Get().calculate(_name + "-Start", _name + "-End");
+    }
+    inline Value GetValue(std::string_view name)
+    {
+        return Get().getValue(name);
+    }
+    inline Value GetValue(Id id)
+    {
+        return Get().getValue(id);
     }
 }
+
+// void example()
+// {
+//     assert(false && "This is an example of how to use the Tracker class. It should not be used!");
+
+//     P_Setup();
+
+//     while (true)
+//     {
+//         P_Begin();
+
+//         P_Stamp("Start");
+//         P_Stamp("Input-Start");
+//         P_Stamp("Input-End");
+
+//         P_Stamp("State-Start");
+//         P_Stamp("State-End");
+
+//         P_Stamp("Render-Start");
+//         P_Stamp("Render-End");
+
+//         P_Stamp("End");
+
+//         P_End();
+
+//         Duration t = P_Eval("Start", "End");
+//     }
+// }

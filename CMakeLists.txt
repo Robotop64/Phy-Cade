@@ -48,6 +48,11 @@ set(CLAY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/clay")
 include_directories(${CLAY_DIR})
 list(APPEND MY_SOURCES "${CLAY_DIR}/clayman.cpp")
 list(APPEND MY_SOURCES "${CLAY_DIR}/clay_renderer_raylib.cpp")
+#-------------------------------------------------------------------------------
+# Unordered_Dense (Hashmap)
+#-------------------------------------------------------------------------------
+set(UNORDERED_DENSE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/ankerl")
+include_directories(${UNORDERED_DENSE_DIR})
 #===============================================================================
 
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/bin)
