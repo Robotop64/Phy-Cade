@@ -1,5 +1,6 @@
 #include "gui.hpp"
 #include "logging.hpp"
+#include "profiler.hpp"
 
 Clay_RenderCommandArray Gui::current_Commands = Clay_RenderCommandArray{};
 Clay_Context *Gui::current_Context = nullptr;
@@ -148,6 +149,7 @@ const char *Gui::insertStringIntoArena(const std::string &str)
     size_t strSize = str.size();
     if (nextStringArenaIndex + strSize + 1 > sizeof(stringArena))
     {
+        Log::msg("Gui", "The string: {} caused an overflow in the string arena.", str);
         throw std::overflow_error("StringArena: Not enough space to insert the string.");
     }
 
@@ -158,6 +160,8 @@ const char *Gui::insertStringIntoArena(const std::string &str)
         stringArena[nextStringArenaIndex++] = str[i];
     }
     stringArena[nextStringArenaIndex++] = ' ';
+
+    Profiler::Stamp("Gui-StringArena", std::nullopt, float(nextStringArenaIndex) / sizeof(stringArena));
 
     return startPtr;
 }

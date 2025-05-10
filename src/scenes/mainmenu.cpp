@@ -4,6 +4,7 @@
 #include "logging.hpp"
 #include "config.hpp"
 #include "style.hpp"
+#include "profiler.hpp"
 
 #include <string>
 
@@ -49,6 +50,8 @@ void Scene::MainMenu()
 
     while (!WindowShouldClose() && !state.close)
     {
+        Profiler::StampS("MainMenu");
+
         processInput();
 
         if (state.rebuild_layout)
@@ -64,6 +67,9 @@ void Scene::MainMenu()
         Gui::draw();
 
         EndDrawing();
+        Profiler::StampE("MainMenu");
+        // Log::msg("Profiler", "Gui-StringArena State: {}", std::get<float>(Profiler::GetValue("Gui-StringArena")));
+        // Log::msg("Profiler", "Frame Time: {}ms", Profiler::EvalScope("MainMenu").count() * 1000);
     }
 
     cleanup();

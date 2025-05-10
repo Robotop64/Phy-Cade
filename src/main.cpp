@@ -2,9 +2,13 @@
 #include "window.hpp"
 #include "scene.hpp"
 #include "gui.hpp"
+#include "profiler.hpp"
 
 int main(void)
 {
+    Profiler::Setup();
+    Profiler::Stamp("Start");
+
     Config::instance();
 
     Window::create();

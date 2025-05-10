@@ -1,11 +1,13 @@
 #include "config.hpp"
 #include "logging.hpp"
+#include "profiler.hpp"
 
 #include <iostream>
 #include <fstream>
 
 NodePtr ConfigUtil::gen_default()
 {
+    Profiler::StampS("Config-Gen");
     NodePtr root = Node::createNodeGroup("root");
 
     root->addNode(Node::createNodeGroup("display"));
@@ -26,6 +28,7 @@ NodePtr ConfigUtil::gen_default()
     root->at("debug")->addNode(Node::createOptionList("gameplay"));
 
     root->addNode(Node::createOptionList("audio"));
+    Profiler::StampE("Config-Gen");
 
     return root;
 };
