@@ -505,12 +505,15 @@ namespace
                                         .width = CLAY_SIZING_FIT(),
                                         .height = CLAY_SIZING_FIT(),
                                     },
+                                    .padding = {0, 0, 8, 8},
                                     .childGap = 8,
                                     .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP},
                                     .layoutDirection = CLAY_TOP_TO_BOTTOM,
                                 },
                                 .backgroundColor = Style::Dark::gray_2,
+                                .cornerRadius = CLAY_CORNER_RADIUS(15),
                                 .floating = {
+                                    .offset = {0, 16},
                                     .parentId = setting_id.id,
                                     .attachPoints = {
                                         .element = CLAY_ATTACH_POINT_CENTER_TOP,
@@ -518,6 +521,7 @@ namespace
                                     },
                                     .attachTo = CLAY_ATTACH_TO_ELEMENT_WITH_ID,
                                 },
+                                .border = {.color = Style::Dark::gray_5, .width = {2, 2, 2, 2, 0}},
                             })
                             {
                                 for (const auto &choice : choices)
@@ -531,10 +535,11 @@ namespace
                                                 .width = CLAY_SIZING_GROW(),
                                                 .height = CLAY_SIZING_FIXED(30),
                                             },
-                                            .padding = {10, 10, 0, 0},
+                                            .padding = {8, 8, 0, 0},
                                             .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER},
                                         },
                                         .backgroundColor = Clay_Hovered() ? Style::Dark::gray_4 : Style::Dark::none,
+                                        .cornerRadius = CLAY_CORNER_RADIUS(5),
                                     })
                                     {
                                         CLAY_TEXT(Gui::ClayString(choice), &Style::Text::buttonText);
